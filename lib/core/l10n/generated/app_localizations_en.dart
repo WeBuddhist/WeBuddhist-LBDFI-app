@@ -2121,6 +2121,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get share_this_quote => 'Share this quote';
 
   @override
+  String get share_this_verse => 'Share this verse';
+
+  @override
   String get shared_from => 'Shared from';
 
   @override

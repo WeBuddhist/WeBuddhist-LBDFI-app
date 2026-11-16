@@ -2141,6 +2141,9 @@ class AppLocalizationsMn extends AppLocalizations {
   String get share_this_quote => 'Энэ ишлэлийг хуваалцах';
 
   @override
+  String get share_this_verse => 'Энэ шүлгийг хуваалцах';
+
+  @override
   String get shared_from => 'Хуваалцсан:';
 
   @override

@@ -4177,6 +4177,13 @@ class TolgeeAppLocalizations extends AppLocalizations {
   );
 
   @override
+  String get share_this_verse => TolgeeBridge.get(
+    localeName,
+    'share_this_verse',
+    () => _fallback.share_this_verse,
+  );
+
+  @override
   String get shared_from =>
       TolgeeBridge.get(localeName, 'shared_from', () => _fallback.shared_from);
 

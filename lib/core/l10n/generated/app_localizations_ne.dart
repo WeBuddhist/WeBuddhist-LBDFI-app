@@ -2146,6 +2146,9 @@ class AppLocalizationsNe extends AppLocalizations {
   String get share_this_quote => 'यो उद्धरण साझा गर्नुहोस्';
 
   @override
+  String get share_this_verse => 'यो श्लोक साझा गर्नुहोस्';
+
+  @override
   String get shared_from => 'बाट साझा गरिएको';
 
   @override

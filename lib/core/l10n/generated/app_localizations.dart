@@ -3801,6 +3801,12 @@ abstract class AppLocalizations {
   /// **'Share this quote'**
   String get share_this_quote;
 
+  /// No description provided for @share_this_verse.
+  ///
+  /// In en, this message translates to:
+  /// **'Share this verse'**
+  String get share_this_verse;
+
   /// No description provided for @shared_from.
   ///
   /// In en, this message translates to:

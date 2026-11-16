@@ -585,6 +585,7 @@
   "group_recitation_collection_completed_title": "สวด {collection} จบแล้ว",
   "group_recitation_collection_dedication": "ด้วยบุญกุศลนี้ ขอสรรพสัตว์ทั้งหลาย\nจงพ้นจากความทุกข์",
   "share_this_quote": "แชร์คำคมนี้",
+  "share_this_verse": "แชร์คาถานี้",
   "shared_from": "แชร์จาก",
   "verse_share_error": "ไม่สามารถแชร์คำคมได้ โปรดลองอีกครั้ง",
   "verse_comments_title": "ความคิดเห็น · {count}",

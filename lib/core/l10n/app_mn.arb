@@ -691,6 +691,7 @@
   "group_accumulator_session_share_message_no_group": "Би WeBuddhist дээр \"{accumulation}\" хуримтлалд {count} уншлага гүйцэтгэлээ. Та ч бас надтай нэгдээрэй!",
   "group_accumulator_session_share_error": "Хуралдааныг хуваалцаж чадсангүй. Дахин оролдоно уу",
   "share_this_quote": "Энэ ишлэлийг хуваалцах",
+  "share_this_verse": "Энэ шүлгийг хуваалцах",
   "shared_from": "Хуваалцсан:",
   "verse_share_error": "Ишлэлийг хуваалцах боломжгүй. Дахин оролдоно уу",
   "share_app_message": "Би өдөр тутмын Буддын дадлага хийхийн тулд энэ аппыг ашиглаж байна, та ч дуртай болно гэж бодлоо.",

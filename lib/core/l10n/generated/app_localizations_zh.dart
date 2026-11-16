@@ -2035,6 +2035,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String get share_this_quote => '分享這句話';
 
   @override
+  String get share_this_verse => '分享這段偈頌';
+
+  @override
   String get shared_from => '分享自';
 
   @override
@@ -5994,6 +5997,9 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String get share_this_quote => '分享这句话';
+
+  @override
+  String get share_this_verse => '分享这段偈颂';
 
   @override
   String get shared_from => '分享自';

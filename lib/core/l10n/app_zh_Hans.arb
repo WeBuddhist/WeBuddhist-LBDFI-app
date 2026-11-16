@@ -860,6 +860,7 @@
   "group_recitation_collection_completed_title": "已完成「{collection}」",
   "group_recitation_collection_dedication": "愿以此功德，令一切众生\n远离痛苦",
   "share_this_quote": "分享这句话",
+  "share_this_verse": "分享这段偈颂",
   "shared_from": "分享自",
   "verse_share_error": "无法分享引文，请再试一次",
   "verse_comments_title": "评论 · {count}",

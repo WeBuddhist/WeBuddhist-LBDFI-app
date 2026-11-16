@@ -22,3 +22,24 @@ final verseOfDayFutureProvider = AsyncNotifierProvider<
     );
   });
 });
+
+/// The verse-of-the-day week for the carousel, newest first. The stored week
+/// is the first state; re-fetches when the app language changes.
+final recentVersesOfDayProvider = AsyncNotifierProvider<
+  ScreenCacheNotifier<List<VerseOfDay>, Either<Failure, List<VerseOfDay>>>,
+  Either<Failure, List<VerseOfDay>>
+>(() {
+  return ScreenCacheNotifier((ref, bind) {
+    final language = ref.watch(contentLanguageProvider);
+    final repository = ref.watch(verseOfDayDomainRepositoryProvider);
+    final stored = ref
+        .watch(homeLocalDatasourceProvider)
+        .readRecentVerses(language)
+        ?.map((model) => model.toEntity())
+        .toList();
+    return bind.stream(
+      stored == null ? null : Right(stored),
+      repository.watchRecentVerses(language: language),
+    );
+  });
+});

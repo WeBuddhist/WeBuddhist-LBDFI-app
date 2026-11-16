@@ -2148,6 +2148,9 @@ class AppLocalizationsMy extends AppLocalizations {
   String get share_this_quote => 'ဤဆိုမိန့်ကို မျှဝေရန်';
 
   @override
+  String get share_this_verse => 'ဤဂါထာကို မျှဝေရန်';
+
+  @override
   String get shared_from => 'မျှဝေထားသည့်နေရာ';
 
   @override

@@ -36,6 +36,18 @@ abstract class VerseOfDayRepositoryInterface extends Repository {
 
   /// Pull-to-refresh: fetches and stores; the watch stream delivers the result.
   Future<Either<Failure, Unit>> refreshVerseOfDay({required String language});
+
+  /// The verse-of-the-day week: today and the six days before it, newest
+  /// first, skipping days with no verse. Cached first, then refreshed.
+  Stream<Either<Failure, List<VerseOfDay>>> watchRecentVerses({
+    required String language,
+  });
+
+  /// Pull-to-refresh for [watchRecentVerses]. Also updates today's verse for
+  /// [watchVerseOfDay].
+  Future<Either<Failure, Unit>> refreshRecentVerses({
+    required String language,
+  });
   Future<Either<Failure, VerseOfDayLikes>> getLikes(String verseId);
   Future<Either<Failure, Unit>> likeVerse(String verseId);
   Future<Either<Failure, Unit>> unlikeVerse(String verseId);

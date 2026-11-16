@@ -2111,6 +2111,9 @@ class AppLocalizationsTh extends AppLocalizations {
   String get share_this_quote => 'แชร์คำคมนี้';
 
   @override
+  String get share_this_verse => 'แชร์คาถานี้';
+
+  @override
   String get shared_from => 'แชร์จาก';
 
   @override

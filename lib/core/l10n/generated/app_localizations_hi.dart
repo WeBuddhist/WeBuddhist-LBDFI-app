@@ -2134,6 +2134,9 @@ class AppLocalizationsHi extends AppLocalizations {
   String get share_this_quote => 'यह उद्धरण शेयर करें';
 
   @override
+  String get share_this_verse => 'यह श्लोक शेयर करें';
+
+  @override
   String get shared_from => 'यहाँ से शेयर किया गया';
 
   @override

@@ -2145,6 +2145,9 @@ class AppLocalizationsBo extends AppLocalizations {
   String get share_this_quote => 'ལེགས་བཤད་འདི་སྤེལ།';
 
   @override
+  String get share_this_verse => 'ཚིགས་བཅད་འདི་སྤེལ།';
+
+  @override
   String get shared_from => 'སྤེལ་ཁུངས།';
 
   @override
