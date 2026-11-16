@@ -108,12 +108,14 @@ void main() {
       language: 'bo',
       skip: 100,
       limit: 100,
+      calendarType: 'tsurphu',
     );
     final request = recorder.requests.single;
     expect(request.path, '/users/me/calendar');
     expect(request.queryParameters, {
       'from_date': '2026-02-01',
       'to_date': '2026-02-28',
+      'calendar_type': 'tsurphu',
       'language': 'bo',
       'skip': 100,
       'limit': 100,
