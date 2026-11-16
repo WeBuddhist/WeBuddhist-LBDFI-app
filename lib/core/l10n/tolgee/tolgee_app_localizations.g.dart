@@ -3054,6 +3054,118 @@ class TolgeeAppLocalizations extends AppLocalizations {
   );
 
   @override
+  String get calendar_choose_calendar => TolgeeBridge.get(
+    localeName,
+    'calendar_choose_calendar',
+    () => _fallback.calendar_choose_calendar,
+  );
+
+  @override
+  String get settings_calendar_row => TolgeeBridge.get(
+    localeName,
+    'settings_calendar_row',
+    () => _fallback.settings_calendar_row,
+  );
+
+  @override
+  String get calendar_tradition_vajrayana => TolgeeBridge.get(
+    localeName,
+    'calendar_tradition_vajrayana',
+    () => _fallback.calendar_tradition_vajrayana,
+  );
+
+  @override
+  String get calendar_tradition_theravada => TolgeeBridge.get(
+    localeName,
+    'calendar_tradition_theravada',
+    () => _fallback.calendar_tradition_theravada,
+  );
+
+  @override
+  String get calendar_tradition_mahayana => TolgeeBridge.get(
+    localeName,
+    'calendar_tradition_mahayana',
+    () => _fallback.calendar_tradition_mahayana,
+  );
+
+  @override
+  String get calendar_type_phugpa => TolgeeBridge.get(
+    localeName,
+    'calendar_type_phugpa',
+    () => _fallback.calendar_type_phugpa,
+  );
+
+  @override
+  String get calendar_type_tsurphu => TolgeeBridge.get(
+    localeName,
+    'calendar_type_tsurphu',
+    () => _fallback.calendar_type_tsurphu,
+  );
+
+  @override
+  String get calendar_type_nyingmapa => TolgeeBridge.get(
+    localeName,
+    'calendar_type_nyingmapa',
+    () => _fallback.calendar_type_nyingmapa,
+  );
+
+  @override
+  String get calendar_type_sinhalese => TolgeeBridge.get(
+    localeName,
+    'calendar_type_sinhalese',
+    () => _fallback.calendar_type_sinhalese,
+  );
+
+  @override
+  String get calendar_type_thai => TolgeeBridge.get(
+    localeName,
+    'calendar_type_thai',
+    () => _fallback.calendar_type_thai,
+  );
+
+  @override
+  String get calendar_type_burmese => TolgeeBridge.get(
+    localeName,
+    'calendar_type_burmese',
+    () => _fallback.calendar_type_burmese,
+  );
+
+  @override
+  String get calendar_type_lao => TolgeeBridge.get(
+    localeName,
+    'calendar_type_lao',
+    () => _fallback.calendar_type_lao,
+  );
+
+  @override
+  String get calendar_type_chinese => TolgeeBridge.get(
+    localeName,
+    'calendar_type_chinese',
+    () => _fallback.calendar_type_chinese,
+  );
+
+  @override
+  String get calendar_type_vietnamese => TolgeeBridge.get(
+    localeName,
+    'calendar_type_vietnamese',
+    () => _fallback.calendar_type_vietnamese,
+  );
+
+  @override
+  String get calendar_type_korean => TolgeeBridge.get(
+    localeName,
+    'calendar_type_korean',
+    () => _fallback.calendar_type_korean,
+  );
+
+  @override
+  String get calendar_type_japanese => TolgeeBridge.get(
+    localeName,
+    'calendar_type_japanese',
+    () => _fallback.calendar_type_japanese,
+  );
+
+  @override
   String get calendar_today => TolgeeBridge.get(
     localeName,
     'calendar_today',

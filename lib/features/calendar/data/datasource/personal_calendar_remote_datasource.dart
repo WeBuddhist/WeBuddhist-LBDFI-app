@@ -19,12 +19,14 @@ class PersonalCalendarRemoteDatasource {
     required String language,
     required int skip,
     required int limit,
+    required String calendarType,
   }) async {
     final response = await dio.get(
       '/users/me/calendar',
       queryParameters: {
         'from_date': formatApiDate(from),
         'to_date': formatApiDate(to),
+        'calendar_type': calendarType,
         'language': language,
         'skip': skip,
         'limit': limit,
@@ -74,10 +76,16 @@ class PersonalCalendarRemoteDatasource {
     await dio.delete('$_eventsPath/$id');
   }
 
-  Future<List<PersonalRepeatOption>> fetchRepeatOptions(DateTime date) async {
+  Future<List<PersonalRepeatOption>> fetchRepeatOptions(
+    DateTime date, {
+    required String calendarType,
+  }) async {
     final response = await dio.get(
       '$_eventsPath/repeat-options',
-      queryParameters: {'date': formatApiDate(date)},
+      queryParameters: {
+        'date': formatApiDate(date),
+        'calendar_type': calendarType,
+      },
       options: _noCache,
     );
     return repeatOptionsFromJson(response.data as Map<String, dynamic>);

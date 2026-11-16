@@ -7,6 +7,7 @@ import 'package:flutter_pecha/features/calendar/data/repositories/personal_calen
 import 'package:flutter_pecha/features/calendar/domain/models/calendar_event.dart';
 import 'package:flutter_pecha/features/calendar/domain/models/personal_calendar_event.dart';
 import 'package:flutter_pecha/features/calendar/domain/repositories/personal_calendar_repository.dart';
+import 'package:flutter_pecha/features/calendar/presentation/providers/calendar_type_providers.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 // ============ Who is viewing ============
@@ -28,6 +29,7 @@ final calendarViewerProvider = Provider<CalendarViewer>((ref) {
 final personalCalendarRepositoryProvider = Provider<PersonalCalendarRepository>(
   (ref) => PersonalCalendarRepositoryImpl(
     PersonalCalendarRemoteDatasource(dio: ref.watch(dioProvider)),
+    calendarType: ref.watch(selectedCalendarTypeProvider),
   ),
 );
 
