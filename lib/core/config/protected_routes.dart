@@ -91,6 +91,10 @@ class ProtectedRoutes {
     // In-app feedback: the backend takes the sender from the token.
     '/feedback',
 
+    // "Request text" from Chants search: needs a signed-in user (the server
+    // rate-limits per user).
+    '/text-requests',
+
     // Plans (public endpoints but may need auth for user-specific data)
     '/plans/{planId}',
     '/plans/{planId}/days/{dayNumber}',

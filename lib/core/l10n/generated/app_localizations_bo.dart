@@ -167,7 +167,7 @@ class AppLocalizationsBo extends AppLocalizations {
   String get mala_others_section => 'Others';
 
   @override
-  String get mala_mantra_speed => 'Mantra speed';
+  String get mala_mantra_speed => 'སྔགས་ཀྱི་མགྱོགས་ཚད།';
 
   @override
   String get mala_speed_normal => 'Normal';
@@ -753,7 +753,7 @@ class AppLocalizationsBo extends AppLocalizations {
   }
 
   @override
-  String get home_group_events => 'ཁྱད་གསལ་བྱེད་སྒོ།';
+  String get home_group_events => 'གདམ་བསྒྲིགས་བྱེད་སྒོ།';
 
   @override
   String get home_community_feed => 'From the community';
@@ -2535,8 +2535,7 @@ class AppLocalizationsBo extends AppLocalizations {
   String get group_chat_empty_title => 'ད་དུང་འཕྲིན་ཡིག་མི་འདུག';
 
   @override
-  String get group_chat_empty_body =>
-      'ཁྱེད་ཀྱི་ཚོགས་པ་དང་གླེང་མོལ་འགོ་འཛུགས་རོགས།';
+  String get group_chat_empty_body => 'ཁྱེད་ཀྱི་ཚོགས་པའི་ནང་གླེང་མོལ་འགོ་ཚུགས།';
 
   @override
   String get group_chat_load_failed => 'འཕྲིན་ཡིག་ལེན་ཐུབ་མ་སོང་།';
@@ -3431,13 +3430,13 @@ class AppLocalizationsBo extends AppLocalizations {
   String get group_event_choose_repeats => 'Choose how it repeats';
 
   @override
-  String get group_event_duration => 'Duration';
+  String get group_event_duration => 'དུས་ཡུན།';
 
   @override
-  String get group_event_duration_decrease => 'Decrease duration';
+  String get group_event_duration_decrease => 'དུས་ཡུན་ཐུང་དུ་ཐོངས།';
 
   @override
-  String get group_event_duration_increase => 'Increase duration';
+  String get group_event_duration_increase => 'དུས་ཡུན་རིང་དུ་ཐོངས།';
 
   @override
   String group_event_duration_days(int count) {
@@ -4108,7 +4107,7 @@ class AppLocalizationsBo extends AppLocalizations {
   String get timer_starting => 'Starting...';
 
   @override
-  String get timer_duration_hours => 'hours';
+  String get timer_duration_hours => 'ཆུ་ཚོད།';
 
   @override
   String get timer_duration_hr => 'hr';

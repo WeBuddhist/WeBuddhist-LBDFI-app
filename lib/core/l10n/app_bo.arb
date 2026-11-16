@@ -813,7 +813,7 @@
   "connect_post_comments_empty": "ད་དུང་བསམ་ཚུལ་མི་འདུག གླེང་མོལ་འགོ་བཙུགས།",
   "connect_post_media_viewer_hint": "ཆེ་རུ་གཏོང་བར་མཛུབ་མོས་བསྐྱེད་པའམ་ཐེངས་གཉིས་རྡེབ། · པར་རྗེས་མར་སྤོ་བར་འདྲུད།",
   "connect_online": "དྲ་ཐོག",
-  "home_group_events": "ཁྱད་གསལ་བྱེད་སྒོ།",
+  "home_group_events": "གདམ་བསྒྲིགས་བྱེད་སྒོ།",
   "home_poems": "སྙན་ངག",
   "poems_load_error": "སྙན་ངག་སྟོན་ཐུབ་མ་སོང་།\nཁྱེད་ཀྱིས་རང་གི་དྲ་རྒྱར་བསྐྱར་ཞིབ་བྱས་ཏེ་བསྐྱར་དུ་ཚོད་ལྟ་བྱོས།",
   "poems_empty": "ད་ལྟ་སྙན་ངག་མེད། ཡང་བསྐྱར་ཤོག",
@@ -859,7 +859,7 @@
   "group_chat_today": "དེ་རིང་།",
   "group_chat_yesterday": "ཁ་སང་།",
   "group_chat_empty_title": "ད་དུང་འཕྲིན་ཡིག་མི་འདུག",
-  "group_chat_empty_body": "ཁྱེད་ཀྱི་ཚོགས་པ་དང་གླེང་མོལ་འགོ་འཛུགས་རོགས།",
+  "group_chat_empty_body": "ཁྱེད་ཀྱི་ཚོགས་པའི་ནང་གླེང་མོལ་འགོ་ཚུགས།",
   "group_chat_load_failed": "འཕྲིན་ཡིག་ལེན་ཐུབ་མ་སོང་།",
   "group_chat_message_not_found": "འཕྲིན་ཡིག་འདི་ཁ་བརྡའི་ནང་མི་གནས།",
   "group_chat_retry": "བསྐྱར་དུ་ཚོད་ལྟ།",
@@ -1190,5 +1190,10 @@
   "chants_with_audio": "སྒྲ་ཡོད་པའི་ཞལ་འདོན།",
   "chants_audio_chants": "སྒྲའི་ཞལ་འདོན།",
   "reader_no_resources_title": "ཚིགས་བཅད་འདིའི་འགྲེལ་བ་དང་པར་གཞི་མི་འདུག",
-  "reader_no_resources_subtitle": "ང་ཚོས་དཔེ་ཆ་གསར་པ་རྒྱུན་དུ་ཁ་སྣོན་བྱེད་བཞིན་ཡོད། རྗེས་སུ་ཡང་བསྐྱར་གཟིགས་རོགས།"
+  "reader_no_resources_subtitle": "ང་ཚོས་དཔེ་ཆ་གསར་པ་རྒྱུན་དུ་ཁ་སྣོན་བྱེད་བཞིན་ཡོད། རྗེས་སུ་ཡང་བསྐྱར་གཟིགས་རོགས།",
+  "mala_mantra_speed": "སྔགས་ཀྱི་མགྱོགས་ཚད།",
+  "group_event_duration": "དུས་ཡུན།",
+  "group_event_duration_decrease": "དུས་ཡུན་ཐུང་དུ་ཐོངས།",
+  "group_event_duration_increase": "དུས་ཡུན་རིང་དུ་ཐོངས།",
+  "timer_duration_hours": "ཆུ་ཚོད།"
 }
