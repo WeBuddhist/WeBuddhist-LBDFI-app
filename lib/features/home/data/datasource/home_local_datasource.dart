@@ -179,10 +179,15 @@ class HomeLocalDatasource {
   }
 
   /// The cached week, newest first, without the days that have no verse.
-  /// Null when the week was never stored.
+  /// Until the week is first stored, falls back to the single verse that
+  /// installs from before the carousel kept, so Home still has it offline.
+  /// Null when neither was ever stored.
   List<VerseOfDayModel>? readRecentVerses(String language) {
     final dates = readRecentVerseDates(language);
-    if (dates == null) return null;
+    if (dates == null) {
+      final verse = readVerseOfDay(language);
+      return verse == null ? null : [verse];
+    }
     return [
       for (final date in dates)
         if (readVerseOfDayEntry(language, date)?.verse case final verse?)

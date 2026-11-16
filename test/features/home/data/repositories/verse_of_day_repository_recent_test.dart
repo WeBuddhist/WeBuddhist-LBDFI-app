@@ -201,6 +201,17 @@ void main() {
     );
   });
 
+  test('before the week is stored, the single saved verse stands in', () async {
+    // An install from before the carousel: only verse_of_day:<lang> exists.
+    local.today['en'] = _verse('2026-11-09');
+    remote.todayError = const NetworkException('offline');
+
+    final first =
+        await repository.watchRecentVerses(language: 'en').first;
+
+    expect(first.getOrElse((_) => []).map((v) => v.date), ['2026-11-09']);
+  });
+
   test('watch with no cache reports a failed refresh', () async {
     remote.todayError = const NetworkException('offline');
 
