@@ -50,7 +50,7 @@ home/
 
 ## State management
 
-- `StreamProvider` backed by the local cache (names still end in `FutureProvider`): `verseOfDayFutureProvider`, `todayEventsFutureProvider`, `streakFutureProvider`, `routineInfoFutureProvider`, `featuredSeriesFutureProvider`, `seriesListFutureProvider`, `seriesByIdProvider`, `userSeriesEnrollmentsProvider`
+- `StreamProvider` backed by the local cache (names still end in `FutureProvider`): `recentVersesOfDayProvider`, `todayEventsFutureProvider`, `streakFutureProvider`, `routineInfoFutureProvider`, `featuredSeriesFutureProvider`, `seriesListFutureProvider`, `seriesByIdProvider`, `userSeriesEnrollmentsProvider`
 - `FutureProvider.autoDispose`: `homeGroupEventsPreviewProvider`, `homePoemsPreviewProvider`
 - `StateNotifierProvider.autoDispose.family`: `seriesEnrollmentProvider`, `verseOfDayLikesProvider`, `verseOfDayLikersProvider`, `verseOfDayCommentsProvider` (likes/comments re-created on login/logout)
 - `StateProvider`: `mainNavigationIndexProvider`, `pendingOnboardingPlanProvider`

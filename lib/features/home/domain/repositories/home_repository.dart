@@ -30,12 +30,6 @@ abstract class TagsRepositoryInterface extends Repository {
 /// Verse of the Day repository interface.
 abstract class VerseOfDayRepositoryInterface extends Repository {
   Future<Either<Failure, VerseOfDay>> getVerseOfDay({required String language});
-  Stream<Either<Failure, VerseOfDay>> watchVerseOfDay({
-    required String language,
-  });
-
-  /// Pull-to-refresh: fetches and stores; the watch stream delivers the result.
-  Future<Either<Failure, Unit>> refreshVerseOfDay({required String language});
 
   /// The verse-of-the-day week: today and the six days before it, newest
   /// first, skipping days with no verse. Cached first, then refreshed.
@@ -43,8 +37,8 @@ abstract class VerseOfDayRepositoryInterface extends Repository {
     required String language,
   });
 
-  /// Pull-to-refresh for [watchRecentVerses]. Also updates today's verse for
-  /// [watchVerseOfDay].
+  /// Pull-to-refresh for [watchRecentVerses]. Also stores today's verse for
+  /// [getVerseOfDay].
   Future<Either<Failure, Unit>> refreshRecentVerses({
     required String language,
   });

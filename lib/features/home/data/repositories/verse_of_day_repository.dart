@@ -131,30 +131,6 @@ class VerseOfDayRepository implements VerseOfDayRepositoryInterface {
   }
 
   @override
-  Stream<Either<Failure, VerseOfDay>> watchVerseOfDay({
-    required String language,
-  }) async* {
-    final key = local.verseOfDayKey(language);
-    final cached = local.readVerseOfDay(language);
-    if (cached != null) yield Right(cached.toEntity());
-
-    try {
-      await _refresh(language);
-      final refreshed = local.readVerseOfDay(language);
-      if (refreshed != null) yield Right(refreshed.toEntity());
-    } catch (e) {
-      if (cached == null) {
-        yield Left(_toFailure(e, 'Failed to get verse of day'));
-      }
-    }
-
-    await for (final _ in local.watchKey(key)) {
-      final latest = local.readVerseOfDay(language);
-      if (latest != null) yield Right(latest.toEntity());
-    }
-  }
-
-  @override
   Future<Either<Failure, VerseOfDayLikes>> getLikes(String verseId) async {
     try {
       final model = await remote.fetchLikes(verseId);
@@ -281,18 +257,6 @@ class VerseOfDayRepository implements VerseOfDayRepositoryInterface {
       return const Right(unit);
     } catch (e) {
       return Left(_toFailure(e, 'Failed to unlike comment'));
-    }
-  }
-
-  @override
-  Future<Either<Failure, Unit>> refreshVerseOfDay({
-    required String language,
-  }) async {
-    try {
-      await _refresh(language);
-      return const Right(unit);
-    } catch (e) {
-      return Left(_toFailure(e, 'Failed to refresh verse of day'));
     }
   }
 

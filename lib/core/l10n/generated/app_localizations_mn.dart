@@ -2138,9 +2138,6 @@ class AppLocalizationsMn extends AppLocalizations {
       'By this merit, may all beings\nbe free from suffering';
 
   @override
-  String get share_this_quote => 'Энэ ишлэлийг хуваалцах';
-
-  @override
   String get share_this_verse => 'Энэ шүлгийг хуваалцах';
 
   @override

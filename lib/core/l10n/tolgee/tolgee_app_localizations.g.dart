@@ -4170,13 +4170,6 @@ class TolgeeAppLocalizations extends AppLocalizations {
   );
 
   @override
-  String get share_this_quote => TolgeeBridge.get(
-    localeName,
-    'share_this_quote',
-    () => _fallback.share_this_quote,
-  );
-
-  @override
   String get share_this_verse => TolgeeBridge.get(
     localeName,
     'share_this_verse',

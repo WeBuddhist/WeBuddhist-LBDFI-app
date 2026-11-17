@@ -690,7 +690,6 @@
   "group_accumulator_session_share_message": "मैले WeBuddhist मा {group} स्पेसको संचय \"{accumulation}\" मा {count} जप पूरा गरें। तपाईं पनि मसँग सामेल हुनुहोस्!",
   "group_accumulator_session_share_message_no_group": "मैले WeBuddhist मा \"{accumulation}\" संचयमा {count} जप पूरा गरें। तपाईं पनि मसँग सामेल हुनुहोस्!",
   "group_accumulator_session_share_error": "सत्र साझा गर्न सकिएन। कृपया पुनः प्रयास गर्नुहोस्",
-  "share_this_quote": "यो उद्धरण साझा गर्नुहोस्",
   "share_this_verse": "यो श्लोक साझा गर्नुहोस्",
   "shared_from": "बाट साझा गरिएको",
   "verse_share_error": "उद्धरण साझा गर्न सकिएन। कृपया फेरि प्रयास गर्नुहोस्",

@@ -2108,9 +2108,6 @@ class AppLocalizationsTh extends AppLocalizations {
       'ด้วยบุญกุศลนี้ ขอสรรพสัตว์ทั้งหลาย\nจงพ้นจากความทุกข์';
 
   @override
-  String get share_this_quote => 'แชร์คำคมนี้';
-
-  @override
   String get share_this_verse => 'แชร์คาถานี้';
 
   @override
