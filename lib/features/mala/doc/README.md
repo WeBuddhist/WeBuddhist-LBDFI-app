@@ -60,12 +60,15 @@ mala/
 4. **Session vs lifetime** — counter uses session counts; the accumulations sheet shows lifetime for both the personal row (`total_counted` + dirty tail) and group rows (`user_total_count` + dirty tail).
 5. **Presigned bead URLs** — cache as base64 in Hive; widget uses bytes only.
 
+6. **Catalogue is tradition-filtered server-side** — `GET /accumulators/presets` is sent with the bearer token and no `tradition`, so the backend returns only the user's saved traditions plus untagged presets. No match ⇒ `200 {accumulators: [], total: 0}` ⇒ cached `[]` ⇒ "No mantras available" (only if there are also no joined space mantras). Changing traditions doesn't refresh the catalogue; an app restart does. Reproduce with the user's token, not anonymous `curl` (which returns everything). Details in `../README.md` → *Preset catalogue request and tradition filtering*.
+
 ## Cross-feature dependencies
 
 - **auth** — user ID namespacing
 - **group_profile** — group accumulator detail API
 - **reader** — group chant mode entry; reader chants count via `countChantIntoSelection`
 - **practice** — bookmarks, add-to-routine (`/practice/edit-routine` with `initialMantra`)
+- **onboarding / more** — saved traditions (`/users/me/traditions`) decide which presets the backend returns
 
 ## Detailed reference
 
@@ -105,6 +108,7 @@ See also **`../README.md`** (same feature root) for API tables, sync flow, bead 
 | Sync bug | `mala_sync_manager.dart`, `mala_local_datasource.dart`, tests |
 | Group counting | `group_accumulation_counts_provider.dart` + mala README group section |
 | Bead UI | `mala_beads.dart` — forward-only animation on +1 only |
+| "No mantras available" | Check the user's saved traditions vs preset tradition tags before touching app code |
 
 ### Testing
 
