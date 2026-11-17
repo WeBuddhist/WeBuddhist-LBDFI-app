@@ -197,6 +197,42 @@ Providers:
 
 - [joinedAccumulatorGroupsProvider] — groups list metadata + `userTotalCount`
   (lifetime).
+### Preset catalogue request and tradition filtering
+
+`MalaRemoteDataSource.fetchPresets` sends:
+
+```
+GET /accumulators/presets?skip=0&limit=100&language=<content language>
+Authorization: Bearer <token>    (AuthInterceptor)
+X-Timezone: <IANA zone>          (TimezoneInterceptor)
+```
+
+It pages by 100 until `total` is reached. `search` is added only by the
+accumulation search screen. `no_cache` is a client-side Dio extra, not sent.
+
+Backend parameters the app does **not** send, and their defaults:
+
+| Param | Default | Effect |
+| --- | --- | --- |
+| `tradition` | none | The backend uses the caller's **saved traditions** (see below). |
+| `show_recitations` | `false` | Text-linked (recitation) presets are excluded. |
+| `include_spaces` | `false` | No `space_accumulators`; joined space mantras load via `joinedSpaceMantrasProvider`. |
+
+**Tradition filter (backend `pecha_api/traditions/tradition_filter.py`).**
+Because the request carries a valid token and no `tradition`, the backend
+returns only presets of the user's saved traditions (`GET /users/me/traditions`)
+plus presets with no tradition. Anonymous callers, invalid tokens, and users
+with no saved tradition get every preset. So `curl` without a token does
+**not** reproduce what the app sees — test with the user's token.
+
+If the saved traditions match no preset, the API returns
+`{accumulators: [], total: 0}` with 200. The app caches that `[]` under
+`catalogue:v2:{language}` and the screen shows `mala_no_mantras`
+("No mantras available", `mala_screen.dart`) — not an error view. Changing the
+saved tradition in Edit Profile fixes it on the next load. Seen on prod
+2026-11-16: presets were tagged tibetan 8, pali 1, chinese (Mahayana) 0,
+untagged 0, so Mahayana-only users got an empty Mala screen.
+
 - [joinedGroupUserCountsProvider] — fetches detail per joined group to seed
   session counts (`user.total_count`).
 - [groupAccumulationCountsProvider] — local session state, increments on tap,
