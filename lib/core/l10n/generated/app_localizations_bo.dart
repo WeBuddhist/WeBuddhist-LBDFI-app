@@ -2190,7 +2190,7 @@ class AppLocalizationsBo extends AppLocalizations {
       'By this merit, may all beings\nbe free from suffering';
 
   @override
-  String get share_this_quote => 'ལེགས་བཤད་འདི་སྤེལ།';
+  String get share_this_verse => 'ཚིགས་བཅད་འདི་སྤེལ།';
 
   @override
   String get shared_from => 'སྤེལ་ཁུངས།';

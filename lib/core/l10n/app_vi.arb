@@ -584,7 +584,7 @@
   "group_recitation_collection_share_message_no_group": "Mời bạn xem tuyển tập bài tụng \"{collection}\" trên WeBuddhist. Cùng tu tập với chúng tôi nhé!",
   "group_recitation_collection_completed_title": "Đã hoàn thành {collection}",
   "group_recitation_collection_dedication": "Nguyện nhờ công đức này\nchúng sinh đều thoát khổ",
-  "share_this_quote": "Chia sẻ câu trích dẫn này",
+  "share_this_verse": "Chia sẻ câu kệ này",
   "shared_from": "Chia sẻ từ",
   "verse_share_error": "Không thể chia sẻ câu trích dẫn. Vui lòng thử lại",
   "verse_comments_title": "Bình luận · {count}",

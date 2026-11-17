@@ -671,7 +671,7 @@
   "group_accumulator_session_share_message": "ངས་ WeBuddhist ཐོག་ {group} གི་ \"{accumulation}\" གྲངས་གསོག་ནང་བཟླས་བརྗོད་ {count} ཚར་སོང་། ཁྱེད་ཀྱང་ང་དང་མཉམ་དུ་ཞུགས་རོགས།",
   "group_accumulator_session_share_message_no_group": "ངས་ WeBuddhist ཐོག་ \"{accumulation}\" གྲངས་གསོག་ནང་བཟླས་བརྗོད་ {count} ཚར་སོང་། ཁྱེད་ཀྱང་ང་དང་མཉམ་དུ་ཞུགས་རོགས།",
   "group_accumulator_session_share_error": "ཐུན་མཉམ་སྤྱོད་བྱེད་ཐུབ་མ་སོང་། ཡང་བསྐྱར་ཚོད་ལྟ་གནང་།",
-  "share_this_quote": "ལེགས་བཤད་འདི་སྤེལ།",
+  "share_this_verse": "ཚིགས་བཅད་འདི་སྤེལ།",
   "shared_from": "སྤེལ་ཁུངས།",
   "verse_share_error": "ལེགས་བཤད་སྤེལ་ཐུབ་མ་སོང་། བསྐྱར་དུ་ཚོད་ལྟ་བྱོས།",
   "share_app_message": "ངས་ཉིན་རེའི་ནང་ཆོས་ཉམས་ལེན་རྒྱུད་ལ་འཇགས་པར་མཉེན་ཆས་འདི་བཀོལ་སྤྱོད་བྱེད་ཀྱི་ཡོད། ཁྱེད་རང་ཡང་འདི་ལ་དགའ་པོ་ཡོང་གི་རེད་བསམ་གྱི་འདུག",

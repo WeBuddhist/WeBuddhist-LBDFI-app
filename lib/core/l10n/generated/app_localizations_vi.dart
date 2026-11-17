@@ -2176,7 +2176,7 @@ class AppLocalizationsVi extends AppLocalizations {
       'Nguyện nhờ công đức này\nchúng sinh đều thoát khổ';
 
   @override
-  String get share_this_quote => 'Chia sẻ câu trích dẫn này';
+  String get share_this_verse => 'Chia sẻ câu kệ này';
 
   @override
   String get shared_from => 'Chia sẻ từ';

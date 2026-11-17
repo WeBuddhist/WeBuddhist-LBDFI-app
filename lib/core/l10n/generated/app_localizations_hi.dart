@@ -2179,7 +2179,7 @@ class AppLocalizationsHi extends AppLocalizations {
       'By this merit, may all beings\nbe free from suffering';
 
   @override
-  String get share_this_quote => 'यह उद्धरण शेयर करें';
+  String get share_this_verse => 'यह श्लोक शेयर करें';
 
   @override
   String get shared_from => 'यहाँ से शेयर किया गया';

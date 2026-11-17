@@ -2080,7 +2080,7 @@ class AppLocalizationsZh extends AppLocalizations {
       'By this merit, may all beings\nbe free from suffering';
 
   @override
-  String get share_this_quote => '分享這句話';
+  String get share_this_verse => '分享這段偈頌';
 
   @override
   String get shared_from => '分享自';
@@ -6041,7 +6041,7 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get group_recitation_collection_dedication => '愿以此功德，令一切众生\n远离痛苦';
 
   @override
-  String get share_this_quote => '分享这句话';
+  String get share_this_verse => '分享这段偈颂';
 
   @override
   String get shared_from => '分享自';

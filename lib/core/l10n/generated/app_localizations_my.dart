@@ -2193,7 +2193,7 @@ class AppLocalizationsMy extends AppLocalizations {
       'ဤကုသိုလ်ကြောင့် သတ္တဝါအားလုံး\nဆင်းရဲဒုက္ခမှ လွတ်မြောက်ကြပါစေ';
 
   @override
-  String get share_this_quote => 'ဤဆိုမိန့်ကို မျှဝေရန်';
+  String get share_this_verse => 'ဤဂါထာကို မျှဝေရန်';
 
   @override
   String get shared_from => 'မျှဝေထားသည့်နေရာ';

@@ -59,6 +59,12 @@ class HomeLocalDatasource {
   // v2: entries cached before group_avatar_url was read lack the avatar.
   String todayEventsKey(String language) => 'today_events:v2:$language';
   String verseOfDayKey(String language) => 'verse_of_day:$language';
+  String verseOfDayByDatePrefix(String language) =>
+      'verse_of_day_date:$language:';
+  String verseOfDayByDateKey(String language, String date) =>
+      '${verseOfDayByDatePrefix(language)}$date';
+  String recentVerseDatesKey(String language) =>
+      'verse_of_day_recent:$language';
   String routineInfoKey(String userId) => 'routine_info:$userId';
   String streakKey(String userId) => 'streak:$userId';
   String enrollmentsKey(String userId) => 'series_enrollments:$userId';
@@ -135,6 +141,58 @@ class HomeLocalDatasource {
 
   Future<void> saveVerseOfDay(String language, VerseOfDayModel verse) {
     return _writeObject(verseOfDayKey(language), verse.toJson());
+  }
+
+  VerseOfDayCacheEntry? readVerseOfDayEntry(String language, String date) {
+    return _readObject(
+      verseOfDayByDateKey(language, date),
+      VerseOfDayCacheEntry.fromJson,
+    );
+  }
+
+  Future<void> saveVerseOfDayEntry(
+    String language,
+    String date,
+    VerseOfDayCacheEntry entry,
+  ) {
+    return _writeObject(verseOfDayByDateKey(language, date), entry.toJson());
+  }
+
+  /// The week's dates, newest first, including days with no verse.
+  List<String>? readRecentVerseDates(String language) {
+    return _readStringList(recentVerseDatesKey(language));
+  }
+
+  /// Stores the week's [dates] and drops cached days that fell out of it.
+  /// Written after the day entries, so a watcher of
+  /// [recentVerseDatesKey] sees the whole week at once.
+  Future<void> saveRecentVerseDates(String language, List<String> dates) async {
+    final prefix = verseOfDayByDatePrefix(language);
+    final keep = {for (final date in dates) '$prefix$date'};
+    final stale =
+        _box.keys
+            .whereType<String>()
+            .where((key) => key.startsWith(prefix) && !keep.contains(key))
+            .toList();
+    if (stale.isNotEmpty) await _box.deleteAll(stale);
+    await _writeList(recentVerseDatesKey(language), dates);
+  }
+
+  /// The cached week, newest first, without the days that have no verse.
+  /// Until the week is first stored, falls back to the single verse that
+  /// installs from before the carousel kept, so Home still has it offline.
+  /// Null when neither was ever stored.
+  List<VerseOfDayModel>? readRecentVerses(String language) {
+    final dates = readRecentVerseDates(language);
+    if (dates == null) {
+      final verse = readVerseOfDay(language);
+      return verse == null ? null : [verse];
+    }
+    return [
+      for (final date in dates)
+        if (readVerseOfDayEntry(language, date)?.verse case final verse?)
+          verse,
+    ];
   }
 
   RoutineInfoModel? readRoutineInfo(String userId) {

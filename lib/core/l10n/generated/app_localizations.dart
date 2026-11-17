@@ -3891,11 +3891,11 @@ abstract class AppLocalizations {
   /// **'By this merit, may all beings\nbe free from suffering'**
   String get group_recitation_collection_dedication;
 
-  /// No description provided for @share_this_quote.
+  /// No description provided for @share_this_verse.
   ///
   /// In en, this message translates to:
-  /// **'Share this quote'**
-  String get share_this_quote;
+  /// **'Share this verse'**
+  String get share_this_verse;
 
   /// No description provided for @shared_from.
   ///
