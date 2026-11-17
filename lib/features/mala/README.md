@@ -197,6 +197,12 @@ Providers:
 
 - [joinedAccumulatorGroupsProvider] — groups list metadata + `userTotalCount`
   (lifetime).
+- [joinedGroupUserCountsProvider] — fetches detail per joined group to seed
+  session counts (`user.total_count`).
+- [groupAccumulationCountsProvider] — local session state, increments on tap,
+  `mergeFromServerCounts()` reconciles with detail API, `resetCount()` for
+  group reset.
+
 ### Preset catalogue request and tradition filtering
 
 `MalaRemoteDataSource.fetchPresets` sends:
@@ -226,18 +232,21 @@ with no saved tradition get every preset. So `curl` without a token does
 **not** reproduce what the app sees — test with the user's token.
 
 If the saved traditions match no preset, the API returns
-`{accumulators: [], total: 0}` with 200. The app caches that `[]` under
-`catalogue:v2:{language}` and the screen shows `mala_no_mantras`
-("No mantras available", `mala_screen.dart`) — not an error view. Changing the
-saved tradition in Edit Profile fixes it on the next load. Seen on prod
-2026-11-16: presets were tagged tibetan 8, pali 1, chinese (Mahayana) 0,
-untagged 0, so Mahayana-only users got an empty Mala screen.
+`{accumulators: [], total: 0}` with 200 and the app caches that `[]` under
+`catalogue:v2:{language}`. `mala_screen.dart` merges presets with eligible
+joined space mantras before its empty check, so the screen shows
+`mala_no_mantras` ("No mantras available") only when **both** lists are
+empty; a user with a joined space mantra still sees that one. It is the empty
+state, not an error view, so it has no retry button.
 
-- [joinedGroupUserCountsProvider] — fetches detail per joined group to seed
-  session counts (`user.total_count`).
-- [groupAccumulationCountsProvider] — local session state, increments on tap,
-  `mergeFromServerCounts()` reconciles with detail API, `resetCount()` for
-  group reset.
+Changing the saved tradition in Edit Profile does **not** refresh the Mala
+screen: `malaCatalogueProvider` is not auto-disposed and only rebuilds on
+content-language or auth changes, and saving traditions invalidates only
+`traditionTagFilterProvider`. Restart the app while online: the cached `[]`
+shows first, then the background refresh replaces it.
+
+Seen on prod 2026-11-16: presets were tagged tibetan 8, pali 1, chinese (Mahayana) 0,
+untagged 0, so Mahayana-only users got an empty Mala screen.
 
 ## Local store (`MalaLocalDataSource`)
 
