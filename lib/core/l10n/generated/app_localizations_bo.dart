@@ -4235,4 +4235,66 @@ class AppLocalizationsBo extends AppLocalizations {
   @override
   String get reader_no_resources_subtitle =>
       'ང་ཚོས་དཔེ་ཆ་གསར་པ་རྒྱུན་དུ་ཁ་སྣོན་བྱེད་བཞིན་ཡོད། རྗེས་སུ་ཡང་བསྐྱར་གཟིགས་རོགས།';
+
+  @override
+  String get mala_section_practice => 'ཉམས་ལེན།';
+
+  @override
+  String get mala_section_appearance => 'མཐོང་སྣང་།';
+
+  @override
+  String get mala_section_save_share => 'ཉར་ཚགས་དང་མཉམ་སྤྱོད།';
+
+  @override
+  String get mala_mantra_animation => 'སྔགས་ཀྱི་འགུལ་རིས།';
+
+  @override
+  String get mala_play_animation => 'འགུལ་རིས་གཏོང་།';
+
+  @override
+  String get mala_speed => 'མྱུར་ཚད།';
+
+  @override
+  String get mala_animation_off => 'བཀག';
+
+  @override
+  String get mala_bead_style => 'ཕྲེང་རྡོག་གི་རྣམ་པ།';
+
+  @override
+  String get mala_bead_default => 'སྔོན་སྒྲིག';
+
+  @override
+  String get mala_use_this_style => 'རྣམ་པ་འདི་བེད་སྤྱོད་བྱེད།';
+
+  @override
+  String get mala_bead_style_updated =>
+      'ཕྲེང་རྡོག་གི་རྣམ་པ་གསར་བསྒྱུར་བྱས་ཟིན།';
+
+  @override
+  String get mala_change_image => 'པར་རིས་བརྗེ་བ།';
+
+  @override
+  String get mala_use_image => 'བེད་སྤྱོད།';
+
+  @override
+  String get mala_restore_default_image => 'སྔོན་སྒྲིག་ལ་སླར་གསོ།';
+
+  @override
+  String get mala_image_updated => 'པར་རིས་གསར་བསྒྱུར་བྱས་ཟིན།';
+
+  @override
+  String get mala_images_empty => 'པར་རིས་མི་འདུག';
+
+  @override
+  String get mala_images_load_error => 'པར་རིས་ཕབ་ལེན་བྱེད་མ་ཐུབ།';
+
+  @override
+  String get mala_bookmarked => 'དཔེ་རྟགས་བཀོད་ཟིན།';
+
+  @override
+  String get mala_beads_load_error => 'ཕྲེང་རྡོག་གི་རྣམ་པ་ཕབ་ལེན་བྱེད་མ་ཐུབ།';
+
+  @override
+  String get mala_appearance_save_failed =>
+      'ཉར་ཚགས་བྱེད་མ་ཐུབ། བསྐྱར་དུ་ཚོད་ལྟ་བྱོས།';
 }

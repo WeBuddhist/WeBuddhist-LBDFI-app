@@ -178,6 +178,9 @@ class _Harness {
           ),
           malaLocalDataSourceProvider.overrideWithValue(local),
           malaRemoteDataSourceProvider.overrideWithValue(FakeMalaRemote()),
+          malaAppearanceRepositoryProvider.overrideWithValue(
+            FakeMalaAppearanceRepository(),
+          ),
           malaSyncManagerProvider.overrideWithValue(sync),
           malaSoundPlayerProvider.overrideWithValue(SilentMalaSoundPlayer()),
           analyticsServiceProvider.overrideWithValue(
@@ -308,7 +311,7 @@ void main() {
     expect(h.server.total, 11);
   });
 
-  testWidgets('settings sheet has only speed, sound and vibration', (
+  testWidgets('settings have practice and appearance, no preset actions', (
     tester,
   ) async {
     final h = _Harness(serverTotal: 0);
@@ -317,9 +320,13 @@ void main() {
     await tester.tap(find.byIcon(Icons.more_vert));
     await h.settle(tester);
 
-    expect(find.text('Mantra speed'), findsOneWidget);
+    expect(find.text('Mantra animation'), findsOneWidget);
     expect(find.text('Sound'), findsOneWidget);
     expect(find.text('Vibration'), findsOneWidget);
+    expect(find.text('Bead style'), findsOneWidget);
+    expect(find.text('Change image'), findsOneWidget);
+    expect(find.text('Reset count'), findsNothing);
+    expect(find.text('Add to my practices'), findsNothing);
     expect(find.textContaining('Bookmark'), findsNothing);
     expect(find.textContaining('Share'), findsNothing);
     await h.leave(tester);
@@ -394,6 +401,9 @@ Future<_Harness> _pumpCarousel(
         localStorageServiceProvider.overrideWithValue(FakeUserStorage(_userId)),
         malaLocalDataSourceProvider.overrideWithValue(h.local),
         malaRemoteDataSourceProvider.overrideWithValue(remote),
+        malaAppearanceRepositoryProvider.overrideWithValue(
+          FakeMalaAppearanceRepository(),
+        ),
         malaRepositoryProvider.overrideWithValue(
           MalaRepositoryImpl(remote: remote),
         ),
@@ -490,9 +500,9 @@ void carouselTests() {
     // Settings for a space mantra: no bookmark/share/add-to-practice.
     await tester.tap(find.byIcon(Icons.more_vert));
     await h.settle(tester);
-    expect(find.text('Mantra speed'), findsOneWidget);
+    expect(find.text('Mantra animation'), findsOneWidget);
     expect(find.textContaining('Bookmark'), findsNothing);
-    Navigator.of(tester.element(find.text('Mantra speed'))).pop();
+    Navigator.of(tester.element(find.text('Mantra animation'))).pop();
     await h.settle(tester);
 
     // Back to the preset and again to the space mantra: the count is kept.

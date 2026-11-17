@@ -4226,4 +4226,64 @@ class AppLocalizationsVi extends AppLocalizations {
   @override
   String get reader_no_resources_subtitle =>
       'Chúng tôi thường xuyên bổ sung kinh văn mới; hãy quay lại sau nhé';
+
+  @override
+  String get mala_section_practice => 'Thực hành';
+
+  @override
+  String get mala_section_appearance => 'Giao diện';
+
+  @override
+  String get mala_section_save_share => 'Lưu & chia sẻ';
+
+  @override
+  String get mala_mantra_animation => 'Hiệu ứng câu chú';
+
+  @override
+  String get mala_play_animation => 'Phát hiệu ứng';
+
+  @override
+  String get mala_speed => 'Tốc độ';
+
+  @override
+  String get mala_animation_off => 'Tắt';
+
+  @override
+  String get mala_bead_style => 'Kiểu hạt';
+
+  @override
+  String get mala_bead_default => 'Mặc định';
+
+  @override
+  String get mala_use_this_style => 'Dùng kiểu này';
+
+  @override
+  String get mala_bead_style_updated => 'Đã cập nhật kiểu hạt';
+
+  @override
+  String get mala_change_image => 'Đổi hình ảnh';
+
+  @override
+  String get mala_use_image => 'Dùng';
+
+  @override
+  String get mala_restore_default_image => 'Khôi phục mặc định';
+
+  @override
+  String get mala_image_updated => 'Đã cập nhật hình ảnh';
+
+  @override
+  String get mala_images_empty => 'Không có hình ảnh';
+
+  @override
+  String get mala_images_load_error => 'Không tải được hình ảnh';
+
+  @override
+  String get mala_bookmarked => 'Đã đánh dấu';
+
+  @override
+  String get mala_beads_load_error => 'Không tải được kiểu hạt';
+
+  @override
+  String get mala_appearance_save_failed => 'Không lưu được. Vui lòng thử lại';
 }

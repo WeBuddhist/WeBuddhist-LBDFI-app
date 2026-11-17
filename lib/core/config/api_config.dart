@@ -46,6 +46,16 @@ class ApiConfig {
   static const String v2Prefix = '/../v2';
   static const String spacesV2Path = '$v2Prefix/spaces';
 
+  /// v2 mantra routes: `/{id}/images` lists a mantra's deity images.
+  static const String mantrasV2Path = '$v2Prefix/mantras';
+
+  /// v2 bead skins (`GET /mala-skins`).
+  static const String malaSkinsV2Path = '$v2Prefix/mala-skins';
+
+  /// v2 per-user mantra routes: `/{id}/appearance` holds the user's deity
+  /// image and bead skin for that mantra.
+  static const String userMantrasV2Path = '$v2Prefix/users/me/mantras';
+
   /// Full URL for a given path
   String urlFor(String path) => '$baseUrl$path';
 }

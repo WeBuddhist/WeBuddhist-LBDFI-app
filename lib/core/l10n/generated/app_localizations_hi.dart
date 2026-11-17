@@ -4221,4 +4221,65 @@ class AppLocalizationsHi extends AppLocalizations {
   @override
   String get reader_no_resources_subtitle =>
       'हम नियमित रूप से नए ग्रंथ जोड़ते हैं; जल्द ही फिर देखें';
+
+  @override
+  String get mala_section_practice => 'अभ्यास';
+
+  @override
+  String get mala_section_appearance => 'रूप-रंग';
+
+  @override
+  String get mala_section_save_share => 'सहेजें और साझा करें';
+
+  @override
+  String get mala_mantra_animation => 'मंत्र एनिमेशन';
+
+  @override
+  String get mala_play_animation => 'एनिमेशन चलाएँ';
+
+  @override
+  String get mala_speed => 'गति';
+
+  @override
+  String get mala_animation_off => 'बंद';
+
+  @override
+  String get mala_bead_style => 'मनके की शैली';
+
+  @override
+  String get mala_bead_default => 'डिफ़ॉल्ट';
+
+  @override
+  String get mala_use_this_style => 'यह शैली इस्तेमाल करें';
+
+  @override
+  String get mala_bead_style_updated => 'मनके की शैली अपडेट हो गई';
+
+  @override
+  String get mala_change_image => 'छवि बदलें';
+
+  @override
+  String get mala_use_image => 'इस्तेमाल करें';
+
+  @override
+  String get mala_restore_default_image => 'डिफ़ॉल्ट पर लौटाएँ';
+
+  @override
+  String get mala_image_updated => 'छवि अपडेट हो गई';
+
+  @override
+  String get mala_images_empty => 'कोई छवि उपलब्ध नहीं';
+
+  @override
+  String get mala_images_load_error => 'छवियाँ लोड नहीं हो सकीं';
+
+  @override
+  String get mala_bookmarked => 'बुकमार्क किया गया';
+
+  @override
+  String get mala_beads_load_error => 'मनके की शैलियाँ लोड नहीं हो सकीं';
+
+  @override
+  String get mala_appearance_save_failed =>
+      'सहेजा नहीं जा सका। कृपया फिर से प्रयास करें';
 }

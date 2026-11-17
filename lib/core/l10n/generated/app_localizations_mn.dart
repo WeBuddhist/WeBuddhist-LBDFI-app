@@ -4235,4 +4235,65 @@ class AppLocalizationsMn extends AppLocalizations {
   @override
   String get reader_no_resources_subtitle =>
       'Бид шинэ судар тогтмол нэмдэг; удахгүй дахин шалгаарай';
+
+  @override
+  String get mala_section_practice => 'Дадлага';
+
+  @override
+  String get mala_section_appearance => 'Харагдах байдал';
+
+  @override
+  String get mala_section_save_share => 'Хадгалах ба хуваалцах';
+
+  @override
+  String get mala_mantra_animation => 'Тарнины хөдөлгөөн';
+
+  @override
+  String get mala_play_animation => 'Хөдөлгөөн тоглуулах';
+
+  @override
+  String get mala_speed => 'Хурд';
+
+  @override
+  String get mala_animation_off => 'Унтраалттай';
+
+  @override
+  String get mala_bead_style => 'Мөхлөгийн загвар';
+
+  @override
+  String get mala_bead_default => 'Үндсэн';
+
+  @override
+  String get mala_use_this_style => 'Энэ загварыг ашиглах';
+
+  @override
+  String get mala_bead_style_updated => 'Мөхлөгийн загвар шинэчлэгдлээ';
+
+  @override
+  String get mala_change_image => 'Зураг солих';
+
+  @override
+  String get mala_use_image => 'Ашиглах';
+
+  @override
+  String get mala_restore_default_image => 'Үндсэн рүү буцаах';
+
+  @override
+  String get mala_image_updated => 'Зураг шинэчлэгдлээ';
+
+  @override
+  String get mala_images_empty => 'Зураг байхгүй';
+
+  @override
+  String get mala_images_load_error => 'Зургийг ачаалж чадсангүй';
+
+  @override
+  String get mala_bookmarked => 'Хавчуурганд нэмсэн';
+
+  @override
+  String get mala_beads_load_error => 'Мөхлөгийн загваруудыг ачаалж чадсангүй';
+
+  @override
+  String get mala_appearance_save_failed =>
+      'Хадгалж чадсангүй. Дахин оролдоно уу';
 }

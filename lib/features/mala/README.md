@@ -13,6 +13,7 @@ data/
   datasources/
     mala_remote_datasource.dart   REST calls (dio)
     mala_local_datasource.dart    Hive store (LocalMalaState), namespaced by user
+    mala_appearance_remote_datasource.dart  v2 deity images, bead skins, user appearance
   models/
     accumulator_model.dart        JSON DTOs + toEntity()/toMalaCount()
     accumulator_group_model.dart  Group accumulator DTOs (ImageUrlModel → ResponsiveImage)
@@ -24,7 +25,11 @@ domain/
     mala_count.dart               MalaCount (total, totalCounted, accumulatorId, beadImageUrl)
     accumulator_group.dart        Joined group accumulator summary for a preset
     mala_accumulation_selection.dart  personal vs group selection value
+    mala_image_option.dart        one Change image choice (id, image, isDefault)
+    mala_skin.dart                one bead skin from GET /mala-skins
+    mantra_appearance.dart        the user's deity image + bead skin for a mantra
   repositories/mala_repository.dart
+  repositories/mala_appearance_repository.dart  appearance calls (deity images, skins, GET/PATCH)
   usecases/mala_usecases.dart     GetCatalogue / GetAccumulatorDetail / Create / Update /
                                   Delete (personal reset) / SubmitGroupCount / DeleteGroup
 presentation/
@@ -32,7 +37,9 @@ presentation/
     mala_providers.dart           all DI providers + user-id resolution
     mala_counter_notifier.dart    per-mantra counter (seed + increment)
     mala_sync_manager.dart        app-scoped background sync
-    mala_settings_provider.dart   sound / vibration / left-handed / mantra speed (persisted)
+    mala_settings_provider.dart   sound / vibration / left-handed / play animation /
+                                  mantra speed (persisted)
+    mala_appearance_provider.dart per-mantra deity image + bead skin (server)
     accumulator_groups_provider.dart  joined groups + session seed fetch (autoDispose family)
     group_accumulation_counts_provider.dart  per-group session counts (Hive + sync)
     mala_accumulation_selection_provider.dart  personal vs group selection (SharedPreferences)
@@ -44,17 +51,19 @@ presentation/
     mala_analytics.dart           MalaAnalytics + MalaSessionTracker
     accumulation_sheet_display.dart  sheet section/total rules (events vs groups)
   screens/mala_screen.dart        screen layout (mantra card → counter → beads → group bar)
+  screens/mala_settings_screen.dart  full-page Mala settings (⋮)
   widgets/
     mala_beads.dart               the tappable bead-arc CustomPainter
     mantra_switcher.dart          infinite looping carousel (swipe + ‹ › chevrons)
     mantra_marquee.dart           scrolling script / transliteration band
-    mantra_speed_sheet.dart       marquee speed picker (nested in settings)
+    mantra_animation_sheet.dart   play animation toggle + speed chips
+    bead_style_sheet.dart         bead skin grid ("Use this style")
+    change_image_sheet.dart       deity image grid ("Use", "Restore default")
+    mala_sheet_frame.dart         shared sheet chrome, primary button, toast
     add_mala_rounds_button.dart   "+" beside the rounds count
     add_mala_rounds_dialog.dart   wheel picker for offline rounds
     group_accumulations_bar.dart  joined-group pill with overlapping avatars
     group_accumulations_sheet.dart  group accumulations bottom sheet
-    mala_settings_sheet.dart      sound/vibration, mantra speed, add to practice,
-                                  bookmark, share, reset
     mala_skeleton.dart            loading placeholder
 ```
 
@@ -375,10 +384,64 @@ and reads the user's personal **lifetime** count for the current preset
   `StorageKeys.malaAccumulationSelectionPrefix` + preset id. Invalid group ids
   fall back to personal when the groups list reloads.
 
-Settings (the ⋮ in the mala app bar) toggle sound / vibration, set the mantra
-marquee speed, add the preset to a practice routine, bookmark or share it, and
-reset the active session (personal or group). Offline mala rounds are added from
-the "+" button beside the rounds count.
+Offline mala rounds are added from the "+" button beside the rounds count.
+
+## Mala settings (`MalaSettingsScreen`)
+
+The ⋮ in the mala app bar pushes a full page (root navigator):
+
+- **Add to my practices** (top; personal preset only).
+- **Practice:** Mantra animation (shows the speed, or "Off"), Sound, Vibration,
+  Reset count (presets only; personal or the selected group session).
+- **Appearance:** Bead style (shows "Default" or the skin name), Change image.
+  Hidden when the mantra has no id.
+- **Save & share:** Bookmark / Bookmarked (personal preset only), Share.
+
+A group accumulation's own mantra (space mantra) gets Practice without reset,
+and Appearance.
+
+**Mantra animation** (`MantraAnimationSheet`): a Play animation toggle and
+speed chips 0.5x / 0.75x / 1x / 1.25x / 1.5x (`kMalaMantraSpeedPresets`).
+Changes apply at once. With play off the marquees stand still (`animate:
+false`) and the chips are disabled. A speed saved by an older build (the old
+slider allowed up to 2x) is snapped to the nearest chip on load.
+
+**Bead style** (`BeadStyleSheet`) and **Change image** (`ChangeImageSheet`)
+are saved per mantra on the server (API v2), keyed by `mantra_id`, so a pick
+shows on every accumulation of that mantra (presets, own and space
+accumulations) and on every device. It never changes what others see.
+
+| Call | Used for |
+| --- | --- |
+| `GET /api/v2/mantras/{mantra_id}/images` | `deity_images`: the Change image grid, in `display_order` |
+| `GET /api/v2/mala-skins` | `mala_skins`: the Bead style grid |
+| `GET /api/v2/users/me/mantras/{mantra_id}/appearance` | the user's picks (`null` = default) |
+| `PATCH` the same path | save `deity_image_id` and/or `mala_skin_id`; `null` restores the default |
+
+These paths are in `ApiConfig` (`mantrasV2Path`, `malaSkinsV2Path`,
+`userMantrasV2Path`) and in `ProtectedRoutes`, so the token is always sent.
+The older mala calls stay on v1.
+
+- **`malaAppearanceProvider(mantraId)`** (autoDispose) loads the picks while a
+  screen shows the mantra. `setDeityImage` / `setMalaSkin` PATCH and, on
+  success, take the response as the new state, so the mala screen changes at
+  once; they also refresh `mantraCountsProvider` and
+  `joinedSpaceMantrasProvider`, which carry the pick too. On failure they
+  return false and nothing changes; the sheet stays open with a "Couldn't
+  save" toast (shown inside the sheet through `MalaSheetToastHost`).
+- **The mala screen** (`watchMalaMantraImage`, `watchMalaBeadBytes`) uses the
+  user's pick only when there is one (`deity_image_id` / `mala_skin_id` not
+  null) and otherwise keeps what the accumulation already shows. The image is
+  looked up for the mantra on screen and its two neighbours only.
+- **Bead style:** the first tile, Default, is the bead the accumulation shows
+  without a pick and saves `mala_skin_id: null`. The other tiles are the skins
+  from `/mala-skins`, labelled by `MalaSkin.displayName` (`bodhi_seed` →
+  "Bodhi seed").
+- **Change image:** the default image is ticked until the user has a pick.
+  Picking it again, or "Restore default" (enabled only while there is a pick),
+  saves `deity_image_id: null`, so the user keeps following the default.
+- Image URLs are presigned and expire, so none are stored; the lists are
+  fetched each time a sheet opens.
 
 ## Analytics
 

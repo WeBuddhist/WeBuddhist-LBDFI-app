@@ -4064,6 +4064,66 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get reader_no_resources_subtitle => '我們會定期新增文本，請稍後再來查看';
+
+  @override
+  String get mala_section_practice => '修持';
+
+  @override
+  String get mala_section_appearance => '外觀';
+
+  @override
+  String get mala_section_save_share => '儲存與分享';
+
+  @override
+  String get mala_mantra_animation => '咒語動畫';
+
+  @override
+  String get mala_play_animation => '播放動畫';
+
+  @override
+  String get mala_speed => '速度';
+
+  @override
+  String get mala_animation_off => '關閉';
+
+  @override
+  String get mala_bead_style => '念珠款式';
+
+  @override
+  String get mala_bead_default => '預設';
+
+  @override
+  String get mala_use_this_style => '使用此款式';
+
+  @override
+  String get mala_bead_style_updated => '念珠款式已更新';
+
+  @override
+  String get mala_change_image => '更換圖片';
+
+  @override
+  String get mala_use_image => '使用';
+
+  @override
+  String get mala_restore_default_image => '恢復預設';
+
+  @override
+  String get mala_image_updated => '圖片已更新';
+
+  @override
+  String get mala_images_empty => '沒有可用的圖片';
+
+  @override
+  String get mala_images_load_error => '無法載入圖片';
+
+  @override
+  String get mala_bookmarked => '已加入書籤';
+
+  @override
+  String get mala_beads_load_error => '無法載入念珠款式';
+
+  @override
+  String get mala_appearance_save_failed => '無法儲存。請再試一次';
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hans`).
@@ -7878,4 +7938,64 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String get reader_no_resources_subtitle => '我们会定期新增文本，请稍后再来查看';
+
+  @override
+  String get mala_section_practice => '修持';
+
+  @override
+  String get mala_section_appearance => '外观';
+
+  @override
+  String get mala_section_save_share => '保存与分享';
+
+  @override
+  String get mala_mantra_animation => '咒语动画';
+
+  @override
+  String get mala_play_animation => '播放动画';
+
+  @override
+  String get mala_speed => '速度';
+
+  @override
+  String get mala_animation_off => '关闭';
+
+  @override
+  String get mala_bead_style => '念珠款式';
+
+  @override
+  String get mala_bead_default => '默认';
+
+  @override
+  String get mala_use_this_style => '使用此款式';
+
+  @override
+  String get mala_bead_style_updated => '念珠款式已更新';
+
+  @override
+  String get mala_change_image => '更换图片';
+
+  @override
+  String get mala_use_image => '使用';
+
+  @override
+  String get mala_restore_default_image => '恢复默认';
+
+  @override
+  String get mala_image_updated => '图片已更新';
+
+  @override
+  String get mala_images_empty => '没有可用的图片';
+
+  @override
+  String get mala_images_load_error => '无法加载图片';
+
+  @override
+  String get mala_bookmarked => '已加入书签';
+
+  @override
+  String get mala_beads_load_error => '无法加载念珠款式';
+
+  @override
+  String get mala_appearance_save_failed => '无法保存。请再试一次';
 }

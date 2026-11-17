@@ -4240,4 +4240,65 @@ class AppLocalizationsNe extends AppLocalizations {
   @override
   String get reader_no_resources_subtitle =>
       'हामी नियमित रूपमा नयाँ ग्रन्थहरू थप्छौं; छिट्टै फेरि हेर्नुहोस्';
+
+  @override
+  String get mala_section_practice => 'अभ्यास';
+
+  @override
+  String get mala_section_appearance => 'रूपरङ';
+
+  @override
+  String get mala_section_save_share => 'सुरक्षित र साझा';
+
+  @override
+  String get mala_mantra_animation => 'मन्त्र एनिमेसन';
+
+  @override
+  String get mala_play_animation => 'एनिमेसन चलाउनुहोस्';
+
+  @override
+  String get mala_speed => 'गति';
+
+  @override
+  String get mala_animation_off => 'बन्द';
+
+  @override
+  String get mala_bead_style => 'दानाको शैली';
+
+  @override
+  String get mala_bead_default => 'पूर्वनिर्धारित';
+
+  @override
+  String get mala_use_this_style => 'यो शैली प्रयोग गर्नुहोस्';
+
+  @override
+  String get mala_bead_style_updated => 'दानाको शैली अद्यावधिक भयो';
+
+  @override
+  String get mala_change_image => 'तस्बिर परिवर्तन गर्नुहोस्';
+
+  @override
+  String get mala_use_image => 'प्रयोग गर्नुहोस्';
+
+  @override
+  String get mala_restore_default_image => 'पूर्वनिर्धारितमा फर्काउनुहोस्';
+
+  @override
+  String get mala_image_updated => 'तस्बिर अद्यावधिक भयो';
+
+  @override
+  String get mala_images_empty => 'कुनै तस्बिर उपलब्ध छैन';
+
+  @override
+  String get mala_images_load_error => 'तस्बिरहरू लोड गर्न सकिएन';
+
+  @override
+  String get mala_bookmarked => 'बुकमार्क गरियो';
+
+  @override
+  String get mala_beads_load_error => 'दानाका शैलीहरू लोड गर्न सकिएन';
+
+  @override
+  String get mala_appearance_save_failed =>
+      'सुरक्षित गर्न सकिएन। कृपया फेरि प्रयास गर्नुहोस्';
 }

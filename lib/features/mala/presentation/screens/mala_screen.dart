@@ -13,17 +13,19 @@ import 'package:flutter_pecha/features/mala/domain/entities/mantra.dart';
 import 'package:flutter_pecha/features/mala/presentation/providers/accumulator_groups_provider.dart';
 import 'package:flutter_pecha/features/mala/presentation/providers/group_accumulation_counts_provider.dart';
 import 'package:flutter_pecha/features/mala/presentation/providers/mala_accumulation_selection_provider.dart';
+import 'package:flutter_pecha/features/mala/presentation/providers/mala_appearance_provider.dart';
 import 'package:flutter_pecha/features/mala/presentation/providers/mala_providers.dart';
 import 'package:flutter_pecha/features/mala/presentation/providers/mala_settings_provider.dart';
 import 'package:flutter_pecha/features/mala/presentation/providers/mala_sync_manager.dart';
 import 'package:flutter_pecha/features/mala/presentation/providers/space_mantra_providers.dart';
+import 'package:flutter_pecha/features/mala/presentation/screens/mala_settings_screen.dart';
 import 'package:flutter_pecha/features/mala/presentation/utils/mala_analytics.dart';
 import 'package:flutter_pecha/features/mala/presentation/widgets/add_mala_rounds_button.dart';
 import 'package:flutter_pecha/features/mala/presentation/widgets/group_accumulations_bar.dart';
 import 'package:flutter_pecha/features/mala/presentation/widgets/mala_beads.dart';
+import 'package:flutter_pecha/features/mala/presentation/widgets/mala_sheet_frame.dart';
 import 'package:flutter_pecha/features/mala/presentation/widgets/mala_skeleton.dart';
 import 'package:flutter_pecha/features/mala/presentation/widgets/mantra_switcher.dart';
-import 'package:flutter_pecha/features/mala/presentation/widgets/mala_settings_sheet.dart';
 import 'package:flutter_pecha/features/practice/data/datasource/bookmark_remote_datasource.dart';
 import 'package:flutter_pecha/features/practice/presentation/providers/bookmark_providers.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -270,9 +272,19 @@ class _MalaScreenState extends ConsumerState<MalaScreen> {
     }
     _index = _index.clamp(0, items.length - 1);
     final isSpace = _index >= presets.length;
+    // Each mantra's artwork. The user's own pick is looked up only for the
+    // mantra on screen and its neighbours (one request each), which are all
+    // a swipe can show.
+    final images = {
+      for (final (i, mantra) in items.indexed)
+        mantra.presetId:
+            (i - _index).abs() <= 1
+                ? watchMalaMantraImage(ref, mantra)
+                : mantra.deityImage,
+    };
     // Sized for artwork when any mantra has some, so swiping between mantras
     // with and without an image never resizes the layout mid-carousel.
-    final hasDeityImage = items.any((m) => m.deityImage != null);
+    final hasDeityImage = images.values.any((image) => image != null);
 
     final language = Localizations.localeOf(context).languageCode;
     final settings = ref.watch(malaSettingsProvider);
@@ -281,6 +293,12 @@ class _MalaScreenState extends ConsumerState<MalaScreen> {
         isSpace
             ? _spacePractice(context, spaces[_index - presets.length], settings)
             : _presetPractice(context, presets[_index], settings, language);
+    // The user's bead skin for this mantra, else the accumulation's own.
+    final beadBytes = watchMalaBeadBytes(
+      ref,
+      items[_index].mantraId,
+      practice.beadImageBytes,
+    );
 
     return Column(
       children: [
@@ -309,6 +327,8 @@ class _MalaScreenState extends ConsumerState<MalaScreen> {
                     tibetanFontFamily: AppConfig.tibetanContentFont,
                     index: _index,
                     speedFactor: settings.mantraSpeed,
+                    animate: settings.playAnimation,
+                    imageFor: (mantra) => images[mantra.presetId],
                     onIndexChanged:
                         (next) => _switch(items, presets.length, next),
                   ),
@@ -350,8 +370,8 @@ class _MalaScreenState extends ConsumerState<MalaScreen> {
                                     beadsPerRound: practice.beadsPerRound,
                                     enabled: practice.countingEnabled,
                                     mirrored: leftHanded,
-                                    beadImageBytes: practice.beadImageBytes,
-                                    beadColor: const Color(0xFF8D6E63),
+                                    beadImageBytes: beadBytes,
+                                    beadColor: kMalaDefaultBeadColor,
                                     threadColor: const Color(0xFFC62828),
                                     onTap: () => practice.onBead(MalaInput.tap),
                                     onSwipe:
@@ -474,7 +494,7 @@ class _MalaScreenState extends ConsumerState<MalaScreen> {
 
     return _MalaPractice(
       title: mantra.displayTitle(language),
-      onMorePressed: () => MalaSettingsSheet.show(context, mantra: mantra),
+      onMorePressed: () => _openSettings(context, mantra: mantra),
       showCountSkeleton: showCountSkeleton,
       displayTotal: displayTotal,
       beadsPerRound: beadsPerRound,
@@ -548,7 +568,8 @@ class _MalaScreenState extends ConsumerState<MalaScreen> {
 
     return _MalaPractice(
       title: item.title,
-      onMorePressed: () => MalaPracticeSettingsSheet.show(context),
+      onMorePressed:
+          () => _openSettings(context, mantra: item.displayMantra, space: item),
       showCountSkeleton: !ready,
       displayTotal: displayTotal,
       beadsPerRound: beadsPerRound,
@@ -562,6 +583,25 @@ class _MalaScreenState extends ConsumerState<MalaScreen> {
                   ref.invalidate(groupMantraCountSeedProvider(accumulatorId))
               : null,
     );
+  }
+
+  /// Opens Mala settings and confirms a bead or image change on return.
+  Future<void> _openSettings(
+    BuildContext context, {
+    required Mantra mantra,
+    SpaceMantraItem? space,
+  }) async {
+    final outcome = await MalaSettingsScreen.show(
+      context,
+      mantra: mantra,
+      space: space,
+    );
+    if (!context.mounted || outcome == null) return;
+    final l10n = context.l10n;
+    showMalaToast(context, switch (outcome) {
+      MalaSettingsOutcome.beadStyleUpdated => l10n.mala_bead_style_updated,
+      MalaSettingsOutcome.imageUpdated => l10n.mala_image_updated,
+    });
   }
 
   void _applyInitialGroupSelectionIfNeeded(String presetId) {
