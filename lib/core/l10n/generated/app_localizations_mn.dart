@@ -1581,6 +1581,54 @@ class AppLocalizationsMn extends AppLocalizations {
   String get calendar_title => 'Хуанли';
 
   @override
+  String get calendar_choose_calendar => 'Choose calendar';
+
+  @override
+  String get settings_calendar_row => 'Calendar';
+
+  @override
+  String get calendar_tradition_vajrayana => 'Vajrayana';
+
+  @override
+  String get calendar_tradition_theravada => 'Theravada';
+
+  @override
+  String get calendar_tradition_mahayana => 'Mahayana';
+
+  @override
+  String get calendar_type_phugpa => 'Tibetan (Phugpa)';
+
+  @override
+  String get calendar_type_tsurphu => 'Tibetan (Tsurphu)';
+
+  @override
+  String get calendar_type_nyingmapa => 'Nyingma';
+
+  @override
+  String get calendar_type_sinhalese => 'Sinhalese';
+
+  @override
+  String get calendar_type_thai => 'Thai';
+
+  @override
+  String get calendar_type_burmese => 'Burmese';
+
+  @override
+  String get calendar_type_lao => 'Lao';
+
+  @override
+  String get calendar_type_chinese => 'Chinese';
+
+  @override
+  String get calendar_type_vietnamese => 'Vietnamese';
+
+  @override
+  String get calendar_type_korean => 'Korean';
+
+  @override
+  String get calendar_type_japanese => 'Japanese';
+
+  @override
   String get calendar_today => 'Today';
 
   @override
@@ -2132,7 +2180,7 @@ class AppLocalizationsMn extends AppLocalizations {
       'By this merit, may all beings\nbe free from suffering';
 
   @override
-  String get share_this_quote => 'Энэ ишлэлийг хуваалцах';
+  String get share_this_verse => 'Энэ шүлгийг хуваалцах';
 
   @override
   String get shared_from => 'Хуваалцсан:';

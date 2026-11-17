@@ -1555,6 +1555,54 @@ class AppLocalizationsTh extends AppLocalizations {
   String get calendar_title => 'ปฏิทิน';
 
   @override
+  String get calendar_choose_calendar => 'Choose calendar';
+
+  @override
+  String get settings_calendar_row => 'Calendar';
+
+  @override
+  String get calendar_tradition_vajrayana => 'Vajrayana';
+
+  @override
+  String get calendar_tradition_theravada => 'Theravada';
+
+  @override
+  String get calendar_tradition_mahayana => 'Mahayana';
+
+  @override
+  String get calendar_type_phugpa => 'Tibetan (Phugpa)';
+
+  @override
+  String get calendar_type_tsurphu => 'Tibetan (Tsurphu)';
+
+  @override
+  String get calendar_type_nyingmapa => 'Nyingma';
+
+  @override
+  String get calendar_type_sinhalese => 'Sinhalese';
+
+  @override
+  String get calendar_type_thai => 'Thai';
+
+  @override
+  String get calendar_type_burmese => 'Burmese';
+
+  @override
+  String get calendar_type_lao => 'Lao';
+
+  @override
+  String get calendar_type_chinese => 'Chinese';
+
+  @override
+  String get calendar_type_vietnamese => 'Vietnamese';
+
+  @override
+  String get calendar_type_korean => 'Korean';
+
+  @override
+  String get calendar_type_japanese => 'Japanese';
+
+  @override
   String get calendar_today => 'Today';
 
   @override
@@ -2102,7 +2150,7 @@ class AppLocalizationsTh extends AppLocalizations {
       'ด้วยบุญกุศลนี้ ขอสรรพสัตว์ทั้งหลาย\nจงพ้นจากความทุกข์';
 
   @override
-  String get share_this_quote => 'แชร์คำคมนี้';
+  String get share_this_verse => 'แชร์คาถานี้';
 
   @override
   String get shared_from => 'แชร์จาก';

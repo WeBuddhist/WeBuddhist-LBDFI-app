@@ -5,15 +5,24 @@ import 'package:flutter_pecha/core/error/exceptions.dart';
 import 'package:flutter_pecha/core/error/failures.dart';
 import 'package:flutter_pecha/features/home/data/datasource/home_local_datasource.dart';
 import 'package:flutter_pecha/features/home/data/datasource/verse_of_day_remote_datasource.dart';
+import 'package:flutter_pecha/features/home/data/models/verse_of_day_model.dart';
 import 'package:flutter_pecha/features/home/domain/entities/verse_of_day.dart';
 import 'package:flutter_pecha/features/home/domain/entities/verse_of_day_engagement.dart';
 import 'package:flutter_pecha/features/home/domain/repositories/home_repository.dart';
+import 'package:flutter_pecha/features/home/domain/utils/verse_of_day_dates.dart';
 
 class VerseOfDayRepository implements VerseOfDayRepositoryInterface {
   final VerseOfDayRemoteDatasource remote;
   final HomeLocalDatasource local;
 
-  VerseOfDayRepository({required this.remote, required this.local});
+  /// The device clock; tests pin it.
+  final DateTime Function() _now;
+
+  VerseOfDayRepository({
+    required this.remote,
+    required this.local,
+    DateTime Function()? now,
+  }) : _now = now ?? DateTime.now;
 
   @override
   Future<Either<Failure, VerseOfDay>> getVerseOfDay({
@@ -21,12 +30,15 @@ class VerseOfDayRepository implements VerseOfDayRepositoryInterface {
   }) async {
     final cached = local.readVerseOfDay(language);
     if (cached != null) {
-      unawaited(_refresh(language));
+      unawaited(_refresh(language).catchError((_) {}));
       return Right(cached.toEntity());
     }
 
     try {
       final model = await remote.fetchVerseOfDay(language: language);
+      if (model == null) {
+        return const Left(NotFoundFailure('No verse of day today'));
+      }
       await local.saveVerseOfDay(language, model);
       return Right(model.toEntity());
     } catch (e) {
@@ -35,26 +47,100 @@ class VerseOfDayRepository implements VerseOfDayRepositoryInterface {
   }
 
   @override
-  Stream<Either<Failure, VerseOfDay>> watchVerseOfDay({
+  Stream<Either<Failure, List<VerseOfDay>>> watchRecentVerses({
     required String language,
   }) async* {
-    final key = local.verseOfDayKey(language);
-    final cached = local.readVerseOfDay(language);
-    if (cached != null) yield Right(cached.toEntity());
+    // Listens before the first refresh, so a store write that lands while it
+    // runs (a pull-to-refresh) is not missed. Writes made by that refresh
+    // re-emit the same week, which is harmless.
+    final changes = StreamController<void>();
+    final subscription = local
+        .watchKey(local.recentVerseDatesKey(language))
+        .listen(changes.add);
 
     try {
-      await _refresh(language);
-      final refreshed = local.readVerseOfDay(language);
-      if (refreshed != null) yield Right(refreshed.toEntity());
-    } catch (e) {
-      if (cached == null) {
-        yield Left(_toFailure(e, 'Failed to get verse of day'));
-      }
-    }
+      final cached = local.readRecentVerses(language);
+      if (cached != null) yield Right(_toEntities(cached));
 
-    await for (final _ in local.watchKey(key)) {
-      final latest = local.readVerseOfDay(language);
-      if (latest != null) yield Right(latest.toEntity());
+      try {
+        await _refreshRecent(language);
+        final refreshed = local.readRecentVerses(language);
+        if (refreshed != null) yield Right(_toEntities(refreshed));
+      } catch (e) {
+        if (cached == null) {
+          yield Left(_toFailure(e, 'Failed to get recent verses of day'));
+        }
+      }
+
+      await for (final _ in changes.stream) {
+        final latest = local.readRecentVerses(language);
+        if (latest != null) yield Right(_toEntities(latest));
+      }
+    } finally {
+      await subscription.cancel();
+      // Not awaited: close() only completes once a listener sees "done",
+      // and a watcher can cancel before the buffer is ever listened to.
+      unawaited(changes.close());
+    }
+  }
+
+  @override
+  Future<Either<Failure, Unit>> refreshRecentVerses({
+    required String language,
+  }) async {
+    try {
+      await _refreshRecent(language);
+      return const Right(unit);
+    } catch (e) {
+      return Left(_toFailure(e, 'Failed to refresh recent verses of day'));
+    }
+  }
+
+  List<VerseOfDay> _toEntities(List<VerseOfDayModel> models) => [
+    for (final model in models) model.toEntity(),
+  ];
+
+  /// Today from `/today` (it decides which day "today" is), then the six days
+  /// before it from `?date=`, in parallel. A past day already fetched within
+  /// [VerseOfDayCacheEntry.maxAge] is not asked for again; one that fails
+  /// keeps its old entry. Throws only when today's call fails.
+  Future<void> _refreshRecent(String language) async {
+    final today = await remote.fetchVerseOfDay(language: language);
+    final now = _now();
+    final anchor =
+        (today == null ? null : parseVerseOfDayDate(today.date)) ?? now;
+    final dates = daysEndingOn(anchor, verseOfDayWeekLength);
+
+    await local.saveVerseOfDayEntry(
+      language,
+      dates.first,
+      VerseOfDayCacheEntry(fetchedAt: now, verse: today),
+    );
+    if (today != null) await local.saveVerseOfDay(language, today);
+
+    await Future.wait([
+      for (final date in dates.skip(1))
+        if (!(local.readVerseOfDayEntry(language, date)?.isFreshAt(now) ??
+            false))
+          _refreshDay(language, date, now),
+    ]);
+
+    await local.saveRecentVerseDates(language, dates);
+  }
+
+  Future<void> _refreshDay(String language, String date, DateTime now) async {
+    try {
+      final verse = await remote.fetchVerseOfDayByDate(
+        language: language,
+        date: date,
+      );
+      await local.saveVerseOfDayEntry(
+        language,
+        date,
+        VerseOfDayCacheEntry(fetchedAt: now, verse: verse),
+      );
+    } catch (_) {
+      // The old entry, if any, stays; the next refresh asks again.
     }
   }
 
@@ -188,21 +274,9 @@ class VerseOfDayRepository implements VerseOfDayRepositoryInterface {
     }
   }
 
-  @override
-  Future<Either<Failure, Unit>> refreshVerseOfDay({
-    required String language,
-  }) async {
-    try {
-      await _refresh(language);
-      return const Right(unit);
-    } catch (e) {
-      return Left(_toFailure(e, 'Failed to refresh verse of day'));
-    }
-  }
-
   Future<void> _refresh(String language) async {
     final model = await remote.fetchVerseOfDay(language: language);
-    await local.saveVerseOfDay(language, model);
+    if (model != null) await local.saveVerseOfDay(language, model);
   }
 
   Failure _toFailure(Object error, String fallback) {

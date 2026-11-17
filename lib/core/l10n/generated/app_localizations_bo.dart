@@ -747,7 +747,7 @@ class AppLocalizationsBo extends AppLocalizations {
   }
 
   @override
-  String get home_group_events => 'ཁྱད་གསལ་བྱེད་སྒོ།';
+  String get home_group_events => 'གདམ་བསྒྲིགས་བྱེད་སྒོ།';
 
   @override
   String get home_community_feed => 'From the community';
@@ -1581,6 +1581,54 @@ class AppLocalizationsBo extends AppLocalizations {
   String get calendar_title => 'ལོ་ཐོ།';
 
   @override
+  String get calendar_choose_calendar => 'Choose calendar';
+
+  @override
+  String get settings_calendar_row => 'Calendar';
+
+  @override
+  String get calendar_tradition_vajrayana => 'Vajrayana';
+
+  @override
+  String get calendar_tradition_theravada => 'Theravada';
+
+  @override
+  String get calendar_tradition_mahayana => 'Mahayana';
+
+  @override
+  String get calendar_type_phugpa => 'Tibetan (Phugpa)';
+
+  @override
+  String get calendar_type_tsurphu => 'Tibetan (Tsurphu)';
+
+  @override
+  String get calendar_type_nyingmapa => 'Nyingma';
+
+  @override
+  String get calendar_type_sinhalese => 'Sinhalese';
+
+  @override
+  String get calendar_type_thai => 'Thai';
+
+  @override
+  String get calendar_type_burmese => 'Burmese';
+
+  @override
+  String get calendar_type_lao => 'Lao';
+
+  @override
+  String get calendar_type_chinese => 'Chinese';
+
+  @override
+  String get calendar_type_vietnamese => 'Vietnamese';
+
+  @override
+  String get calendar_type_korean => 'Korean';
+
+  @override
+  String get calendar_type_japanese => 'Japanese';
+
+  @override
   String get calendar_today => 'Today';
 
   @override
@@ -2136,7 +2184,7 @@ class AppLocalizationsBo extends AppLocalizations {
       'By this merit, may all beings\nbe free from suffering';
 
   @override
-  String get share_this_quote => 'ལེགས་བཤད་འདི་སྤེལ།';
+  String get share_this_verse => 'ཚིགས་བཅད་འདི་སྤེལ།';
 
   @override
   String get shared_from => 'སྤེལ་ཁུངས།';
@@ -2481,8 +2529,7 @@ class AppLocalizationsBo extends AppLocalizations {
   String get group_chat_empty_title => 'ད་དུང་འཕྲིན་ཡིག་མི་འདུག';
 
   @override
-  String get group_chat_empty_body =>
-      'ཁྱེད་ཀྱི་ཚོགས་པ་དང་གླེང་མོལ་འགོ་འཛུགས་རོགས།';
+  String get group_chat_empty_body => 'ཁྱེད་ཀྱི་ཚོགས་པའི་ནང་གླེང་མོལ་འགོ་ཚུགས།';
 
   @override
   String get group_chat_load_failed => 'འཕྲིན་ཡིག་ལེན་ཐུབ་མ་སོང་།';
@@ -3377,13 +3424,13 @@ class AppLocalizationsBo extends AppLocalizations {
   String get group_event_choose_repeats => 'Choose how it repeats';
 
   @override
-  String get group_event_duration => 'Duration';
+  String get group_event_duration => 'དུས་ཡུན།';
 
   @override
-  String get group_event_duration_decrease => 'Decrease duration';
+  String get group_event_duration_decrease => 'དུས་ཡུན་ཐུང་དུ་ཐོངས།';
 
   @override
-  String get group_event_duration_increase => 'Increase duration';
+  String get group_event_duration_increase => 'དུས་ཡུན་རིང་དུ་ཐོངས།';
 
   @override
   String group_event_duration_days(int count) {
@@ -4054,7 +4101,7 @@ class AppLocalizationsBo extends AppLocalizations {
   String get timer_starting => 'Starting...';
 
   @override
-  String get timer_duration_hours => 'hours';
+  String get timer_duration_hours => 'ཆུ་ཚོད།';
 
   @override
   String get timer_duration_hr => 'hr';

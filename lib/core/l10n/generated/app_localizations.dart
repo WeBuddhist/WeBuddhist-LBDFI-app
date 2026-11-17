@@ -2861,6 +2861,102 @@ abstract class AppLocalizations {
   /// **'Calendar'**
   String get calendar_title;
 
+  /// No description provided for @calendar_choose_calendar.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose calendar'**
+  String get calendar_choose_calendar;
+
+  /// No description provided for @settings_calendar_row.
+  ///
+  /// In en, this message translates to:
+  /// **'Calendar'**
+  String get settings_calendar_row;
+
+  /// No description provided for @calendar_tradition_vajrayana.
+  ///
+  /// In en, this message translates to:
+  /// **'Vajrayana'**
+  String get calendar_tradition_vajrayana;
+
+  /// No description provided for @calendar_tradition_theravada.
+  ///
+  /// In en, this message translates to:
+  /// **'Theravada'**
+  String get calendar_tradition_theravada;
+
+  /// No description provided for @calendar_tradition_mahayana.
+  ///
+  /// In en, this message translates to:
+  /// **'Mahayana'**
+  String get calendar_tradition_mahayana;
+
+  /// No description provided for @calendar_type_phugpa.
+  ///
+  /// In en, this message translates to:
+  /// **'Tibetan (Phugpa)'**
+  String get calendar_type_phugpa;
+
+  /// No description provided for @calendar_type_tsurphu.
+  ///
+  /// In en, this message translates to:
+  /// **'Tibetan (Tsurphu)'**
+  String get calendar_type_tsurphu;
+
+  /// No description provided for @calendar_type_nyingmapa.
+  ///
+  /// In en, this message translates to:
+  /// **'Nyingma'**
+  String get calendar_type_nyingmapa;
+
+  /// No description provided for @calendar_type_sinhalese.
+  ///
+  /// In en, this message translates to:
+  /// **'Sinhalese'**
+  String get calendar_type_sinhalese;
+
+  /// No description provided for @calendar_type_thai.
+  ///
+  /// In en, this message translates to:
+  /// **'Thai'**
+  String get calendar_type_thai;
+
+  /// No description provided for @calendar_type_burmese.
+  ///
+  /// In en, this message translates to:
+  /// **'Burmese'**
+  String get calendar_type_burmese;
+
+  /// No description provided for @calendar_type_lao.
+  ///
+  /// In en, this message translates to:
+  /// **'Lao'**
+  String get calendar_type_lao;
+
+  /// No description provided for @calendar_type_chinese.
+  ///
+  /// In en, this message translates to:
+  /// **'Chinese'**
+  String get calendar_type_chinese;
+
+  /// No description provided for @calendar_type_vietnamese.
+  ///
+  /// In en, this message translates to:
+  /// **'Vietnamese'**
+  String get calendar_type_vietnamese;
+
+  /// No description provided for @calendar_type_korean.
+  ///
+  /// In en, this message translates to:
+  /// **'Korean'**
+  String get calendar_type_korean;
+
+  /// No description provided for @calendar_type_japanese.
+  ///
+  /// In en, this message translates to:
+  /// **'Japanese'**
+  String get calendar_type_japanese;
+
   /// No description provided for @calendar_today.
   ///
   /// In en, this message translates to:
@@ -3783,11 +3879,11 @@ abstract class AppLocalizations {
   /// **'By this merit, may all beings\nbe free from suffering'**
   String get group_recitation_collection_dedication;
 
-  /// No description provided for @share_this_quote.
+  /// No description provided for @share_this_verse.
   ///
   /// In en, this message translates to:
-  /// **'Share this quote'**
-  String get share_this_quote;
+  /// **'Share this verse'**
+  String get share_this_verse;
 
   /// No description provided for @shared_from.
   ///

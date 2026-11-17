@@ -1502,6 +1502,54 @@ class AppLocalizationsZh extends AppLocalizations {
   String get calendar_title => '日曆';
 
   @override
+  String get calendar_choose_calendar => 'Choose calendar';
+
+  @override
+  String get settings_calendar_row => 'Calendar';
+
+  @override
+  String get calendar_tradition_vajrayana => 'Vajrayana';
+
+  @override
+  String get calendar_tradition_theravada => 'Theravada';
+
+  @override
+  String get calendar_tradition_mahayana => 'Mahayana';
+
+  @override
+  String get calendar_type_phugpa => 'Tibetan (Phugpa)';
+
+  @override
+  String get calendar_type_tsurphu => 'Tibetan (Tsurphu)';
+
+  @override
+  String get calendar_type_nyingmapa => 'Nyingma';
+
+  @override
+  String get calendar_type_sinhalese => 'Sinhalese';
+
+  @override
+  String get calendar_type_thai => 'Thai';
+
+  @override
+  String get calendar_type_burmese => 'Burmese';
+
+  @override
+  String get calendar_type_lao => 'Lao';
+
+  @override
+  String get calendar_type_chinese => 'Chinese';
+
+  @override
+  String get calendar_type_vietnamese => 'Vietnamese';
+
+  @override
+  String get calendar_type_korean => 'Korean';
+
+  @override
+  String get calendar_type_japanese => 'Japanese';
+
+  @override
   String get calendar_today => 'Today';
 
   @override
@@ -2026,7 +2074,7 @@ class AppLocalizationsZh extends AppLocalizations {
       'By this merit, may all beings\nbe free from suffering';
 
   @override
-  String get share_this_quote => '分享這句話';
+  String get share_this_verse => '分享這段偈頌';
 
   @override
   String get shared_from => '分享自';
@@ -6041,7 +6089,7 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get group_recitation_collection_dedication => '愿以此功德，令一切众生\n远离痛苦';
 
   @override
-  String get share_this_quote => '分享这句话';
+  String get share_this_verse => '分享这段偈颂';
 
   @override
   String get shared_from => '分享自';

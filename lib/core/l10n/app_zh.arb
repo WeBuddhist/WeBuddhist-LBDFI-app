@@ -673,7 +673,7 @@
   "group_accumulator_session_share_message": "我在 WeBuddhist 上 {group} 社群的共修計數「{accumulation}」中完成了 {count} 遍持誦，快來加入我吧！",
   "group_accumulator_session_share_message_no_group": "我在 WeBuddhist 上的共修計數活動「{accumulation}」中完成了 {count} 遍的持誦，快來加入我吧！",
   "group_accumulator_session_share_error": "無法分享課誦，請重試",
-  "share_this_quote": "分享這句話",
+  "share_this_verse": "分享這段偈頌",
   "shared_from": "分享自",
   "verse_share_error": "無法分享引文，請再試一次",
   "share_app_message": "我一直在用這個應用程式培養每日佛法修持的習慣，覺得您也會喜歡。",

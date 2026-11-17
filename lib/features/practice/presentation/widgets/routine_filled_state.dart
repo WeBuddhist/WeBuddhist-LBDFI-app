@@ -169,7 +169,12 @@ class _RoutineFilledStateState extends ConsumerState<RoutineFilledState> {
       // the routine. `/home/timers/active` is a root-navigator route, so it is
       // safe to push from this out-of-shell (My Practices) location.
       ref.read(pendingNotificationNavProvider.notifier).state = null;
-      final item = _findRoutineItem(widget.routineData, pendingNav.itemId);
+      // A timer added since the last server reload was scheduled under its
+      // local UUID, while this screen shows the server routine (session row
+      // ids). Fall back to the saved timer the reminder carries.
+      final item =
+          _findRoutineItem(widget.routineData, pendingNav.itemId) ??
+          _findTimerItem(widget.routineData, pendingNav.timerId);
       // Prefer the routine item's duration; fall back to the value embedded in
       // the notification payload so the tap still works when the item is not
       // found or lost its durationMs on a server round-trip.
@@ -788,6 +793,19 @@ RoutineItem? _findRoutineItem(RoutineData routineData, String itemId) {
   for (final block in routineData.blocks) {
     for (final item in block.items) {
       if (item.id == itemId) return item;
+    }
+  }
+  return null;
+}
+
+/// The first timer item in [routineData] linked to the saved timer [timerId].
+RoutineItem? _findTimerItem(RoutineData routineData, String? timerId) {
+  if (timerId == null || timerId.isEmpty) return null;
+  for (final block in routineData.blocks) {
+    for (final item in block.items) {
+      if (item.type == RoutineItemType.timer && item.timer?.id == timerId) {
+        return item;
+      }
     }
   }
   return null;

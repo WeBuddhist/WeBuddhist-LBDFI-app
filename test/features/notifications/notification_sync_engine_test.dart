@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_pecha/core/l10n/generated/app_localizations.dart';
 import 'package:flutter_pecha/features/notifications/application/notification_sync_engine.dart';
@@ -5,6 +7,7 @@ import 'package:flutter_pecha/features/notifications/data/notification_id_scheme
 import 'package:flutter_pecha/features/notifications/data/services/notification_service.dart';
 import 'package:flutter_pecha/features/notifications/data/services/routine_notification_service.dart';
 import 'package:flutter_pecha/features/practice/data/models/routine_model.dart';
+import 'package:flutter_pecha/features/timer/data/models/preset_timer_model.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:timezone/data/latest_all.dart' as tz_data;
@@ -183,6 +186,47 @@ void main() {
       // Fires at block time.
       expect(start.fireAt!.hour, 8);
       expect(start.fireAt!.minute, 30);
+    });
+
+    test('payload carries the linked saved timer id, and omits it for a bare '
+        'duration', () {
+      final linked = RoutineItem(
+        id: 'local-uuid',
+        title: 'Meditation',
+        type: RoutineItemType.timer,
+        durationMs: 1800000,
+        timer: const PresetTimerModel(
+          id: 'saved-timer-1',
+          name: '30 minutes',
+          durationMs: 1800000,
+        ),
+      );
+      final linkedPayload = jsonDecode(
+        engine
+            .computeForTimerBlock(
+              timerBlock(items: [linked]),
+              DateTime(2026, 6, 5, 6),
+              masterOn: true,
+              timerOn: true,
+            )
+            .single
+            .payload!,
+      ) as Map<String, dynamic>;
+      expect(linkedPayload['itemId'], 'local-uuid');
+      expect(linkedPayload['timerId'], 'saved-timer-1');
+
+      final barePayload = jsonDecode(
+        engine
+            .computeForTimerBlock(
+              timerBlock(),
+              DateTime(2026, 6, 5, 6),
+              masterOn: true,
+              timerOn: true,
+            )
+            .single
+            .payload!,
+      ) as Map<String, dynamic>;
+      expect(barePayload.containsKey('timerId'), isFalse);
     });
 
     test('rolls the reminder to next day when block time already passed', () {

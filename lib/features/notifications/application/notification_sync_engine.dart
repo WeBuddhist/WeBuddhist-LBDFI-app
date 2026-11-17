@@ -569,10 +569,16 @@ class NotificationSyncEngine {
     // `durationMs` is embedded so the tap works without re-resolving the routine
     // item (which may have lost its durationMs on a server round-trip, or not be
     // loaded yet on a cold start).
+    // `timerId` is the saved timer the item plays. The item's own id can
+    // change between the local routine (a fresh UUID) and the server one (the
+    // session row id), so the tap falls back to it to find the timer's sound,
+    // bells and the id its stop is reported against.
+    final savedTimerId = timer.timer?.id ?? '';
     final payload = jsonEncode({
       'itemId': timer.id,
       'itemType': timer.type.name,
       'durationMs': durationMs,
+      if (savedTimerId.isNotEmpty) 'timerId': savedTimerId,
       'scheduledMinute': block.time.hour * 60 + block.time.minute,
     });
 

@@ -23,6 +23,11 @@ class NotificationNav {
   /// loaded) routine item. Null for non-timer notifications.
   final int? durationMs;
 
+  /// Saved timer a timer reminder plays. Used to find the routine item when
+  /// [itemId] no longer matches (a new item's local UUID vs the server's
+  /// session row id). Null for non-timer notifications and bare durations.
+  final String? timerId;
+
   const NotificationNav({
     required this.itemId,
     required this.itemType,
@@ -30,6 +35,7 @@ class NotificationNav {
     this.dayNumber,
     this.planLanguage,
     this.durationMs,
+    this.timerId,
   });
 }
 

@@ -3040,6 +3040,118 @@ class TolgeeAppLocalizations extends AppLocalizations {
   );
 
   @override
+  String get calendar_choose_calendar => TolgeeBridge.get(
+    localeName,
+    'calendar_choose_calendar',
+    () => _fallback.calendar_choose_calendar,
+  );
+
+  @override
+  String get settings_calendar_row => TolgeeBridge.get(
+    localeName,
+    'settings_calendar_row',
+    () => _fallback.settings_calendar_row,
+  );
+
+  @override
+  String get calendar_tradition_vajrayana => TolgeeBridge.get(
+    localeName,
+    'calendar_tradition_vajrayana',
+    () => _fallback.calendar_tradition_vajrayana,
+  );
+
+  @override
+  String get calendar_tradition_theravada => TolgeeBridge.get(
+    localeName,
+    'calendar_tradition_theravada',
+    () => _fallback.calendar_tradition_theravada,
+  );
+
+  @override
+  String get calendar_tradition_mahayana => TolgeeBridge.get(
+    localeName,
+    'calendar_tradition_mahayana',
+    () => _fallback.calendar_tradition_mahayana,
+  );
+
+  @override
+  String get calendar_type_phugpa => TolgeeBridge.get(
+    localeName,
+    'calendar_type_phugpa',
+    () => _fallback.calendar_type_phugpa,
+  );
+
+  @override
+  String get calendar_type_tsurphu => TolgeeBridge.get(
+    localeName,
+    'calendar_type_tsurphu',
+    () => _fallback.calendar_type_tsurphu,
+  );
+
+  @override
+  String get calendar_type_nyingmapa => TolgeeBridge.get(
+    localeName,
+    'calendar_type_nyingmapa',
+    () => _fallback.calendar_type_nyingmapa,
+  );
+
+  @override
+  String get calendar_type_sinhalese => TolgeeBridge.get(
+    localeName,
+    'calendar_type_sinhalese',
+    () => _fallback.calendar_type_sinhalese,
+  );
+
+  @override
+  String get calendar_type_thai => TolgeeBridge.get(
+    localeName,
+    'calendar_type_thai',
+    () => _fallback.calendar_type_thai,
+  );
+
+  @override
+  String get calendar_type_burmese => TolgeeBridge.get(
+    localeName,
+    'calendar_type_burmese',
+    () => _fallback.calendar_type_burmese,
+  );
+
+  @override
+  String get calendar_type_lao => TolgeeBridge.get(
+    localeName,
+    'calendar_type_lao',
+    () => _fallback.calendar_type_lao,
+  );
+
+  @override
+  String get calendar_type_chinese => TolgeeBridge.get(
+    localeName,
+    'calendar_type_chinese',
+    () => _fallback.calendar_type_chinese,
+  );
+
+  @override
+  String get calendar_type_vietnamese => TolgeeBridge.get(
+    localeName,
+    'calendar_type_vietnamese',
+    () => _fallback.calendar_type_vietnamese,
+  );
+
+  @override
+  String get calendar_type_korean => TolgeeBridge.get(
+    localeName,
+    'calendar_type_korean',
+    () => _fallback.calendar_type_korean,
+  );
+
+  @override
+  String get calendar_type_japanese => TolgeeBridge.get(
+    localeName,
+    'calendar_type_japanese',
+    () => _fallback.calendar_type_japanese,
+  );
+
+  @override
   String get calendar_today => TolgeeBridge.get(
     localeName,
     'calendar_today',
@@ -3785,10 +3897,12 @@ class TolgeeAppLocalizations extends AppLocalizations {
 
   @override
   String group_removed_message(String group, String duration) =>
-      TolgeeBridge.format(localeName, 'group_removed_message', <String, Object>{
-        'group': group,
-        'duration': duration,
-      }, () => _fallback.group_removed_message(group, duration));
+      TolgeeBridge.format(
+        localeName,
+        'group_removed_message',
+        <String, Object>{'group': group, 'duration': duration},
+        () => _fallback.group_removed_message(group, duration),
+      );
 
   @override
   String group_removed_message_no_date(String group) => TolgeeBridge.format(
@@ -4154,10 +4268,10 @@ class TolgeeAppLocalizations extends AppLocalizations {
   );
 
   @override
-  String get share_this_quote => TolgeeBridge.get(
+  String get share_this_verse => TolgeeBridge.get(
     localeName,
-    'share_this_quote',
-    () => _fallback.share_this_quote,
+    'share_this_verse',
+    () => _fallback.share_this_verse,
   );
 
   @override
@@ -5422,10 +5536,12 @@ class TolgeeAppLocalizations extends AppLocalizations {
 
   @override
   String event_replay_session(String day, String session) =>
-      TolgeeBridge.format(localeName, 'event_replay_session', <String, Object>{
-        'day': day,
-        'session': session,
-      }, () => _fallback.event_replay_session(day, session));
+      TolgeeBridge.format(
+        localeName,
+        'event_replay_session',
+        <String, Object>{'day': day, 'session': session},
+        () => _fallback.event_replay_session(day, session),
+      );
 
   @override
   String get event_replay_recording => TolgeeBridge.get(
@@ -8161,10 +8277,12 @@ class TolgeeAppLocalizations extends AppLocalizations {
 
   @override
   String reader_round_position(String current, String total) =>
-      TolgeeBridge.format(localeName, 'reader_round_position', <String, Object>{
-        'current': current,
-        'total': total,
-      }, () => _fallback.reader_round_position(current, total));
+      TolgeeBridge.format(
+        localeName,
+        'reader_round_position',
+        <String, Object>{'current': current, 'total': total},
+        () => _fallback.reader_round_position(current, total),
+      );
 
   @override
   String reader_round_number(String current) => TolgeeBridge.format(
@@ -8176,10 +8294,12 @@ class TolgeeAppLocalizations extends AppLocalizations {
 
   @override
   String reader_count_position(String current, String total) =>
-      TolgeeBridge.format(localeName, 'reader_count_position', <String, Object>{
-        'current': current,
-        'total': total,
-      }, () => _fallback.reader_count_position(current, total));
+      TolgeeBridge.format(
+        localeName,
+        'reader_count_position',
+        <String, Object>{'current': current, 'total': total},
+        () => _fallback.reader_count_position(current, total),
+      );
 
   @override
   String reader_show_script_in(String language) => TolgeeBridge.format(

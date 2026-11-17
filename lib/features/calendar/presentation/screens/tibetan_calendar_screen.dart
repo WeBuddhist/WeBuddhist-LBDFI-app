@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_pecha/core/core.dart';
 import 'package:flutter_pecha/core/extensions/context_ext.dart';
+import 'package:flutter_pecha/core/theme/app_colors.dart';
 import 'package:flutter_pecha/features/auth/presentation/providers/state_providers.dart';
 import 'package:flutter_pecha/features/auth/presentation/widgets/login_drawer.dart';
+import 'package:flutter_pecha/features/calendar/presentation/calendar_type_l10n.dart';
 import 'package:flutter_pecha/features/calendar/presentation/providers/calendar_event_sources_providers.dart';
+import 'package:flutter_pecha/features/calendar/presentation/providers/calendar_type_providers.dart';
 import 'package:flutter_pecha/features/calendar/presentation/providers/tibetan_calendar_providers.dart';
 import 'package:flutter_pecha/features/calendar/presentation/widgets/calendar_events_section.dart';
 import 'package:flutter_pecha/features/calendar/presentation/widgets/calendar_header_card.dart';
@@ -106,14 +109,33 @@ class _TibetanCalendarScreenState extends ConsumerState<TibetanCalendarScreen>
             }
           },
         ),
-        title: Text(
-          l10n.calendar_title,
-          strutStyle: context.tibetanStrutStyle(
-            theme.textTheme.titleLarge?.fontSize ?? 22,
-          ),
-          style: theme.textTheme.titleLarge?.copyWith(
-            fontWeight: FontWeight.w700,
-          ),
+        title: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              l10n.calendar_title,
+              strutStyle: context.tibetanStrutStyle(
+                theme.textTheme.titleLarge?.fontSize ?? 22,
+                compact: true,
+              ),
+              style: theme.textTheme.titleLarge?.copyWith(
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+            // Which calendar the dates are in; change it in Settings.
+            Text(
+              calendarTypeLabel(l10n, ref.watch(selectedCalendarTypeProvider)),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              strutStyle: context.tibetanStrutStyle(
+                theme.textTheme.bodySmall?.fontSize ?? 12,
+                compact: true,
+              ),
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: AppColors.grey600,
+              ),
+            ),
+          ],
         ),
         actions: [
           IconButton(

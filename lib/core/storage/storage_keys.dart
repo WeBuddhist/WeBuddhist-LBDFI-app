@@ -39,6 +39,10 @@ class StorageKeys {
   /// Current onboarding step
   static const String onboardingStep = 'onboarding_step';
 
+  // ========== CALENDAR ==========
+  /// Calendar type the calendar is shown in (`phugpa`, `tsurphu`, …)
+  static const String calendarType = 'calendar_type';
+
   /// Onboarding data JSON
   static const String onboardingData = 'onboarding_data';
 

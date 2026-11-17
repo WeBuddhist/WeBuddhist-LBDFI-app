@@ -456,9 +456,10 @@ class NotificationService {
 
         final planId = data['planId'] as String?;
         final durationMs = (data['durationMs'] as num?)?.toInt();
+        final timerId = data['timerId'] as String?;
         _logger.info(
           'Storing pending notification nav: $itemTypeStr $itemId '
-          'planId=$planId durationMs=$durationMs',
+          'planId=$planId durationMs=$durationMs timerId=$timerId',
         );
         _container!.read(pendingNotificationNavProvider.notifier).state =
             NotificationNav(
@@ -466,6 +467,7 @@ class NotificationService {
               itemType: itemTypeStr,
               planId: planId,
               durationMs: durationMs,
+              timerId: timerId,
             );
         _openMyPractices();
         // `scheduledMinute` is the block time the sync engine stamped on it.
