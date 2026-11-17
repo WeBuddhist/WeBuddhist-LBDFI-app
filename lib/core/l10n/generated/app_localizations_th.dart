@@ -161,12 +161,6 @@ class AppLocalizationsTh extends AppLocalizations {
   String get mala_settings_section => 'การตั้งค่าลูกประคำ';
 
   @override
-  String get mala_others_section => 'อื่น ๆ';
-
-  @override
-  String get mala_mantra_speed => 'ความเร็วมนต์';
-
-  @override
   String get mala_speed_normal => 'ปกติ';
 
   @override

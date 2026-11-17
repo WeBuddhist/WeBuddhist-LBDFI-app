@@ -109,10 +109,7 @@ class _BeadStyleSheetState extends ConsumerState<BeadStyleSheet> {
             label: l10n.mala_bead_default,
             selected: selected == null,
             onTap: () => setState(() => _picked = (id: null)),
-            bead: MalaBeadPreview(
-              color: kMalaDefaultBeadColor,
-              imageBytes: widget.ownBeadBytes,
-            ),
+            bead: MalaBeadPreview(imageBytes: widget.ownBeadBytes),
           ),
           for (final skin in skins)
             _BeadTile(
@@ -165,7 +162,6 @@ class _SkinPreview extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return MalaBeadPreview(
-      color: kMalaDefaultBeadColor,
       imageBytes: ref.watch(malaBeadImageBytesProvider(skin.url)).valueOrNull,
     );
   }

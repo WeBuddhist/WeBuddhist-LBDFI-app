@@ -371,18 +371,6 @@ abstract class AppLocalizations {
   /// **'Mala settings'**
   String get mala_settings_section;
 
-  /// No description provided for @mala_others_section.
-  ///
-  /// In en, this message translates to:
-  /// **'Others'**
-  String get mala_others_section;
-
-  /// No description provided for @mala_mantra_speed.
-  ///
-  /// In en, this message translates to:
-  /// **'Mantra speed'**
-  String get mala_mantra_speed;
-
   /// No description provided for @mala_speed_normal.
   ///
   /// In en, this message translates to:

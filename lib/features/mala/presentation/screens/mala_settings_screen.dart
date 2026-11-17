@@ -260,7 +260,6 @@ class _BeadStyleTile extends ConsumerWidget {
     }
     return _SettingsTile(
       icon: MalaBeadPreview(
-        color: kMalaDefaultBeadColor,
         imageBytes: watchMalaBeadBytes(ref, mantraId, ownBeadBytes),
         size: 22,
       ),

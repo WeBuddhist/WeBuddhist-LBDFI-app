@@ -164,12 +164,6 @@ class AppLocalizationsMy extends AppLocalizations {
   String get mala_settings_section => 'ပုတီး ဆက်တင်များ';
 
   @override
-  String get mala_others_section => 'အခြား';
-
-  @override
-  String get mala_mantra_speed => 'မန္တန် အမြန်နှုန်း';
-
-  @override
   String get mala_speed_normal => 'ပုံမှန်';
 
   @override

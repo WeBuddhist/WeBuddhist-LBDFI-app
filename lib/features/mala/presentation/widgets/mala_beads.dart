@@ -469,6 +469,9 @@ class _MalaBeadsPainter extends CustomPainter {
       old.mirrored != mirrored;
 }
 
+/// Fill of the drawn bead when no bead artwork is available.
+const Color kMalaDefaultBeadColor = Color(0xFF8D6E63);
+
 /// A shaded sphere in [color]: the bead drawn when there is no bead artwork.
 void paintDrawnMalaBead(
   Canvas canvas,
@@ -499,11 +502,11 @@ void paintDrawnMalaBead(
 }
 
 /// One bead on its own, for pickers: [imageBytes] clipped to a circle, or the
-/// drawn bead in [color] when there are none.
+/// drawn bead when there are none.
 class MalaBeadPreview extends StatelessWidget {
   const MalaBeadPreview({
     super.key,
-    required this.color,
+    this.color = kMalaDefaultBeadColor,
     this.imageBytes,
     this.size = 48,
   });

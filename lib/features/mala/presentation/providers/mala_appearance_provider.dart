@@ -1,5 +1,4 @@
 import 'dart:typed_data';
-import 'dart:ui' show Color;
 
 import 'package:flutter_pecha/core/utils/app_logger.dart';
 import 'package:flutter_pecha/features/mala/domain/entities/mala_image_option.dart';
@@ -75,9 +74,6 @@ final malaDeityImagesProvider = FutureProvider.autoDispose
 final malaSkinsProvider = FutureProvider.autoDispose<List<MalaSkin>>((ref) {
   return ref.watch(malaAppearanceRepositoryProvider).skins();
 });
-
-/// Fill of the drawn bead when no bead artwork is available.
-const Color kMalaDefaultBeadColor = Color(0xFF8D6E63);
 
 /// Bead artwork for the mantra [mantraId]: the user's skin when they picked
 /// one, else [ownBytes] (the bead the accumulation already shows). Also

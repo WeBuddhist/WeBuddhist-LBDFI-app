@@ -43,8 +43,6 @@
   "mala_rounds_count": "{count, plural, =0 {0 ပတ်} =1 {1 ပတ်} other {{count} ပတ်}}",
   "mala_hand_layout_tooltip": "လက် အနေအထား ပြောင်းရန်",
   "mala_settings_section": "ပုတီး ဆက်တင်များ",
-  "mala_others_section": "အခြား",
-  "mala_mantra_speed": "မန္တန် အမြန်နှုန်း",
   "mala_speed_normal": "ပုံမှန်",
   "mala_show_full_mantra": "မန္တန် အပြည့်အစုံ ပြရန်",
   "mala_counter_semantics": "အရေအတွက် {total} အနက် {bead}၊ {rounds}",

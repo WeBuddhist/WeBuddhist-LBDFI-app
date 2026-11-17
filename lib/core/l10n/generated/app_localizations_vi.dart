@@ -164,12 +164,6 @@ class AppLocalizationsVi extends AppLocalizations {
   String get mala_settings_section => 'Cài đặt chuỗi hạt';
 
   @override
-  String get mala_others_section => 'Khác';
-
-  @override
-  String get mala_mantra_speed => 'Tốc độ tụng chú';
-
-  @override
   String get mala_speed_normal => 'Bình thường';
 
   @override

@@ -43,8 +43,6 @@
   "mala_rounds_count": "{count, plural,\n=0 {0 รอบ}\n=1 {1 รอบ}\nother {{count} รอบ}\n}",
   "mala_hand_layout_tooltip": "สลับรูปแบบมือ",
   "mala_settings_section": "การตั้งค่าลูกประคำ",
-  "mala_others_section": "อื่น ๆ",
-  "mala_mantra_speed": "ความเร็วมนต์",
   "mala_speed_normal": "ปกติ",
   "mala_show_full_mantra": "แสดงมนต์เต็ม",
   "mala_counter_semantics": "นับ {bead} จาก {total} {rounds}",

@@ -301,20 +301,6 @@ class TolgeeAppLocalizations extends AppLocalizations {
   );
 
   @override
-  String get mala_others_section => TolgeeBridge.get(
-    localeName,
-    'mala_others_section',
-    () => _fallback.mala_others_section,
-  );
-
-  @override
-  String get mala_mantra_speed => TolgeeBridge.get(
-    localeName,
-    'mala_mantra_speed',
-    () => _fallback.mala_mantra_speed,
-  );
-
-  @override
   String get mala_speed_normal => TolgeeBridge.get(
     localeName,
     'mala_speed_normal',

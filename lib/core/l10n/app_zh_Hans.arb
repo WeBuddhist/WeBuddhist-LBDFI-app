@@ -64,8 +64,6 @@
   },
   "mala_hand_layout_tooltip": "切换左右手布局",
   "mala_settings_section": "念珠设置",
-  "mala_others_section": "其他",
-  "mala_mantra_speed": "咒语速度",
   "mala_speed_normal": "正常",
   "mala_show_full_mantra": "显示完整咒语",
   "mala_counter_semantics": "计数 {bead}/{total}，{rounds}",

@@ -159,12 +159,6 @@ class AppLocalizationsZh extends AppLocalizations {
   String get mala_settings_section => 'Mala settings';
 
   @override
-  String get mala_others_section => 'Others';
-
-  @override
-  String get mala_mantra_speed => 'Mantra speed';
-
-  @override
   String get mala_speed_normal => 'Normal';
 
   @override
@@ -4279,12 +4273,6 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String get mala_settings_section => '念珠设置';
-
-  @override
-  String get mala_others_section => '其他';
-
-  @override
-  String get mala_mantra_speed => '咒语速度';
 
   @override
   String get mala_speed_normal => '正常';
