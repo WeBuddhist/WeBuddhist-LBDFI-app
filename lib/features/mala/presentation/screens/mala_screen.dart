@@ -274,11 +274,17 @@ class _MalaScreenState extends ConsumerState<MalaScreen> {
     final isSpace = _index >= presets.length;
     // Each mantra's artwork. The user's own pick is looked up only for the
     // mantra on screen and its neighbours (one request each), which are all
-    // a swipe can show.
+    // a swipe can show. The carousel wraps, so the first and last mantras
+    // are neighbours too.
+    bool isNeighbour(int i) {
+      final distance = (i - _index).abs();
+      return distance <= 1 || distance == items.length - 1;
+    }
+
     final images = {
       for (final (i, mantra) in items.indexed)
         mantra.presetId:
-            (i - _index).abs() <= 1
+            isNeighbour(i)
                 ? watchMalaMantraImage(ref, mantra)
                 : mantra.deityImage,
     };

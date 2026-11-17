@@ -75,9 +75,11 @@ final malaSkinsProvider = FutureProvider.autoDispose<List<MalaSkin>>((ref) {
   return ref.watch(malaAppearanceRepositoryProvider).skins();
 });
 
-/// Bead artwork for the mantra [mantraId]: the user's skin when they picked
-/// one, else [ownBytes] (the bead the accumulation already shows). Also
-/// [ownBytes] while the pick loads or when it fails to download.
+/// Bead artwork for the mantra [mantraId]: the skin the appearance resolves
+/// (the user's pick, else the mantra's default). [ownBytes], the bead the
+/// accumulation already holds, only stands in while that loads or when it
+/// fails: it can still be an earlier pick, so it is never taken as the
+/// default once the appearance is known.
 Uint8List? watchMalaBeadBytes(
   WidgetRef ref,
   String? mantraId,
@@ -86,16 +88,15 @@ Uint8List? watchMalaBeadBytes(
   if (mantraId == null) return ownBytes;
   final appearance = ref.watch(malaAppearanceProvider(mantraId)).valueOrNull;
   final url = appearance?.malaSkinUrl;
-  if (appearance?.malaSkinId == null || url == null) return ownBytes;
+  if (url == null) return ownBytes;
   return ref.watch(malaBeadImageBytesProvider(url)).valueOrNull ?? ownBytes;
 }
 
-/// The artwork shown above [mantra]: the user's deity image when they picked
-/// one, else the mantra's own.
+/// The artwork shown above [mantra]: the image the appearance resolves (the
+/// user's pick, else the mantra's default), or the mantra's own until then.
 ResponsiveImage? watchMalaMantraImage(WidgetRef ref, Mantra mantra) {
   final mantraId = mantra.mantraId;
   if (mantraId == null) return mantra.deityImage;
   final appearance = ref.watch(malaAppearanceProvider(mantraId)).valueOrNull;
-  if (appearance?.deityImageId == null) return mantra.deityImage;
   return appearance?.deityImage ?? mantra.deityImage;
 }

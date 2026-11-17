@@ -429,10 +429,14 @@ The older mala calls stay on v1.
   `joinedSpaceMantrasProvider`, which carry the pick too. On failure they
   return false and nothing changes; the sheet stays open with a "Couldn't
   save" toast (shown inside the sheet through `MalaSheetToastHost`).
-- **The mala screen** (`watchMalaMantraImage`, `watchMalaBeadBytes`) uses the
-  user's pick only when there is one (`deity_image_id` / `mala_skin_id` not
-  null) and otherwise keeps what the accumulation already shows. The image is
-  looked up for the mantra on screen and its two neighbours only.
+- **The mala screen** (`watchMalaMantraImage`, `watchMalaBeadBytes`) draws
+  the resolved `deity_image` / `mala_skin_url` (the pick, else the mantra's
+  default). What the accumulation already holds only stands in while the
+  appearance loads or fails, since it can still be an earlier pick. The image
+  is looked up for the mantra on screen and its two neighbours only; the
+  carousel wraps, so the first and last mantras count as neighbours.
+- **Not cached:** `CacheInterceptor.isUserSpecificPath` also matches
+  `/../v2/users/me/...`, so the appearance is read fresh each time.
 - **Bead style:** the first tile, Default, is the bead the accumulation shows
   without a pick and saves `mala_skin_id: null`. The other tiles are the skins
   from `/mala-skins`, labelled by `MalaSkin.displayName` (`bodhi_seed` →

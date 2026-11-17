@@ -23,27 +23,44 @@ const _mantra = Mantra(
 
 final _ownBead = Uint8List.fromList([1]);
 final _skinBead = Uint8List.fromList([2]);
+final _defaultBead = Uint8List.fromList([3]);
 
-FakeMalaAppearanceRepository _server({String? deity, String? skin}) =>
-    FakeMalaAppearanceRepository(
-      deityOptions: const [
-        MalaImageOption(id: 'own', image: _own, isDefault: true),
-        MalaImageOption(id: 'other', image: _other),
-      ],
-      skinList: const [
-        MalaSkin(id: 'bodhi', name: 'bodhi_seed', url: 'https://s3/bodhi'),
-      ],
-      deityImageId: deity,
-      malaSkinId: skin,
-    );
+FakeMalaAppearanceRepository _server({
+  String? deity,
+  String? skin,
+  bool defaultSkin = true,
+}) => FakeMalaAppearanceRepository(
+  deityOptions: const [
+    MalaImageOption(id: 'own', image: _own, isDefault: true),
+    MalaImageOption(id: 'other', image: _other),
+  ],
+  skinList: [
+    if (defaultSkin)
+      const MalaSkin(
+        id: 'ellipse',
+        name: 'ellipse',
+        url: 'https://s3/ellipse',
+        isDefault: true,
+      ),
+    const MalaSkin(id: 'bodhi', name: 'bodhi_seed', url: 'https://s3/bodhi'),
+  ],
+  deityImageId: deity,
+  malaSkinId: skin,
+);
+
+const _beadsByUrl = {'https://s3/bodhi': 2, 'https://s3/ellipse': 3};
 
 /// What the mala screen would draw for [_mantra].
 typedef _Shown = ({ResponsiveImage? image, Uint8List? bead});
 
+/// [mantra] and [ownBead] are what the accumulation itself holds.
 Future<_Shown Function()> _pump(
   WidgetTester tester,
-  FakeMalaAppearanceRepository server,
-) async {
+  FakeMalaAppearanceRepository server, {
+  Mantra mantra = _mantra,
+  Uint8List? ownBead,
+}) async {
+  final heldBead = ownBead ?? _ownBead;
   late _Shown shown;
   late WidgetRef widgetRef;
   await tester.pumpWidget(
@@ -51,7 +68,11 @@ Future<_Shown Function()> _pump(
       overrides: [
         malaAppearanceRepositoryProvider.overrideWithValue(server),
         malaBeadImageBytesProvider.overrideWith(
-          (ref, url) async => url == 'https://s3/bodhi' ? _skinBead : null,
+          (ref, url) async => switch (_beadsByUrl[url]) {
+            2 => _skinBead,
+            3 => _defaultBead,
+            _ => null,
+          },
         ),
         // Saving refreshes this list; keep it off the network.
         joinedSpaceMantrasProvider.overrideWith((ref) async => const []),
@@ -60,8 +81,8 @@ Future<_Shown Function()> _pump(
         builder: (context, ref, _) {
           widgetRef = ref;
           shown = (
-            image: watchMalaMantraImage(ref, _mantra),
-            bead: watchMalaBeadBytes(ref, _mantra.mantraId, _ownBead),
+            image: watchMalaMantraImage(ref, mantra),
+            bead: watchMalaBeadBytes(ref, mantra.mantraId, heldBead),
           );
           return const SizedBox();
         },
@@ -76,13 +97,44 @@ Future<_Shown Function()> _pump(
 late WidgetRef _ref;
 
 void main() {
-  testWidgets('without a pick, the mantra shows its own image and bead', (
+  testWidgets('without a pick, the mantra shows its default image and bead', (
     tester,
   ) async {
     final shown = await _pump(tester, _server());
 
     expect(shown().image, _own);
+    expect(shown().bead, _defaultBead);
+  });
+
+  testWidgets('the accumulation bead stands in when there is no skin url', (
+    tester,
+  ) async {
+    final shown = await _pump(tester, _server(defaultSkin: false));
+
     expect(shown().bead, _ownBead);
+  });
+
+  testWidgets('clearing a pick shows the default, not the earlier pick the '
+      'accumulation still holds', (tester) async {
+    // The accumulation was loaded while "other" and "bodhi" were picked.
+    const picked = Mantra(
+      presetId: 'tara',
+      mantra: MantraText(id: 'm1', text: 'om', deityImage: _other),
+    );
+    final shown = await _pump(
+      tester,
+      _server(deity: 'other', skin: 'bodhi'),
+      mantra: picked,
+      ownBead: _skinBead,
+    );
+
+    final notifier = _ref.read(malaAppearanceProvider('m1').notifier);
+    expect(await notifier.setDeityImage(null), isTrue);
+    expect(await notifier.setMalaSkin(null), isTrue);
+    await tester.pumpAndSettle();
+
+    expect(shown().image, _own);
+    expect(shown().bead, _defaultBead);
   });
 
   testWidgets('a saved pick replaces the image and bead', (tester) async {

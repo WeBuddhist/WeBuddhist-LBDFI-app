@@ -11,6 +11,7 @@ import 'package:flutter_pecha/features/group_profile/domain/entities/group_accum
 import 'package:flutter_pecha/features/group_profile/domain/repositories/group_accumulator_repository.dart';
 import 'package:flutter_pecha/features/group_profile/presentation/providers/group_accumulator_providers.dart';
 import 'package:flutter_pecha/features/mala/data/datasources/mala_local_datasource.dart';
+import 'package:flutter_pecha/features/mala/domain/entities/mala_image_option.dart';
 import 'package:flutter_pecha/features/mala/domain/entities/mantra.dart';
 import 'package:flutter_pecha/features/mala/domain/usecases/mala_usecases.dart';
 import 'package:flutter_pecha/features/mala/presentation/providers/mala_providers.dart';
@@ -23,6 +24,7 @@ import 'package:flutter_pecha/features/mala/data/repositories/mala_repository_im
 import 'package:flutter_pecha/features/mala/presentation/providers/space_mantra_providers.dart';
 import 'package:flutter_pecha/features/mala/presentation/widgets/mantra_switcher.dart';
 import 'package:flutter_pecha/features/practice/presentation/providers/bookmark_providers.dart';
+import 'package:flutter_pecha/shared/domain/value_objects/responsive_image.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:fpdart/fpdart.dart';
@@ -391,8 +393,10 @@ const _otherMantra = MantraText(
 
 Future<_Harness> _pumpCarousel(
   WidgetTester tester,
-  List<GroupAccumulator> joined,
-) async {
+  List<GroupAccumulator> joined, {
+  List<Mantra> presets = const [_tara],
+  FakeMalaAppearanceRepository? appearance,
+}) async {
   final h = _Harness(serverTotal: 42);
   final remote = _OfflineRemote();
   await tester.pumpWidget(
@@ -402,7 +406,7 @@ Future<_Harness> _pumpCarousel(
         malaLocalDataSourceProvider.overrideWithValue(h.local),
         malaRemoteDataSourceProvider.overrideWithValue(remote),
         malaAppearanceRepositoryProvider.overrideWithValue(
-          FakeMalaAppearanceRepository(),
+          appearance ?? FakeMalaAppearanceRepository(),
         ),
         malaRepositoryProvider.overrideWithValue(
           MalaRepositoryImpl(remote: remote),
@@ -416,7 +420,7 @@ Future<_Harness> _pumpCarousel(
         ),
         prefetchBookmarkExistsProvider.overrideWith((ref, target) {}),
         malaCatalogueProvider.overrideWith(
-          () => ScreenCacheNotifier.fixed(const Right([_tara])),
+          () => ScreenCacheNotifier.fixed(Right(presets)),
         ),
         joinedSpaceMantrasProvider.overrideWith(
           (ref) async => [
@@ -514,5 +518,33 @@ void carouselTests() {
 
     await h.leave(tester);
     expect(h.server.total, 44);
+  });
+
+  testWidgets('the last mantra shows its picked image beside the first', (
+    tester,
+  ) async {
+    const picked = ResponsiveImage(thumbnail: 'https://s3/picked.jpg');
+    Mantra preset(String id) => Mantra(
+      presetId: id,
+      metadata: [AccumulatorMetadata(language: 'en', name: id)],
+      mantra: MantraText(id: '$id-mantra', text: 'ཨོཾ།', title: id),
+    );
+    final h = await _pumpCarousel(
+      tester,
+      const [],
+      presets: [preset('a'), preset('b'), preset('c'), preset('d')],
+      appearance: FakeMalaAppearanceRepository(
+        deityOptions: const [MalaImageOption(id: 'picked', image: picked)],
+        deityImageId: 'picked',
+      ),
+    );
+
+    final switcher = tester.widget<MantraSwitcher>(find.byType(MantraSwitcher));
+    expect(switcher.index, 0);
+    // Swiping back from the first mantra wraps round to the last one.
+    expect(switcher.imageFor!(switcher.mantras.last), picked);
+    // Two away either way is not on screen after one swipe.
+    expect(switcher.imageFor!(switcher.mantras[2]), isNull);
+    await h.leave(tester);
   });
 }

@@ -50,6 +50,8 @@ class SilentMalaSoundPlayer extends Fake implements MalaSoundPlayer {
 }
 
 /// In-memory appearance server: remembers PATCHes and can be made to fail.
+/// Like the real one, it resolves `deity_image` and `mala_skin_url` to the
+/// pick, else to the option or skin marked default.
 class FakeMalaAppearanceRepository implements MalaAppearanceRepository {
   FakeMalaAppearanceRepository({
     this.deityOptions = const [],
@@ -72,11 +74,15 @@ class FakeMalaAppearanceRepository implements MalaAppearanceRepository {
   MantraAppearance _current(String mantraId) {
     String? skinUrl;
     for (final skin in skinList) {
-      if (skin.id == malaSkinId) skinUrl = skin.url;
+      if (malaSkinId == null ? skin.isDefault : skin.id == malaSkinId) {
+        skinUrl = skin.url;
+      }
     }
     ResponsiveImage? deity;
     for (final option in deityOptions) {
-      if (option.id == deityImageId) deity = option.image;
+      if (deityImageId == null ? option.isDefault : option.id == deityImageId) {
+        deity = option.image;
+      }
     }
     return MantraAppearance(
       mantraId: mantraId,
