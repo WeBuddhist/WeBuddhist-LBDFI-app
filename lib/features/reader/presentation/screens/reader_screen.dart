@@ -40,6 +40,7 @@ import 'package:flutter_pecha/features/reader/domain/services/live_position_reso
 import 'package:flutter_pecha/features/reader/domain/services/navigation_service.dart';
 import 'package:flutter_pecha/features/reader/presentation/providers/reader_dual_settings_provider.dart';
 import 'package:flutter_pecha/features/reader/presentation/providers/reader_notifier.dart';
+import 'package:flutter_pecha/features/reader/presentation/utils/deferred_recitation.dart';
 import 'package:flutter_pecha/features/reader/presentation/utils/reader_transliteration.dart';
 import 'package:flutter_pecha/features/reader/presentation/widgets/reader_actions/reader_verse_sheet.dart';
 import 'package:flutter_pecha/features/reader/presentation/widgets/reader_app_bar/reader_app_bar.dart';
@@ -117,11 +118,37 @@ class _ReaderScreenState extends ConsumerState<ReaderScreen>
   VoidCallback? _scrollToTop;
 
   // Group accumulation chant session
-  bool _hasSeededInitialChantCount = false;
   bool _chantSessionFinished = false;
 
   /// Chants made in this visit, whichever target each one was counted into.
   int _chantSessionCount = 0;
+
+  /// A recitation from Recite again, shown as counted but held back while
+  /// its toast offers Undo. Counted when the window closes, or sooner when
+  /// the visit moves on (another count, finishing, leaving).
+  late final _pendingRecitation = DeferredRecitation(
+    window: _undoWindow,
+    onCommit: _onPendingRecitationCommitted,
+  );
+
+  /// True from [dispose] on, where a pending recitation is counted through
+  /// [_container] since `ref` can no longer be used.
+  bool _disposing = false;
+
+  /// Set once Finish and count has counted the recitation on screen, so a
+  /// retry after the finish call failed does not count it twice.
+  bool _finishedRecitationCounted = false;
+
+  /// How long Recite again's toast offers Undo.
+  static const _undoWindow = Duration(seconds: 5);
+
+  /// Held for counting a pending recitation from [dispose], where `ref` and
+  /// context lookups are no longer allowed.
+  ProviderContainer? _container;
+
+  /// Recitations counted in this visit, the one waiting on Undo included.
+  int get _recitationsCounted =>
+      _chantSessionCount + (_pendingRecitation.isPending ? 1 : 0);
 
   /// Those counted into the accumulation this reader was opened from, which
   /// is what its completion sheet reports.
@@ -178,6 +205,12 @@ class _ReaderScreenState extends ConsumerState<ReaderScreen>
 
   bool get _hasAudio =>
       (_audioController?.hasAudio ?? false) || _hasCollectionAudioChoices;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _container = ProviderScope.containerOf(context, listen: false);
+  }
 
   @override
   void initState() {
@@ -259,15 +292,7 @@ class _ReaderScreenState extends ConsumerState<ReaderScreen>
       });
       if (!mounted) return;
       setState(() => _chantSelectionReady = true);
-      _seedInitialChantCountIfNeeded();
     });
-  }
-
-  void _seedInitialChantCountIfNeeded() {
-    if (_hasSeededInitialChantCount) return;
-    _hasSeededInitialChantCount = true;
-    if (_openedEndedAccumulator) return;
-    _countChant();
   }
 
   /// Counts one chant into the target selected in the accumulation sheet.
@@ -309,9 +334,86 @@ class _ReaderScreenState extends ConsumerState<ReaderScreen>
     return !ref.watch(malaCounterProvider(mantra)).isSeeding;
   }
 
-  void _onChantAgain() {
+  /// Counts the recitation just finished, after an Undo window, and goes
+  /// back to the opening verse for the next one.
+  void _onReciteAgain() {
     _scrollToTop?.call();
+    _pendingRecitation.hold();
+    setState(() => _finishedRecitationCounted = false);
+    _showRecitationCountedToast();
+  }
+
+  void _showRecitationCountedToast() {
+    final l10n = context.l10n;
+    ScaffoldMessenger.of(context)
+      ..hideCurrentSnackBar()
+      ..showSnackBar(
+        SnackBar(
+          behavior: SnackBarBehavior.floating,
+          // Figma: floats just above the chant bar.
+          margin: const EdgeInsets.fromLTRB(
+            16,
+            0,
+            16,
+            GroupAccumulatorChantBar.barHeight + 8,
+          ),
+          duration: _undoWindow,
+          content: Text(
+            l10n.group_accumulator_recitations_counted(_recitationsCounted),
+          ),
+          action: SnackBarAction(
+            label: l10n.undo,
+            onPressed: _undoPendingRecitation,
+          ),
+        ),
+      );
+  }
+
+  /// Drops the recitation waiting on Undo; nothing reached the counters.
+  void _undoPendingRecitation() {
+    if (!mounted) return;
+    if (_pendingRecitation.undo()) setState(() {});
+  }
+
+  /// Counts the recitation waiting on Undo, if there is one, and takes its
+  /// toast away so no Undo is left offered for it.
+  void _settlePendingRecitation() {
+    if (!_pendingRecitation.isPending) return;
+    ScaffoldMessenger.maybeOf(context)?.hideCurrentSnackBar();
+    _pendingRecitation.commit();
+  }
+
+  void _onPendingRecitationCommitted() {
+    final mantra = _chantMantra;
+    if (mantra == null) return;
+    if (_disposing) {
+      // The counters are held open by this widget until after dispose, so
+      // the container can still reach them.
+      final container = _container;
+      if (container != null) countChantIntoSelection(container.read, mantra);
+      return;
+    }
+    if (!mounted) return;
+    // Redraws even when the target turns the count away.
+    setState(() {});
     _countChant();
+  }
+
+  /// Counts the recitation just finished and ends the session.
+  Future<void> _finishAndCount() async {
+    _settlePendingRecitation();
+    if (!_finishedRecitationCounted) {
+      _finishedRecitationCounted = true;
+      _countChant();
+    }
+    await _finishChantSession();
+  }
+
+  /// Ends the session without counting the recitation just finished. One
+  /// already shown as counted by Recite again still counts.
+  Future<void> _finishWithoutCounting() async {
+    _settlePendingRecitation();
+    await _finishChantSession();
   }
 
   Future<void> _addOfflineChantCount() async {
@@ -428,6 +530,9 @@ class _ReaderScreenState extends ConsumerState<ReaderScreen>
 
   @override
   void dispose() {
+    // Left before the Undo window closed: the recitation still counts.
+    _disposing = true;
+    _pendingRecitation.commit();
     _audioController?.dispose();
     _progress.dispose();
     super.dispose();
@@ -687,6 +792,7 @@ class _ReaderScreenState extends ConsumerState<ReaderScreen>
             // cannot mutate Riverpod state while GoRouter rebuilds the tree.
             _clearTransientState();
             _invalidatePlanProviders();
+            _settlePendingRecitation();
             if (_isGroupAccumulatorChant && !_chantSessionFinished) {
               unawaited(
                 ref.read(malaSyncManagerProvider).flush(SyncReason.screenLeave),
@@ -791,9 +897,12 @@ class _ReaderScreenState extends ConsumerState<ReaderScreen>
     final chantFooter =
         chantMantra != null && !isPanelOpen && !_openedEndedAccumulator
             ? GroupAccumulatorChantFooter(
-              onChantAgain: _onChantAgain,
-              onFinishSession: _finishChantSession,
-              isChantAgainEnabled: isChantTargetReady,
+              // The recitation just finished counts as one completed.
+              completedCount: _recitationsCounted + 1,
+              onReciteAgain: _onReciteAgain,
+              onFinishAndCount: _finishAndCount,
+              onFinishWithoutCounting: _finishWithoutCounting,
+              canCount: isChantTargetReady,
             )
             : null;
 
@@ -855,6 +964,7 @@ class _ReaderScreenState extends ConsumerState<ReaderScreen>
                       initialSegmentId: widget.segmentId,
                       bottomPadding: contentBottomPadding,
                       chantSessionFooter: chantFooter,
+                      chantRecitationCount: _recitationsCounted,
                       onSourceSelected: _onSourceSelected,
                       onScrollDirectionChanged: _onScrollDirectionChanged,
                       progress: _progress,
@@ -868,7 +978,7 @@ class _ReaderScreenState extends ConsumerState<ReaderScreen>
               if (chantMantra != null)
                 GroupAccumulatorChantBar(
                   mantra: chantMantra,
-                  sessionCount: _chantSessionCount,
+                  sessionCount: _recitationsCounted,
                   chantTitle: state.openedText!.title,
                   chantTitleFontFamily: getFontFamily(
                     state.openedText!.language,
@@ -990,6 +1100,7 @@ class _ReaderScreenState extends ConsumerState<ReaderScreen>
   void _closeEmbedded() {
     _audioController?.cancel();
     _invalidatePlanProviders();
+    _settlePendingRecitation();
     if (_isGroupAccumulatorChant && !_chantSessionFinished) {
       unawaited(
         ref.read(malaSyncManagerProvider).flush(SyncReason.screenLeave),

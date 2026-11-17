@@ -2083,6 +2083,39 @@ class AppLocalizationsMy extends AppLocalizations {
   String get group_accumulator_finish_session => 'ဤအကြိမ် ပြီးဆုံးရန်';
 
   @override
+  String get group_accumulator_completed_recitations =>
+      'You completed recitations';
+
+  @override
+  String get group_accumulator_recite_again => 'Recite again';
+
+  @override
+  String get group_accumulator_finish_and_count => 'Finish and count';
+
+  @override
+  String get group_accumulator_finish_without_counting =>
+      'Finish without counting';
+
+  @override
+  String group_accumulator_recitations_counted(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count recitations counted',
+      one: '1 recitation counted',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String group_accumulator_recitation_count_badge(int count) {
+    return '×$count';
+  }
+
+  @override
+  String get undo => 'Undo';
+
+  @override
   String get group_accumulator_offline_recitation => 'အက်ပ်ပြင်ပ ရွတ်ဆိုမှု';
 
   @override

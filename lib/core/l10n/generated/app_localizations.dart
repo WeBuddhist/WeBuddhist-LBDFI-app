@@ -3713,6 +3713,48 @@ abstract class AppLocalizations {
   /// **'Finish session'**
   String get group_accumulator_finish_session;
 
+  /// Label above the big number of recitations at the end of a group chant
+  ///
+  /// In en, this message translates to:
+  /// **'You completed recitations'**
+  String get group_accumulator_completed_recitations;
+
+  /// Counts the recitation just finished and jumps back to the start of the chant
+  ///
+  /// In en, this message translates to:
+  /// **'Recite again'**
+  String get group_accumulator_recite_again;
+
+  /// Counts the recitation just finished and ends the chant session
+  ///
+  /// In en, this message translates to:
+  /// **'Finish and count'**
+  String get group_accumulator_finish_and_count;
+
+  /// Ends the chant session without counting the recitation just finished
+  ///
+  /// In en, this message translates to:
+  /// **'Finish without counting'**
+  String get group_accumulator_finish_without_counting;
+
+  /// Toast after Recite again; count is the recitations counted so far in this visit
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural,\n=1 {1 recitation counted}\nother {{count} recitations counted}\n}'**
+  String group_accumulator_recitations_counted(int count);
+
+  /// Running recitation count on the reader's section chip
+  ///
+  /// In en, this message translates to:
+  /// **'×{count}'**
+  String group_accumulator_recitation_count_badge(int count);
+
+  /// No description provided for @undo.
+  ///
+  /// In en, this message translates to:
+  /// **'Undo'**
+  String get undo;
+
   /// No description provided for @group_accumulator_offline_recitation.
   ///
   /// In en, this message translates to:
