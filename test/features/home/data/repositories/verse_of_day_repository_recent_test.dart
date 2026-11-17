@@ -58,8 +58,12 @@ class _FakeRemote extends VerseOfDayRemoteDatasource {
   final dateErrors = <String, Exception>{};
   final dateCalls = <String>[];
 
+  /// When set, today's call waits for it before answering.
+  Completer<void>? todayGate;
+
   @override
   Future<VerseOfDayModel?> fetchVerseOfDay({required String language}) async {
+    await todayGate?.future;
     if (todayError != null) throw todayError!;
     return todayVerse;
   }
@@ -211,6 +215,42 @@ void main() {
 
     expect(first.getOrElse((_) => []).map((v) => v.date), ['2026-11-09']);
   });
+
+  test(
+    'a week stored while the first refresh runs still reaches the watcher',
+    () async {
+      local.dates = ['2026-11-09'];
+      local.entries['en:2026-11-09'] = VerseOfDayCacheEntry(
+        fetchedAt: now,
+        verse: _verse('2026-11-09'),
+      );
+      remote.todayGate = Completer<void>();
+      final emitted = <List<String>>[];
+      final subscription = repository
+          .watchRecentVerses(language: 'en')
+          .listen(
+            (r) =>
+                emitted.add(r.getOrElse((_) => []).map((v) => v.date).toList()),
+          );
+      await pumpEventQueue();
+
+      // A pull-to-refresh stores the new week while the first refresh waits,
+      // and the first refresh then fails.
+      local.entries['en:2026-11-10'] = VerseOfDayCacheEntry(
+        fetchedAt: now,
+        verse: _verse('2026-11-10'),
+      );
+      await local.saveRecentVerseDates('en', ['2026-11-10', '2026-11-09']);
+      remote.todayError = const NetworkException('offline');
+      remote.todayGate!.complete();
+      await pumpEventQueue();
+
+      expect(emitted.last, ['2026-11-10', '2026-11-09']);
+      // An async* stream stops at its next yield, so the cancel isn't
+      // awaited while it waits for another store write.
+      unawaited(subscription.cancel());
+    },
+  );
 
   test('watch with no cache reports a failed refresh', () async {
     remote.todayError = const NetworkException('offline');

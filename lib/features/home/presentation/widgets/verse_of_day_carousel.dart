@@ -25,13 +25,23 @@ class _VerseOfDayCarouselState extends State<VerseOfDayCarousel> {
   @override
   void didUpdateWidget(VerseOfDayCarousel oldWidget) {
     super.didUpdateWidget(oldWidget);
-    // A refresh can shorten the week (a day turned out empty) or move it on
-    // a day; keep the page in range.
-    final last = widget.verses.length - 1;
-    if (last >= 0 && _page > last) {
-      _page = last;
-      if (_controller.hasClients) _controller.jumpToPage(last);
+    final target = verseCarouselPageAfterUpdate(
+      oldIds: [for (final verse in oldWidget.verses) verse.id],
+      newIds: [for (final verse in widget.verses) verse.id],
+      page: _page,
+    );
+    if (target != _page) {
+      _page = target;
+      if (_controller.hasClients) _controller.jumpToPage(target);
     }
+  }
+
+  /// Lets a card (and its kept-alive state) follow its verse when the week
+  /// shifts, instead of being rebuilt for whichever verse took its index.
+  int? _indexOfKey(Key key) {
+    if (key is! ValueKey<String>) return null;
+    final index = widget.verses.indexWhere((verse) => verse.id == key.value);
+    return index < 0 ? null : index;
   }
 
   @override
@@ -54,6 +64,7 @@ class _VerseOfDayCarouselState extends State<VerseOfDayCarousel> {
             controller: _controller,
             itemCount: verses.length,
             onPageChanged: (page) => setState(() => _page = page),
+            findChildIndexCallback: _indexOfKey,
             itemBuilder:
                 (context, index) => _KeepAlive(
                   key: ValueKey(verses[index].id),
@@ -71,6 +82,21 @@ class _VerseOfDayCarouselState extends State<VerseOfDayCarousel> {
       ],
     );
   }
+}
+
+/// The page to show after the week changes under the carousel. A refresh can
+/// shorten the week (a day turned out empty) or move it on a day, which
+/// shifts every verse's index: stay on the verse that was showing, and when
+/// it is gone, on the same index kept in range.
+@visibleForTesting
+int verseCarouselPageAfterUpdate({
+  required List<String> oldIds,
+  required List<String> newIds,
+  required int page,
+}) {
+  if (newIds.isEmpty) return 0;
+  final shown = page < oldIds.length ? newIds.indexOf(oldIds[page]) : -1;
+  return shown >= 0 ? shown : page.clamp(0, newIds.length - 1);
 }
 
 /// Keeps a swiped-away card (and its like / comment counts) alive, so going

@@ -50,23 +50,37 @@ class VerseOfDayRepository implements VerseOfDayRepositoryInterface {
   Stream<Either<Failure, List<VerseOfDay>>> watchRecentVerses({
     required String language,
   }) async* {
-    final key = local.recentVerseDatesKey(language);
-    final cached = local.readRecentVerses(language);
-    if (cached != null) yield Right(_toEntities(cached));
+    // Listens before the first refresh, so a store write that lands while it
+    // runs (a pull-to-refresh) is not missed. Writes made by that refresh
+    // re-emit the same week, which is harmless.
+    final changes = StreamController<void>();
+    final subscription = local
+        .watchKey(local.recentVerseDatesKey(language))
+        .listen(changes.add);
 
     try {
-      await _refreshRecent(language);
-      final refreshed = local.readRecentVerses(language);
-      if (refreshed != null) yield Right(_toEntities(refreshed));
-    } catch (e) {
-      if (cached == null) {
-        yield Left(_toFailure(e, 'Failed to get recent verses of day'));
-      }
-    }
+      final cached = local.readRecentVerses(language);
+      if (cached != null) yield Right(_toEntities(cached));
 
-    await for (final _ in local.watchKey(key)) {
-      final latest = local.readRecentVerses(language);
-      if (latest != null) yield Right(_toEntities(latest));
+      try {
+        await _refreshRecent(language);
+        final refreshed = local.readRecentVerses(language);
+        if (refreshed != null) yield Right(_toEntities(refreshed));
+      } catch (e) {
+        if (cached == null) {
+          yield Left(_toFailure(e, 'Failed to get recent verses of day'));
+        }
+      }
+
+      await for (final _ in changes.stream) {
+        final latest = local.readRecentVerses(language);
+        if (latest != null) yield Right(_toEntities(latest));
+      }
+    } finally {
+      await subscription.cancel();
+      // Not awaited: close() only completes once a listener sees "done",
+      // and a watcher can cancel before the buffer is ever listened to.
+      unawaited(changes.close());
     }
   }
 
