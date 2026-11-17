@@ -116,6 +116,7 @@ class _TibetanCalendarScreenState extends ConsumerState<TibetanCalendarScreen>
               l10n.calendar_title,
               strutStyle: context.tibetanStrutStyle(
                 theme.textTheme.titleLarge?.fontSize ?? 22,
+                compact: true,
               ),
               style: theme.textTheme.titleLarge?.copyWith(
                 fontWeight: FontWeight.w700,
@@ -126,6 +127,10 @@ class _TibetanCalendarScreenState extends ConsumerState<TibetanCalendarScreen>
               calendarTypeLabel(l10n, ref.watch(selectedCalendarTypeProvider)),
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
+              strutStyle: context.tibetanStrutStyle(
+                theme.textTheme.bodySmall?.fontSize ?? 12,
+                compact: true,
+              ),
               style: theme.textTheme.bodySmall?.copyWith(
                 color: AppColors.grey600,
               ),
