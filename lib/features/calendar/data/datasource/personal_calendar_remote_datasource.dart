@@ -41,11 +41,13 @@ class PersonalCalendarRemoteDatasource {
     return personalEventFromJson(response.data as Map<String, dynamic>);
   }
 
-  /// Saved without a start time, which makes it all day.
+  /// Saved without a start time, which makes it all day. A lunar repeat is
+  /// kept in [calendarType], the calendar the viewer chose its day in.
   Future<PersonalCalendarEvent> createEvent({
     required String title,
     required DateTime startDate,
     required PersonalRepeat repeat,
+    required String calendarType,
   }) async {
     final response = await dio.post(
       _eventsPath,
@@ -54,6 +56,7 @@ class PersonalCalendarRemoteDatasource {
         'start_date': formatApiDate(startDate),
         'timezone': await IanaTimezone.resolve(),
         'repeat': repeat.apiValue,
+        'calendar_type': calendarType,
       },
     );
     return personalEventFromJson(response.data as Map<String, dynamic>);
@@ -64,10 +67,15 @@ class PersonalCalendarRemoteDatasource {
     String id, {
     required String title,
     required PersonalRepeat repeat,
+    required String calendarType,
   }) async {
     final response = await dio.patch(
       '$_eventsPath/$id',
-      data: {'title': title, 'repeat': repeat.apiValue},
+      data: {
+        'title': title,
+        'repeat': repeat.apiValue,
+        'calendar_type': calendarType,
+      },
     );
     return personalEventFromJson(response.data as Map<String, dynamic>);
   }
