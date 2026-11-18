@@ -14,6 +14,7 @@ class GroupAccumulatorChantFooter extends StatelessWidget {
     required this.onFinishAndCount,
     required this.onFinishWithoutCounting,
     this.canCount = true,
+    this.isFinishing = false,
   });
 
   /// Recitations in this visit, the one just finished included.
@@ -32,6 +33,10 @@ class GroupAccumulatorChantFooter extends StatelessWidget {
   /// counting actions are disabled meanwhile.
   final bool canCount;
 
+  /// True while the session is being finished; every action is disabled so
+  /// none can count the same recitation again.
+  final bool isFinishing;
+
   static const _buttonHeight = 52.0;
   static const _borderRadius = 999.0;
 
@@ -43,6 +48,7 @@ class GroupAccumulatorChantFooter extends StatelessWidget {
         isDark ? AppColors.textPrimaryDark : AppColors.textPrimary;
     final secondaryColor =
         isDark ? AppColors.textSecondaryDark : AppColors.textSecondary;
+    final countEnabled = canCount && !isFinishing;
 
     return Padding(
       padding: const EdgeInsets.fromLTRB(24, 24, 24, 16),
@@ -74,7 +80,7 @@ class GroupAccumulatorChantFooter extends StatelessWidget {
                 isDark ? AppColors.surfaceWhite : AppColors.textPrimary,
             foregroundColor:
                 isDark ? AppColors.textPrimary : AppColors.surfaceWhite,
-            onTap: canCount ? onReciteAgain : null,
+            onTap: countEnabled ? onReciteAgain : null,
           ),
           const SizedBox(height: 12),
           _ChantActionButton(
@@ -82,11 +88,11 @@ class GroupAccumulatorChantFooter extends StatelessWidget {
             backgroundColor:
                 isDark ? AppColors.cardBorderDark : AppColors.grey100,
             foregroundColor: textColor,
-            onTap: canCount ? onFinishAndCount : null,
+            onTap: countEnabled ? onFinishAndCount : null,
           ),
           const SizedBox(height: 8),
           TextButton(
-            onPressed: onFinishWithoutCounting,
+            onPressed: isFinishing ? null : onFinishWithoutCounting,
             style: TextButton.styleFrom(foregroundColor: textColor),
             child: Text(
               l10n.group_accumulator_finish_without_counting,

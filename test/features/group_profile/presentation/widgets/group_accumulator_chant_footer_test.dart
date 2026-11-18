@@ -8,7 +8,11 @@ void main() {
 
   setUp(() => taps = []);
 
-  Widget app({int completedCount = 4, bool canCount = true}) => MaterialApp(
+  Widget app({
+    int completedCount = 4,
+    bool canCount = true,
+    bool isFinishing = false,
+  }) => MaterialApp(
     locale: const Locale('en'),
     localizationsDelegates: AppLocalizations.localizationsDelegates,
     supportedLocales: AppLocalizations.supportedLocales,
@@ -17,6 +21,7 @@ void main() {
         child: GroupAccumulatorChantFooter(
           completedCount: completedCount,
           canCount: canCount,
+          isFinishing: isFinishing,
           onReciteAgain: () => taps.add('again'),
           onFinishAndCount: () => taps.add('finishCount'),
           onFinishWithoutCounting: () => taps.add('finishNoCount'),
@@ -61,4 +66,14 @@ void main() {
       expect(taps, ['finishNoCount']);
     },
   );
+
+  testWidgets('while finishing, no action can be tapped', (tester) async {
+    await tester.pumpWidget(app(isFinishing: true));
+
+    await tester.tap(find.text('Recite again'));
+    await tester.tap(find.text('Finish and count'));
+    await tester.tap(find.text('Finish without counting'));
+
+    expect(taps, isEmpty);
+  });
 }

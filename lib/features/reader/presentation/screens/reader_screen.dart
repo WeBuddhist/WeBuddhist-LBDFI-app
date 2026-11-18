@@ -12,6 +12,7 @@ import 'package:flutter_pecha/features/group_profile/presentation/widgets/add_of
 import 'package:flutter_pecha/features/group_profile/presentation/widgets/group_accumulator_chant_bar.dart';
 import 'package:flutter_pecha/features/group_profile/presentation/widgets/group_accumulator_chant_footer.dart';
 import 'package:flutter_pecha/features/group_profile/presentation/widgets/group_recitation_audio_sheet.dart';
+import 'package:flutter_pecha/features/mala/domain/entities/mala_accumulation_selection.dart';
 import 'package:flutter_pecha/features/mala/domain/entities/mantra.dart';
 import 'package:flutter_pecha/features/mala/presentation/providers/accumulation_chant_counter.dart';
 import 'package:flutter_pecha/features/mala/presentation/providers/accumulator_groups_provider.dart';
@@ -131,6 +132,11 @@ class _ReaderScreenState extends ConsumerState<ReaderScreen>
     onCommit: _onPendingRecitationCommitted,
   );
 
+  /// Where the pending recitation goes: the target selected when Recite
+  /// again was tapped (a joined accumulation's id, or null for personal
+  /// practice), not whatever is selected once the Undo window closes.
+  String? _pendingTarget;
+
   /// True from [dispose] on, where a pending recitation is counted through
   /// [_container] since `ref` can no longer be used.
   bool _disposing = false;
@@ -138,6 +144,11 @@ class _ReaderScreenState extends ConsumerState<ReaderScreen>
   /// Set once Finish and count has counted the recitation on screen, so a
   /// retry after the finish call failed does not count it twice.
   bool _finishedRecitationCounted = false;
+
+  /// True from a finish action until the session is finished, or the finish
+  /// call failed. Every chant action is off meanwhile, so a slow call cannot
+  /// let Recite again hold the recitation Finish and count already counted.
+  bool _isFinishing = false;
 
   /// How long Recite again's toast offers Undo.
   static const _undoWindow = Duration(seconds: 5);
@@ -297,19 +308,43 @@ class _ReaderScreenState extends ConsumerState<ReaderScreen>
 
   /// Counts one chant into the target selected in the accumulation sheet.
   void _countChant() {
+    final mantra = _chantMantra;
+    if (mantra == null) return;
+    _countChantInto(chantTargetOf(ref.read, mantra));
+  }
+
+  /// Counts one chant into [groupAccumulatorId], or personal practice when
+  /// null, whatever is selected now.
+  void _countChantInto(String? groupAccumulatorId) {
     if (_openedEndedAccumulator) return;
     final mantra = _chantMantra;
     if (mantra == null) return;
 
-    if (!countChantIntoSelection(ref.read, mantra)) return;
-    _tallyChants(mantra, 1);
+    final counted = countChantInto(
+      ref.read,
+      mantra,
+      groupAccumulatorId: groupAccumulatorId,
+    );
+    if (!counted) return;
+    final opened = _chantContext?.groupAccumulatorId;
+    _tallyChantsInto(
+      1,
+      intoOpened: opened != null && opened == groupAccumulatorId,
+    );
   }
 
   /// Adds chants just counted into the selected target to this visit's tallies.
   void _tallyChants(Mantra mantra, int count) {
     final opened = _chantContext?.groupAccumulatorId;
-    final intoOpened =
-        opened != null && isChantTarget(ref.read, mantra, opened);
+    _tallyChantsInto(
+      count,
+      intoOpened: opened != null && isChantTarget(ref.read, mantra, opened),
+    );
+  }
+
+  /// Adds chants just counted to this visit's tallies; [intoOpened] when they
+  /// went to the accumulation this reader was opened from.
+  void _tallyChantsInto(int count, {required bool intoOpened}) {
     setState(() {
       _chantSessionCount += count;
       if (intoOpened) _chantOpenedCount += count;
@@ -337,9 +372,20 @@ class _ReaderScreenState extends ConsumerState<ReaderScreen>
   /// Counts the recitation just finished, after an Undo window, and goes
   /// back to the opening verse for the next one.
   void _onReciteAgain() {
+    if (_isFinishing) return;
+    final mantra = _chantMantra;
+    if (mantra == null) return;
     _scrollToTop?.call();
+    if (_finishedRecitationCounted) {
+      // A finish failed after counting this recitation: start the next pass
+      // without counting it again.
+      setState(() => _finishedRecitationCounted = false);
+      return;
+    }
+    // Counts the one already held, into its own target, before taking this.
     _pendingRecitation.hold();
-    setState(() => _finishedRecitationCounted = false);
+    _pendingTarget = chantTargetOf(ref.read, mantra);
+    setState(() {});
     _showRecitationCountedToast();
   }
 
@@ -386,34 +432,61 @@ class _ReaderScreenState extends ConsumerState<ReaderScreen>
   void _onPendingRecitationCommitted() {
     final mantra = _chantMantra;
     if (mantra == null) return;
+    final target = _pendingTarget;
     if (_disposing) {
       // The counters are held open by this widget until after dispose, so
       // the container can still reach them.
       final container = _container;
-      if (container != null) countChantIntoSelection(container.read, mantra);
+      if (container != null) {
+        countChantInto(container.read, mantra, groupAccumulatorId: target);
+      }
       return;
     }
     if (!mounted) return;
     // Redraws even when the target turns the count away.
     setState(() {});
-    _countChant();
+    _countChantInto(target);
+  }
+
+  /// A different target was picked while a recitation waits on Undo: count
+  /// it now, into the target it was made for. Waiting would let the old
+  /// target's counter go (personal practice is only held while selected).
+  void _onChantSelectionChanged(
+    MalaAccumulationSelection? previous,
+    MalaAccumulationSelection next,
+  ) {
+    if (!_pendingRecitation.isPending) return;
+    if (next.groupAccumulatorId == _pendingTarget) return;
+    _settlePendingRecitation();
   }
 
   /// Counts the recitation just finished and ends the session.
-  Future<void> _finishAndCount() async {
-    _settlePendingRecitation();
+  Future<void> _finishAndCount() => _finishing(() {
     if (!_finishedRecitationCounted) {
       _finishedRecitationCounted = true;
       _countChant();
     }
-    await _finishChantSession();
-  }
+  });
 
   /// Ends the session without counting the recitation just finished. One
   /// already shown as counted by Recite again still counts.
-  Future<void> _finishWithoutCounting() async {
-    _settlePendingRecitation();
-    await _finishChantSession();
+  Future<void> _finishWithoutCounting() => _finishing(() {});
+
+  /// Locks the chant actions, settles any recitation waiting on Undo, runs
+  /// [countFinished], then finishes the session. Unlocks only when the
+  /// finish failed and the reader is still open.
+  Future<void> _finishing(VoidCallback countFinished) async {
+    if (_isFinishing) return;
+    setState(() => _isFinishing = true);
+    try {
+      _settlePendingRecitation();
+      countFinished();
+      await _finishChantSession();
+    } finally {
+      if (mounted && !_chantSessionFinished) {
+        setState(() => _isFinishing = false);
+      }
+    }
   }
 
   Future<void> _addOfflineChantCount() async {
@@ -762,6 +835,10 @@ class _ReaderScreenState extends ConsumerState<ReaderScreen>
       ref.watch(joinedAccumulatorGroupsProvider(presetId));
       ref.watch(groupAccumulationCountsProvider(presetId));
       ref.watch(malaAccumulationSelectionProvider(presetId));
+      ref.listen(
+        malaAccumulationSelectionProvider(presetId),
+        _onChantSelectionChanged,
+      );
       ref.listen(joinedGroupUserCountsProvider(presetId), (_, next) {
         next.whenData((counts) {
           ref
@@ -903,6 +980,7 @@ class _ReaderScreenState extends ConsumerState<ReaderScreen>
               onFinishAndCount: _finishAndCount,
               onFinishWithoutCounting: _finishWithoutCounting,
               canCount: isChantTargetReady,
+              isFinishing: _isFinishing,
             )
             : null;
 
