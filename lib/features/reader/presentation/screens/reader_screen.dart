@@ -141,13 +141,14 @@ class _ReaderScreenState extends ConsumerState<ReaderScreen>
   /// [_container] since `ref` can no longer be used.
   bool _disposing = false;
 
-  /// Set once Finish and count has counted the recitation on screen, so a
-  /// retry after the finish call failed does not count it twice.
+  /// Set once Finish and count has counted the recitation on screen. It is
+  /// then in [_recitationsCounted] already, so the footer stops adding it,
+  /// and a retry after finishing threw does not count it twice.
   bool _finishedRecitationCounted = false;
 
-  /// True from a finish action until the session is finished, or the finish
-  /// call failed. Every chant action is off meanwhile, so a slow call cannot
-  /// let Recite again hold the recitation Finish and count already counted.
+  /// True from a finish action until the session is finished, or finishing
+  /// threw. Every chant action is off meanwhile, so a slow sync cannot let
+  /// Recite again hold the recitation Finish and count already counted.
   bool _isFinishing = false;
 
   /// How long Recite again's toast offers Undo.
@@ -377,7 +378,7 @@ class _ReaderScreenState extends ConsumerState<ReaderScreen>
     if (mantra == null) return;
     _scrollToTop?.call();
     if (_finishedRecitationCounted) {
-      // A finish failed after counting this recitation: start the next pass
+      // Finishing threw after counting this recitation: start the next pass
       // without counting it again.
       setState(() => _finishedRecitationCounted = false);
       return;
@@ -530,19 +531,13 @@ class _ReaderScreenState extends ConsumerState<ReaderScreen>
     int? finishedSessionCount;
     if (ctx != null) {
       final sessionCount = _chantOpenedCount;
-      final success = await finishGroupAccumulatorSession(
+      await finishGroupAccumulatorSession(
         container: ProviderScope.containerOf(context, listen: false),
         groupAccumulatorId: ctx.groupAccumulatorId!,
         presetId: ctx.presetAccumulatorId!,
         groupId: ctx.groupId,
       );
       if (!mounted) return;
-      if (!success) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(context.l10n.something_went_wrong)),
-        );
-        return;
-      }
       _chantSessionFinished = true;
       finishedSessionCount = sessionCount;
     }
@@ -979,8 +974,10 @@ class _ReaderScreenState extends ConsumerState<ReaderScreen>
     final chantFooter =
         chantMantra != null && !isPanelOpen && !_openedEndedAccumulator
             ? GroupAccumulatorChantFooter(
-              // The recitation just finished counts as one completed.
-              completedCount: _recitationsCounted + 1,
+              // The recitation just finished counts as one completed, unless
+              // Finish and count has already counted it.
+              completedCount:
+                  _recitationsCounted + (_finishedRecitationCounted ? 0 : 1),
               onReciteAgain: _onReciteAgain,
               onFinishAndCount: _finishAndCount,
               onFinishWithoutCounting: _finishWithoutCounting,
