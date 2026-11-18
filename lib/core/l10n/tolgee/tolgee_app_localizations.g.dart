@@ -4150,6 +4150,55 @@ class TolgeeAppLocalizations extends AppLocalizations {
   );
 
   @override
+  String get group_accumulator_completed_recitations => TolgeeBridge.get(
+    localeName,
+    'group_accumulator_completed_recitations',
+    () => _fallback.group_accumulator_completed_recitations,
+  );
+
+  @override
+  String get group_accumulator_recite_again => TolgeeBridge.get(
+    localeName,
+    'group_accumulator_recite_again',
+    () => _fallback.group_accumulator_recite_again,
+  );
+
+  @override
+  String get group_accumulator_finish_and_count => TolgeeBridge.get(
+    localeName,
+    'group_accumulator_finish_and_count',
+    () => _fallback.group_accumulator_finish_and_count,
+  );
+
+  @override
+  String get group_accumulator_finish_without_counting => TolgeeBridge.get(
+    localeName,
+    'group_accumulator_finish_without_counting',
+    () => _fallback.group_accumulator_finish_without_counting,
+  );
+
+  @override
+  String group_accumulator_recitations_counted(int count) =>
+      TolgeeBridge.format(
+        localeName,
+        'group_accumulator_recitations_counted',
+        <String, Object>{'count': count},
+        () => _fallback.group_accumulator_recitations_counted(count),
+      );
+
+  @override
+  String group_accumulator_recitation_count_badge(int count) =>
+      TolgeeBridge.format(
+        localeName,
+        'group_accumulator_recitation_count_badge',
+        <String, Object>{'count': count},
+        () => _fallback.group_accumulator_recitation_count_badge(count),
+      );
+
+  @override
+  String get undo => TolgeeBridge.get(localeName, 'undo', () => _fallback.undo);
+
+  @override
   String get group_accumulator_offline_recitation => TolgeeBridge.get(
     localeName,
     'group_accumulator_offline_recitation',

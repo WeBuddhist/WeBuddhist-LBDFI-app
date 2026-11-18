@@ -1032,6 +1032,41 @@
   "group_accumulator_view_practice": "View practice",
   "group_accumulator_chant_again": "Chant again",
   "group_accumulator_finish_session": "Finish session",
+  "group_accumulator_completed_recitations": "You completed recitations",
+  "@group_accumulator_completed_recitations": {
+    "description": "Label above the big number of recitations at the end of a group chant"
+  },
+  "group_accumulator_recite_again": "Recite again",
+  "@group_accumulator_recite_again": {
+    "description": "Counts the recitation just finished and jumps back to the start of the chant"
+  },
+  "group_accumulator_finish_and_count": "Finish and count",
+  "@group_accumulator_finish_and_count": {
+    "description": "Counts the recitation just finished and ends the chant session"
+  },
+  "group_accumulator_finish_without_counting": "Finish without counting",
+  "@group_accumulator_finish_without_counting": {
+    "description": "Ends the chant session without counting the recitation just finished"
+  },
+  "group_accumulator_recitations_counted": "{count, plural,\n=1 {1 recitation counted}\nother {{count} recitations counted}\n}",
+  "@group_accumulator_recitations_counted": {
+    "description": "Toast after Recite again; count is the recitations counted so far in this visit",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "group_accumulator_recitation_count_badge": "×{count}",
+  "@group_accumulator_recitation_count_badge": {
+    "description": "Running recitation count on the reader's section chip",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "undo": "Undo",
   "group_accumulator_offline_recitation": "Offline recitation",
   "group_accumulator_add_offline_chants_title": "Add offline chants:",
   "group_accumulator_add_offline_chants_message": "Add the number of chants you did outside the app",

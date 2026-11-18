@@ -437,7 +437,9 @@ Future<bool> joinGroupAccumulator({
 ///
 /// Takes the app's [ProviderContainer] because the reader is usually closing
 /// while the flush runs, and its `ref` is unusable once it is disposed.
-Future<bool> finishGroupAccumulatorSession({
+///
+/// Never fails: a flush that throws is left to the sync manager's retries.
+Future<void> finishGroupAccumulatorSession({
   required ProviderContainer container,
   required String groupAccumulatorId,
   required String presetId,
@@ -456,6 +458,4 @@ Future<bool> finishGroupAccumulatorSession({
   );
   container.invalidate(joinedGroupUserCountsProvider(presetId));
   container.invalidate(joinedAccumulatorGroupsProvider(presetId));
-
-  return true;
 }
