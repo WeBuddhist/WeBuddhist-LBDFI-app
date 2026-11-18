@@ -12,6 +12,7 @@ import 'package:flutter_pecha/features/group_chat/domain/prayer_room_scope.dart'
 import 'package:flutter_pecha/features/group_chat/presentation/providers/group_chat_providers.dart';
 import 'package:flutter_pecha/features/group_chat/presentation/providers/prayer_requests_providers.dart';
 import 'package:flutter_pecha/features/group_chat/presentation/utils/chat_sender.dart';
+import 'package:flutter_pecha/features/group_chat/presentation/utils/prayer_board_access.dart';
 import 'package:flutter_pecha/features/group_chat/presentation/widgets/group_chat_delete_dialog.dart';
 import 'package:flutter_pecha/features/group_chat/presentation/widgets/new_prayer_request_sheet.dart';
 import 'package:flutter_pecha/features/group_chat/presentation/widgets/prayer_notification_settings_sheet.dart';
@@ -23,7 +24,6 @@ import 'package:flutter_pecha/features/group_chat/presentation/widgets/prayer_so
 import 'package:flutter_pecha/features/group_chat/presentation/widgets/prayer_supporters_sheet.dart';
 import 'package:flutter_pecha/features/group_chat/presentation/widgets/random_prayer_overlay.dart';
 import 'package:flutter_pecha/features/group_profile/presentation/providers/group_profile_providers.dart';
-import 'package:flutter_pecha/features/group_profile/presentation/utils/group_event_live_utils.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 /// Bottom sheet listing an event's or a space's prayer requests, with a
@@ -299,22 +299,21 @@ class _PrayerRequestsSheetState extends ConsumerState<PrayerRequestsSheet> {
       ref.watch(prayerRoomLiveProvider((scope: widget.scope, roomId: liveRoomId)));
     }
 
-    // Requests stay readable after the event, but no new ones are taken. A
-    // space has no end.
+    // After the event the board takes no new requests, but people can still
+    // read and pray for the ones already there.
     final eventId = widget.scope.eventId;
-    final hasEnded =
-        eventId != null &&
-        (ref
-                .watch(groupEventDetailProvider(eventId))
-                .valueOrNull
-                ?.fold(
-                  (_) => false,
-                  (event) =>
-                      GroupEventLiveUtils.hasEnded(event, DateTime.now()),
-                ) ??
-            false);
+    final takesRequests = prayerBoardTakesRequests(
+      event:
+          eventId == null
+              ? null
+              : ref
+                  .watch(groupEventDetailProvider(eventId))
+                  .valueOrNull
+                  ?.toNullable(),
+      now: DateTime.now(),
+    );
     final roomReady = state.roomStatus == PrayerRoomStatus.ready;
-    final canCompose = roomReady && !hasEnded;
+    final canCompose = roomReady && takesRequests;
     // The filter row only makes sense once the room is open: a failed or
     // closed room shows its notice alone.
     final canFilter = roomReady;
@@ -374,6 +373,14 @@ class _PrayerRequestsSheetState extends ConsumerState<PrayerRequestsSheet> {
                       hintText: context.l10n.event_prayer_add,
                       onTap: () => unawaited(_openComposer()),
                     ),
+                  )
+                else if (roomReady)
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
+                    child: _ClosedBanner(
+                      text: context.l10n.event_prayer_closed,
+                      isDark: isDark,
+                    ),
                   ),
                 if (canFilter)
                   Padding(
@@ -393,7 +400,13 @@ class _PrayerRequestsSheetState extends ConsumerState<PrayerRequestsSheet> {
                     ),
                   ),
                 Expanded(
-                  child: _buildBody(context, state, isDark, scrollController),
+                  child: _buildBody(
+                    context,
+                    state,
+                    isDark,
+                    scrollController,
+                    takesRequests: takesRequests,
+                  ),
                 ),
               ],
             ),
@@ -407,8 +420,9 @@ class _PrayerRequestsSheetState extends ConsumerState<PrayerRequestsSheet> {
     BuildContext context,
     PrayerRequestsState state,
     bool isDark,
-    ScrollController scrollController,
-  ) {
+    ScrollController scrollController, {
+    required bool takesRequests,
+  }) {
     final mutedColor =
         isDark ? AppColors.textTertiaryDark : AppColors.textSecondary;
 
@@ -442,6 +456,12 @@ class _PrayerRequestsSheetState extends ConsumerState<PrayerRequestsSheet> {
       placeholder = _Notice(
         text: context.l10n.event_prayer_filter_empty_title,
         detail: context.l10n.event_prayer_filter_empty_body,
+        color: mutedColor,
+      );
+    } else if (state.requests.isEmpty && !takesRequests) {
+      // The banner above already says it is closed; no invitation to add.
+      placeholder = _Notice(
+        text: context.l10n.event_prayer_empty_title,
         color: mutedColor,
       );
     } else if (state.requests.isEmpty) {
@@ -720,6 +740,41 @@ class _EmptyState extends StatelessWidget {
             ],
           ],
         ),
+      ),
+    );
+  }
+}
+
+/// Sits where the composer was once the event has ended.
+class _ClosedBanner extends StatelessWidget {
+  const _ClosedBanner({required this.text, required this.isDark});
+
+  final String text;
+  final bool isDark;
+
+  @override
+  Widget build(BuildContext context) {
+    final foreground =
+        isDark ? AppColors.textTertiaryDark : AppColors.textSecondary;
+    return Container(
+      constraints: const BoxConstraints(minHeight: 44),
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+      decoration: BoxDecoration(
+        color: isDark ? AppColors.surfaceVariantDark : AppColors.grey100,
+        borderRadius: BorderRadius.circular(22),
+      ),
+      child: Row(
+        children: [
+          Icon(AppAssets.lock, size: 18, color: foreground),
+          const SizedBox(width: 8),
+          Expanded(
+            child: Text(
+              text,
+              strutStyle: context.tibetanStrutStyle(14, compact: true),
+              style: TextStyle(fontSize: 14, color: foreground),
+            ),
+          ),
+        ],
       ),
     );
   }
