@@ -395,6 +395,9 @@ class _ReaderScreenState extends ConsumerState<ReaderScreen>
       ..hideCurrentSnackBar()
       ..showSnackBar(
         SnackBar(
+          // A SnackBar with an action stays up past its duration unless told
+          // not to; this one has to go when the Undo window closes.
+          persist: false,
           behavior: SnackBarBehavior.floating,
           // Figma: floats just above the chant bar.
           margin: const EdgeInsets.fromLTRB(
@@ -421,11 +424,10 @@ class _ReaderScreenState extends ConsumerState<ReaderScreen>
     if (_pendingRecitation.undo()) setState(() {});
   }
 
-  /// Counts the recitation waiting on Undo, if there is one, and takes its
-  /// toast away so no Undo is left offered for it.
+  /// Counts the recitation waiting on Undo, if there is one; committing takes
+  /// its toast away so no Undo is left offered for it.
   void _settlePendingRecitation() {
     if (!_pendingRecitation.isPending) return;
-    ScaffoldMessenger.maybeOf(context)?.hideCurrentSnackBar();
     _pendingRecitation.commit();
   }
 
@@ -443,6 +445,9 @@ class _ReaderScreenState extends ConsumerState<ReaderScreen>
       return;
     }
     if (!mounted) return;
+    // The toast's own timer starts after its entrance animation, so it can
+    // outlast the Undo window briefly; take it down with the count.
+    ScaffoldMessenger.maybeOf(context)?.hideCurrentSnackBar();
     // Redraws even when the target turns the count away.
     setState(() {});
     _countChantInto(target);
