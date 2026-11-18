@@ -332,13 +332,13 @@ abstract class AppLocalizations {
   /// No description provided for @mala_reset_title.
   ///
   /// In en, this message translates to:
-  /// **'Reset this mala?'**
+  /// **'Reset count?'**
   String get mala_reset_title;
 
   /// No description provided for @mala_reset_count_confirm.
   ///
   /// In en, this message translates to:
-  /// **'Your current count will go back to zero, but your accumulations will stay in your lifetime total'**
+  /// **'This mala\'s count goes back to 0. Your lifetime total stays the same'**
   String get mala_reset_count_confirm;
 
   /// No description provided for @mala_reset_confirm.
@@ -370,18 +370,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Mala settings'**
   String get mala_settings_section;
-
-  /// No description provided for @mala_others_section.
-  ///
-  /// In en, this message translates to:
-  /// **'Others'**
-  String get mala_others_section;
-
-  /// No description provided for @mala_mantra_speed.
-  ///
-  /// In en, this message translates to:
-  /// **'Mantra speed'**
-  String get mala_mantra_speed;
 
   /// No description provided for @mala_speed_normal.
   ///
@@ -7458,6 +7446,126 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'We add new texts regularly; check back soon'**
   String get reader_no_resources_subtitle;
+
+  /// No description provided for @mala_section_practice.
+  ///
+  /// In en, this message translates to:
+  /// **'Practice'**
+  String get mala_section_practice;
+
+  /// No description provided for @mala_section_appearance.
+  ///
+  /// In en, this message translates to:
+  /// **'Appearance'**
+  String get mala_section_appearance;
+
+  /// No description provided for @mala_section_save_share.
+  ///
+  /// In en, this message translates to:
+  /// **'Save & share'**
+  String get mala_section_save_share;
+
+  /// No description provided for @mala_mantra_animation.
+  ///
+  /// In en, this message translates to:
+  /// **'Mantra animation'**
+  String get mala_mantra_animation;
+
+  /// No description provided for @mala_play_animation.
+  ///
+  /// In en, this message translates to:
+  /// **'Play animation'**
+  String get mala_play_animation;
+
+  /// No description provided for @mala_speed.
+  ///
+  /// In en, this message translates to:
+  /// **'Speed'**
+  String get mala_speed;
+
+  /// No description provided for @mala_animation_off.
+  ///
+  /// In en, this message translates to:
+  /// **'Off'**
+  String get mala_animation_off;
+
+  /// No description provided for @mala_bead_style.
+  ///
+  /// In en, this message translates to:
+  /// **'Bead style'**
+  String get mala_bead_style;
+
+  /// No description provided for @mala_bead_default.
+  ///
+  /// In en, this message translates to:
+  /// **'Default'**
+  String get mala_bead_default;
+
+  /// No description provided for @mala_use_this_style.
+  ///
+  /// In en, this message translates to:
+  /// **'Use this style'**
+  String get mala_use_this_style;
+
+  /// No description provided for @mala_bead_style_updated.
+  ///
+  /// In en, this message translates to:
+  /// **'Bead style updated'**
+  String get mala_bead_style_updated;
+
+  /// No description provided for @mala_change_image.
+  ///
+  /// In en, this message translates to:
+  /// **'Change image'**
+  String get mala_change_image;
+
+  /// No description provided for @mala_use_image.
+  ///
+  /// In en, this message translates to:
+  /// **'Use'**
+  String get mala_use_image;
+
+  /// No description provided for @mala_restore_default_image.
+  ///
+  /// In en, this message translates to:
+  /// **'Restore default'**
+  String get mala_restore_default_image;
+
+  /// No description provided for @mala_image_updated.
+  ///
+  /// In en, this message translates to:
+  /// **'Image updated'**
+  String get mala_image_updated;
+
+  /// No description provided for @mala_images_empty.
+  ///
+  /// In en, this message translates to:
+  /// **'No images available'**
+  String get mala_images_empty;
+
+  /// No description provided for @mala_images_load_error.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not load images'**
+  String get mala_images_load_error;
+
+  /// No description provided for @mala_bookmarked.
+  ///
+  /// In en, this message translates to:
+  /// **'Bookmarked'**
+  String get mala_bookmarked;
+
+  /// No description provided for @mala_beads_load_error.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not load bead styles'**
+  String get mala_beads_load_error;
+
+  /// No description provided for @mala_appearance_save_failed.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t save. Please try again'**
+  String get mala_appearance_save_failed;
 }
 
 class _AppLocalizationsDelegate

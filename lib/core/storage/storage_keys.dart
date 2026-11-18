@@ -192,6 +192,9 @@ class StorageKeys {
   /// Scroll speed multiplier for the mantra text marquee. Default: 1.0.
   static const String malaMantraSpeed = 'mala_mantra_speed';
 
+  /// Whether the mantra text marquee scrolls. Default: true.
+  static const String malaPlayAnimation = 'mala_play_animation';
+
   /// Per-preset accumulation source: `personal` or `group:{uuid}`.
   static const String malaAccumulationSelectionPrefix =
       'mala_accumulation_selection_';

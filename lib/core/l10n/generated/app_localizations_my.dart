@@ -164,12 +164,6 @@ class AppLocalizationsMy extends AppLocalizations {
   String get mala_settings_section => 'ပုတီး ဆက်တင်များ';
 
   @override
-  String get mala_others_section => 'အခြား';
-
-  @override
-  String get mala_mantra_speed => 'မန္တန် အမြန်နှုန်း';
-
-  @override
   String get mala_speed_normal => 'ပုံမှန်';
 
   @override
@@ -4314,4 +4308,64 @@ class AppLocalizationsMy extends AppLocalizations {
   @override
   String get reader_no_resources_subtitle =>
       'ကျမ်းစာအသစ်များကို ပုံမှန်ထည့်နေပါသည်။ မကြာမီ ပြန်ကြည့်ပါ။';
+
+  @override
+  String get mala_section_practice => 'အလေ့အကျင့်';
+
+  @override
+  String get mala_section_appearance => 'အသွင်အပြင်';
+
+  @override
+  String get mala_section_save_share => 'သိမ်းဆည်းခြင်းနှင့် မျှဝေခြင်း';
+
+  @override
+  String get mala_mantra_animation => 'မန္တန် လှုပ်ရှားပုံ';
+
+  @override
+  String get mala_play_animation => 'လှုပ်ရှားပုံ ဖွင့်ရန်';
+
+  @override
+  String get mala_speed => 'အမြန်နှုန်း';
+
+  @override
+  String get mala_animation_off => 'ပိတ်';
+
+  @override
+  String get mala_bead_style => 'ပုတီးစေ့ ပုံစံ';
+
+  @override
+  String get mala_bead_default => 'မူလ';
+
+  @override
+  String get mala_use_this_style => 'ဤပုံစံကို သုံးရန်';
+
+  @override
+  String get mala_bead_style_updated => 'ပုတီးစေ့ ပုံစံ ပြောင်းပြီးပါပြီ';
+
+  @override
+  String get mala_change_image => 'ပုံ ပြောင်းရန်';
+
+  @override
+  String get mala_use_image => 'သုံးရန်';
+
+  @override
+  String get mala_restore_default_image => 'မူလသို့ ပြန်ထားရန်';
+
+  @override
+  String get mala_image_updated => 'ပုံ ပြောင်းပြီးပါပြီ';
+
+  @override
+  String get mala_images_empty => 'ပုံများ မရှိပါ';
+
+  @override
+  String get mala_images_load_error => 'ပုံများ ဖွင့်၍ မရပါ';
+
+  @override
+  String get mala_bookmarked => 'မှတ်ထားပြီး';
+
+  @override
+  String get mala_beads_load_error => 'ပုတီးစေ့ ပုံစံများ ဖွင့်၍ မရပါ';
+
+  @override
+  String get mala_appearance_save_failed => 'သိမ်း၍ မရပါ။ ထပ်ကြိုးစားပါ';
 }

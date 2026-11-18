@@ -161,12 +161,6 @@ class AppLocalizationsTh extends AppLocalizations {
   String get mala_settings_section => 'การตั้งค่าลูกประคำ';
 
   @override
-  String get mala_others_section => 'อื่น ๆ';
-
-  @override
-  String get mala_mantra_speed => 'ความเร็วมนต์';
-
-  @override
   String get mala_speed_normal => 'ปกติ';
 
   @override
@@ -4227,4 +4221,64 @@ class AppLocalizationsTh extends AppLocalizations {
   @override
   String get reader_no_resources_subtitle =>
       'เราเพิ่มคัมภีร์ใหม่อยู่เสมอ แวะกลับมาเร็ว ๆ นี้';
+
+  @override
+  String get mala_section_practice => 'การปฏิบัติ';
+
+  @override
+  String get mala_section_appearance => 'รูปลักษณ์';
+
+  @override
+  String get mala_section_save_share => 'บันทึกและแชร์';
+
+  @override
+  String get mala_mantra_animation => 'แอนิเมชันมนต์';
+
+  @override
+  String get mala_play_animation => 'เล่นแอนิเมชัน';
+
+  @override
+  String get mala_speed => 'ความเร็ว';
+
+  @override
+  String get mala_animation_off => 'ปิด';
+
+  @override
+  String get mala_bead_style => 'แบบเม็ดลูกประคำ';
+
+  @override
+  String get mala_bead_default => 'ค่าเริ่มต้น';
+
+  @override
+  String get mala_use_this_style => 'ใช้แบบนี้';
+
+  @override
+  String get mala_bead_style_updated => 'อัปเดตแบบเม็ดลูกประคำแล้ว';
+
+  @override
+  String get mala_change_image => 'เปลี่ยนรูปภาพ';
+
+  @override
+  String get mala_use_image => 'ใช้';
+
+  @override
+  String get mala_restore_default_image => 'คืนค่าเริ่มต้น';
+
+  @override
+  String get mala_image_updated => 'อัปเดตรูปภาพแล้ว';
+
+  @override
+  String get mala_images_empty => 'ไม่มีรูปภาพ';
+
+  @override
+  String get mala_images_load_error => 'โหลดรูปภาพไม่ได้';
+
+  @override
+  String get mala_bookmarked => 'บุ๊กมาร์กแล้ว';
+
+  @override
+  String get mala_beads_load_error => 'โหลดแบบเม็ดลูกประคำไม่ได้';
+
+  @override
+  String get mala_appearance_save_failed => 'บันทึกไม่สำเร็จ โปรดลองอีกครั้ง';
 }

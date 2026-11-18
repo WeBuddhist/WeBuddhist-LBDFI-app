@@ -301,20 +301,6 @@ class TolgeeAppLocalizations extends AppLocalizations {
   );
 
   @override
-  String get mala_others_section => TolgeeBridge.get(
-    localeName,
-    'mala_others_section',
-    () => _fallback.mala_others_section,
-  );
-
-  @override
-  String get mala_mantra_speed => TolgeeBridge.get(
-    localeName,
-    'mala_mantra_speed',
-    () => _fallback.mala_mantra_speed,
-  );
-
-  @override
   String get mala_speed_normal => TolgeeBridge.get(
     localeName,
     'mala_speed_normal',
@@ -8490,5 +8476,142 @@ class TolgeeAppLocalizations extends AppLocalizations {
     localeName,
     'reader_no_resources_subtitle',
     () => _fallback.reader_no_resources_subtitle,
+  );
+
+  @override
+  String get mala_section_practice => TolgeeBridge.get(
+    localeName,
+    'mala_section_practice',
+    () => _fallback.mala_section_practice,
+  );
+
+  @override
+  String get mala_section_appearance => TolgeeBridge.get(
+    localeName,
+    'mala_section_appearance',
+    () => _fallback.mala_section_appearance,
+  );
+
+  @override
+  String get mala_section_save_share => TolgeeBridge.get(
+    localeName,
+    'mala_section_save_share',
+    () => _fallback.mala_section_save_share,
+  );
+
+  @override
+  String get mala_mantra_animation => TolgeeBridge.get(
+    localeName,
+    'mala_mantra_animation',
+    () => _fallback.mala_mantra_animation,
+  );
+
+  @override
+  String get mala_play_animation => TolgeeBridge.get(
+    localeName,
+    'mala_play_animation',
+    () => _fallback.mala_play_animation,
+  );
+
+  @override
+  String get mala_speed =>
+      TolgeeBridge.get(localeName, 'mala_speed', () => _fallback.mala_speed);
+
+  @override
+  String get mala_animation_off => TolgeeBridge.get(
+    localeName,
+    'mala_animation_off',
+    () => _fallback.mala_animation_off,
+  );
+
+  @override
+  String get mala_bead_style => TolgeeBridge.get(
+    localeName,
+    'mala_bead_style',
+    () => _fallback.mala_bead_style,
+  );
+
+  @override
+  String get mala_bead_default => TolgeeBridge.get(
+    localeName,
+    'mala_bead_default',
+    () => _fallback.mala_bead_default,
+  );
+
+  @override
+  String get mala_use_this_style => TolgeeBridge.get(
+    localeName,
+    'mala_use_this_style',
+    () => _fallback.mala_use_this_style,
+  );
+
+  @override
+  String get mala_bead_style_updated => TolgeeBridge.get(
+    localeName,
+    'mala_bead_style_updated',
+    () => _fallback.mala_bead_style_updated,
+  );
+
+  @override
+  String get mala_change_image => TolgeeBridge.get(
+    localeName,
+    'mala_change_image',
+    () => _fallback.mala_change_image,
+  );
+
+  @override
+  String get mala_use_image => TolgeeBridge.get(
+    localeName,
+    'mala_use_image',
+    () => _fallback.mala_use_image,
+  );
+
+  @override
+  String get mala_restore_default_image => TolgeeBridge.get(
+    localeName,
+    'mala_restore_default_image',
+    () => _fallback.mala_restore_default_image,
+  );
+
+  @override
+  String get mala_image_updated => TolgeeBridge.get(
+    localeName,
+    'mala_image_updated',
+    () => _fallback.mala_image_updated,
+  );
+
+  @override
+  String get mala_images_empty => TolgeeBridge.get(
+    localeName,
+    'mala_images_empty',
+    () => _fallback.mala_images_empty,
+  );
+
+  @override
+  String get mala_images_load_error => TolgeeBridge.get(
+    localeName,
+    'mala_images_load_error',
+    () => _fallback.mala_images_load_error,
+  );
+
+  @override
+  String get mala_bookmarked => TolgeeBridge.get(
+    localeName,
+    'mala_bookmarked',
+    () => _fallback.mala_bookmarked,
+  );
+
+  @override
+  String get mala_beads_load_error => TolgeeBridge.get(
+    localeName,
+    'mala_beads_load_error',
+    () => _fallback.mala_beads_load_error,
+  );
+
+  @override
+  String get mala_appearance_save_failed => TolgeeBridge.get(
+    localeName,
+    'mala_appearance_save_failed',
+    () => _fallback.mala_appearance_save_failed,
   );
 }

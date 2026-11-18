@@ -49,7 +49,8 @@ mala/
 | `joinedAccumulatorGroupsProvider` | Joined groups for preset |
 | `groupAccumulationCountsProvider` | Per-group session counts |
 | `malaAccumulationSelectionProvider` | Personal vs group (SharedPreferences) |
-| `malaSettingsProvider` | Sound, vibration, left-handed, mantra speed |
+| `malaSettingsProvider` | Sound, vibration, left-handed, play animation, mantra speed |
+| `malaAppearanceProvider` | The user's deity image and bead skin for a mantra, by mantra id (server, API v2) |
 | `malaCatalogueProvider` | Preset catalogue (re-fetches on UI locale change) |
 
 ## Critical invariants

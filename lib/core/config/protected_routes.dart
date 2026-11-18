@@ -56,6 +56,11 @@ class ProtectedRoutes {
     '/accumulators/', // Catch-all: detail, create (/user), update (/user/{id})
     // Group accumulator counts (submit requires auth).
     '/group-accumulators/', // Catch-all: POST count, GET detail, etc.
+    // Mala appearance (v2). A space's own mantra needs the token for its
+    // images, and the mala screen is login-gated, so all of these send it.
+    '${ApiConfig.mantrasV2Path}/',
+    ApiConfig.malaSkinsV2Path,
+    '${ApiConfig.userMantrasV2Path}/',
     // Group join / follow
     '/author/groups/{groupId}/join',
     '/author/groups/{groupId}/follow',

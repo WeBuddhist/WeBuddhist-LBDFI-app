@@ -134,11 +134,11 @@ class AppLocalizationsEn extends AppLocalizations {
   String get mala_reset_count => 'Reset count';
 
   @override
-  String get mala_reset_title => 'Reset this mala?';
+  String get mala_reset_title => 'Reset count?';
 
   @override
   String get mala_reset_count_confirm =>
-      'Your current count will go back to zero, but your accumulations will stay in your lifetime total';
+      'This mala\'s count goes back to 0. Your lifetime total stays the same';
 
   @override
   String get mala_reset_confirm => 'Reset';
@@ -163,12 +163,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get mala_settings_section => 'Mala settings';
-
-  @override
-  String get mala_others_section => 'Others';
-
-  @override
-  String get mala_mantra_speed => 'Mantra speed';
 
   @override
   String get mala_speed_normal => 'Normal';
@@ -4241,4 +4235,64 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get reader_no_resources_subtitle =>
       'We add new texts regularly; check back soon';
+
+  @override
+  String get mala_section_practice => 'Practice';
+
+  @override
+  String get mala_section_appearance => 'Appearance';
+
+  @override
+  String get mala_section_save_share => 'Save & share';
+
+  @override
+  String get mala_mantra_animation => 'Mantra animation';
+
+  @override
+  String get mala_play_animation => 'Play animation';
+
+  @override
+  String get mala_speed => 'Speed';
+
+  @override
+  String get mala_animation_off => 'Off';
+
+  @override
+  String get mala_bead_style => 'Bead style';
+
+  @override
+  String get mala_bead_default => 'Default';
+
+  @override
+  String get mala_use_this_style => 'Use this style';
+
+  @override
+  String get mala_bead_style_updated => 'Bead style updated';
+
+  @override
+  String get mala_change_image => 'Change image';
+
+  @override
+  String get mala_use_image => 'Use';
+
+  @override
+  String get mala_restore_default_image => 'Restore default';
+
+  @override
+  String get mala_image_updated => 'Image updated';
+
+  @override
+  String get mala_images_empty => 'No images available';
+
+  @override
+  String get mala_images_load_error => 'Could not load images';
+
+  @override
+  String get mala_bookmarked => 'Bookmarked';
+
+  @override
+  String get mala_beads_load_error => 'Could not load bead styles';
+
+  @override
+  String get mala_appearance_save_failed => 'Couldn\'t save. Please try again';
 }

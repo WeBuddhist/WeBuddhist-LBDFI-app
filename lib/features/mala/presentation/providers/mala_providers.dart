@@ -12,8 +12,10 @@ import 'package:flutter_pecha/core/utils/local_storage_service.dart';
 import 'package:flutter_pecha/features/auth/presentation/providers/state_providers.dart';
 import 'package:flutter_pecha/features/mala/data/datasources/mala_local_datasource.dart';
 import 'package:flutter_pecha/features/mala/data/datasources/mala_remote_datasource.dart';
+import 'package:flutter_pecha/features/mala/data/datasources/mala_appearance_remote_datasource.dart';
 import 'package:flutter_pecha/features/mala/data/repositories/mala_repository_impl.dart';
 import 'package:flutter_pecha/features/mala/domain/entities/mantra.dart';
+import 'package:flutter_pecha/features/mala/domain/repositories/mala_appearance_repository.dart';
 import 'package:flutter_pecha/features/mala/domain/repositories/mala_repository.dart';
 import 'package:flutter_pecha/features/mala/domain/usecases/mala_usecases.dart';
 import 'package:flutter_pecha/features/mala/presentation/providers/accumulation_search_provider.dart';
@@ -177,6 +179,15 @@ final malaCatalogueProvider = AsyncNotifierProvider<
       _catalogueUpdates(getCatalogue, local, language),
     );
   });
+});
+
+// ============ Appearance (deity image and bead skin) ============
+
+/// The user's per-mantra deity image and bead skin, on the v2 API.
+final malaAppearanceRepositoryProvider = Provider<MalaAppearanceRepository>((
+  ref,
+) {
+  return MalaAppearanceRemoteDataSource(dio: ref.watch(dioProvider));
 });
 
 // ============ Catalogue search (debounced, server-side) ============
