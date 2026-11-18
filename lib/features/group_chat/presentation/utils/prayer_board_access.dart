@@ -6,9 +6,9 @@ import 'package:flutter_pecha/features/group_profile/presentation/utils/group_ev
 ///
 /// [event] is null for a space, which has no end, and while the event is
 /// still loading: the board stays open then, since a failed fetch must not
-/// lock it. A recurring event stays open here too: the app only knows its
-/// next occurrence, so the backend decides when the series is over and
-/// refuses with EVENT_ENDED.
+/// lock it. A recurring event stays open too: its series has no end date, so
+/// it never finishes, and requests are taken between occurrences as well.
+/// The backend refuses with EVENT_ENDED if it ever disagrees.
 bool prayerBoardTakesRequests({
   required GroupEvent? event,
   required DateTime now,
