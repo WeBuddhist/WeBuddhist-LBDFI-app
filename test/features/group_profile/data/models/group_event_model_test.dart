@@ -317,4 +317,39 @@ void main() {
       expect(event.primaryAccumulation, isNull);
     });
   });
+
+  group('GroupEventParticipant.displayName', () {
+    test('prefers the display name over the full name', () {
+      const participant = GroupEventParticipant(
+        userId: 'u1',
+        username: 'tenzin',
+        fullname: 'Tenzin Dorje',
+        userDisplayName: '  tenz  ',
+      );
+
+      expect(participant.displayName, 'tenz');
+    });
+
+    test('falls back to the full name when it is blank', () {
+      const participant = GroupEventParticipant(
+        userId: 'u1',
+        username: 'tenzin',
+        fullname: 'Tenzin Dorje',
+        userDisplayName: '  ',
+      );
+
+      expect(participant.displayName, 'Tenzin Dorje');
+    });
+
+    test('falls back to the username, then to Participant', () {
+      const withUsername = GroupEventParticipant(
+        userId: 'u1',
+        username: 'tenzin',
+      );
+      const withNothing = GroupEventParticipant(userId: 'u2');
+
+      expect(withUsername.displayName, 'tenzin');
+      expect(withNothing.displayName, 'Participant');
+    });
+  });
 }
