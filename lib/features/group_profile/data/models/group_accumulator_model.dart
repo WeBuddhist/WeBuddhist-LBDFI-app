@@ -189,6 +189,7 @@ class GroupAccumulatorUserContributionModel {
   final String username;
   final String? imageUrl;
   final String fullname;
+  final String? displayName;
 
   GroupAccumulatorUserContributionModel({
     this.totalCount = 0,
@@ -196,6 +197,7 @@ class GroupAccumulatorUserContributionModel {
     this.username = '',
     this.imageUrl,
     this.fullname = '',
+    this.displayName,
   });
 
   factory GroupAccumulatorUserContributionModel.fromJson(
@@ -207,6 +209,7 @@ class GroupAccumulatorUserContributionModel {
       username: json['username'] as String? ?? '',
       imageUrl: json['image'] as String?,
       fullname: json['fullname'] as String? ?? '',
+      displayName: json['display_name'] as String?,
     );
   }
 
@@ -217,6 +220,7 @@ class GroupAccumulatorUserContributionModel {
       username: username,
       imageUrl: imageUrl,
       fullname: fullname,
+      userDisplayName: displayName,
     );
   }
 }
@@ -262,6 +266,7 @@ class GroupAccumulatorMemberModel {
   final String userId;
   final String username;
   final String fullname;
+  final String? displayName;
   final String? avatarUrl;
   final DateTime? joinedAt;
   final int totalCount;
@@ -271,6 +276,7 @@ class GroupAccumulatorMemberModel {
     required this.userId,
     required this.username,
     required this.fullname,
+    this.displayName,
     this.avatarUrl,
     this.joinedAt,
     this.totalCount = 0,
@@ -282,6 +288,7 @@ class GroupAccumulatorMemberModel {
       userId: json['user_id'] as String? ?? '',
       username: json['username'] as String? ?? '',
       fullname: json['fullname'] as String? ?? '',
+      displayName: json['display_name'] as String?,
       avatarUrl: json['avatar_url'] as String?,
       joinedAt: GroupAccumulatorModel._parseDate(json['joined_at']),
       totalCount: (json['total_count'] as num?)?.toInt() ?? 0,
@@ -294,6 +301,7 @@ class GroupAccumulatorMemberModel {
       userId: userId,
       username: username,
       fullname: fullname,
+      userDisplayName: displayName,
       avatarUrl: avatarUrl,
       joinedAt: joinedAt,
       totalCount: totalCount,

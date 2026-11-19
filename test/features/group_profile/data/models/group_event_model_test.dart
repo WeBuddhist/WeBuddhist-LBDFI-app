@@ -352,4 +352,17 @@ void main() {
       expect(withNothing.displayName, 'Participant');
     });
   });
+
+  test('participant fromJson forwards display_name', () {
+    final participant =
+        GroupEventParticipantModel.fromJson({
+          'user_id': 'u1',
+          'username': 'tenzin',
+          'fullname': 'Tenzin Dorje',
+          'display_name': 'Tenz',
+        }).toEntity();
+
+    expect(participant.userDisplayName, 'Tenz');
+    expect(participant.displayName, 'Tenz');
+  });
 }

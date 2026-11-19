@@ -111,4 +111,15 @@ void main() {
       expect(user.displayName, 'tenzin');
     });
   });
+
+  test('reporter fromJson forwards display_name', () {
+    final json = _reportJson(id: 'r1', kind: 'POST', postId: 'p1');
+    (json['reporter'] as Map<String, dynamic>)['display_name'] = 'Tenz';
+
+    final report = GroupReportModel.fromJson(json)!.toEntity();
+
+    expect(report.reporter?.userDisplayName, 'Tenz');
+    expect(report.reporter?.displayName, 'Tenz');
+    expect(report.reportedUser?.userDisplayName, isNull);
+  });
 }

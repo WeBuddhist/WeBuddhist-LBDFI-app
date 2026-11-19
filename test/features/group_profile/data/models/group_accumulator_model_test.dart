@@ -137,4 +137,43 @@ void main() {
       expect(withUsername.displayName, 'tenzin');
     });
   });
+
+  group('display_name from the API', () {
+    test('member fromJson forwards display_name', () {
+      final member =
+          GroupAccumulatorMemberModel.fromJson({
+            'user_id': 'u1',
+            'username': 'tenzin',
+            'fullname': 'Tenzin Dorje',
+            'display_name': 'Tenz',
+          }).toEntity();
+
+      expect(member.userDisplayName, 'Tenz');
+      expect(member.displayName, 'Tenz');
+    });
+
+    test('member without display_name falls back to fullname', () {
+      final member =
+          GroupAccumulatorMemberModel.fromJson({
+            'user_id': 'u1',
+            'username': 'tenzin',
+            'fullname': 'Tenzin Dorje',
+          }).toEntity();
+
+      expect(member.userDisplayName, isNull);
+      expect(member.displayName, 'Tenzin Dorje');
+    });
+
+    test('contribution fromJson forwards display_name', () {
+      final contribution =
+          GroupAccumulatorUserContributionModel.fromJson({
+            'username': 'tenzin',
+            'fullname': 'Tenzin Dorje',
+            'display_name': 'Tenz',
+          }).toEntity();
+
+      expect(contribution.userDisplayName, 'Tenz');
+      expect(contribution.displayName, 'Tenz');
+    });
+  });
 }
