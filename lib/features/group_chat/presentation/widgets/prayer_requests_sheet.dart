@@ -161,11 +161,14 @@ class _PrayerRequestsSheetState extends ConsumerState<PrayerRequestsSheet> {
     );
   }
 
-  /// Marks the room read once it is known. A closed room keeps its id so the
+  /// Marks the room read once its requests have come from the server: a room
+  /// that is known but whose requests failed to load has shown nothing new.
+  /// Until then [_roomId] stays null, which also holds off the calls from
+  /// the composer and from `dispose`. A closed room keeps its id so the
   /// loaded requests still render, so the status has to be checked too.
   void _syncRoom(PrayerRequestsState state) {
     if (state.roomStatus == PrayerRoomStatus.closed) return;
-    final roomId = state.roomId;
+    final roomId = state.fetchedRoomId;
     if (roomId == null || roomId.isEmpty || roomId == _roomId) return;
     _roomId = roomId;
     unawaited(_markRoomRead());

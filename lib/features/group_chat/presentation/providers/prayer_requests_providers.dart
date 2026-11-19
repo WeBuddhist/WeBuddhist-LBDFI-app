@@ -283,6 +283,12 @@ class PrayerRequestsState extends Equatable {
   final PrayerRoomStatus roomStatus;
   final String? roomId;
 
+  /// The room whose requests last came from the server, set only once a
+  /// first page of them has landed. A stored page or a room known before its
+  /// requests load leaves it null, so the board is never marked read on
+  /// requests the viewer has not been shown.
+  final String? fetchedRoomId;
+
   /// The room's own mantra to float on a prayer; null uses the built-in one.
   final String? mantra;
 
@@ -306,6 +312,7 @@ class PrayerRequestsState extends Equatable {
   const PrayerRequestsState({
     this.roomStatus = PrayerRoomStatus.resolving,
     this.roomId,
+    this.fetchedRoomId,
     this.mantra,
     this.requests = const [],
     this.filter = PrayerRequestsFilter.initial,
@@ -322,6 +329,7 @@ class PrayerRequestsState extends Equatable {
   PrayerRequestsState copyWith({
     PrayerRoomStatus? roomStatus,
     String? roomId,
+    String? fetchedRoomId,
     String? mantra,
     bool clearMantra = false,
     List<ChatMessageDTO>? requests,
@@ -340,6 +348,7 @@ class PrayerRequestsState extends Equatable {
     return PrayerRequestsState(
       roomStatus: roomStatus ?? this.roomStatus,
       roomId: roomId ?? this.roomId,
+      fetchedRoomId: fetchedRoomId ?? this.fetchedRoomId,
       mantra: clearMantra ? null : mantra ?? this.mantra,
       requests: requests ?? this.requests,
       filter: filter ?? this.filter,
@@ -374,6 +383,7 @@ class PrayerRequestsState extends Equatable {
   List<Object?> get props => [
     roomStatus,
     roomId,
+    fetchedRoomId,
     mantra,
     requests,
     filter,
@@ -675,6 +685,9 @@ class PrayerRequestsNotifier extends StateNotifier<PrayerRequestsState> {
         final page = _withLocalChanges(fetched, changes);
         _applyFirstPage(page);
         _reapplyLocal(page, changes);
+        if (state.fetchedRoomId != roomId) {
+          state = state.copyWith(fetchedRoomId: roomId);
+        }
         unawaited(
           ref
               .read(screenCacheStoreProvider)

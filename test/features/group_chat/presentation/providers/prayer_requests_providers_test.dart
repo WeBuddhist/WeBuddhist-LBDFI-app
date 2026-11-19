@@ -978,6 +978,24 @@ void main() {
       expect(notifier.state.mantra, isNull);
     });
 
+    test('the room counts as fetched only once its requests load, so a '
+        'failed list never marks the board read', () async {
+      repository =
+          _FakeGroupChatRepository(history: [_prayer('a')])
+            ..listFailure = const ServerFailure('boom');
+      container = buildContainer();
+
+      final notifier = _keepAlive(container);
+      await _settle();
+      expect(notifier.state.roomId, 'room-1');
+      expect(notifier.state.fetchedRoomId, isNull);
+
+      repository.listFailure = null;
+      await notifier.retry();
+      await _settle();
+      expect(notifier.state.fetchedRoomId, 'room-1');
+    });
+
     test('send posts a PRAYER message and inserts it at the top', () async {
       repository = _FakeGroupChatRepository(history: [_prayer('a')]);
       container = buildContainer();

@@ -996,6 +996,46 @@ void main() {
 
       expect(notifier.state, same(before));
     });
+
+    test('a refresh that was out before the read does not bring the dot '
+        'back', () async {
+      const prayerRoom = ChatRoomDTO(
+        id: 'group-room-1',
+        createdBy: 'u9',
+        groupId: 'group-1',
+        kind: 'group',
+        name: 'Group 1',
+        memberCount: 3,
+        updatedAt: '2026-09-01T10:00:00Z',
+        unreadChat: 2,
+        unreadPrayer: 1,
+      );
+      repository = _FakeGroupChatRepository(rooms: [prayerRoom]);
+      container = buildContainer();
+
+      final notifier = _keepAlive(container);
+      await _settle();
+
+      // The refresh reads the counts from before the read, and lands after.
+      final hold = repository.holdNextList = Completer<void>();
+      final refresh = notifier.refresh();
+      await _settle();
+      notifier.markReadLocally(
+        'group-room-1',
+        messageType: ChatMessageDTO.typePrayer,
+      );
+      hold.complete();
+      await refresh;
+
+      final room = notifier.state.rooms.single;
+      expect(room.unreadPrayer, 0);
+      // Only the type that was read.
+      expect(room.unreadChat, 2);
+
+      // A refresh sent after the read takes the server's word again.
+      await notifier.refresh();
+      expect(notifier.state.rooms.single.unreadPrayer, 1);
+    });
   });
 
   group('room cache seed', () {
@@ -1084,6 +1124,24 @@ void main() {
 
       signals.emit(path1, {'messages_changed_at': DateTime.utc(2026, 1, 2)});
       signals.emit(path2, {'messages_changed_at': DateTime.utc(2026, 1, 2)});
+      await settleTimers();
+      await _settle();
+
+      expect(repository.listCallCount, calls + 1);
+    });
+
+    test('a moved prayers signal refetches the list too', () async {
+      repository = _FakeGroupChatRepository(rooms: [_group(1)]);
+      container = buildLiveContainer();
+      container.listen(chatRoomsSignalsProvider, (_, _) {});
+      _keepAlive(container);
+      await _settle();
+      final path = SignalPaths.chatRoom('group-room-1');
+      signals.emit(path, {'prayers_changed_at': DateTime.utc(2026, 1, 1)});
+      await settleTimers();
+      final calls = repository.listCallCount;
+
+      signals.emit(path, {'prayers_changed_at': DateTime.utc(2026, 1, 2)});
       await settleTimers();
       await _settle();
 
