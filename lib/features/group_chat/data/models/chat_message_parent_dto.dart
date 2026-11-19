@@ -36,12 +36,20 @@ class ChatMessageParentDTO extends Equatable {
       id: json['id'] as String? ?? '',
       senderId: json['sender_id'] as String? ?? '',
       senderEmail: json['sender_email'] as String? ?? '',
-      senderName: json['sender_name'] as String?,
+      senderName: _senderNameFromJson(json),
       senderAvatarUrl: json['sender_avatar_url'] as String?,
       body: json['body'] as String? ?? '',
       createdAt: json['created_at'] as String? ?? '',
       deletedAt: json['deleted_at'] as String?,
     );
+  }
+
+  /// The sender's display name from Edit profile, then `sender_name` for
+  /// messages without one.
+  static String? _senderNameFromJson(Map<String, dynamic> json) {
+    final display = (json['sender_display_name'] as String?)?.trim();
+    if (display != null && display.isNotEmpty) return display;
+    return json['sender_name'] as String?;
   }
 
   /// [deletedAt] only ever goes from null to a timestamp — nothing undeletes

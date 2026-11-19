@@ -152,16 +152,22 @@ class GroupAccumulatorUserContribution extends Equatable {
   final String? imageUrl;
   final String fullname;
 
+  /// The name the user picked in Edit profile (`display_name`).
+  final String? userDisplayName;
+
   const GroupAccumulatorUserContribution({
     this.totalCount = 0,
     this.todayCount = 0,
     this.username = '',
     this.imageUrl,
     this.fullname = '',
+    this.userDisplayName,
   });
 
+  /// Name shown in the UI: the display name, then the full name, then the
+  /// username.
   String get displayName =>
-      fullname.trim().isNotEmpty ? fullname.trim() : username;
+      _visibleName(userDisplayName, fullname, username);
 
   @override
   List<Object?> get props => [
@@ -170,6 +176,7 @@ class GroupAccumulatorUserContribution extends Equatable {
     username,
     imageUrl,
     fullname,
+    userDisplayName,
   ];
 }
 
@@ -182,6 +189,9 @@ class GroupAccumulatorMember extends Equatable {
   final int totalCount;
   final int todayCount;
 
+  /// The name the user picked in Edit profile (`display_name`).
+  final String? userDisplayName;
+
   const GroupAccumulatorMember({
     required this.userId,
     required this.username,
@@ -190,10 +200,13 @@ class GroupAccumulatorMember extends Equatable {
     this.joinedAt,
     this.totalCount = 0,
     this.todayCount = 0,
+    this.userDisplayName,
   });
 
+  /// Name shown in the UI: the display name, then the full name, then the
+  /// username.
   String get displayName =>
-      fullname.trim().isNotEmpty ? fullname.trim() : username;
+      _visibleName(userDisplayName, fullname, username);
 
   @override
   List<Object?> get props => [
@@ -204,7 +217,16 @@ class GroupAccumulatorMember extends Equatable {
     joinedAt,
     totalCount,
     todayCount,
+    userDisplayName,
   ];
+}
+
+String _visibleName(String? displayName, String fullname, String username) {
+  final display = displayName?.trim() ?? '';
+  if (display.isNotEmpty) return display;
+  final full = fullname.trim();
+  if (full.isNotEmpty) return full;
+  return username;
 }
 
 enum GroupAccumulatorMemberSort { today, total }

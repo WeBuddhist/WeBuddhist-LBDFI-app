@@ -39,6 +39,9 @@ class GroupEventParticipant {
   final String? avatarUrl;
   final GroupEventParticipationType? participationType;
 
+  /// The name the user picked in Edit profile (`display_name`).
+  final String? userDisplayName;
+
   const GroupEventParticipant({
     required this.userId,
     this.createdAt,
@@ -46,9 +49,14 @@ class GroupEventParticipant {
     this.fullname,
     this.avatarUrl,
     this.participationType,
+    this.userDisplayName,
   });
 
+  /// Name shown in the UI: the display name, then the full name, then the
+  /// username.
   String get displayName {
+    final display = userDisplayName?.trim();
+    if (display != null && display.isNotEmpty) return display;
     final name = fullname?.trim();
     if (name != null && name.isNotEmpty) return name;
     final handle = username?.trim();

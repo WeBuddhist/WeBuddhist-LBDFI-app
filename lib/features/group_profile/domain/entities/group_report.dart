@@ -22,15 +22,22 @@ class GroupReportUser {
   final String firstname;
   final String lastname;
 
+  /// The name the user picked in Edit profile (`display_name`).
+  final String? userDisplayName;
+
   const GroupReportUser({
     required this.id,
     this.username = '',
     this.firstname = '',
     this.lastname = '',
+    this.userDisplayName,
   });
 
-  /// Full name, falling back to the username when neither name is set.
+  /// Name shown in the UI: the display name, then first and last name, then
+  /// the username.
   String get displayName {
+    final display = userDisplayName?.trim() ?? '';
+    if (display.isNotEmpty) return display;
     final fullName = '${firstname.trim()} ${lastname.trim()}'.trim();
     return fullName.isNotEmpty ? fullName : username.trim();
   }
