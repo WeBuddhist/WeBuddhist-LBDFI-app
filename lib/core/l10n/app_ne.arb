@@ -636,7 +636,7 @@
   "group_members_empty": "अहिलेसम्म कुनै सदस्य छैन",
   "group_member_admin": "प्रशासक",
   "group_remove_member": "{name} लाई हटाउनुहोस्",
-  "group_remove_member_title": "स्पेसबाट हटाउने?",
+  "group_remove_member_title": "{name} लाई हटाउनुहोस्",
   "group_remove_member_message": "{name} लाई यस स्पेसबाट हटाइनेछ र प्रतिबन्ध नहटेसम्म पुनः सामेल हुन सक्नुहुने छैन",
   "group_remove_member_blocked_for": "प्रतिबन्ध अवधि:",
   "group_remove_member_duration_day": "1 दिन",

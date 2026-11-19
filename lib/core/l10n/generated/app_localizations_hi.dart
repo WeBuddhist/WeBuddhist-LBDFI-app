@@ -1934,7 +1934,9 @@ class AppLocalizationsHi extends AppLocalizations {
   }
 
   @override
-  String get group_remove_member_title => 'स्पेस से हटाएँ?';
+  String group_remove_member_title(String name) {
+    return '$name को हटाएँ';
+  }
 
   @override
   String group_remove_member_message(String name) {

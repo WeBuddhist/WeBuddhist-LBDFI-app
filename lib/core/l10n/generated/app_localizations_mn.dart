@@ -1941,7 +1941,9 @@ class AppLocalizationsMn extends AppLocalizations {
   }
 
   @override
-  String get group_remove_member_title => 'Орон зайгаас хасах уу?';
+  String group_remove_member_title(String name) {
+    return '$name-г хасах';
+  }
 
   @override
   String group_remove_member_message(String name) {

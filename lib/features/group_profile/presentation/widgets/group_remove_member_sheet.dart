@@ -138,7 +138,7 @@ class _GroupRemoveMemberSheetState
                       children: [
                         Expanded(
                           child: Text(
-                            l10n.group_remove_member_title,
+                            l10n.group_remove_member_title(name),
                             style: const TextStyle(
                               fontSize: 22,
                               fontWeight: FontWeight.bold,

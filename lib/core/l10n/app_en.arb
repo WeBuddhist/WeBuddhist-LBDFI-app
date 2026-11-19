@@ -907,7 +907,14 @@
       }
     }
   },
-  "group_remove_member_title": "Remove from space?",
+  "group_remove_member_title": "Remove {name}",
+  "@group_remove_member_title": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
   "group_remove_member_message": "{name} will be removed from this space and unable to rejoin it until the ban is lifted",
   "@group_remove_member_message": {
     "placeholders": {

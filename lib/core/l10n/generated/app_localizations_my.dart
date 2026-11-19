@@ -1948,7 +1948,9 @@ class AppLocalizationsMy extends AppLocalizations {
   }
 
   @override
-  String get group_remove_member_title => 'အဖွဲ့မှ ဖယ်ရှားမလား။';
+  String group_remove_member_title(String name) {
+    return '$name ကို ဖယ်ရှားရန်';
+  }
 
   @override
   String group_remove_member_message(String name) {

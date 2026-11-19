@@ -522,7 +522,7 @@
   "group_member_admin": "ผู้ดูแล",
   "group_member_owner": "เจ้าของ",
   "group_remove_member": "นำ {name} ออก",
-  "group_remove_member_title": "นำออกจากกลุ่มใช่ไหม",
+  "group_remove_member_title": "นำ {name} ออก",
   "group_remove_member_message": "{name} จะถูกนำออกจากกลุ่มนี้ และเข้าร่วมใหม่ไม่ได้จนกว่าการระงับจะสิ้นสุด",
   "group_remove_member_blocked_for": "ระงับเป็นเวลา:",
   "group_remove_member_duration_day": "1 วัน",

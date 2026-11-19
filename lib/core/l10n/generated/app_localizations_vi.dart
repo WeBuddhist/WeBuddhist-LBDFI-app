@@ -1931,7 +1931,9 @@ class AppLocalizationsVi extends AppLocalizations {
   }
 
   @override
-  String get group_remove_member_title => 'Xóa khỏi nhóm?';
+  String group_remove_member_title(String name) {
+    return 'Xóa $name';
+  }
 
   @override
   String group_remove_member_message(String name) {

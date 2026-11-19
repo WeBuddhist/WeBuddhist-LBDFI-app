@@ -1944,7 +1944,9 @@ class AppLocalizationsBo extends AppLocalizations {
   }
 
   @override
-  String get group_remove_member_title => 'ཚོགས་པ་ནས་ཕུད་དམ།';
+  String group_remove_member_title(String name) {
+    return '$name ཕུད།';
+  }
 
   @override
   String group_remove_member_message(String name) {

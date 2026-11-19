@@ -1921,7 +1921,9 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get group_remove_member_title => 'Remove from space?';
+  String group_remove_member_title(String name) {
+    return 'Remove $name';
+  }
 
   @override
   String group_remove_member_message(String name) {

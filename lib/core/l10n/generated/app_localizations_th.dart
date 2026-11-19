@@ -1912,7 +1912,9 @@ class AppLocalizationsTh extends AppLocalizations {
   }
 
   @override
-  String get group_remove_member_title => 'นำออกจากกลุ่มใช่ไหม';
+  String group_remove_member_title(String name) {
+    return 'นำ $name ออก';
+  }
 
   @override
   String group_remove_member_message(String name) {

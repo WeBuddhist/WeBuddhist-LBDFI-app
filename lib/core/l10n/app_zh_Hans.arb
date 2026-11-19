@@ -782,7 +782,7 @@
   "group_member_admin": "管理员",
   "group_member_owner": "拥有者",
   "group_remove_member": "移除 {name}",
-  "group_remove_member_title": "要从社群中移除吗？",
+  "group_remove_member_title": "移除 {name}",
   "group_remove_member_message": "{name} 将被移出此社群，且在禁令解除前无法重新加入",
   "group_remove_member_blocked_for": "封锁期间：",
   "group_remove_member_duration_day": "1 天",

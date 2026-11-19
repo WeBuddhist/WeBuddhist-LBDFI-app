@@ -1844,7 +1844,9 @@ class AppLocalizationsZh extends AppLocalizations {
   }
 
   @override
-  String get group_remove_member_title => '要從社群中移除嗎？';
+  String group_remove_member_title(String name) {
+    return '移除 $name';
+  }
 
   @override
   String group_remove_member_message(String name) {
@@ -5903,7 +5905,9 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   }
 
   @override
-  String get group_remove_member_title => '要从社群中移除吗？';
+  String group_remove_member_title(String name) {
+    return '移除 $name';
+  }
 
   @override
   String group_remove_member_message(String name) {

@@ -3506,8 +3506,8 @@ abstract class AppLocalizations {
   /// No description provided for @group_remove_member_title.
   ///
   /// In en, this message translates to:
-  /// **'Remove from space?'**
-  String get group_remove_member_title;
+  /// **'Remove {name}'**
+  String group_remove_member_title(String name);
 
   /// No description provided for @group_remove_member_message.
   ///
