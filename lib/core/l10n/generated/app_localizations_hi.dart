@@ -1939,8 +1939,8 @@ class AppLocalizationsHi extends AppLocalizations {
   }
 
   @override
-  String group_remove_member_message(String name) {
-    return '$name को इस स्पेस से हटा दिया जाएगा और प्रतिबंध हटने तक वे फिर से शामिल नहीं हो पाएँगे';
+  String group_remove_member_message(String duration) {
+    return 'उन्हें इस स्पेस से हटा दिया जाएगा और वे $duration तक फिर से शामिल नहीं हो पाएँगे।';
   }
 
   @override

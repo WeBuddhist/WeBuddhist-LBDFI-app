@@ -1953,8 +1953,8 @@ class AppLocalizationsMy extends AppLocalizations {
   }
 
   @override
-  String group_remove_member_message(String name) {
-    return '$name ကို ဤအဖွဲ့မှ ဖယ်ရှားမည်ဖြစ်ပြီး ပိတ်ပင်မှု မရုပ်သိမ်းမချင်း ပြန်ဝင်၍ မရပါ';
+  String group_remove_member_message(String duration) {
+    return '၎င်းတို့ကို ဤအဖွဲ့မှ ဖယ်ရှားမည်ဖြစ်ပြီး $duration ကြာ ပြန်ဝင်၍ မရပါ။';
   }
 
   @override

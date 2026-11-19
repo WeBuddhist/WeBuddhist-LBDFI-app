@@ -1917,8 +1917,8 @@ class AppLocalizationsTh extends AppLocalizations {
   }
 
   @override
-  String group_remove_member_message(String name) {
-    return '$name จะถูกนำออกจากกลุ่มนี้ และเข้าร่วมใหม่ไม่ได้จนกว่าการระงับจะสิ้นสุด';
+  String group_remove_member_message(String duration) {
+    return 'พวกเขาจะถูกนำออกจากกลุ่มนี้ และเข้าร่วมใหม่ไม่ได้เป็นเวลา $duration';
   }
 
   @override

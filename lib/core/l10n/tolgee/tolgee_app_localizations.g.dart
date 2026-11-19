@@ -3802,11 +3802,11 @@ class TolgeeAppLocalizations extends AppLocalizations {
   );
 
   @override
-  String group_remove_member_message(String name) => TolgeeBridge.format(
+  String group_remove_member_message(String duration) => TolgeeBridge.format(
     localeName,
     'group_remove_member_message',
-    <String, Object>{'name': name},
-    () => _fallback.group_remove_member_message(name),
+    <String, Object>{'duration': duration},
+    () => _fallback.group_remove_member_message(duration),
   );
 
   @override

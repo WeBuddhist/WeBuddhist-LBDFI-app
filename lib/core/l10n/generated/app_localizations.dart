@@ -3512,8 +3512,8 @@ abstract class AppLocalizations {
   /// No description provided for @group_remove_member_message.
   ///
   /// In en, this message translates to:
-  /// **'{name} will be removed from this space and unable to rejoin it until the ban is lifted'**
-  String group_remove_member_message(String name);
+  /// **'They\'ll be removed from this space and can\'t rejoin for {duration}.'**
+  String group_remove_member_message(String duration);
 
   /// No description provided for @group_remove_member_blocked_for.
   ///

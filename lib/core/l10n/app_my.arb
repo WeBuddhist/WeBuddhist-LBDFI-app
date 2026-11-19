@@ -523,7 +523,7 @@
   "group_member_owner": "ပိုင်ရှင်",
   "group_remove_member": "{name} ကို ဖယ်ရှားရန်",
   "group_remove_member_title": "{name} ကို ဖယ်ရှားရန်",
-  "group_remove_member_message": "{name} ကို ဤအဖွဲ့မှ ဖယ်ရှားမည်ဖြစ်ပြီး ပိတ်ပင်မှု မရုပ်သိမ်းမချင်း ပြန်ဝင်၍ မရပါ",
+  "group_remove_member_message": "၎င်းတို့ကို ဤအဖွဲ့မှ ဖယ်ရှားမည်ဖြစ်ပြီး {duration} ကြာ ပြန်ဝင်၍ မရပါ။",
   "group_remove_member_blocked_for": "ပိတ်ပင်မည့် ကာလ:",
   "group_remove_member_duration_day": "1 ရက်",
   "group_remove_member_duration_days": "{count} ရက်",

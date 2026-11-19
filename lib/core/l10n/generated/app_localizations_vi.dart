@@ -1936,8 +1936,8 @@ class AppLocalizationsVi extends AppLocalizations {
   }
 
   @override
-  String group_remove_member_message(String name) {
-    return '$name sẽ bị xóa khỏi nhóm này và không thể tham gia lại cho đến khi lệnh cấm được gỡ bỏ';
+  String group_remove_member_message(String duration) {
+    return 'Họ sẽ bị xóa khỏi nhóm này và không thể tham gia lại trong $duration.';
   }
 
   @override

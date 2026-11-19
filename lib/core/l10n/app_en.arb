@@ -915,10 +915,10 @@
       }
     }
   },
-  "group_remove_member_message": "{name} will be removed from this space and unable to rejoin it until the ban is lifted",
+  "group_remove_member_message": "They'll be removed from this space and can't rejoin for {duration}.",
   "@group_remove_member_message": {
     "placeholders": {
-      "name": {
+      "duration": {
         "type": "String"
       }
     }

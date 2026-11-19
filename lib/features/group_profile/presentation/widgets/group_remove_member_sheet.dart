@@ -156,7 +156,9 @@ class _GroupRemoveMemberSheetState
                       ],
                     ),
                     Text(
-                      l10n.group_remove_member_message(name),
+                      l10n.group_remove_member_message(
+                        _durationLabel(context, _banDays),
+                      ),
                       style: TextStyle(
                         fontSize: 15,
                         height: 1.35,

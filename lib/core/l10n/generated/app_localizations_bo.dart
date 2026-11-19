@@ -1949,8 +1949,8 @@ class AppLocalizationsBo extends AppLocalizations {
   }
 
   @override
-  String group_remove_member_message(String name) {
-    return '$name ཚོགས་པ་འདི་ནས་ཕུད་འགྲོ་བ་དང་། བཀག་སྡོམ་མ་བཏང་བར་ཡང་བསྐྱར་ཞུགས་མི་ཐུབ།';
+  String group_remove_member_message(String duration) {
+    return 'ཁོང་ཚོགས་པ་འདི་ནས་ཕུད་འགྲོ་བ་དང་། དུས་ཡུན་$duration རིང་ཡང་བསྐྱར་ཞུགས་མི་ཐུབ།';
   }
 
   @override

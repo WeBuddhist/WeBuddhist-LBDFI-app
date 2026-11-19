@@ -1946,8 +1946,8 @@ class AppLocalizationsMn extends AppLocalizations {
   }
 
   @override
-  String group_remove_member_message(String name) {
-    return '$name энэ орон зайгаас хасагдах бөгөөд хориг цуцлагдах хүртэл дахин нэгдэх боломжгүй';
+  String group_remove_member_message(String duration) {
+    return 'Тэд энэ орон зайгаас хасагдах бөгөөд $duration-ийн турш дахин нэгдэх боломжгүй.';
   }
 
   @override

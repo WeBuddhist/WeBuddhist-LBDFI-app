@@ -1926,8 +1926,8 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String group_remove_member_message(String name) {
-    return '$name will be removed from this space and unable to rejoin it until the ban is lifted';
+  String group_remove_member_message(String duration) {
+    return 'They\'ll be removed from this space and can\'t rejoin for $duration.';
   }
 
   @override

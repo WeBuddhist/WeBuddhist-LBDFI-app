@@ -1849,8 +1849,8 @@ class AppLocalizationsZh extends AppLocalizations {
   }
 
   @override
-  String group_remove_member_message(String name) {
-    return '$name 將被移出此社群，且在禁令解除前無法重新加入';
+  String group_remove_member_message(String duration) {
+    return '對方將被移出此社群，且在 $duration 內無法重新加入。';
   }
 
   @override
@@ -5910,8 +5910,8 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   }
 
   @override
-  String group_remove_member_message(String name) {
-    return '$name 将被移出此社群，且在禁令解除前无法重新加入';
+  String group_remove_member_message(String duration) {
+    return '对方将被移出此社群，且在 $duration 内无法重新加入。';
   }
 
   @override

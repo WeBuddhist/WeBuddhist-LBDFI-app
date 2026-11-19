@@ -523,7 +523,7 @@
   "group_member_owner": "Chủ nhóm",
   "group_remove_member": "Xóa {name}",
   "group_remove_member_title": "Xóa {name}",
-  "group_remove_member_message": "{name} sẽ bị xóa khỏi nhóm này và không thể tham gia lại cho đến khi lệnh cấm được gỡ bỏ",
+  "group_remove_member_message": "Họ sẽ bị xóa khỏi nhóm này và không thể tham gia lại trong {duration}.",
   "group_remove_member_blocked_for": "Chặn trong:",
   "group_remove_member_duration_day": "1 ngày",
   "group_remove_member_duration_days": "{count} ngày",

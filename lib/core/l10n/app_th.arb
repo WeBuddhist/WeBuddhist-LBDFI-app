@@ -523,7 +523,7 @@
   "group_member_owner": "เจ้าของ",
   "group_remove_member": "นำ {name} ออก",
   "group_remove_member_title": "นำ {name} ออก",
-  "group_remove_member_message": "{name} จะถูกนำออกจากกลุ่มนี้ และเข้าร่วมใหม่ไม่ได้จนกว่าการระงับจะสิ้นสุด",
+  "group_remove_member_message": "พวกเขาจะถูกนำออกจากกลุ่มนี้ และเข้าร่วมใหม่ไม่ได้เป็นเวลา {duration}",
   "group_remove_member_blocked_for": "ระงับเป็นเวลา:",
   "group_remove_member_duration_day": "1 วัน",
   "group_remove_member_duration_days": "{count} วัน",

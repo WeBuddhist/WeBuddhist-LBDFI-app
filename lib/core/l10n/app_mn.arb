@@ -637,7 +637,7 @@
   "group_member_admin": "Админ",
   "group_remove_member": "{name}-г хасах",
   "group_remove_member_title": "{name}-г хасах",
-  "group_remove_member_message": "{name} энэ орон зайгаас хасагдах бөгөөд хориг цуцлагдах хүртэл дахин нэгдэх боломжгүй",
+  "group_remove_member_message": "Тэд энэ орон зайгаас хасагдах бөгөөд {duration}-ийн турш дахин нэгдэх боломжгүй.",
   "group_remove_member_blocked_for": "Хоригийн хугацаа:",
   "group_remove_member_duration_day": "1 өдөр",
   "group_remove_member_duration_days": "{count} өдөр",

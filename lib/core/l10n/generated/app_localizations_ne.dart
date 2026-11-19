@@ -1951,8 +1951,8 @@ class AppLocalizationsNe extends AppLocalizations {
   }
 
   @override
-  String group_remove_member_message(String name) {
-    return '$name लाई यस स्पेसबाट हटाइनेछ र प्रतिबन्ध नहटेसम्म पुनः सामेल हुन सक्नुहुने छैन';
+  String group_remove_member_message(String duration) {
+    return 'उहाँलाई यस स्पेसबाट हटाइनेछ र $duration सम्म पुनः सामेल हुन सक्नुहुने छैन।';
   }
 
   @override
