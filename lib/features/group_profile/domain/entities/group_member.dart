@@ -4,6 +4,9 @@ class GroupMember {
   final String userId;
   final String username;
   final String fullname;
+
+  /// The name the user picked in Edit profile (`display_name`).
+  final String? displayName;
   final String? avatarUrl;
 
   /// Membership role from the members list. See [GroupMemberRole].
@@ -13,9 +16,20 @@ class GroupMember {
     this.userId = '',
     required this.username,
     required this.fullname,
+    this.displayName,
     this.avatarUrl,
     this.role,
   });
+
+  /// Name shown in the UI: the display name, then the full name for
+  /// responses without one, then the username.
+  String get visibleName {
+    final display = displayName?.trim() ?? '';
+    if (display.isNotEmpty) return display;
+    final full = fullname.trim();
+    if (full.isNotEmpty) return full;
+    return username;
+  }
 
   /// `OWNER` or `ADMIN`. Both get a role badge and are never removable.
   bool get isAdmin => GroupMemberRole.isAdminTier(role);
