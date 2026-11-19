@@ -59,7 +59,7 @@ connect/
 ## Cross-feature dependencies
 
 - **auth** — guest gating, login prompts
-- **group_chat** — `chatRoomsProvider` / `chatRoomsPushRefreshProvider` drive the ☰ unread dot (`unreadSpaceIdsProvider`)
+- **group_chat** — `chatRoomsProvider` / `chatRoomsPushRefreshProvider` drive the unread dots (`unreadSpacesProvider`): the bottom-nav Connect tab for any space (`MainNavigationBottomBar`), ☰ for another space, the space in "Your spaces", then the space page: a dot on the chat button and/or on 🙏, never a number (`SpaceUnread`, from v2's per-type `unread`). Marking one type read clears its badge at once (`ChatRoomsNotifier.markReadLocally`)
 - **group_profile** — entities (`GroupProfile`, `GroupEvent`, `GroupPractice`), repository, follow invalidation
 - **core** — `contentLanguageProvider`, theme
 

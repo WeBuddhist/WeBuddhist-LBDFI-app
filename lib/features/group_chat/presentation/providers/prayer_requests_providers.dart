@@ -23,6 +23,7 @@ import 'package:flutter_pecha/features/group_chat/domain/prayer_room_scope.dart'
 import 'package:flutter_pecha/features/group_chat/domain/prayer_translation_language.dart';
 import 'package:flutter_pecha/features/group_chat/domain/repositories/group_chat_repository.dart';
 import 'package:flutter_pecha/features/group_chat/presentation/providers/chat_room_live_providers.dart';
+import 'package:flutter_pecha/features/group_chat/presentation/providers/chat_rooms_providers.dart';
 import 'package:flutter_pecha/features/group_chat/presentation/providers/group_chat_providers.dart';
 import 'package:flutter_pecha/features/group_chat/presentation/providers/pending_prayer_sends.dart';
 import 'package:flutter_pecha/features/group_chat/presentation/utils/chat_analytics.dart';
@@ -1819,24 +1820,33 @@ final prayerRoomLiveProvider = Provider.autoDispose
       PrayerRequestsNotifier notifier() =>
           ref.read(prayerRequestsProvider(key.scope).notifier);
 
-      // The sheet is open, so new requests are seen. Events only: a space's
-      // room also holds its chat.
+      // The sheet is open, so new requests are seen. Only prayer requests
+      // are marked read: a space's room also holds its chat.
+      var disposed = false;
+      ref.onDispose(() => disposed = true);
+
       // Signals that joined one refresh share its future; read once for it.
       Future<bool>? marked;
       Future<void> markReadIfArrived(Future<bool> refresh) async {
         if (identical(refresh, marked)) return;
         marked = refresh;
         final arrived = await refresh;
-        if (!arrived || !key.scope.isEvent) return;
+        if (!arrived) return;
         final lifecycle = WidgetsBinding.instance.lifecycleState;
         if (lifecycle != null && lifecycle != AppLifecycleState.resumed) {
           return;
         }
-        await repository.markRoomRead(key.roomId);
+        final result = await repository.markRoomRead(
+          key.roomId,
+          messageType: ChatMessageDTO.typePrayer,
+        );
+        if (disposed || !result.isRight() || !ref.exists(chatRoomsProvider)) {
+          return;
+        }
+        ref
+            .read(chatRoomsProvider.notifier)
+            .markReadLocally(key.roomId, messageType: ChatMessageDTO.typePrayer);
       }
-
-      var disposed = false;
-      ref.onDispose(() => disposed = true);
 
       // `closed_at` is never cleared, so a reopened room still has it; only
       // the room endpoint's 404 means it is closed now.

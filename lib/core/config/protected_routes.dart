@@ -36,6 +36,8 @@ class ProtectedRoutes {
 
     // Community group chat (REST).
     '/chat/',
+    // v2 chat: rooms inbox with per-type unread, mark read by type.
+    '${ApiConfig.chatV2Path}/',
 
     // Timers
     '/timers',

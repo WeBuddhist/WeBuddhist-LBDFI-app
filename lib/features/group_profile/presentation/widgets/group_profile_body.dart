@@ -17,10 +17,13 @@ import 'package:flutter_pecha/core/widgets/destructive_confirmation_dialog.dart'
 import 'package:flutter_pecha/features/auth/presentation/providers/state_providers.dart';
 import 'package:flutter_pecha/features/auth/presentation/widgets/login_drawer.dart';
 import 'package:flutter_pecha/features/connect/domain/entities/connect_post.dart';
+import 'package:flutter_pecha/features/connect/presentation/providers/connect_space_providers.dart';
 import 'package:flutter_pecha/features/connect/presentation/utils/connect_analytics.dart';
 import 'package:flutter_pecha/features/connect/presentation/widgets/connect_feed_card_layout.dart';
 import 'package:flutter_pecha/features/connect/presentation/widgets/connect_practice_card.dart';
+import 'package:flutter_pecha/features/connect/presentation/widgets/connect_unread_dot.dart';
 import 'package:flutter_pecha/features/group_chat/domain/prayer_room_scope.dart';
+import 'package:flutter_pecha/features/group_chat/presentation/providers/chat_rooms_providers.dart';
 import 'package:flutter_pecha/features/group_chat/presentation/widgets/prayer_requests_sheet.dart';
 import 'package:flutter_pecha/features/group_profile/domain/entities/group_accumulator.dart';
 import 'package:flutter_pecha/features/group_profile/domain/entities/group_event_cms_item.dart';
@@ -1739,6 +1742,14 @@ class _GroupFollowButton extends ConsumerWidget {
 
     final authState = ref.watch(authProvider);
     final showChat = authState.isLoggedIn && !authState.isGuest;
+    // What is unread in this space, so the dot that led here from ☰ ends on
+    // the button that shows it. Dots only, never counts.
+    final unread =
+        showChat
+            ? ref.watch(
+              unreadSpacesProvider.select((spaces) => spaces[profile.id]),
+            )
+            : null;
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16.0),
@@ -1752,7 +1763,8 @@ class _GroupFollowButton extends ConsumerWidget {
               tooltip: context.l10n.group_chat_open,
               size: buttonHeight,
               isDark: isDark,
-              onTap: () => context.push(AppRoutes.groupChatPath(profile.id)),
+              hasUnread: unread?.chat ?? false,
+              onTap: () => _openChat(context),
             ),
             const SizedBox(width: 12),
             _RoundActionButton(
@@ -1760,6 +1772,7 @@ class _GroupFollowButton extends ConsumerWidget {
               tooltip: context.l10n.event_prayer_requests,
               size: buttonHeight,
               isDark: isDark,
+              hasUnread: unread?.prayer ?? false,
               onTap:
                   () => unawaited(
                     PrayerRequestsSheet.show(
@@ -1796,6 +1809,17 @@ class _GroupFollowButton extends ConsumerWidget {
         ],
       ),
     );
+  }
+
+  /// Opens the space's chat. Coming back refetches the rooms the dots read,
+  /// as the Chats screen does: the chat clears its own room as it marks it
+  /// read, but messages may have landed in other spaces meanwhile.
+  Future<void> _openChat(BuildContext context) async {
+    final container = ProviderScope.containerOf(context, listen: false);
+    await context.push(AppRoutes.groupChatPath(profile.id));
+    if (container.exists(chatRoomsProvider)) {
+      unawaited(container.read(chatRoomsProvider.notifier).refresh());
+    }
   }
 
   Widget _buildPrivateMembershipLoadingButton(BuildContext context) {
@@ -2045,7 +2069,8 @@ class _GroupProfileTabBarDelegate extends SliverPersistentHeaderDelegate {
   }
 }
 
-/// Round icon button beside Invite, the same height as it.
+/// Round icon button beside Invite, the same height as it. [hasUnread] puts
+/// the Connect unread dot on its top-right edge.
 class _RoundActionButton extends StatelessWidget {
   const _RoundActionButton({
     required this.icon,
@@ -2053,6 +2078,7 @@ class _RoundActionButton extends StatelessWidget {
     required this.size,
     required this.isDark,
     required this.onTap,
+    this.hasUnread = false,
   });
 
   final IconData icon;
@@ -2060,28 +2086,45 @@ class _RoundActionButton extends StatelessWidget {
   final double size;
   final bool isDark;
   final VoidCallback onTap;
+  final bool hasUnread;
 
   @override
   Widget build(BuildContext context) {
-    return Tooltip(
-      message: tooltip,
-      child: Material(
-        color: isDark ? AppColors.surfaceVariantDark : AppColors.grey100,
-        shape: const CircleBorder(),
-        clipBehavior: Clip.antiAlias,
-        child: InkWell(
-          onTap: onTap,
-          child: SizedBox(
-            width: size,
-            height: size,
-            child: Icon(
-              icon,
-              size: 22,
-              color: isDark ? AppColors.surfaceWhite : AppColors.textPrimary,
-            ),
+    final button = Material(
+      color: isDark ? AppColors.surfaceVariantDark : AppColors.grey100,
+      shape: const CircleBorder(),
+      clipBehavior: Clip.antiAlias,
+      child: InkWell(
+        onTap: onTap,
+        child: SizedBox(
+          width: size,
+          height: size,
+          child: Icon(
+            icon,
+            size: 22,
+            color: isDark ? AppColors.surfaceWhite : AppColors.textPrimary,
           ),
         ),
       ),
+    );
+
+    return Tooltip(
+      message: tooltip,
+      child:
+          hasUnread
+              ? Stack(
+                clipBehavior: Clip.none,
+                children: [
+                  button,
+                  // On the circle's edge at about 45°, like a badge.
+                  const Positioned(
+                    top: 1,
+                    right: 1,
+                    child: ConnectUnreadDot(size: 11),
+                  ),
+                ],
+              )
+              : button,
     );
   }
 }

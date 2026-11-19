@@ -52,6 +52,10 @@ class ApiConfig {
   /// v2 bead skins (`GET /mala-skins`).
   static const String malaSkinsV2Path = '$v2Prefix/mala-skins';
 
+  /// v2 chat: the rooms inbox and mark-read, where unread is counted per
+  /// message type (`unread: {"TEXT": n, "PRAYER": n}`).
+  static const String chatV2Path = '$v2Prefix/chat';
+
   /// v2 per-user mantra routes: `/{id}/appearance` holds the user's deity
   /// image and bead skin for that mantra.
   static const String userMantrasV2Path = '$v2Prefix/users/me/mantras';

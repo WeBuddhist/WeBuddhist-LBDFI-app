@@ -31,7 +31,7 @@ ChatRoomDTO _group(int i, {int unreadCount = 0}) {
     name: 'Group $i',
     memberCount: 3,
     updatedAt: '2026-09-01T10:00:00Z',
-    unreadCount: unreadCount,
+    unreadChat: unreadCount,
   );
 }
 
@@ -180,7 +180,10 @@ class _FakeGroupChatRepository implements GroupChatRepository {
   );
 
   @override
-  Future<Either<Failure, Unit>> markRoomRead(String roomId) async =>
+  Future<Either<Failure, Unit>> markRoomRead(
+    String roomId, {
+    String? messageType,
+  }) async =>
       const Right(unit);
 
   @override
@@ -956,6 +959,43 @@ void main() {
     repository.rooms = [_group(1), _group(2)];
     await notifier.refresh();
     expect(notifier.state.hasUnread, isFalse);
+  });
+
+  group('markReadLocally', () {
+    test('clears the room at once, without a refetch', () async {
+      repository = _FakeGroupChatRepository(
+        rooms: [_group(1, unreadCount: 2), _group(2, unreadCount: 3)],
+      );
+      container = buildContainer();
+
+      final notifier = _keepAlive(container);
+      await _settle();
+      final calls = repository.listCallCount;
+
+      notifier.markReadLocally('group-room-2');
+
+      final counts = {
+        for (final room in notifier.state.rooms) room.id: room.unreadCount,
+      };
+      expect(counts, {'group-room-1': 2, 'group-room-2': 0});
+      expect(notifier.state.hasUnread, isTrue);
+      expect(repository.listCallCount, calls);
+    });
+
+    test('leaves the state alone for a room it does not hold', () async {
+      repository = _FakeGroupChatRepository(
+        rooms: [_group(1, unreadCount: 2)],
+      );
+      container = buildContainer();
+
+      final notifier = _keepAlive(container);
+      await _settle();
+      final before = notifier.state;
+
+      notifier.markReadLocally('somewhere-else');
+
+      expect(notifier.state, same(before));
+    });
   });
 
   group('room cache seed', () {

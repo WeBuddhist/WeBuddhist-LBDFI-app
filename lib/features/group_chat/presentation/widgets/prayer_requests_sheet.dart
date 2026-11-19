@@ -9,6 +9,7 @@ import 'package:flutter_pecha/features/group_chat/data/models/chat_message_dto.d
 import 'package:flutter_pecha/features/group_chat/data/models/chat_prayer_user_dto.dart';
 import 'package:flutter_pecha/features/group_chat/domain/prayer_requests_filter.dart';
 import 'package:flutter_pecha/features/group_chat/domain/prayer_room_scope.dart';
+import 'package:flutter_pecha/features/group_chat/presentation/providers/chat_rooms_providers.dart';
 import 'package:flutter_pecha/features/group_chat/presentation/providers/group_chat_providers.dart';
 import 'package:flutter_pecha/features/group_chat/presentation/providers/prayer_requests_providers.dart';
 import 'package:flutter_pecha/features/group_chat/presentation/utils/chat_sender.dart';
@@ -92,6 +93,10 @@ class _PrayerRequestsSheetState extends ConsumerState<PrayerRequestsSheet> {
 
   @override
   void dispose() {
+    // Requests that landed while the sheet was open have been seen too. Runs
+    // before the flag, which only guards the call's start: the rest goes
+    // through the container, which outlives the sheet.
+    unawaited(_markRoomRead());
     _disposed = true;
     _listController?.removeListener(_onScroll);
     _sheetController.dispose();
@@ -166,13 +171,19 @@ class _PrayerRequestsSheetState extends ConsumerState<PrayerRequestsSheet> {
     unawaited(_markRoomRead());
   }
 
-  /// Best-effort: the room also lists under chats, so keep its badge clear.
-  /// Events only: a space's room also holds its chat, and reading prayer
-  /// requests must not clear chat messages the member has not seen.
+  /// Best-effort: marks only the prayer requests read, so a space's chat
+  /// keeps its own unread count. A successful one clears the 🙏 dot at once.
   Future<void> _markRoomRead() async {
     final roomId = _roomId;
-    if (_disposed || roomId == null || !widget.scope.isEvent) return;
-    await _providers.read(groupChatRepositoryProvider).markRoomRead(roomId);
+    if (_disposed || roomId == null) return;
+    final result = await _providers
+        .read(groupChatRepositoryProvider)
+        .markRoomRead(roomId, messageType: ChatMessageDTO.typePrayer);
+    if (result.isRight() && _providers.exists(chatRoomsProvider)) {
+      _providers
+          .read(chatRoomsProvider.notifier)
+          .markReadLocally(roomId, messageType: ChatMessageDTO.typePrayer);
+    }
   }
 
   /// Opens the composer sheet; the notifier already holds the new or edited

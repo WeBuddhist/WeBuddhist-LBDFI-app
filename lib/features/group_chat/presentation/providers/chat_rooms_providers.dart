@@ -389,6 +389,21 @@ class ChatRoomsNotifier extends StateNotifier<ChatRoomsState>
   /// old list able to page on from where it was.
   Future<void> refresh() => loadInitial();
 
+  /// Clears [roomId]'s unread [messageType] (every type when null) once the
+  /// server has been told the viewer read it. Marking a room read moves no
+  /// signal, so without this every dot would wait for the next refetch.
+  /// Callers check `exists` first, so a read never starts a fetch of its own.
+  void markReadLocally(String roomId, {String? messageType}) {
+    if (!mounted) return;
+    final rooms = roomsWithRoomRead(
+      state.rooms,
+      roomId,
+      messageType: messageType,
+    );
+    if (identical(rooms, state.rooms)) return;
+    state = state.copyWith(rooms: rooms);
+  }
+
   void retry() {
     if (state.rooms.isEmpty) {
       loadInitial();
