@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'package:flutter_pecha/features/group_profile/domain/entities/visible_name.dart';
 import 'package:flutter_pecha/features/mala/domain/entities/mantra.dart';
 import 'package:flutter_pecha/shared/domain/value_objects/responsive_image.dart';
 
@@ -166,8 +167,11 @@ class GroupAccumulatorUserContribution extends Equatable {
 
   /// Name shown in the UI: the display name, then the full name, then the
   /// username.
-  String get displayName =>
-      _visibleName(userDisplayName, fullname, username);
+  String get displayName => visibleUserName(
+    displayName: userDisplayName,
+    fullname: fullname,
+    username: username,
+  );
 
   @override
   List<Object?> get props => [
@@ -205,8 +209,11 @@ class GroupAccumulatorMember extends Equatable {
 
   /// Name shown in the UI: the display name, then the full name, then the
   /// username.
-  String get displayName =>
-      _visibleName(userDisplayName, fullname, username);
+  String get displayName => visibleUserName(
+    displayName: userDisplayName,
+    fullname: fullname,
+    username: username,
+  );
 
   @override
   List<Object?> get props => [
@@ -219,14 +226,6 @@ class GroupAccumulatorMember extends Equatable {
     todayCount,
     userDisplayName,
   ];
-}
-
-String _visibleName(String? displayName, String fullname, String username) {
-  final display = displayName?.trim() ?? '';
-  if (display.isNotEmpty) return display;
-  final full = fullname.trim();
-  if (full.isNotEmpty) return full;
-  return username;
 }
 
 enum GroupAccumulatorMemberSort { today, total }

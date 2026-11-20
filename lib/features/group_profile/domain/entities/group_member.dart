@@ -1,4 +1,5 @@
 import 'package:flutter_pecha/features/group_profile/domain/entities/group_member_role.dart';
+import 'package:flutter_pecha/features/group_profile/domain/entities/visible_name.dart';
 
 class GroupMember {
   final String userId;
@@ -23,13 +24,11 @@ class GroupMember {
 
   /// Name shown in the UI: the display name, then the full name for
   /// responses without one, then the username.
-  String get visibleName {
-    final display = displayName?.trim() ?? '';
-    if (display.isNotEmpty) return display;
-    final full = fullname.trim();
-    if (full.isNotEmpty) return full;
-    return username;
-  }
+  String get visibleName => visibleUserName(
+    displayName: displayName,
+    fullname: fullname,
+    username: username,
+  );
 
   /// `OWNER` or `ADMIN`. Both get a role badge and are never removable.
   bool get isAdmin => GroupMemberRole.isAdminTier(role);

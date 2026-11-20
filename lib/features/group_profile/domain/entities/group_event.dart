@@ -1,4 +1,5 @@
 import 'package:flutter_pecha/shared/domain/value_objects/responsive_image.dart';
+import 'package:flutter_pecha/features/group_profile/domain/entities/visible_name.dart';
 
 class GroupEventLink {
   final String id;
@@ -54,15 +55,12 @@ class GroupEventParticipant {
 
   /// Name shown in the UI: the display name, then the full name, then the
   /// username.
-  String get displayName {
-    final display = userDisplayName?.trim();
-    if (display != null && display.isNotEmpty) return display;
-    final name = fullname?.trim();
-    if (name != null && name.isNotEmpty) return name;
-    final handle = username?.trim();
-    if (handle != null && handle.isNotEmpty) return handle;
-    return 'Participant';
-  }
+  String get displayName => visibleUserName(
+    displayName: userDisplayName,
+    fullname: fullname,
+    username: username,
+    fallback: 'Participant',
+  );
 }
 
 class GroupEventLocation {
