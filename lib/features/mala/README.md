@@ -77,7 +77,7 @@ fetched by authenticated users, so the catch-all is safe.
 
 | Method | Path | Purpose |
 | --- | --- | --- |
-| `GET` | `/accumulators/presets` | Catalogue of preset mantras (paged, `language`). Sent with `no_cache` so it skips the 5-min HTTP cache and always returns the latest titles/images. |
+| `GET` | `/api/v2/accumulations?owner_type=platform` | Catalogue of preset mantras (paged, `language`). Same body as v1 `/accumulators/presets` plus each row's `last_used_at` (orders the carousel, see *Carousel order*). Sent with `no_cache` so it skips the 5-min HTTP cache and always returns the latest titles/images. Called as `ApiConfig.accumulationsV2Path` and listed in `ProtectedRoutes` on its own, since the `/accumulators/` catch-all doesn't cover it. |
 | `GET` | `/accumulators/{parent_id}` | The user's detail for one preset. **404 ⇒ no accumulator yet ⇒ seed at 0.** |
 | `GET` | `/accumulators/{accumulator_id}/groups` | Groups using this preset. Query `joined_only=true` returns only groups the user has joined. `{accumulator_id}` is the preset id (`Mantra.presetId`). Each row includes `user_total_count` — the user's **lifetime** total for that group (shown in the accumulations sheet). Sent with `no_cache`. |
 | `POST` | `/accumulators/user` | Lazily create the user's accumulator (`{parent_id}`, starts at 0). |
@@ -212,12 +212,44 @@ Providers:
   `mergeFromServerCounts()` reconciles with detail API, `resetCount()` for
   group reset.
 
+### Carousel order (latest used first)
+
+Each catalogue row has `last_used_at`: when the user last counted on that
+preset, personal or in a space accumulation built on it (`null` if never or
+without a token). A reset keeps it; changing images doesn't move it. It is
+cached in Hive with the rest of the row and carried onto `Mantra.lastUsedAt`.
+The list's `last_used_id` is parsed but not used: it can name a preset that
+isn't in the list.
+
+Only `MalaScreen` reorders (`latestUsedFirst` in
+`presentation/utils/mala_carousel_order.dart`): used presets newest first,
+then never-used ones in server order, then joined space mantras. The carousel
+opens on index 0, so it opens on the latest-used mantra; `initialPresetId`
+still wins. The select-session screen and the group hero card keep the
+server order.
+
+- **Pinned for the life of the screen.** The order is worked out on the first
+  non-empty catalogue and kept as preset ids (`_pinnedOrder`). A refresh
+  updates each mantra's content but not its position (`inPinnedOrder`); new
+  presets go at the end. A new order shows the next time the screen opens.
+  Otherwise a refresh (e.g. after counting on another device) would move the
+  page under the user's thumb.
+- **Local override.** The server only knows synced counts. Each counted bead
+  or added rounds on a preset (personal or group) writes `{preset_id, at}` to
+  SharedPreferences under `mala_last_used_preset_{userId}`
+  (`MalaLastUsedStore`, at most every 30 s per preset). When ordering, that
+  preset's time is the later of the server's and the local one.
+- `lastUsedAt` is not in `Mantra.props`: a `Mantra` keys `malaCounterProvider`,
+  and a refresh that only moves it must not restart the counter.
+- The first open after updating from a build without this uses the cached
+  catalogue, which has no `last_used_at` yet, so it opens in server order.
+
 ### Preset catalogue request and tradition filtering
 
 `MalaRemoteDataSource.fetchPresets` sends:
 
 ```
-GET /accumulators/presets?skip=0&limit=100&language=<content language>
+GET /api/v2/accumulations?owner_type=platform&skip=0&limit=100&language=<content language>
 Authorization: Bearer <token>    (AuthInterceptor)
 X-Timezone: <IANA zone>          (TimezoneInterceptor)
 ```

@@ -6,7 +6,8 @@ import 'package:flutter_pecha/features/mala/domain/entities/mala_count.dart';
 import 'package:flutter_pecha/features/mala/domain/entities/mantra.dart';
 
 abstract class MalaRepository {
-  /// Preset accumulators (catalogue), from `GET /accumulators/presets`.
+  /// Preset accumulators (catalogue), from
+  /// `GET /api/v2/accumulations?owner_type=platform`.
   /// [language] localizes the embedded mantra title/text/pronunciation.
   /// [search] filters presets server-side by name when non-empty.
   Future<Either<Failure, List<Mantra>>> getCatalogue({

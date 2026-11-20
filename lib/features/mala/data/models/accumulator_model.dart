@@ -101,7 +101,8 @@ class PresetMantraModel {
   );
 }
 
-/// `PublicAccumulatorDTO` (`GET /accumulators/presets`).
+/// A preset row of `GET /api/v2/accumulations?owner_type=platform` (the v1
+/// `PublicAccumulatorDTO` plus `last_used_at`).
 class PresetAccumulatorModel {
   const PresetAccumulatorModel({
     required this.id,
@@ -109,6 +110,7 @@ class PresetAccumulatorModel {
     this.beadImageUrl,
     this.metadata = const [],
     this.mantra,
+    this.lastUsedAt,
   });
 
   final String id;
@@ -116,6 +118,10 @@ class PresetAccumulatorModel {
   final String? beadImageUrl;
   final List<AccumulatorMetadataModel> metadata;
   final PresetMantraModel? mantra;
+
+  /// When the user last counted on this preset (personal or a space's
+  /// accumulation built on it). Null if never, or without a token.
+  final DateTime? lastUsedAt;
 
   factory PresetAccumulatorModel.fromJson(Map<String, dynamic> json) {
     final mantraJson = json['mantra'];
@@ -128,6 +134,7 @@ class PresetAccumulatorModel {
           mantraJson is Map<String, dynamic>
               ? PresetMantraModel.fromJson(mantraJson)
               : null,
+      lastUsedAt: _parseDate(json['last_used_at']),
     );
   }
 
@@ -137,6 +144,7 @@ class PresetAccumulatorModel {
     'mala_image_url': beadImageUrl,
     'metadata': metadata.map((m) => m.toJson()).toList(),
     'mantra': mantra?.toJson(),
+    'last_used_at': lastUsedAt?.toIso8601String(),
   };
 
   Mantra toEntity() => Mantra(
@@ -149,18 +157,26 @@ class PresetAccumulatorModel {
     beadImageUrl: mantra?.beadImageUrl ?? beadImageUrl,
     metadata: metadata.map((m) => m.toEntity()).toList(),
     mantra: mantra?.toEntity(),
+    lastUsedAt: lastUsedAt,
   );
 }
 
-/// Wrapper for `PublicAccumulatorsResponse`.
+/// Wrapper for the v2 preset list (v1 `PublicAccumulatorsResponse` plus
+/// `last_used_id`).
 class PresetAccumulatorsResponseModel {
   const PresetAccumulatorsResponseModel({
     required this.accumulators,
     required this.total,
+    this.lastUsedId,
   });
 
   final List<PresetAccumulatorModel> accumulators;
   final int total;
+
+  /// The preset the user counted on most recently, across all their history.
+  /// It may not be in [accumulators] (filters, favourites), so the order is
+  /// built from each row's `last_used_at` instead.
+  final String? lastUsedId;
 
   factory PresetAccumulatorsResponseModel.fromJson(Map<String, dynamic> json) {
     final list = (json['accumulators'] as List<dynamic>?) ?? const [];
@@ -173,6 +189,7 @@ class PresetAccumulatorsResponseModel {
               )
               .toList(),
       total: (json['total'] as num?)?.toInt() ?? list.length,
+      lastUsedId: json['last_used_id'] as String?,
     );
   }
 }

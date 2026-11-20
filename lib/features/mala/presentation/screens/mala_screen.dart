@@ -14,12 +14,14 @@ import 'package:flutter_pecha/features/mala/presentation/providers/accumulator_g
 import 'package:flutter_pecha/features/mala/presentation/providers/group_accumulation_counts_provider.dart';
 import 'package:flutter_pecha/features/mala/presentation/providers/mala_accumulation_selection_provider.dart';
 import 'package:flutter_pecha/features/mala/presentation/providers/mala_appearance_provider.dart';
+import 'package:flutter_pecha/features/mala/presentation/providers/mala_last_used_provider.dart';
 import 'package:flutter_pecha/features/mala/presentation/providers/mala_providers.dart';
 import 'package:flutter_pecha/features/mala/presentation/providers/mala_settings_provider.dart';
 import 'package:flutter_pecha/features/mala/presentation/providers/mala_sync_manager.dart';
 import 'package:flutter_pecha/features/mala/presentation/providers/space_mantra_providers.dart';
 import 'package:flutter_pecha/features/mala/presentation/screens/mala_settings_screen.dart';
 import 'package:flutter_pecha/features/mala/presentation/utils/mala_analytics.dart';
+import 'package:flutter_pecha/features/mala/presentation/utils/mala_carousel_order.dart';
 import 'package:flutter_pecha/features/mala/presentation/widgets/add_mala_rounds_button.dart';
 import 'package:flutter_pecha/features/mala/presentation/widgets/group_accumulations_bar.dart';
 import 'package:flutter_pecha/features/mala/presentation/widgets/mala_beads.dart';
@@ -100,6 +102,11 @@ class _MalaPractice {
 class _MalaScreenState extends ConsumerState<MalaScreen> {
   int _index = 0;
   bool _initialisedIndex = false;
+
+  /// Preset ids in carousel order, fixed on the first non-empty catalogue so
+  /// a refresh never moves the page under the user's thumb. A new order
+  /// shows the next time the screen opens.
+  List<String>? _pinnedOrder;
   bool _appliedInitialGroupSelection = false;
   bool _trackedOpened = false;
   late final MalaSessionTracker _session;
@@ -195,7 +202,9 @@ class _MalaScreenState extends ConsumerState<MalaScreen> {
 
     final catalogue = ref.watch(malaCatalogueProvider);
     // _buildLoaded calls ref.listen, so it must run in this build method.
-    final presets = ScreenCacheBuilder.loadedOf(catalogue);
+    final loadedPresets = ScreenCacheBuilder.loadedOf(catalogue);
+    final presets =
+        loadedPresets == null ? null : _carouselOrder(loadedPresets);
     final loaded =
         presets == null
             ? null
@@ -229,6 +238,19 @@ class _MalaScreenState extends ConsumerState<MalaScreen> {
         ),
       ),
     );
+  }
+
+  /// Latest-used first, worked out once and then pinned. Only this screen
+  /// reorders: the catalogue's other readers keep the server's order.
+  List<Mantra> _carouselOrder(List<Mantra> presets) {
+    final pinned = _pinnedOrder;
+    if (pinned != null) return inPinnedOrder(presets, pinned);
+    final local = ref.read(malaLastUsedStoreProvider).read(malaUserIdSync());
+    final ordered = latestUsedFirst(presets, local: local);
+    if (ordered.isNotEmpty) {
+      _pinnedOrder = [for (final m in ordered) m.presetId];
+    }
+    return ordered;
   }
 
   /// Joined space accumulations whose mantra is not shown through a preset,
@@ -487,6 +509,8 @@ class _MalaScreenState extends ConsumerState<MalaScreen> {
       }
       // Null means the tap was ignored, so no bead was counted.
       if (total == null) return;
+      // Personal and group counts both move the preset to the front.
+      recordMalaPresetUsed(ref, mantra.presetId);
       _session.onBead(
         presetId: mantra.presetId,
         mantraName: mantra.localizedName('en'),
