@@ -125,7 +125,7 @@
   "my_recitation_collection_chant_count": "{count, plural, =0 {ရွတ်ဆိုရန်စာ 0 ပုဒ်} =1 {ရွတ်ဆိုရန်စာ 1 ပုဒ်} other {ရွတ်ဆိုရန်စာ {count} ပုဒ်}}",
   "my_recitation_collection_chant_count_owner": "{count, plural, =0 {ရွတ်ဆိုရန်စာ 0 ပုဒ် • ကျွန်ုပ်} =1 {ရွတ်ဆိုရန်စာ 1 ပုဒ် • ကျွန်ုပ်} other {ရွတ်ဆိုရန်စာ {count} ပုဒ် • ကျွန်ုပ်}}",
   "chant_book_bookmarks_empty_title": "မှတ်ထားသော ရွတ်ဆိုရန်စာ စုစည်းမှု မရှိသေးပါ",
-  "bookmarks_empty_chant_collections_subtitle": "တစ်ခုကို မှတ်ထားပါက ဤနေရာတွင် သိမ်းထားပါမည်",
+  "chant_book_bookmarks_empty_subtitle": "တစ်ခုကို မှတ်ထားပါက ဤနေရာတွင် သိမ်းထားပါမည်",
   "notification_allow_title": "အသိပေးချက်များ ခွင့်ပြုရန်",
   "notification_allow_subtitle_disabled": "ခွင့်ပြုချက် လိုအပ်ပါသည်။ ဆက်တင်များတွင် ခွင့်ပြုရန် နှိပ်ပါ",
   "notification_snack_permission_denied": "အသိပေးချက်များကို ပိတ်ဆို့ထားပါသည်။ ဆက်တင်များတွင် ဖွင့်ပါ",

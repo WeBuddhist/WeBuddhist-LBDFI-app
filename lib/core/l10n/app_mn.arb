@@ -195,7 +195,7 @@
     }
   },
   "chant_book_bookmarks_empty_title": "Хараахан магтаалын ном хавчуургалаагүй байна",
-  "bookmarks_empty_chant_collections_subtitle": "Энд хадгалахын тулд цуглуулга хавчуургалаарай",
+  "chant_book_bookmarks_empty_subtitle": "Энд хадгалахын тулд магтаалын ном хавчуургалаарай",
   "notification_allow_title": "Мэдэгдэл зөвшөөрөх",
   "notification_allow_subtitle_disabled": "Зөвшөөрөл шаардлагатай. Тохиргоо хэсэгт олгохын тулд дарна уу",
   "notification_snack_permission_denied": "Мэдэгдэл хаагдсан байна. Тохиргоо хэсэгт идэвхжүүлнэ үү",

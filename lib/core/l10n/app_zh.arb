@@ -195,7 +195,7 @@
     }
   },
   "chant_book_bookmarks_empty_title": "尚無加入書籤的持誦集",
-  "bookmarks_empty_chant_collections_subtitle": "將法本加入書籤，，即可收藏於此",
+  "chant_book_bookmarks_empty_subtitle": "將持誦集加入書籤，即可收藏於此",
   "notification_allow_title": "允許通知",
   "notification_allow_subtitle_disabled": "需要權限。請點此前往「設定」授權",
   "notification_snack_permission_denied": "通知已被封鎖。請在「設定」中開啟",

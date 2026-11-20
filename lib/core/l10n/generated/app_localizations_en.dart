@@ -442,7 +442,7 @@ class AppLocalizationsEn extends AppLocalizations {
       'No chant books bookmarked yet';
 
   @override
-  String get bookmarks_empty_chant_collections_subtitle =>
+  String get chant_book_bookmarks_empty_subtitle =>
       'Bookmark one to save it here';
 
   @override

@@ -445,7 +445,7 @@ class AppLocalizationsMy extends AppLocalizations {
       'မှတ်ထားသော ရွတ်ဆိုရန်စာ စုစည်းမှု မရှိသေးပါ';
 
   @override
-  String get bookmarks_empty_chant_collections_subtitle =>
+  String get chant_book_bookmarks_empty_subtitle =>
       'တစ်ခုကို မှတ်ထားပါက ဤနေရာတွင် သိမ်းထားပါမည်';
 
   @override

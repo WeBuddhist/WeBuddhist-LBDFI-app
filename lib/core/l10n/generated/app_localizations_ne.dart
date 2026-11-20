@@ -444,8 +444,8 @@ class AppLocalizationsNe extends AppLocalizations {
       'अहिलेसम्म कुनै जप पुस्तक बुकमार्क गरिएको छैन';
 
   @override
-  String get bookmarks_empty_chant_collections_subtitle =>
-      'यहाँ सुरक्षित गर्न कुनै संग्रह बुकमार्क गर्नुहोस्';
+  String get chant_book_bookmarks_empty_subtitle =>
+      'यहाँ सुरक्षित गर्न कुनै जप पुस्तक बुकमार्क गर्नुहोस्';
 
   @override
   String get notification_allow_title => 'सूचनाहरू अनुमति दिनुहोस्';

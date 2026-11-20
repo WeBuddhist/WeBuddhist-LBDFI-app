@@ -125,7 +125,7 @@
   "my_recitation_collection_chant_count": "{count, plural,\n=0 {0 บทสวด}\n=1 {1 บทสวด}\nother {{count} บทสวด}\n}",
   "my_recitation_collection_chant_count_owner": "{count, plural,\n=0 {0 บทสวด • ฉัน}\n=1 {1 บทสวด • ฉัน}\nother {{count} บทสวด • ฉัน}\n}",
   "chant_book_bookmarks_empty_title": "ยังไม่มีชุดบทสวดที่บุ๊กมาร์กไว้",
-  "bookmarks_empty_chant_collections_subtitle": "บุ๊กมาร์กรายการที่สนใจเพื่อเก็บไว้ที่นี่",
+  "chant_book_bookmarks_empty_subtitle": "บุ๊กมาร์กรายการที่สนใจเพื่อเก็บไว้ที่นี่",
   "notification_allow_title": "อนุญาตการแจ้งเตือน",
   "notification_allow_subtitle_disabled": "ต้องได้รับอนุญาต แตะเพื่ออนุญาตในการตั้งค่า",
   "notification_snack_permission_denied": "การแจ้งเตือนถูกบล็อก เปิดได้ในการตั้งค่า",

@@ -209,7 +209,7 @@
     }
   },
   "chant_book_bookmarks_empty_title": "No chant books bookmarked yet",
-  "bookmarks_empty_chant_collections_subtitle": "Bookmark one to save it here",
+  "chant_book_bookmarks_empty_subtitle": "Bookmark one to save it here",
   "notification_allow_title": "Allow notifications",
   "notification_allow_subtitle_disabled": "Permission needed. Tap to grant in Settings",
   "notification_snack_permission_denied": "Notifications are blocked. Turn them on in Settings",

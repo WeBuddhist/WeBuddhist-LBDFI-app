@@ -444,8 +444,8 @@ class AppLocalizationsMn extends AppLocalizations {
       'Хараахан магтаалын ном хавчуургалаагүй байна';
 
   @override
-  String get bookmarks_empty_chant_collections_subtitle =>
-      'Энд хадгалахын тулд цуглуулга хавчуургалаарай';
+  String get chant_book_bookmarks_empty_subtitle =>
+      'Энд хадгалахын тулд магтаалын ном хавчуургалаарай';
 
   @override
   String get notification_allow_title => 'Мэдэгдэл зөвшөөрөх';

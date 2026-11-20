@@ -195,7 +195,7 @@
     }
   },
   "chant_book_bookmarks_empty_title": "ད་དུང་དཔེ་རྟགས་བཀོད་པའི་ཞལ་འདོན་དེབ་མི་འདུག",
-  "bookmarks_empty_chant_collections_subtitle": "ཕྱོགས་བསྡུས་ཞིག་འདིར་ཉར་བར་དེ་ལ་དཔེ་རྟགས་འགོད་རོགས།",
+  "chant_book_bookmarks_empty_subtitle": "ཞལ་འདོན་དེབ་ཞིག་འདིར་ཉར་བར་དེ་ལ་དཔེ་རྟགས་འགོད་རོགས།",
   "notification_allow_title": "གསར་བརྡ་གཏོང་ཆོག",
   "notification_allow_subtitle_disabled": "ཆོག་མཆན་དགོས། སྒྲིག་འགོད་ནང་ཆོག་མཆན་སྤྲོད་པར་འདིར་ནོན།",
   "notification_snack_permission_denied": "གསར་བརྡ་ཁག་བཀག་འདུག སྒྲིག་འགོད་ནང་ནས་དེ་སྒོ་འབྱེད་རོགས།",

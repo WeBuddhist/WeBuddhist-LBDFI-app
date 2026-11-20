@@ -443,8 +443,8 @@ class AppLocalizationsHi extends AppLocalizations {
       'अभी तक कोई जप पुस्तक बुकमार्क नहीं की गई';
 
   @override
-  String get bookmarks_empty_chant_collections_subtitle =>
-      'इसे यहाँ सहेजने के लिए किसी संग्रह को बुकमार्क करें';
+  String get chant_book_bookmarks_empty_subtitle =>
+      'इसे यहाँ सहेजने के लिए किसी जप पुस्तक को बुकमार्क करें';
 
   @override
   String get notification_allow_title => 'नोटिफिकेशन की अनुमति दें';

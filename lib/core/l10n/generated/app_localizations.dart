@@ -863,11 +863,11 @@ abstract class AppLocalizations {
   /// **'No chant books bookmarked yet'**
   String get chant_book_bookmarks_empty_title;
 
-  /// No description provided for @bookmarks_empty_chant_collections_subtitle.
+  /// No description provided for @chant_book_bookmarks_empty_subtitle.
   ///
   /// In en, this message translates to:
   /// **'Bookmark one to save it here'**
-  String get bookmarks_empty_chant_collections_subtitle;
+  String get chant_book_bookmarks_empty_subtitle;
 
   /// No description provided for @notification_allow_title.
   ///

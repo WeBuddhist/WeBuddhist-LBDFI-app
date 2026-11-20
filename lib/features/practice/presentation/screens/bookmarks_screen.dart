@@ -52,7 +52,7 @@ class _BookmarksScreenState extends ConsumerState<BookmarksScreen>
     ),
     BookmarkTab.chants => (
       context.l10n.chant_book_bookmarks_empty_title,
-      context.l10n.bookmarks_empty_chant_collections_subtitle,
+      context.l10n.chant_book_bookmarks_empty_subtitle,
     ),
     BookmarkTab.mala => (
       context.l10n.bookmarks_empty_malas_title,

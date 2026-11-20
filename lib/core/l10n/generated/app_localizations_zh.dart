@@ -433,7 +433,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get chant_book_bookmarks_empty_title => '尚無加入書籤的持誦集';
 
   @override
-  String get bookmarks_empty_chant_collections_subtitle => '將法本加入書籤，，即可收藏於此';
+  String get chant_book_bookmarks_empty_subtitle => '將持誦集加入書籤，即可收藏於此';
 
   @override
   String get notification_allow_title => '允許通知';
@@ -4627,7 +4627,7 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get chant_book_bookmarks_empty_title => '尚无加入书签的持诵集';
 
   @override
-  String get bookmarks_empty_chant_collections_subtitle => '将法本加入书签，即可收藏于此';
+  String get chant_book_bookmarks_empty_subtitle => '将持诵集加入书签，即可收藏于此';
 
   @override
   String get notification_allow_title => '允许通知';

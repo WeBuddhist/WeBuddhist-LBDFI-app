@@ -443,7 +443,7 @@ class AppLocalizationsVi extends AppLocalizations {
       'Chưa đánh dấu tuyển tập bài tụng nào';
 
   @override
-  String get bookmarks_empty_chant_collections_subtitle =>
+  String get chant_book_bookmarks_empty_subtitle =>
       'Đánh dấu một tuyển tập để lưu vào đây';
 
   @override

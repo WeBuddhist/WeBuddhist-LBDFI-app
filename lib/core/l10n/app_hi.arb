@@ -195,7 +195,7 @@
     }
   },
   "chant_book_bookmarks_empty_title": "अभी तक कोई जप पुस्तक बुकमार्क नहीं की गई",
-  "bookmarks_empty_chant_collections_subtitle": "इसे यहाँ सहेजने के लिए किसी संग्रह को बुकमार्क करें",
+  "chant_book_bookmarks_empty_subtitle": "इसे यहाँ सहेजने के लिए किसी जप पुस्तक को बुकमार्क करें",
   "notification_allow_title": "नोटिफिकेशन की अनुमति दें",
   "notification_allow_subtitle_disabled": "अनुमति आवश्यक है। अनुमति देने के लिए सेटिंग्स में टैप करें",
   "notification_snack_permission_denied": "नोटिफिकेशन ब्लॉक हैं। उन्हें सेटिंग्स में चालू करें",

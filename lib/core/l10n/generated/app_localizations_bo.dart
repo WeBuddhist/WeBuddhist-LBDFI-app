@@ -442,8 +442,8 @@ class AppLocalizationsBo extends AppLocalizations {
       'ད་དུང་དཔེ་རྟགས་བཀོད་པའི་ཞལ་འདོན་དེབ་མི་འདུག';
 
   @override
-  String get bookmarks_empty_chant_collections_subtitle =>
-      'ཕྱོགས་བསྡུས་ཞིག་འདིར་ཉར་བར་དེ་ལ་དཔེ་རྟགས་འགོད་རོགས།';
+  String get chant_book_bookmarks_empty_subtitle =>
+      'ཞལ་འདོན་དེབ་ཞིག་འདིར་ཉར་བར་དེ་ལ་དཔེ་རྟགས་འགོད་རོགས།';
 
   @override
   String get notification_allow_title => 'གསར་བརྡ་གཏོང་ཆོག';

@@ -805,10 +805,10 @@ class TolgeeAppLocalizations extends AppLocalizations {
   );
 
   @override
-  String get bookmarks_empty_chant_collections_subtitle => TolgeeBridge.get(
+  String get chant_book_bookmarks_empty_subtitle => TolgeeBridge.get(
     localeName,
-    'bookmarks_empty_chant_collections_subtitle',
-    () => _fallback.bookmarks_empty_chant_collections_subtitle,
+    'chant_book_bookmarks_empty_subtitle',
+    () => _fallback.chant_book_bookmarks_empty_subtitle,
   );
 
   @override
