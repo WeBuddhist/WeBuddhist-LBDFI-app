@@ -1502,115 +1502,115 @@ class AppLocalizationsZh extends AppLocalizations {
   String get calendar_title => '日曆';
 
   @override
-  String get calendar_choose_calendar => 'Choose calendar';
+  String get calendar_choose_calendar => '選擇日曆';
 
   @override
   String get settings_calendar_row => 'Calendar';
 
   @override
-  String get calendar_tradition_vajrayana => 'Vajrayana';
+  String get calendar_tradition_vajrayana => '金剛乘';
 
   @override
-  String get calendar_tradition_theravada => 'Theravada';
+  String get calendar_tradition_theravada => '上座部';
 
   @override
-  String get calendar_tradition_mahayana => 'Mahayana';
+  String get calendar_tradition_mahayana => '大乘';
 
   @override
-  String get calendar_type_phugpa => 'Tibetan (Phugpa)';
+  String get calendar_type_phugpa => '藏曆（浦派）';
 
   @override
-  String get calendar_type_tsurphu => 'Tibetan (Tsurphu)';
+  String get calendar_type_tsurphu => '藏曆（楚布派）';
 
   @override
-  String get calendar_type_nyingmapa => 'Nyingma';
+  String get calendar_type_nyingmapa => '寧瑪派';
 
   @override
-  String get calendar_type_sinhalese => 'Sinhalese';
+  String get calendar_type_sinhalese => '僧伽羅曆';
 
   @override
-  String get calendar_type_thai => 'Thai';
+  String get calendar_type_thai => '泰曆';
 
   @override
-  String get calendar_type_burmese => 'Burmese';
+  String get calendar_type_burmese => '緬甸曆';
 
   @override
-  String get calendar_type_lao => 'Lao';
+  String get calendar_type_lao => '寮國曆';
 
   @override
-  String get calendar_type_chinese => 'Chinese';
+  String get calendar_type_chinese => '農曆';
 
   @override
-  String get calendar_type_vietnamese => 'Vietnamese';
+  String get calendar_type_vietnamese => '越南曆';
 
   @override
-  String get calendar_type_korean => 'Korean';
+  String get calendar_type_korean => '韓國曆';
 
   @override
-  String get calendar_type_japanese => 'Japanese';
+  String get calendar_type_japanese => '日本曆';
 
   @override
-  String get calendar_today => 'Today';
+  String get calendar_today => '今天';
 
   @override
-  String get calendar_no_events => 'No events';
+  String get calendar_no_events => '沒有活動';
 
   @override
-  String get calendar_source_lunar => 'Lunar calendar';
+  String get calendar_source_lunar => '陰曆';
 
   @override
-  String get calendar_add_event => 'Add event';
+  String get calendar_add_event => '新增活動';
 
   @override
-  String get calendar_event_name => 'Event name';
+  String get calendar_event_name => '活動名稱';
 
   @override
-  String get calendar_event_name_hint => 'Add an event to your calendar';
+  String get calendar_event_name_hint => '在日曆中新增活動';
 
   @override
-  String get calendar_repeat => 'Repeat';
+  String get calendar_repeat => '重複';
 
   @override
-  String get calendar_does_not_repeat => 'Does not repeat';
+  String get calendar_does_not_repeat => '不重複';
 
   @override
-  String get calendar_repeat_weekly => 'Weekly';
+  String get calendar_repeat_weekly => '每週';
 
   @override
-  String get calendar_repeat_monthly => 'Monthly';
+  String get calendar_repeat_monthly => '每月';
 
   @override
-  String get calendar_repeat_yearly => 'Yearly';
+  String get calendar_repeat_yearly => '每年';
 
   @override
   String calendar_repeat_monthly_lunar(String day) {
-    return 'Monthly ($day lunar)';
+    return '每月（陰曆$day日）';
   }
 
   @override
-  String get calendar_repeat_yearly_lunar => 'Yearly (lunar date)';
+  String get calendar_repeat_yearly_lunar => '每年（陰曆日期）';
 
   @override
-  String get calendar_delete_event => 'Delete event';
+  String get calendar_delete_event => '刪除活動';
 
   @override
-  String get calendar_delete_event_title => 'Delete event?';
+  String get calendar_delete_event_title => '刪除活動？';
 
   @override
   String calendar_delete_event_body(String title) {
-    return '\"$title\" will be removed from your calendar. This can’t be undone.';
+    return '「$title」將從你的日曆中移除。此操作無法復原。';
   }
 
   @override
-  String get calendar_delete_repeating_title => 'Delete repeating event?';
+  String get calendar_delete_repeating_title => '刪除重複活動？';
 
   @override
   String calendar_delete_repeating_body(String title, String repeat) {
-    return 'Every date of \"$title\" ($repeat) will be removed from your calendar. This can’t be undone.';
+    return '「$title」（$repeat）的所有日期都將從你的日曆中移除。此操作無法復原。';
   }
 
   @override
-  String get calendar_event_deleted => 'Event deleted';
+  String get calendar_event_deleted => '已刪除活動';
 
   @override
   String get calendar_upcoming_events => '近期活動';
@@ -5672,6 +5672,114 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String get calendar_title => '日历';
+
+  @override
+  String get calendar_choose_calendar => '选择日历';
+
+  @override
+  String get calendar_tradition_vajrayana => '金刚乘';
+
+  @override
+  String get calendar_tradition_theravada => '上座部';
+
+  @override
+  String get calendar_tradition_mahayana => '大乘';
+
+  @override
+  String get calendar_type_phugpa => '藏历（浦派）';
+
+  @override
+  String get calendar_type_tsurphu => '藏历（楚布派）';
+
+  @override
+  String get calendar_type_nyingmapa => '宁玛派';
+
+  @override
+  String get calendar_type_sinhalese => '僧伽罗历';
+
+  @override
+  String get calendar_type_thai => '泰历';
+
+  @override
+  String get calendar_type_burmese => '缅甸历';
+
+  @override
+  String get calendar_type_lao => '老挝历';
+
+  @override
+  String get calendar_type_chinese => '农历';
+
+  @override
+  String get calendar_type_vietnamese => '越南历';
+
+  @override
+  String get calendar_type_korean => '韩国历';
+
+  @override
+  String get calendar_type_japanese => '日本历';
+
+  @override
+  String get calendar_today => '今天';
+
+  @override
+  String get calendar_no_events => '没有活动';
+
+  @override
+  String get calendar_source_lunar => '阴历';
+
+  @override
+  String get calendar_add_event => '添加活动';
+
+  @override
+  String get calendar_event_name => '活动名称';
+
+  @override
+  String get calendar_event_name_hint => '在日历中添加活动';
+
+  @override
+  String get calendar_repeat => '重复';
+
+  @override
+  String get calendar_does_not_repeat => '不重复';
+
+  @override
+  String get calendar_repeat_weekly => '每周';
+
+  @override
+  String get calendar_repeat_monthly => '每月';
+
+  @override
+  String get calendar_repeat_yearly => '每年';
+
+  @override
+  String calendar_repeat_monthly_lunar(String day) {
+    return '每月（阴历$day日）';
+  }
+
+  @override
+  String get calendar_repeat_yearly_lunar => '每年（阴历日期）';
+
+  @override
+  String get calendar_delete_event => '删除活动';
+
+  @override
+  String get calendar_delete_event_title => '删除活动？';
+
+  @override
+  String calendar_delete_event_body(String title) {
+    return '“$title”将从你的日历中移除。此操作无法撤销。';
+  }
+
+  @override
+  String get calendar_delete_repeating_title => '删除重复活动？';
+
+  @override
+  String calendar_delete_repeating_body(String title, String repeat) {
+    return '“$title”（$repeat）的所有日期都将从你的日历中移除。此操作无法撤销。';
+  }
+
+  @override
+  String get calendar_event_deleted => '活动已删除';
 
   @override
   String get calendar_upcoming_events => '近期活动';

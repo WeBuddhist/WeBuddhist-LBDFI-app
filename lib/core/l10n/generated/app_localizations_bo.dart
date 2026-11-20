@@ -1581,115 +1581,115 @@ class AppLocalizationsBo extends AppLocalizations {
   String get calendar_title => 'ལོ་ཐོ།';
 
   @override
-  String get calendar_choose_calendar => 'Choose calendar';
+  String get calendar_choose_calendar => 'ལོ་ཐོ་འདེམས།';
 
   @override
   String get settings_calendar_row => 'Calendar';
 
   @override
-  String get calendar_tradition_vajrayana => 'Vajrayana';
+  String get calendar_tradition_vajrayana => 'རྡོ་རྗེ་ཐེག་པ།';
 
   @override
-  String get calendar_tradition_theravada => 'Theravada';
+  String get calendar_tradition_theravada => 'གནས་བརྟན་པ།';
 
   @override
-  String get calendar_tradition_mahayana => 'Mahayana';
+  String get calendar_tradition_mahayana => 'ཐེག་པ་ཆེན་པོ།';
 
   @override
-  String get calendar_type_phugpa => 'Tibetan (Phugpa)';
+  String get calendar_type_phugpa => 'བོད། (ཕུག་ལུགས།)';
 
   @override
-  String get calendar_type_tsurphu => 'Tibetan (Tsurphu)';
+  String get calendar_type_tsurphu => 'བོད། (མཚུར་ལུགས།)';
 
   @override
-  String get calendar_type_nyingmapa => 'Nyingma';
+  String get calendar_type_nyingmapa => 'རྙིང་མ།';
 
   @override
-  String get calendar_type_sinhalese => 'Sinhalese';
+  String get calendar_type_sinhalese => 'སིང་ག་ལ།';
 
   @override
-  String get calendar_type_thai => 'Thai';
+  String get calendar_type_thai => 'ཐའི།';
 
   @override
-  String get calendar_type_burmese => 'Burmese';
+  String get calendar_type_burmese => 'འབར་མ།';
 
   @override
-  String get calendar_type_lao => 'Lao';
+  String get calendar_type_lao => 'ལའོ།';
 
   @override
-  String get calendar_type_chinese => 'Chinese';
+  String get calendar_type_chinese => 'རྒྱ་ནག';
 
   @override
-  String get calendar_type_vietnamese => 'Vietnamese';
+  String get calendar_type_vietnamese => 'ཝེད་ནམ།';
 
   @override
-  String get calendar_type_korean => 'Korean';
+  String get calendar_type_korean => 'ཀོ་རི་ཡ།';
 
   @override
-  String get calendar_type_japanese => 'Japanese';
+  String get calendar_type_japanese => 'ཉི་ཧོང་།';
 
   @override
-  String get calendar_today => 'Today';
+  String get calendar_today => 'དེ་རིང་།';
 
   @override
-  String get calendar_no_events => 'No events';
+  String get calendar_no_events => 'བྱེད་སྒོ་མེད།';
 
   @override
-  String get calendar_source_lunar => 'Lunar calendar';
+  String get calendar_source_lunar => 'ཟླ་ཐོ།';
 
   @override
-  String get calendar_add_event => 'Add event';
+  String get calendar_add_event => 'བྱེད་སྒོ་སྣོན།';
 
   @override
-  String get calendar_event_name => 'Event name';
+  String get calendar_event_name => 'བྱེད་སྒོའི་མིང་།';
 
   @override
-  String get calendar_event_name_hint => 'Add an event to your calendar';
+  String get calendar_event_name_hint => 'ཁྱེད་ཀྱི་ལོ་ཐོར་བྱེད་སྒོ་ཞིག་སྣོན།';
 
   @override
-  String get calendar_repeat => 'Repeat';
+  String get calendar_repeat => 'བསྐྱར་ཟློས།';
 
   @override
-  String get calendar_does_not_repeat => 'Does not repeat';
+  String get calendar_does_not_repeat => 'བསྐྱར་ཟློས་མི་བྱེད།';
 
   @override
-  String get calendar_repeat_weekly => 'Weekly';
+  String get calendar_repeat_weekly => 'བདུན་ཕྲག་རེ་བཞིན།';
 
   @override
-  String get calendar_repeat_monthly => 'Monthly';
+  String get calendar_repeat_monthly => 'ཟླ་བ་རེ་བཞིན།';
 
   @override
-  String get calendar_repeat_yearly => 'Yearly';
+  String get calendar_repeat_yearly => 'ལོ་རེ་བཞིན།';
 
   @override
   String calendar_repeat_monthly_lunar(String day) {
-    return 'Monthly ($day lunar)';
+    return 'ཟླ་བ་རེ་བཞིན། (ཚེས་$day)';
   }
 
   @override
-  String get calendar_repeat_yearly_lunar => 'Yearly (lunar date)';
+  String get calendar_repeat_yearly_lunar => 'ལོ་རེ་བཞིན། (ཟླ་ཚེས།)';
 
   @override
-  String get calendar_delete_event => 'Delete event';
+  String get calendar_delete_event => 'བྱེད་སྒོ་སུབས།';
 
   @override
-  String get calendar_delete_event_title => 'Delete event?';
+  String get calendar_delete_event_title => 'བྱེད་སྒོ་སུབས་སམ།';
 
   @override
   String calendar_delete_event_body(String title) {
-    return '\"$title\" will be removed from your calendar. This can’t be undone.';
+    return '\"$title\" ཁྱེད་ཀྱི་ལོ་ཐོ་ནས་སུབས་ངེས། འདི་ཕྱིར་ལོག་བྱེད་ཐབས་མེད།';
   }
 
   @override
-  String get calendar_delete_repeating_title => 'Delete repeating event?';
+  String get calendar_delete_repeating_title => 'བསྐྱར་ཟློས་བྱེད་སྒོ་སུབས་སམ།';
 
   @override
   String calendar_delete_repeating_body(String title, String repeat) {
-    return 'Every date of \"$title\" ($repeat) will be removed from your calendar. This can’t be undone.';
+    return '\"$title\" ($repeat) ཡི་ཚེས་གྲངས་ཚང་མ་ཁྱེད་ཀྱི་ལོ་ཐོ་ནས་སུབས་ངེས། འདི་ཕྱིར་ལོག་བྱེད་ཐབས་མེད།';
   }
 
   @override
-  String get calendar_event_deleted => 'Event deleted';
+  String get calendar_event_deleted => 'བྱེད་སྒོ་སུབས་ཟིན།';
 
   @override
   String get calendar_upcoming_events => 'འབྱུང་འགྱུར་བྱེད་སྒོ།';

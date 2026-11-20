@@ -563,6 +563,64 @@
       }
     }
   },
+  "calendar_choose_calendar": "Хуанли сонгох",
+  "calendar_tradition_vajrayana": "Очир хөлгөн",
+  "calendar_tradition_theravada": "Тэравада",
+  "calendar_tradition_mahayana": "Их хөлгөн",
+  "calendar_type_phugpa": "Төвөд (Пүгба)",
+  "calendar_type_tsurphu": "Төвөд (Цурпү)",
+  "calendar_type_nyingmapa": "Нингма",
+  "calendar_type_sinhalese": "Синхала",
+  "calendar_type_thai": "Тай",
+  "calendar_type_burmese": "Бирм",
+  "calendar_type_lao": "Лаос",
+  "calendar_type_chinese": "Хятад",
+  "calendar_type_vietnamese": "Вьетнам",
+  "calendar_type_korean": "Солонгос",
+  "calendar_type_japanese": "Япон",
+  "calendar_today": "Өнөөдөр",
+  "calendar_no_events": "Арга хэмжээ алга",
+  "calendar_source_lunar": "Билгийн тоолол",
+  "calendar_add_event": "Арга хэмжээ нэмэх",
+  "calendar_event_name": "Арга хэмжээний нэр",
+  "calendar_event_name_hint": "Хуанлидаа арга хэмжээ нэмэх",
+  "calendar_repeat": "Давтах",
+  "calendar_does_not_repeat": "Давтахгүй",
+  "calendar_repeat_weekly": "Долоо хоног бүр",
+  "calendar_repeat_monthly": "Сар бүр",
+  "calendar_repeat_yearly": "Жил бүр",
+  "calendar_repeat_monthly_lunar": "Сар бүр (билгийн {day}-ний өдөр)",
+  "@calendar_repeat_monthly_lunar": {
+    "placeholders": {
+      "day": {
+        "type": "String"
+      }
+    }
+  },
+  "calendar_repeat_yearly_lunar": "Жил бүр (билгийн огноо)",
+  "calendar_delete_event": "Арга хэмжээ устгах",
+  "calendar_delete_event_title": "Арга хэмжээг устгах уу?",
+  "calendar_delete_event_body": "\"{title}\" таны хуанлиас хасагдана. Үүнийг буцаах боломжгүй.",
+  "@calendar_delete_event_body": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "calendar_delete_repeating_title": "Давтагдах арга хэмжээг устгах уу?",
+  "calendar_delete_repeating_body": "\"{title}\" ({repeat})-ийн бүх огноо таны хуанлиас хасагдана. Үүнийг буцаах боломжгүй.",
+  "@calendar_delete_repeating_body": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      },
+      "repeat": {
+        "type": "String"
+      }
+    }
+  },
+  "calendar_event_deleted": "Арга хэмжээ устгагдлаа",
   "moon_phase_new_moon": "Шинэ сар",
   "moon_phase_first_quarter": "Тэргүүн улирал",
   "moon_phase_full_moon": "Тэргэл сар",

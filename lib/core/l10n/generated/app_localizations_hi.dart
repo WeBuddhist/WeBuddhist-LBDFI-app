@@ -1574,115 +1574,116 @@ class AppLocalizationsHi extends AppLocalizations {
   String get calendar_title => 'कैलेंडर';
 
   @override
-  String get calendar_choose_calendar => 'Choose calendar';
+  String get calendar_choose_calendar => 'कैलेंडर चुनें';
 
   @override
   String get settings_calendar_row => 'Calendar';
 
   @override
-  String get calendar_tradition_vajrayana => 'Vajrayana';
+  String get calendar_tradition_vajrayana => 'वज्रयान';
 
   @override
-  String get calendar_tradition_theravada => 'Theravada';
+  String get calendar_tradition_theravada => 'थेरवाद';
 
   @override
-  String get calendar_tradition_mahayana => 'Mahayana';
+  String get calendar_tradition_mahayana => 'महायान';
 
   @override
-  String get calendar_type_phugpa => 'Tibetan (Phugpa)';
+  String get calendar_type_phugpa => 'तिब्बती (फुगपा)';
 
   @override
-  String get calendar_type_tsurphu => 'Tibetan (Tsurphu)';
+  String get calendar_type_tsurphu => 'तिब्बती (त्सुरफू)';
 
   @override
-  String get calendar_type_nyingmapa => 'Nyingma';
+  String get calendar_type_nyingmapa => 'ञिङमा';
 
   @override
-  String get calendar_type_sinhalese => 'Sinhalese';
+  String get calendar_type_sinhalese => 'सिंहली';
 
   @override
-  String get calendar_type_thai => 'Thai';
+  String get calendar_type_thai => 'थाई';
 
   @override
-  String get calendar_type_burmese => 'Burmese';
+  String get calendar_type_burmese => 'बर्मी';
 
   @override
-  String get calendar_type_lao => 'Lao';
+  String get calendar_type_lao => 'लाओ';
 
   @override
-  String get calendar_type_chinese => 'Chinese';
+  String get calendar_type_chinese => 'चीनी';
 
   @override
-  String get calendar_type_vietnamese => 'Vietnamese';
+  String get calendar_type_vietnamese => 'वियतनामी';
 
   @override
-  String get calendar_type_korean => 'Korean';
+  String get calendar_type_korean => 'कोरियाई';
 
   @override
-  String get calendar_type_japanese => 'Japanese';
+  String get calendar_type_japanese => 'जापानी';
 
   @override
-  String get calendar_today => 'Today';
+  String get calendar_today => 'आज';
 
   @override
-  String get calendar_no_events => 'No events';
+  String get calendar_no_events => 'कोई कार्यक्रम नहीं';
 
   @override
-  String get calendar_source_lunar => 'Lunar calendar';
+  String get calendar_source_lunar => 'चंद्र कैलेंडर';
 
   @override
-  String get calendar_add_event => 'Add event';
+  String get calendar_add_event => 'कार्यक्रम जोड़ें';
 
   @override
-  String get calendar_event_name => 'Event name';
+  String get calendar_event_name => 'कार्यक्रम का नाम';
 
   @override
-  String get calendar_event_name_hint => 'Add an event to your calendar';
+  String get calendar_event_name_hint => 'अपने कैलेंडर में कार्यक्रम जोड़ें';
 
   @override
-  String get calendar_repeat => 'Repeat';
+  String get calendar_repeat => 'दोहराएँ';
 
   @override
-  String get calendar_does_not_repeat => 'Does not repeat';
+  String get calendar_does_not_repeat => 'दोहराया नहीं जाता';
 
   @override
-  String get calendar_repeat_weekly => 'Weekly';
+  String get calendar_repeat_weekly => 'साप्ताहिक';
 
   @override
-  String get calendar_repeat_monthly => 'Monthly';
+  String get calendar_repeat_monthly => 'मासिक';
 
   @override
-  String get calendar_repeat_yearly => 'Yearly';
+  String get calendar_repeat_yearly => 'वार्षिक';
 
   @override
   String calendar_repeat_monthly_lunar(String day) {
-    return 'Monthly ($day lunar)';
+    return 'मासिक (चंद्र तिथि $day)';
   }
 
   @override
-  String get calendar_repeat_yearly_lunar => 'Yearly (lunar date)';
+  String get calendar_repeat_yearly_lunar => 'वार्षिक (चंद्र तिथि)';
 
   @override
-  String get calendar_delete_event => 'Delete event';
+  String get calendar_delete_event => 'कार्यक्रम हटाएँ';
 
   @override
-  String get calendar_delete_event_title => 'Delete event?';
+  String get calendar_delete_event_title => 'कार्यक्रम हटाएँ?';
 
   @override
   String calendar_delete_event_body(String title) {
-    return '\"$title\" will be removed from your calendar. This can’t be undone.';
+    return '\"$title\" आपके कैलेंडर से हटा दिया जाएगा। इसे पूर्ववत नहीं किया जा सकता।';
   }
 
   @override
-  String get calendar_delete_repeating_title => 'Delete repeating event?';
+  String get calendar_delete_repeating_title =>
+      'दोहराया जाने वाला कार्यक्रम हटाएँ?';
 
   @override
   String calendar_delete_repeating_body(String title, String repeat) {
-    return 'Every date of \"$title\" ($repeat) will be removed from your calendar. This can’t be undone.';
+    return '\"$title\" ($repeat) की सभी तिथियाँ आपके कैलेंडर से हटा दी जाएँगी। इसे पूर्ववत नहीं किया जा सकता।';
   }
 
   @override
-  String get calendar_event_deleted => 'Event deleted';
+  String get calendar_event_deleted => 'कार्यक्रम हटा दिया गया';
 
   @override
   String get calendar_upcoming_events => 'आगामी इवेंट';
