@@ -10,10 +10,18 @@ abstract class MalaRepository {
   /// `GET /api/v2/accumulations?owner_type=platform`.
   /// [language] localizes the embedded mantra title/text/pronunciation.
   /// [search] filters presets server-side by name when non-empty.
+  /// [userId] is the account the local cache is kept under; without it, or
+  /// with a [search], the cache is neither read nor written.
   Future<Either<Failure, List<Mantra>>> getCatalogue({
     String? language,
     String? search,
+    String? userId,
   });
+
+  /// Fetches the catalogue and stores it under [userId], so readers of the
+  /// cache (`malaCatalogueProvider`) get fresh usage times. Never throws.
+  /// Joins a refresh already running for the same account and language.
+  Future<void> refreshCatalogue({required String userId, String? language});
 
   /// The user's detail for one preset, from `GET /accumulators/{parent_id}`.
   /// Returns a count of 0 with a null `accumulatorId` when the user has no

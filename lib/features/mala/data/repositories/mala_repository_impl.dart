@@ -77,12 +77,21 @@ class MalaRepositoryImpl implements MalaRepository {
   Future<Either<Failure, List<Mantra>>> getCatalogue({
     String? language,
     String? search,
+    String? userId,
   }) async {
     final cacheLanguage = language ?? 'en';
-    final canUseLocal = search == null || search.trim().isEmpty;
-    final cached = canUseLocal ? local?.readCatalogue(cacheLanguage) : null;
+    final cacheUser =
+        (search == null || search.trim().isEmpty) &&
+                userId != null &&
+                userId.isNotEmpty
+            ? userId
+            : null;
+    final cached =
+        cacheUser == null
+            ? null
+            : local?.readCatalogue(cacheUser, cacheLanguage);
     if (cached != null) {
-      unawaited(_refreshCatalogue(cacheLanguage));
+      unawaited(refreshCatalogue(userId: cacheUser!, language: cacheLanguage));
       return Right(cached.map((preset) => preset.toEntity()).toList());
     }
 
@@ -91,37 +100,52 @@ class MalaRepositoryImpl implements MalaRepository {
         language: language,
         search: search,
       );
-      if (canUseLocal) {
-        await local?.writeCatalogue(cacheLanguage, presets);
+      if (cacheUser != null) {
+        await local?.writeCatalogue(cacheUser, cacheLanguage, presets);
       }
       return Right(presets.map((p) => p.toEntity()).toList());
     } on AppException catch (e) {
-      return _legacyCatalogueOr(canUseLocal, cacheLanguage, _toFailure(e));
+      return _legacyCatalogueOr(cacheUser, cacheLanguage, _toFailure(e));
     } catch (e) {
       return _legacyCatalogueOr(
-        canUseLocal,
+        cacheUser,
         cacheLanguage,
         UnknownFailure('Failed to load catalogue: $e'),
       );
     }
   }
 
-  /// Offline right after the cache-key bump: serve the pre-v2 cache (no deity
-  /// images) rather than an error. The next online load replaces it.
+  /// Offline right after the cache-key bump: serve a pre-v3 cache (no usage
+  /// times) rather than an error. The next online load replaces it.
   Either<Failure, List<Mantra>> _legacyCatalogueOr(
-    bool canUseLocal,
+    String? userId,
     String language,
     Failure failure,
   ) {
     final legacy =
-        canUseLocal ? local?.readCatalogue(language, allowLegacy: true) : null;
+        userId == null
+            ? null
+            : local?.readCatalogue(userId, language, allowLegacy: true);
     if (legacy == null) return Left(failure);
     return Right(legacy.map((preset) => preset.toEntity()).toList());
   }
 
-  Future<void> _refreshCatalogue(String language) async {
-    final presets = await remote.fetchPresets(language: language);
-    await local?.writeCatalogue(language, presets);
+  final _catalogueRefreshes = <String, Future<void>>{};
+
+  @override
+  Future<void> refreshCatalogue({required String userId, String? language}) {
+    final cacheLanguage = language ?? 'en';
+    final key = '$userId:$cacheLanguage';
+    return _catalogueRefreshes[key] ??= () async {
+      try {
+        final presets = await remote.fetchPresets(language: cacheLanguage);
+        await local?.writeCatalogue(userId, cacheLanguage, presets);
+      } catch (_) {
+        // Offline or failed: the cached catalogue stays until the next one.
+      } finally {
+        _catalogueRefreshes.remove(key);
+      }
+    }();
   }
 
   @override

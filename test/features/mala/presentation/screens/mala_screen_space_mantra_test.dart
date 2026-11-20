@@ -412,6 +412,7 @@ Future<_Harness> _pumpCarousel(
   FakeMalaAppearanceRepository? appearance,
   Stream<Either<Failure, List<Mantra>>>? refreshes,
   MalaLastUsedStore? lastUsed,
+  void Function()? onCatalogueRefresh,
 }) async {
   final h = _Harness(serverTotal: 42);
   final remote = _OfflineRemote();
@@ -445,6 +446,9 @@ Future<_Harness> _pumpCarousel(
         ),
         malaLastUsedStoreProvider.overrideWithValue(
           lastUsed ?? _memoryLastUsed({}),
+        ),
+        malaCatalogueRefreshProvider.overrideWithValue(
+          () async => onCatalogueRefresh?.call(),
         ),
         joinedSpaceMantrasProvider.overrideWith(
           (ref) async => [
@@ -614,6 +618,22 @@ void carouselTests() {
     final switcher = tester.widget<MantraSwitcher>(find.byType(MantraSwitcher));
     expect(switcher.index, 0);
     expect(find.text('d'), findsWidgets, reason: 'the title is the latest');
+    await h.leave(tester);
+  });
+
+  testWidgets('opening the screen refreshes the catalogue once', (
+    tester,
+  ) async {
+    var refreshes = 0;
+    final h = await _pumpCarousel(
+      tester,
+      const [],
+      onCatalogueRefresh: () => refreshes++,
+    );
+    expect(refreshes, 1);
+    _goTo(tester, 0);
+    await h.chant(tester, 1);
+    expect(refreshes, 1, reason: 'not on every rebuild');
     await h.leave(tester);
   });
 

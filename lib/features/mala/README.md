@@ -241,8 +241,20 @@ server order.
   preset's time is the later of the server's and the local one.
 - `lastUsedAt` is not in `Mantra.props`: a `Mantra` keys `malaCounterProvider`,
   and a refresh that only moves it must not restart the counter.
-- The first open after updating from a build without this uses the cached
-  catalogue, which has no `last_used_at` yet, so it opens in server order.
+- **Refreshed on entry.** `malaCatalogueProvider` is kept alive, so each
+  `MalaScreen` open calls `malaCatalogueRefreshProvider`, which fetches the
+  catalogue and writes it to Hive (one fetch per account and language at a
+  time; failures are ignored). The screen's own order is already pinned from
+  what was loaded, so counts made on another device order the next visit,
+  not this one.
+- **Per account.** Rows carry the user's own `last_used_at`, so the Hive
+  catalogue is keyed `catalogue:v3:{userId}:{language}` and
+  `malaCatalogueProvider` watches the signed-in state, rebuilding on logout
+  and login. Older shared keys (`catalogue:v2:{language}`,
+  `catalogue:{language}`) are only an offline fallback, served without usage
+  times, and deleted once a v3 catalogue is written.
+- The first open after updating from a build without this has no v3 cache,
+  so it loads from the network (or a legacy cache offline, in server order).
 
 ### Preset catalogue request and tradition filtering
 
@@ -274,17 +286,18 @@ with no saved tradition get every preset. So `curl` without a token does
 
 If the saved traditions match no preset, the API returns
 `{accumulators: [], total: 0}` with 200 and the app caches that `[]` under
-`catalogue:v2:{language}`. `mala_screen.dart` merges presets with eligible
+`catalogue:v3:{userId}:{language}`. `mala_screen.dart` merges presets with eligible
 joined space mantras before its empty check, so the screen shows
 `mala_no_mantras` ("No mantras available") only when **both** lists are
 empty; a user with a joined space mantra still sees that one. It is the empty
 state, not an error view, so it has no retry button.
 
 Changing the saved tradition in Edit Profile does **not** refresh the Mala
-screen: `malaCatalogueProvider` is not auto-disposed and only rebuilds on
-content-language or auth changes, and saving traditions invalidates only
-`traditionTagFilterProvider`. Restart the app while online: the cached `[]`
-shows first, then the background refresh replaces it.
+screen right away: `malaCatalogueProvider` is not auto-disposed and only
+rebuilds on content-language or sign-in changes, and saving traditions
+invalidates only `traditionTagFilterProvider`. The next Mala open does: the
+cached list shows first, then the entry refresh replaces it (new presets go
+after the pinned ones, removed ones drop out).
 
 Seen on prod 2026-11-16: presets were tagged tibetan 8, pali 1, chinese (Mahayana) 0,
 untagged 0, so Mahayana-only users got an empty Mala screen.
@@ -293,8 +306,8 @@ untagged 0, so Mahayana-only users got an empty Mala screen.
 
 Hive box `mala_counts`, keys `userId:presetId`, value = JSON `LocalMalaState`
 (`total`, `syncedTotal`, `totalCounted`, `accumulatorId`, `beadImageUrl`,
-`beadImageBase64`). The same box also caches the preset catalogue under
-`catalogue:v2:{language}`. `isDirty =
+`beadImageBase64`). The same box also caches the preset catalogue per
+account under `catalogue:v3:{userId}:{language}`. `isDirty =
 total > syncedTotal`. `pruneSynced` removes fully-synced entries (keeps dirty
 tails); it currently has no caller.
 

@@ -117,6 +117,12 @@ class _MalaScreenState extends ConsumerState<MalaScreen> {
     super.initState();
     _session = MalaSessionTracker(ref.read(malaAnalyticsProvider))..start();
     _sync = ref.read(malaSyncManagerProvider);
+    // The catalogue provider is kept alive, so without this a reopen would
+    // order by usage times from whenever it first loaded. This screen's order
+    // is pinned from what's loaded now; the fresh times order the next visit.
+    if (widget.singleAccumulation == null) {
+      unawaited(ref.read(malaCatalogueRefreshProvider)());
+    }
   }
 
   @override

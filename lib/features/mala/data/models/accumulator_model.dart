@@ -138,6 +138,15 @@ class PresetAccumulatorModel {
     );
   }
 
+  /// This row with no usage time, for a cache not tied to an account.
+  PresetAccumulatorModel withoutUsage() => PresetAccumulatorModel(
+    id: id,
+    targetCount: targetCount,
+    beadImageUrl: beadImageUrl,
+    metadata: metadata,
+    mantra: mantra,
+  );
+
   Map<String, dynamic> toJson() => {
     'id': id,
     'target_count': targetCount,

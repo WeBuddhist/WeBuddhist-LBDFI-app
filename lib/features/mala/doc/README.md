@@ -51,7 +51,8 @@ mala/
 | `malaAccumulationSelectionProvider` | Personal vs group (SharedPreferences) |
 | `malaSettingsProvider` | Sound, vibration, left-handed, play animation, mantra speed |
 | `malaAppearanceProvider` | The user's deity image and bead skin for a mantra, by mantra id (server, API v2) |
-| `malaCatalogueProvider` | Preset catalogue (re-fetches on UI locale change), in server order |
+| `malaCatalogueProvider` | Preset catalogue, cached per account (re-fetches on content language or sign-in change), in server order |
+| `malaCatalogueRefreshProvider` | Background catalogue fetch the mala screen runs on entry, so the next visit has fresh usage times |
 | `malaLastUsedStoreProvider` | Last preset counted on this device, per user (SharedPreferences); orders the carousel before the count syncs |
 
 ## Critical invariants
