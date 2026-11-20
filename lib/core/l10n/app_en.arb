@@ -907,16 +907,23 @@
       }
     }
   },
-  "group_remove_member_title": "Remove from space?",
-  "group_remove_member_message": "{name} will be removed from this space and unable to rejoin it until the ban is lifted",
-  "@group_remove_member_message": {
+  "group_remove_member_title": "Remove {name}",
+  "@group_remove_member_title": {
     "placeholders": {
       "name": {
         "type": "String"
       }
     }
   },
-  "group_remove_member_blocked_for": "Blocked for:",
+  "group_remove_member_message": "They'll be removed from this space and can't rejoin for {duration}.",
+  "@group_remove_member_message": {
+    "placeholders": {
+      "duration": {
+        "type": "String"
+      }
+    }
+  },
+  "group_remove_member_blocked_for": "Can't rejoin for",
   "group_remove_member_duration_day": "1 day",
   "group_remove_member_duration_days": "{count} days",
   "@group_remove_member_duration_days": {
@@ -928,8 +935,8 @@
   },
   "group_remove_member_duration_year": "1 year",
   "group_remove_member_reason_label": "Reason (optional)",
-  "group_remove_member_reason_hint": "Something else...",
-  "group_remove_member_action": "Remove",
+  "group_remove_member_reason_hint": "Why are you removing this member?",
+  "group_remove_member_action": "Remove member",
   "group_remove_member_success": "{name} was removed from the space",
   "@group_remove_member_success": {
     "placeholders": {

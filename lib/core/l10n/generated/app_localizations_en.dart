@@ -1921,15 +1921,17 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get group_remove_member_title => 'Remove from space?';
-
-  @override
-  String group_remove_member_message(String name) {
-    return '$name will be removed from this space and unable to rejoin it until the ban is lifted';
+  String group_remove_member_title(String name) {
+    return 'Remove $name';
   }
 
   @override
-  String get group_remove_member_blocked_for => 'Blocked for:';
+  String group_remove_member_message(String duration) {
+    return 'They\'ll be removed from this space and can\'t rejoin for $duration.';
+  }
+
+  @override
+  String get group_remove_member_blocked_for => 'Can\'t rejoin for';
 
   @override
   String get group_remove_member_duration_day => '1 day';
@@ -1946,10 +1948,11 @@ class AppLocalizationsEn extends AppLocalizations {
   String get group_remove_member_reason_label => 'Reason (optional)';
 
   @override
-  String get group_remove_member_reason_hint => 'Something else...';
+  String get group_remove_member_reason_hint =>
+      'Why are you removing this member?';
 
   @override
-  String get group_remove_member_action => 'Remove';
+  String get group_remove_member_action => 'Remove member';
 
   @override
   String group_remove_member_success(String name) {

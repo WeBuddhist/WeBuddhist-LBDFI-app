@@ -1944,15 +1944,18 @@ class AppLocalizationsBo extends AppLocalizations {
   }
 
   @override
-  String get group_remove_member_title => 'ཚོགས་པ་ནས་ཕུད་དམ།';
-
-  @override
-  String group_remove_member_message(String name) {
-    return '$name ཚོགས་པ་འདི་ནས་ཕུད་འགྲོ་བ་དང་། བཀག་སྡོམ་མ་བཏང་བར་ཡང་བསྐྱར་ཞུགས་མི་ཐུབ།';
+  String group_remove_member_title(String name) {
+    return '$name ཕུད།';
   }
 
   @override
-  String get group_remove_member_blocked_for => 'བཀག་སྡོམ་དུས་ཡུན།';
+  String group_remove_member_message(String duration) {
+    return 'ཁོང་ཚོགས་པ་འདི་ནས་ཕུད་འགྲོ་བ་དང་། དུས་ཡུན་$duration རིང་ཡང་བསྐྱར་ཞུགས་མི་ཐུབ།';
+  }
+
+  @override
+  String get group_remove_member_blocked_for =>
+      'ཡང་བསྐྱར་ཞུགས་མི་ཐུབ་པའི་དུས་ཡུན';
 
   @override
   String get group_remove_member_duration_day => 'ཉིན་ 1';
@@ -1969,10 +1972,11 @@ class AppLocalizationsBo extends AppLocalizations {
   String get group_remove_member_reason_label => 'རྒྱུ་མཚན། (གདམ་ཀ)';
 
   @override
-  String get group_remove_member_reason_hint => 'གཞན།...';
+  String get group_remove_member_reason_hint =>
+      'ཚོགས་མི་འདི་ཅིའི་ཕྱིར་ཕུད་གི་ཡོད་དམ།';
 
   @override
-  String get group_remove_member_action => 'ཕུད།';
+  String get group_remove_member_action => 'ཚོགས་མི་ཕུད།';
 
   @override
   String group_remove_member_success(String name) {

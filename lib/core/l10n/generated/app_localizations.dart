@@ -3506,19 +3506,19 @@ abstract class AppLocalizations {
   /// No description provided for @group_remove_member_title.
   ///
   /// In en, this message translates to:
-  /// **'Remove from space?'**
-  String get group_remove_member_title;
+  /// **'Remove {name}'**
+  String group_remove_member_title(String name);
 
   /// No description provided for @group_remove_member_message.
   ///
   /// In en, this message translates to:
-  /// **'{name} will be removed from this space and unable to rejoin it until the ban is lifted'**
-  String group_remove_member_message(String name);
+  /// **'They\'ll be removed from this space and can\'t rejoin for {duration}.'**
+  String group_remove_member_message(String duration);
 
   /// No description provided for @group_remove_member_blocked_for.
   ///
   /// In en, this message translates to:
-  /// **'Blocked for:'**
+  /// **'Can\'t rejoin for'**
   String get group_remove_member_blocked_for;
 
   /// No description provided for @group_remove_member_duration_day.
@@ -3548,13 +3548,13 @@ abstract class AppLocalizations {
   /// No description provided for @group_remove_member_reason_hint.
   ///
   /// In en, this message translates to:
-  /// **'Something else...'**
+  /// **'Why are you removing this member?'**
   String get group_remove_member_reason_hint;
 
   /// No description provided for @group_remove_member_action.
   ///
   /// In en, this message translates to:
-  /// **'Remove'**
+  /// **'Remove member'**
   String get group_remove_member_action;
 
   /// No description provided for @group_remove_member_success.

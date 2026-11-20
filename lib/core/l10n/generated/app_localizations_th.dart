@@ -1912,15 +1912,17 @@ class AppLocalizationsTh extends AppLocalizations {
   }
 
   @override
-  String get group_remove_member_title => 'นำออกจากกลุ่มใช่ไหม';
-
-  @override
-  String group_remove_member_message(String name) {
-    return '$name จะถูกนำออกจากกลุ่มนี้ และเข้าร่วมใหม่ไม่ได้จนกว่าการระงับจะสิ้นสุด';
+  String group_remove_member_title(String name) {
+    return 'นำ $name ออก';
   }
 
   @override
-  String get group_remove_member_blocked_for => 'ระงับเป็นเวลา:';
+  String group_remove_member_message(String duration) {
+    return 'พวกเขาจะถูกนำออกจากกลุ่มนี้ และเข้าร่วมใหม่ไม่ได้เป็นเวลา $duration';
+  }
+
+  @override
+  String get group_remove_member_blocked_for => 'เข้าร่วมใหม่ไม่ได้เป็นเวลา';
 
   @override
   String get group_remove_member_duration_day => '1 วัน';
@@ -1937,10 +1939,10 @@ class AppLocalizationsTh extends AppLocalizations {
   String get group_remove_member_reason_label => 'เหตุผล (ไม่บังคับ)';
 
   @override
-  String get group_remove_member_reason_hint => 'อื่น ๆ...';
+  String get group_remove_member_reason_hint => 'ทำไมคุณจึงนำสมาชิกคนนี้ออก';
 
   @override
-  String get group_remove_member_action => 'นำออก';
+  String get group_remove_member_action => 'นำสมาชิกออก';
 
   @override
   String group_remove_member_success(String name) {
