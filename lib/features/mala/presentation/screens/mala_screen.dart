@@ -101,6 +101,11 @@ class _MalaPractice {
 
 class _MalaScreenState extends ConsumerState<MalaScreen> {
   int _index = 0;
+
+  /// The item on screen, by `presetId` (a space mantra's is its counts key).
+  /// A refreshed catalogue or space list can add or drop items before it, so
+  /// [_index] is found again from this rather than kept as a number.
+  String? _selectedId;
   bool _initialisedIndex = false;
 
   /// Preset ids in carousel order, fixed on the first non-empty catalogue so
@@ -191,7 +196,10 @@ class _MalaScreenState extends ConsumerState<MalaScreen> {
             via: MalaSwitchVia.carousel,
           );
     }
-    setState(() => _index = next);
+    setState(() {
+      _index = next;
+      _selectedId = items[next].presetId;
+    });
   }
 
   @override
@@ -297,8 +305,14 @@ class _MalaScreenState extends ConsumerState<MalaScreen> {
         );
         if (i >= 0) _index = i;
       }
+    } else if (_selectedId case final selected?) {
+      // Stay on the same mantra when items before it come or go. If it was
+      // removed, the clamp below keeps the nearest position.
+      final i = items.indexWhere((m) => m.presetId == selected);
+      if (i >= 0) _index = i;
     }
     _index = _index.clamp(0, items.length - 1);
+    _selectedId = items[_index].presetId;
     final isSpace = _index >= presets.length;
     // Each mantra's artwork. The user's own pick is looked up only for the
     // mantra on screen and its neighbours (one request each), which are all

@@ -197,4 +197,41 @@ void main() {
       expect(MalaLocalDataSource().readCatalogue('u1', 'en'), isNotNull);
     },
   );
+
+  test('a first load and a refresh at once download it once', () async {
+    final remote = _FakeRemote(
+      presets: [PresetAccumulatorModel.fromJson(_preset('a'))],
+    );
+    final repo = MalaRepositoryImpl(
+      remote: remote,
+      local: MalaLocalDataSource(),
+    );
+
+    final (load, _) =
+        await (
+          repo.getCatalogue(language: 'en', userId: 'u1'),
+          repo.refreshCatalogue(userId: 'u1', language: 'en'),
+        ).wait;
+
+    expect(remote.fetches, 1);
+    expect(load.getOrElse((_) => []).single.presetId, 'a');
+  });
+
+  test('a shared first load still reports being offline', () async {
+    final remote = _FakeRemote();
+    final repo = MalaRepositoryImpl(
+      remote: remote,
+      local: MalaLocalDataSource(),
+    );
+
+    // The refresh starts first; the load joins it.
+    final (_, load) =
+        await (
+          repo.refreshCatalogue(userId: 'u1', language: 'en'),
+          repo.getCatalogue(language: 'en', userId: 'u1'),
+        ).wait;
+
+    expect(remote.fetches, 1);
+    expect(load.isLeft(), isTrue, reason: 'only the refresh hides errors');
+  });
 }

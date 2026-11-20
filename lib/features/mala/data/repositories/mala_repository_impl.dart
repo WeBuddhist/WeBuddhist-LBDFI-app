@@ -9,6 +9,7 @@ import 'package:flutter_pecha/core/error/failures.dart';
 import 'package:flutter_pecha/features/mala/data/datasources/mala_local_datasource.dart';
 import 'package:flutter_pecha/features/mala/data/datasources/mala_remote_datasource.dart';
 import 'package:flutter_pecha/features/mala/data/models/accumulator_group_model.dart';
+import 'package:flutter_pecha/features/mala/data/models/accumulator_model.dart';
 import 'package:flutter_pecha/features/mala/domain/entities/accumulator_group.dart';
 import 'package:flutter_pecha/features/mala/domain/entities/mala_count.dart';
 import 'package:flutter_pecha/features/mala/domain/entities/mantra.dart';
@@ -96,13 +97,10 @@ class MalaRepositoryImpl implements MalaRepository {
     }
 
     try {
-      final presets = await remote.fetchPresets(
-        language: language,
-        search: search,
-      );
-      if (cacheUser != null) {
-        await local?.writeCatalogue(cacheUser, cacheLanguage, presets);
-      }
+      final presets =
+          cacheUser == null
+              ? await remote.fetchPresets(language: language, search: search)
+              : await _fetchAndStore(cacheUser, cacheLanguage);
       return Right(presets.map((p) => p.toEntity()).toList());
     } on AppException catch (e) {
       return _legacyCatalogueOr(cacheUser, cacheLanguage, _toFailure(e));
@@ -130,22 +128,37 @@ class MalaRepositoryImpl implements MalaRepository {
     return Right(legacy.map((preset) => preset.toEntity()).toList());
   }
 
-  final _catalogueRefreshes = <String, Future<void>>{};
+  /// In-flight catalogue fetches by account and language. The first load
+  /// and the mala screen's refresh on entry often start together; they
+  /// share one download of every page instead of making two.
+  final _catalogueFetches = <String, Future<List<PresetAccumulatorModel>>>{};
 
-  @override
-  Future<void> refreshCatalogue({required String userId, String? language}) {
-    final cacheLanguage = language ?? 'en';
-    final key = '$userId:$cacheLanguage';
-    return _catalogueRefreshes[key] ??= () async {
+  Future<List<PresetAccumulatorModel>> _fetchAndStore(
+    String userId,
+    String language,
+  ) {
+    final key = '$userId:$language';
+    return _catalogueFetches[key] ??= () async {
       try {
-        final presets = await remote.fetchPresets(language: cacheLanguage);
-        await local?.writeCatalogue(userId, cacheLanguage, presets);
-      } catch (_) {
-        // Offline or failed: the cached catalogue stays until the next one.
+        final presets = await remote.fetchPresets(language: language);
+        await local?.writeCatalogue(userId, language, presets);
+        return presets;
       } finally {
-        _catalogueRefreshes.remove(key);
+        _catalogueFetches.remove(key);
       }
     }();
+  }
+
+  @override
+  Future<void> refreshCatalogue({
+    required String userId,
+    String? language,
+  }) async {
+    try {
+      await _fetchAndStore(userId, language ?? 'en');
+    } catch (_) {
+      // Offline or failed: the cached catalogue stays until the next one.
+    }
   }
 
   @override

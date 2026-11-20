@@ -672,6 +672,45 @@ void carouselTests() {
     await h.leave(tester);
   });
 
+  testWidgets('a refresh adding or removing a preset keeps the mantra shown', (
+    tester,
+  ) async {
+    final refreshes = StreamController<Either<Failure, List<Mantra>>>();
+    addTearDown(refreshes.close);
+    final h = await _pumpCarousel(
+      tester,
+      [_accumulation],
+      presets: [_preset('a')],
+      refreshes: refreshes.stream,
+    );
+    _goTo(tester, 1);
+    await h.settle(tester);
+    await h.chant(tester, 2);
+    expect(h.beads(tester).total, 44);
+
+    MantraSwitcher switcher() =>
+        tester.widget<MantraSwitcher>(find.byType(MantraSwitcher));
+    final space = 'group:$_accumulationId';
+
+    // A new preset lands before the space mantra.
+    refreshes.add(Right([_preset('a'), _preset('b')]));
+    await h.settle(tester);
+    expect(_carouselIds(tester), ['a', 'b', space]);
+    expect(switcher().index, 2, reason: 'still on the space mantra');
+    await h.chant(tester, 1);
+    expect(h.beads(tester).total, 45, reason: 'taps still count into it');
+
+    // A preset before it is removed.
+    refreshes.add(Right([_preset('b')]));
+    await h.settle(tester);
+    expect(_carouselIds(tester), ['b', space]);
+    expect(switcher().index, 1);
+    expect(h.beads(tester).total, 45);
+
+    await h.leave(tester);
+    expect(h.server.total, 45);
+  });
+
   testWidgets('a counted bead puts its preset first next time', (tester) async {
     final prefs = <String, String>{};
     final presets = [

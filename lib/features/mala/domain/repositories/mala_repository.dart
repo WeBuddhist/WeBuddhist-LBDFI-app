@@ -20,7 +20,8 @@ abstract class MalaRepository {
 
   /// Fetches the catalogue and stores it under [userId], so readers of the
   /// cache (`malaCatalogueProvider`) get fresh usage times. Never throws.
-  /// Joins a refresh already running for the same account and language.
+  /// Joins a fetch already running for the same account and language,
+  /// including a [getCatalogue] that found no cache.
   Future<void> refreshCatalogue({required String userId, String? language});
 
   /// The user's detail for one preset, from `GET /accumulators/{parent_id}`.
