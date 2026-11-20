@@ -1943,15 +1943,17 @@ class AppLocalizationsMy extends AppLocalizations {
   }
 
   @override
-  String get group_remove_member_title => 'အဖွဲ့မှ ဖယ်ရှားမလား။';
-
-  @override
-  String group_remove_member_message(String name) {
-    return '$name ကို ဤအဖွဲ့မှ ဖယ်ရှားမည်ဖြစ်ပြီး ပိတ်ပင်မှု မရုပ်သိမ်းမချင်း ပြန်ဝင်၍ မရပါ';
+  String group_remove_member_title(String name) {
+    return '$name ကို ဖယ်ရှားရန်';
   }
 
   @override
-  String get group_remove_member_blocked_for => 'ပိတ်ပင်မည့် ကာလ:';
+  String group_remove_member_message(String duration) {
+    return '၎င်းတို့ကို ဤအဖွဲ့မှ ဖယ်ရှားမည်ဖြစ်ပြီး $duration ကြာ ပြန်ဝင်၍ မရပါ။';
+  }
+
+  @override
+  String get group_remove_member_blocked_for => 'ပြန်ဝင်၍ မရသည့် ကာလ';
 
   @override
   String get group_remove_member_duration_day => '1 ရက်';
@@ -1968,10 +1970,11 @@ class AppLocalizationsMy extends AppLocalizations {
   String get group_remove_member_reason_label => 'အကြောင်းရင်း (ရွေးချယ်နိုင်)';
 
   @override
-  String get group_remove_member_reason_hint => 'အခြားအကြောင်းအရာ...';
+  String get group_remove_member_reason_hint =>
+      'ဤအဖွဲ့ဝင်ကို အဘယ်ကြောင့် ဖယ်ရှားသနည်း။';
 
   @override
-  String get group_remove_member_action => 'ဖယ်ရှားရန်';
+  String get group_remove_member_action => 'အဖွဲ့ဝင်ကို ဖယ်ရှားရန်';
 
   @override
   String group_remove_member_success(String name) {

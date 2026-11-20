@@ -1941,15 +1941,17 @@ class AppLocalizationsNe extends AppLocalizations {
   }
 
   @override
-  String get group_remove_member_title => 'स्पेसबाट हटाउने?';
-
-  @override
-  String group_remove_member_message(String name) {
-    return '$name लाई यस स्पेसबाट हटाइनेछ र प्रतिबन्ध नहटेसम्म पुनः सामेल हुन सक्नुहुने छैन';
+  String group_remove_member_title(String name) {
+    return '$name लाई हटाउनुहोस्';
   }
 
   @override
-  String get group_remove_member_blocked_for => 'प्रतिबन्ध अवधि:';
+  String group_remove_member_message(String duration) {
+    return 'उहाँलाई यस स्पेसबाट हटाइनेछ र $duration सम्म पुनः सामेल हुन सक्नुहुने छैन।';
+  }
+
+  @override
+  String get group_remove_member_blocked_for => 'पुनः सामेल हुन नमिल्ने अवधि';
 
   @override
   String get group_remove_member_duration_day => '1 दिन';
@@ -1966,10 +1968,11 @@ class AppLocalizationsNe extends AppLocalizations {
   String get group_remove_member_reason_label => 'कारण (ऐच्छिक)';
 
   @override
-  String get group_remove_member_reason_hint => 'अरू केही...';
+  String get group_remove_member_reason_hint =>
+      'तपाईं यो सदस्यलाई किन हटाउँदै हुनुहुन्छ?';
 
   @override
-  String get group_remove_member_action => 'हटाउनुहोस्';
+  String get group_remove_member_action => 'सदस्यलाई हटाउनुहोस्';
 
   @override
   String group_remove_member_success(String name) {

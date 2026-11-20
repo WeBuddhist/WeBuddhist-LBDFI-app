@@ -1927,15 +1927,17 @@ class AppLocalizationsVi extends AppLocalizations {
   }
 
   @override
-  String get group_remove_member_title => 'Xóa khỏi nhóm?';
-
-  @override
-  String group_remove_member_message(String name) {
-    return '$name sẽ bị xóa khỏi nhóm này và không thể tham gia lại cho đến khi lệnh cấm được gỡ bỏ';
+  String group_remove_member_title(String name) {
+    return 'Xóa $name';
   }
 
   @override
-  String get group_remove_member_blocked_for => 'Chặn trong:';
+  String group_remove_member_message(String duration) {
+    return 'Họ sẽ bị xóa khỏi nhóm này và không thể tham gia lại trong $duration.';
+  }
+
+  @override
+  String get group_remove_member_blocked_for => 'Không thể tham gia lại trong';
 
   @override
   String get group_remove_member_duration_day => '1 ngày';
@@ -1952,10 +1954,11 @@ class AppLocalizationsVi extends AppLocalizations {
   String get group_remove_member_reason_label => 'Lý do (không bắt buộc)';
 
   @override
-  String get group_remove_member_reason_hint => 'Lý do khác...';
+  String get group_remove_member_reason_hint =>
+      'Tại sao bạn xóa thành viên này?';
 
   @override
-  String get group_remove_member_action => 'Xóa';
+  String get group_remove_member_action => 'Xóa thành viên';
 
   @override
   String group_remove_member_success(String name) {

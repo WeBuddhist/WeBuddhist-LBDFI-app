@@ -138,7 +138,7 @@ class _GroupRemoveMemberSheetState
                       children: [
                         Expanded(
                           child: Text(
-                            l10n.group_remove_member_title,
+                            l10n.group_remove_member_title(name),
                             style: const TextStyle(
                               fontSize: 22,
                               fontWeight: FontWeight.bold,
@@ -156,7 +156,9 @@ class _GroupRemoveMemberSheetState
                       ],
                     ),
                     Text(
-                      l10n.group_remove_member_message(name),
+                      l10n.group_remove_member_message(
+                        _durationLabel(context, _banDays),
+                      ),
                       style: TextStyle(
                         fontSize: 15,
                         height: 1.35,
