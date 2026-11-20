@@ -51,7 +51,7 @@ class _BookmarksScreenState extends ConsumerState<BookmarksScreen>
       context.l10n.bookmarks_empty_plans_subtitle,
     ),
     BookmarkTab.chants => (
-      context.l10n.bookmarks_empty_chant_collections_title,
+      context.l10n.chant_book_bookmarks_empty_title,
       context.l10n.bookmarks_empty_chant_collections_subtitle,
     ),
     BookmarkTab.mala => (
@@ -190,7 +190,7 @@ class _BookmarksScreenState extends ConsumerState<BookmarksScreen>
     if (preferred != null && preferred.trim().isNotEmpty) {
       return preferred.trim();
     }
-    return context.l10n.my_recitation_collection_fallback_title;
+    return context.l10n.chant_book_fallback_title;
   }
 
   @override
