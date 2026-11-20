@@ -85,7 +85,7 @@ class _GroupProfileMembersTabState
       member: member,
     );
     if (removed != true || !mounted) return;
-    final name = member.visibleName;
+    final name = member.displayName;
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text(context.l10n.group_remove_member_success(name))),
     );
@@ -262,7 +262,7 @@ class _GroupMemberRow extends StatelessWidget {
   Widget build(BuildContext context) {
     final secondaryColor =
         isDark ? AppColors.textTertiaryDark : AppColors.textSecondary;
-    final displayName = member.visibleName;
+    final displayName = member.displayName;
 
     return Column(
       children: [

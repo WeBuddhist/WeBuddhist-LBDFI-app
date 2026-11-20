@@ -28,7 +28,7 @@ const _members = [
     userId: 'u4',
     username: 'tenzin',
     fullname: 'Tenzin Dorje',
-    displayName: 'tenz',
+    userDisplayName: 'tenz',
   ),
 ];
 

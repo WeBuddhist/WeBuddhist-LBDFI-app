@@ -40,7 +40,7 @@ class GroupMemberModel {
       userId: userId,
       username: username,
       fullname: fullname,
-      displayName: displayName,
+      userDisplayName: displayName,
       avatarUrl: avatarUrl,
       role: role,
     );

@@ -107,7 +107,7 @@ class _GroupRemoveMemberSheetState
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final labelColor =
         isDark ? AppColors.textTertiaryDark : AppColors.textSecondary;
-    final name = widget.member.visibleName;
+    final name = widget.member.displayName;
 
     return PopScope(
       canPop: !_isSubmitting,

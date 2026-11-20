@@ -7,7 +7,7 @@ class GroupMember {
   final String fullname;
 
   /// The name the user picked in Edit profile (`display_name`).
-  final String? displayName;
+  final String? userDisplayName;
   final String? avatarUrl;
 
   /// Membership role from the members list. See [GroupMemberRole].
@@ -17,15 +17,15 @@ class GroupMember {
     this.userId = '',
     required this.username,
     required this.fullname,
-    this.displayName,
+    this.userDisplayName,
     this.avatarUrl,
     this.role,
   });
 
   /// Name shown in the UI: the display name, then the full name for
   /// responses without one, then the username.
-  String get visibleName => visibleUserName(
-    displayName: displayName,
+  String get displayName => visibleUserName(
+    displayName: userDisplayName,
     fullname: fullname,
     username: username,
   );
