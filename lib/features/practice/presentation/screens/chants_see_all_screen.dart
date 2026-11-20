@@ -17,25 +17,24 @@ import 'package:flutter_pecha/features/practice/presentation/widgets/chants/spac
 import 'package:flutter_pecha/features/recitation/presentation/widgets/recitation_list_skeleton.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-/// See all for text-only chants, with the Your spaces / Other spaces pills.
+/// See all for single chants, with the Your spaces / Other spaces pills.
 ///
-/// Your spaces lists the chants of your spaces' chant books. Other spaces
-/// lists other spaces' chants, then the whole library list page by page,
-/// as under "Explore more" on the Chants page. With no text-only chants in
-/// your spaces there are no pills.
-class TextChantsSeeAllScreen extends ConsumerStatefulWidget {
-  const TextChantsSeeAllScreen({super.key, this.showYours = false});
+/// Chants with audio come first, then text-only ones, each A to Z. Your
+/// spaces lists the chants of your spaces' chant books. Other spaces lists
+/// other spaces' chants, then the whole library list page by page, as under
+/// "Explore more" on the Chants page. With no chants in your spaces there
+/// are no pills.
+class ChantsSeeAllScreen extends ConsumerStatefulWidget {
+  const ChantsSeeAllScreen({super.key, this.showYours = false});
 
   /// Opens on your spaces; false opens on other spaces.
   final bool showYours;
 
   @override
-  ConsumerState<TextChantsSeeAllScreen> createState() =>
-      _TextChantsSeeAllScreenState();
+  ConsumerState<ChantsSeeAllScreen> createState() => _ChantsSeeAllScreenState();
 }
 
-class _TextChantsSeeAllScreenState
-    extends ConsumerState<TextChantsSeeAllScreen> {
+class _ChantsSeeAllScreenState extends ConsumerState<ChantsSeeAllScreen> {
   final ScrollController _scrollController = ScrollController();
   late bool _showYours = widget.showYours;
   bool _isCreateFlowOpen = false;
@@ -131,11 +130,14 @@ class _TextChantsSeeAllScreenState
         ref
             .watch(allSpaceChantsProvider)
             .valueOrNull
-            ?.fold((_) => null, (all) => all.yoursText.isNotEmpty) ??
+            ?.fold(
+              (_) => null,
+              (all) => all.yoursAudio.isNotEmpty || all.yoursText.isNotEmpty,
+            ) ??
         _showYours;
     final showYours = hasYours && _showYours;
     _onYours = showYours;
-    final othersText = spaceChants.othersText;
+    final others = [...spaceChants.othersAudio, ...spaceChants.othersText];
     final spacesLoading = spaceChantsAsync.isLoading;
 
     // The space chants failed, or some chant books could not be read:
@@ -156,7 +158,7 @@ class _TextChantsSeeAllScreenState
 
     final Widget list;
     if (showYours) {
-      final yours = spaceChants.yoursText;
+      final yours = [...spaceChants.yoursAudio, ...spaceChants.yoursText];
       list =
           yours.isEmpty
               ? _empty(l10n.recitations_no_content, notice: spacesNotice)
@@ -166,17 +168,17 @@ class _TextChantsSeeAllScreenState
                     (context, index) =>
                         index < lead
                             ? spacesNotice!
-                            : SpaceTextChantRow(chant: yours[index - lead]),
+                            : _spaceRow(yours[index - lead]),
               );
     } else if ((state.isLoading || spacesLoading) &&
         state.recitations.isEmpty &&
-        othersText.isEmpty) {
+        others.isEmpty) {
       list = const RecitationListSkeleton(
         variant: RecitationListSkeletonVariant.chantTile,
       );
     } else if (state.error != null &&
         state.recitations.isEmpty &&
-        othersText.isEmpty) {
+        others.isEmpty) {
       list = ErrorStateWidget(
         error: state.error!,
         onRetry: () {
@@ -184,11 +186,11 @@ class _TextChantsSeeAllScreenState
           if (spacesFailed) ref.invalidate(spaceChantBooksProvider);
         },
       );
-    } else if (state.recitations.isEmpty && othersText.isEmpty) {
+    } else if (state.recitations.isEmpty && others.isEmpty) {
       list = _empty(l10n.recitations_no_content, notice: spacesNotice);
     } else {
       final chants = state.recitations;
-      final total = othersText.length + chants.length;
+      final total = others.length + chants.length;
       // After the rows: the next page loading, or the library's error
       // with Retry (a first page that failed while space chants show, or
       // a later page, which never pages on scroll again).
@@ -215,10 +217,8 @@ class _TextChantsSeeAllScreenState
           if (index < lead) return spacesNotice!;
           final i = index - lead;
           if (i == total) return tail!;
-          if (i < othersText.length) {
-            return SpaceTextChantRow(chant: othersText[i]);
-          }
-          final chant = chants[i - othersText.length];
+          if (i < others.length) return _spaceRow(others[i]);
+          final chant = chants[i - others.length];
           return TextChantRow(
             title: chant.title,
             openLabel: l10n.chants_open_chant,
@@ -243,7 +243,7 @@ class _TextChantsSeeAllScreenState
           onPressed: () => Navigator.of(context).pop(),
         ),
         title: Text(
-          l10n.chants_text_only,
+          l10n.home_chants,
           style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
           strutStyle: context.tibetanStrutStyle(20),
         ),
@@ -287,6 +287,12 @@ class _TextChantsSeeAllScreenState
               ),
     );
   }
+
+  /// A space chant's row: with a play row when it has audio.
+  Widget _spaceRow(SpaceChant chant) =>
+      chant.hasAudio
+          ? SpaceAudioChantRow(chant: chant)
+          : SpaceTextChantRow(chant: chant);
 
   /// An empty list that still pulls to refresh, with [notice] above the
   /// message when part of the chants could not be read.

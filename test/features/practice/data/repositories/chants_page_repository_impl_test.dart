@@ -368,10 +368,11 @@ void main() {
       String textId, {
       bool withAudio = false,
       String? audioUrl,
+      String? title,
     }) => GroupRecitationCollectionItem(
       id: 'i-$textId',
       textId: textId,
-      title: 'Chant $textId',
+      title: title ?? 'Chant $textId',
       language: 'bo',
       type: '',
       displayOrder: 0,
@@ -460,6 +461,39 @@ void main() {
         expect(ids(chants.othersText), ['t2']);
       },
     );
+
+    test('lists each kind A to Z by title, ignoring case', () {
+      final chants = splitSpaceChants(
+        [book('o'), book('p')],
+        [
+          detail('o', [
+            item('t1', title: 'Tara praise', withAudio: true),
+            item('t2', title: 'refuge'),
+            item('t3', title: 'Heart Sutra', withAudio: true),
+          ]),
+          detail('p', [
+            item('t4', title: 'Bodhicitta'),
+            item('t5', title: '  amitabha', withAudio: true),
+          ]),
+        ],
+      );
+      expect(ids(chants.othersAudio), ['t5', 't3', 't1']);
+      expect(ids(chants.othersText), ['t4', 't2']);
+    });
+
+    test('sortChantsByTitle keeps the order of equal titles', () {
+      final chants = splitSpaceChants(
+        [book('o')],
+        [
+          detail('o', [
+            item('t2', title: 'Same'),
+            item('t1', title: 'same'),
+            item('t0', title: 'Another'),
+          ]),
+        ],
+      );
+      expect(ids(chants.othersText), ['t0', 't2', 't1']);
+    });
 
     test('keeps a recording when a joined book has the text only', () {
       final chants = splitSpaceChants(
