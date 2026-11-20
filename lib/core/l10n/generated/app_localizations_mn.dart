@@ -1951,7 +1951,8 @@ class AppLocalizationsMn extends AppLocalizations {
   }
 
   @override
-  String get group_remove_member_blocked_for => 'Хоригийн хугацаа:';
+  String get group_remove_member_blocked_for =>
+      'Дахин нэгдэх боломжгүй хугацаа';
 
   @override
   String get group_remove_member_duration_day => '1 өдөр';
@@ -1968,10 +1969,11 @@ class AppLocalizationsMn extends AppLocalizations {
   String get group_remove_member_reason_label => 'Шалтгаан (заавал биш)';
 
   @override
-  String get group_remove_member_reason_hint => 'Бусад...';
+  String get group_remove_member_reason_hint =>
+      'Та энэ гишүүнийг яагаад хасаж байна вэ?';
 
   @override
-  String get group_remove_member_action => 'Хасах';
+  String get group_remove_member_action => 'Гишүүнийг хасах';
 
   @override
   String group_remove_member_success(String name) {

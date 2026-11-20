@@ -1854,7 +1854,7 @@ class AppLocalizationsZh extends AppLocalizations {
   }
 
   @override
-  String get group_remove_member_blocked_for => '封鎖期間：';
+  String get group_remove_member_blocked_for => '無法重新加入的期限';
 
   @override
   String get group_remove_member_duration_day => '1 天';
@@ -1871,10 +1871,10 @@ class AppLocalizationsZh extends AppLocalizations {
   String get group_remove_member_reason_label => '原因（選填）';
 
   @override
-  String get group_remove_member_reason_hint => '其他...';
+  String get group_remove_member_reason_hint => '您為什麼要移除此成員？';
 
   @override
-  String get group_remove_member_action => '移除';
+  String get group_remove_member_action => '移除成員';
 
   @override
   String group_remove_member_success(String name) {
@@ -5915,7 +5915,7 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   }
 
   @override
-  String get group_remove_member_blocked_for => '封锁期间：';
+  String get group_remove_member_blocked_for => '无法重新加入的期限';
 
   @override
   String get group_remove_member_duration_day => '1 天';
@@ -5932,10 +5932,10 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get group_remove_member_reason_label => '原因（选填）';
 
   @override
-  String get group_remove_member_reason_hint => '其他...';
+  String get group_remove_member_reason_hint => '您为什么要移除此成员？';
 
   @override
-  String get group_remove_member_action => '移除';
+  String get group_remove_member_action => '移除成员';
 
   @override
   String group_remove_member_success(String name) {

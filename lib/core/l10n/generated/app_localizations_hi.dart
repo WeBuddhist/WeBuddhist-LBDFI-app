@@ -1944,7 +1944,8 @@ class AppLocalizationsHi extends AppLocalizations {
   }
 
   @override
-  String get group_remove_member_blocked_for => 'प्रतिबंध अवधि:';
+  String get group_remove_member_blocked_for =>
+      'फिर से शामिल न हो सकने की अवधि';
 
   @override
   String get group_remove_member_duration_day => '1 दिन';
@@ -1961,10 +1962,11 @@ class AppLocalizationsHi extends AppLocalizations {
   String get group_remove_member_reason_label => 'कारण (वैकल्पिक)';
 
   @override
-  String get group_remove_member_reason_hint => 'कुछ और...';
+  String get group_remove_member_reason_hint =>
+      'आप इस सदस्य को क्यों हटा रहे हैं?';
 
   @override
-  String get group_remove_member_action => 'हटाएँ';
+  String get group_remove_member_action => 'सदस्य को हटाएँ';
 
   @override
   String group_remove_member_success(String name) {

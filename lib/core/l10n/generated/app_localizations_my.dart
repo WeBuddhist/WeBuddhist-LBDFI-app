@@ -1958,7 +1958,7 @@ class AppLocalizationsMy extends AppLocalizations {
   }
 
   @override
-  String get group_remove_member_blocked_for => 'ပိတ်ပင်မည့် ကာလ:';
+  String get group_remove_member_blocked_for => 'ပြန်ဝင်၍ မရသည့် ကာလ';
 
   @override
   String get group_remove_member_duration_day => '1 ရက်';
@@ -1975,10 +1975,11 @@ class AppLocalizationsMy extends AppLocalizations {
   String get group_remove_member_reason_label => 'အကြောင်းရင်း (ရွေးချယ်နိုင်)';
 
   @override
-  String get group_remove_member_reason_hint => 'အခြားအကြောင်းအရာ...';
+  String get group_remove_member_reason_hint =>
+      'ဤအဖွဲ့ဝင်ကို အဘယ်ကြောင့် ဖယ်ရှားသနည်း။';
 
   @override
-  String get group_remove_member_action => 'ဖယ်ရှားရန်';
+  String get group_remove_member_action => 'အဖွဲ့ဝင်ကို ဖယ်ရှားရန်';
 
   @override
   String group_remove_member_success(String name) {

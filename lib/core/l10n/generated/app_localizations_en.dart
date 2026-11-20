@@ -1931,7 +1931,7 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get group_remove_member_blocked_for => 'Blocked for:';
+  String get group_remove_member_blocked_for => 'Can\'t rejoin for';
 
   @override
   String get group_remove_member_duration_day => '1 day';
@@ -1948,10 +1948,11 @@ class AppLocalizationsEn extends AppLocalizations {
   String get group_remove_member_reason_label => 'Reason (optional)';
 
   @override
-  String get group_remove_member_reason_hint => 'Something else...';
+  String get group_remove_member_reason_hint =>
+      'Why are you removing this member?';
 
   @override
-  String get group_remove_member_action => 'Remove';
+  String get group_remove_member_action => 'Remove member';
 
   @override
   String group_remove_member_success(String name) {

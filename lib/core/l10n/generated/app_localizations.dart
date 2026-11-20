@@ -3518,7 +3518,7 @@ abstract class AppLocalizations {
   /// No description provided for @group_remove_member_blocked_for.
   ///
   /// In en, this message translates to:
-  /// **'Blocked for:'**
+  /// **'Can\'t rejoin for'**
   String get group_remove_member_blocked_for;
 
   /// No description provided for @group_remove_member_duration_day.
@@ -3548,13 +3548,13 @@ abstract class AppLocalizations {
   /// No description provided for @group_remove_member_reason_hint.
   ///
   /// In en, this message translates to:
-  /// **'Something else...'**
+  /// **'Why are you removing this member?'**
   String get group_remove_member_reason_hint;
 
   /// No description provided for @group_remove_member_action.
   ///
   /// In en, this message translates to:
-  /// **'Remove'**
+  /// **'Remove member'**
   String get group_remove_member_action;
 
   /// No description provided for @group_remove_member_success.

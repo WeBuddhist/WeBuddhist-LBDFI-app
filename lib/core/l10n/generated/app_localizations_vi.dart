@@ -1941,7 +1941,7 @@ class AppLocalizationsVi extends AppLocalizations {
   }
 
   @override
-  String get group_remove_member_blocked_for => 'Chặn trong:';
+  String get group_remove_member_blocked_for => 'Không thể tham gia lại trong';
 
   @override
   String get group_remove_member_duration_day => '1 ngày';
@@ -1958,10 +1958,11 @@ class AppLocalizationsVi extends AppLocalizations {
   String get group_remove_member_reason_label => 'Lý do (không bắt buộc)';
 
   @override
-  String get group_remove_member_reason_hint => 'Lý do khác...';
+  String get group_remove_member_reason_hint =>
+      'Tại sao bạn xóa thành viên này?';
 
   @override
-  String get group_remove_member_action => 'Xóa';
+  String get group_remove_member_action => 'Xóa thành viên';
 
   @override
   String group_remove_member_success(String name) {
