@@ -70,6 +70,7 @@ class GroupEventParticipantModel {
   final DateTime? createdAt;
   final String? username;
   final String? fullname;
+  final String? displayName;
   final String? avatarUrl;
   final String? participationType;
 
@@ -78,6 +79,7 @@ class GroupEventParticipantModel {
     this.createdAt,
     this.username,
     this.fullname,
+    this.displayName,
     this.avatarUrl,
     this.participationType,
   });
@@ -88,6 +90,7 @@ class GroupEventParticipantModel {
       createdAt: GroupEventModel._parseDate(json['created_at']),
       username: json['username'] as String?,
       fullname: json['fullname'] as String?,
+      displayName: json['display_name'] as String?,
       avatarUrl: json['avatar_url'] as String?,
       participationType: json['participation_type'] as String?,
     );
@@ -99,6 +102,7 @@ class GroupEventParticipantModel {
       createdAt: createdAt,
       username: username,
       fullname: fullname,
+      userDisplayName: displayName,
       avatarUrl: avatarUrl,
       participationType: GroupEventParticipationType.fromApi(participationType),
     );

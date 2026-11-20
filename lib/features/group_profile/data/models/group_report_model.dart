@@ -42,6 +42,7 @@ class GroupReportModel {
       username: value['username'] as String? ?? '',
       firstname: value['firstname'] as String? ?? '',
       lastname: value['lastname'] as String? ?? '',
+      userDisplayName: value['display_name'] as String?,
     );
   }
 

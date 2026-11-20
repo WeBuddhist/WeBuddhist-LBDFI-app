@@ -1,4 +1,5 @@
 import 'package:flutter_pecha/shared/domain/value_objects/responsive_image.dart';
+import 'package:flutter_pecha/features/group_profile/domain/entities/visible_name.dart';
 
 class GroupEventLink {
   final String id;
@@ -39,6 +40,9 @@ class GroupEventParticipant {
   final String? avatarUrl;
   final GroupEventParticipationType? participationType;
 
+  /// The name the user picked in Edit profile (`display_name`).
+  final String? userDisplayName;
+
   const GroupEventParticipant({
     required this.userId,
     this.createdAt,
@@ -46,15 +50,17 @@ class GroupEventParticipant {
     this.fullname,
     this.avatarUrl,
     this.participationType,
+    this.userDisplayName,
   });
 
-  String get displayName {
-    final name = fullname?.trim();
-    if (name != null && name.isNotEmpty) return name;
-    final handle = username?.trim();
-    if (handle != null && handle.isNotEmpty) return handle;
-    return 'Participant';
-  }
+  /// Name shown in the UI: the display name, then the full name, then the
+  /// username.
+  String get displayName => visibleUserName(
+    displayName: userDisplayName,
+    fullname: fullname,
+    username: username,
+    fallback: 'Participant',
+  );
 }
 
 class GroupEventLocation {
