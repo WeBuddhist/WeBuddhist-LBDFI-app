@@ -2,7 +2,6 @@ import 'package:flutter_pecha/core/config/locale/locale_notifier.dart';
 import 'package:flutter_pecha/core/storage/storage_keys.dart';
 import 'package:flutter_pecha/features/auth/presentation/providers/state_providers.dart';
 import 'package:flutter_pecha/features/connect/presentation/providers/connect_providers.dart';
-import 'package:flutter_pecha/features/group_chat/data/models/chat_room_dto.dart';
 import 'package:flutter_pecha/features/group_chat/presentation/providers/chat_rooms_providers.dart';
 import 'package:flutter_pecha/features/group_chat/presentation/utils/chat_rooms_list.dart';
 import 'package:flutter_pecha/features/group_profile/domain/entities/group_profile.dart';
@@ -99,18 +98,14 @@ final connectLastSpaceProvider =
       (ref) => ConnectLastSpaceNotifier(),
     );
 
-/// Group ids whose chat has unread messages. Only rooms the chats list has
-/// loaded count, so a space past that page shows no dot.
-Set<String> unreadSpaceIds(List<ChatRoomDTO> rooms) {
-  return {
-    for (final room in chatListRooms(rooms))
-      if (chatRoomIsUnread(room) && (room.groupId ?? '').isNotEmpty)
-        room.groupId!,
-  };
-}
-
-/// Unread spaces for a member; empty for guests, who never load the rooms.
-final unreadSpaceIdsProvider = Provider.autoDispose<Set<String>>((ref) {
+/// Spaces with unread messages in their room, by group id, and whether the
+/// space page should send the member to its chat or its prayer requests
+/// ([unreadSpaces]). Drives every Connect dot: ☰, "Your spaces", and the
+/// space page's chat or prayer button. Empty for guests, who never load the
+/// rooms.
+final unreadSpacesProvider = Provider.autoDispose<Map<String, SpaceUnread>>((
+  ref,
+) {
   final isMember = ref.watch(
     authProvider.select((auth) => auth.isLoggedIn && !auth.isGuest),
   );
@@ -119,5 +114,5 @@ final unreadSpaceIdsProvider = Provider.autoDispose<Set<String>>((ref) {
   // Keep the list current while a dot is on screen.
   ref.watch(chatRoomsPushRefreshProvider);
   ref.watch(chatRoomsSignalsProvider);
-  return unreadSpaceIds(ref.watch(chatRoomsProvider).rooms);
+  return unreadSpaces(ref.watch(chatRoomsProvider).rooms);
 });

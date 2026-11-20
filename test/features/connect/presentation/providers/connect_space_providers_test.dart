@@ -1,6 +1,5 @@
 import 'package:flutter_pecha/core/storage/storage_keys.dart';
 import 'package:flutter_pecha/features/connect/presentation/providers/connect_space_providers.dart';
-import 'package:flutter_pecha/features/group_chat/data/models/chat_room_dto.dart';
 import 'package:flutter_pecha/features/group_profile/domain/entities/group_profile.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -8,18 +7,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 const _a = GroupProfile(id: 'a', title: 'A');
 const _b = GroupProfile(id: 'b', title: 'B');
-
-ChatRoomDTO _room(String id, {String? groupId, int unreadCount = 0}) {
-  return ChatRoomDTO(
-    id: id,
-    createdBy: 'u9',
-    groupId: groupId,
-    kind: groupId == null ? 'direct' : 'group',
-    name: id,
-    updatedAt: '2026-09-01T10:00:00Z',
-    unreadCount: unreadCount,
-  );
-}
 
 void main() {
   group('resolveConnectSpace', () {
@@ -44,17 +31,6 @@ void main() {
         same(_a),
       );
     });
-  });
-
-  test('only unread space rooms put a dot on their space', () {
-    expect(
-      unreadSpaceIds([
-        _room('r1', groupId: 'a', unreadCount: 2),
-        _room('r2', groupId: 'b'),
-        _room('r3', unreadCount: 5),
-      ]),
-      {'a'},
-    );
   });
 
   group('connectLastSpaceProvider', () {

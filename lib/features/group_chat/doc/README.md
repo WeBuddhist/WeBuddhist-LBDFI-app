@@ -69,7 +69,8 @@ group_chat/
 - **group_profile** — `groupProfileProvider`, `groupFollowProvider` (membership gate), notification preferences, event detail
 - **push_notifications** — foreground pushes refresh the thread / rooms; `foregroundPushFilterProvider` suppresses banners for the open room
 - **feedback** — Help & contact context line parsing in direct chat
-- **connect** — hosts the Chats action / unread dot
+- **connect** — hosts the Chats action / unread dots; every mark-read (`GroupChatScreen`, `DirectChatNotifier`, `PrayerRequestsSheet`, `prayerRoomLiveProvider`) calls `ChatRoomsNotifier.markReadLocally` so the dots clear without a refetch
+- **Unread (v2)** — the rooms inbox comes from `/api/v2/chat/rooms`, where each room has `unread: {TEXT, PRAYER}` (v1 `unread_count` still parses, as chat). Mark-read is per type: the chat marks `TEXT`, prayer boards mark `PRAYER`, a direct chat marks both. The Chats list counts chat only
 
 ## Notable patterns
 

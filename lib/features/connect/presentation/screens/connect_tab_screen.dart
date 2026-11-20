@@ -6,6 +6,7 @@ import 'package:flutter_pecha/features/connect/presentation/providers/connect_sp
 import 'package:flutter_pecha/features/connect/presentation/screens/your_spaces_screen.dart';
 import 'package:flutter_pecha/features/connect/presentation/utils/connect_analytics.dart';
 import 'package:flutter_pecha/features/connect/presentation/widgets/connect_landing_view.dart';
+import 'package:flutter_pecha/features/connect/presentation/widgets/connect_unread_dot.dart';
 import 'package:flutter_pecha/features/group_profile/presentation/screens/group_profile_screen.dart';
 import 'package:flutter_pecha/features/group_profile/presentation/widgets/group_profile_skeleton.dart';
 import 'package:flutter_pecha/features/group_profile/presentation/utils/group_analytics.dart';
@@ -70,7 +71,8 @@ class _ConnectTabScreenState extends ConsumerState<ConnectTabScreen> {
   }
 }
 
-/// ☰ that opens "Your spaces", dotted when another space has unread chat.
+/// ☰ that opens "Your spaces", dotted when another space has unread
+/// messages. The space on screen dots its own chat or prayer button instead.
 class _SpacesMenuButton extends ConsumerWidget {
   const _SpacesMenuButton({required this.currentSpaceId});
 
@@ -79,8 +81,8 @@ class _SpacesMenuButton extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final otherUnread = ref.watch(
-      unreadSpaceIdsProvider.select(
-        (ids) => ids.any((id) => id != currentSpaceId),
+      unreadSpacesProvider.select(
+        (spaces) => spaces.keys.any((id) => id != currentSpaceId),
       ),
     );
 
