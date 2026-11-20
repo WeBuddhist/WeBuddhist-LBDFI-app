@@ -206,7 +206,7 @@ SpaceChantBooks splitSpaceChantBooks(
 }
 
 /// Flattens loaded book [details] (null where a book failed, same order as
-/// [books]) into chant rows, in book order then the book's own order.
+/// [books]) into chant rows, each list in alphabetical order by title.
 ///
 /// A text in more than one book is not listed twice. Each distinct
 /// recording of it is kept (the same recording in two books once). A copy
@@ -265,12 +265,25 @@ SpaceChants splitSpaceChants(
     }
   }
   return SpaceChants(
-    yoursAudio: yoursAudio,
-    yoursText: yoursText,
-    othersAudio: othersAudio,
-    othersText: othersText,
+    yoursAudio: sortChantsByTitle(yoursAudio),
+    yoursText: sortChantsByTitle(yoursText),
+    othersAudio: sortChantsByTitle(othersAudio),
+    othersText: sortChantsByTitle(othersText),
     failedBookCount: details.take(count).where((d) => d == null).length,
   );
+}
+
+/// [chants] in alphabetical order by title, ignoring case and surrounding
+/// spaces, so a recitation is easy to find. Same titles keep their order.
+List<SpaceChant> sortChantsByTitle(List<SpaceChant> chants) {
+  final keyed = [
+    for (var i = 0; i < chants.length; i++)
+      (key: chants[i].item.title.trim().toLowerCase(), index: i),
+  ]..sort((a, b) {
+    final byTitle = a.key.compareTo(b.key);
+    return byTitle != 0 ? byTitle : a.index.compareTo(b.index);
+  });
+  return [for (final k in keyed) chants[k.index]];
 }
 
 String? _nonBlank(String? value) {
