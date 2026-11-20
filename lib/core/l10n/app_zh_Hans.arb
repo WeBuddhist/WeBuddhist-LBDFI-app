@@ -693,6 +693,64 @@
       }
     }
   },
+  "calendar_choose_calendar": "选择日历",
+  "calendar_tradition_vajrayana": "金刚乘",
+  "calendar_tradition_theravada": "上座部",
+  "calendar_tradition_mahayana": "大乘",
+  "calendar_type_phugpa": "藏历（浦派）",
+  "calendar_type_tsurphu": "藏历（楚布派）",
+  "calendar_type_nyingmapa": "宁玛派",
+  "calendar_type_sinhalese": "僧伽罗历",
+  "calendar_type_thai": "泰历",
+  "calendar_type_burmese": "缅甸历",
+  "calendar_type_lao": "老挝历",
+  "calendar_type_chinese": "农历",
+  "calendar_type_vietnamese": "越南历",
+  "calendar_type_korean": "韩国历",
+  "calendar_type_japanese": "日本历",
+  "calendar_today": "今天",
+  "calendar_no_events": "没有活动",
+  "calendar_source_lunar": "阴历",
+  "calendar_add_event": "添加活动",
+  "calendar_event_name": "活动名称",
+  "calendar_event_name_hint": "在日历中添加活动",
+  "calendar_repeat": "重复",
+  "calendar_does_not_repeat": "不重复",
+  "calendar_repeat_weekly": "每周",
+  "calendar_repeat_monthly": "每月",
+  "calendar_repeat_yearly": "每年",
+  "calendar_repeat_monthly_lunar": "每月（阴历{day}日）",
+  "@calendar_repeat_monthly_lunar": {
+    "placeholders": {
+      "day": {
+        "type": "String"
+      }
+    }
+  },
+  "calendar_repeat_yearly_lunar": "每年（阴历日期）",
+  "calendar_delete_event": "删除活动",
+  "calendar_delete_event_title": "删除活动？",
+  "calendar_delete_event_body": "“{title}”将从你的日历中移除。此操作无法撤销。",
+  "@calendar_delete_event_body": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "calendar_delete_repeating_title": "删除重复活动？",
+  "calendar_delete_repeating_body": "“{title}”（{repeat}）的所有日期都将从你的日历中移除。此操作无法撤销。",
+  "@calendar_delete_repeating_body": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      },
+      "repeat": {
+        "type": "String"
+      }
+    }
+  },
+  "calendar_event_deleted": "活动已删除",
   "moon_phase_new_moon": "新月",
   "moon_phase_first_quarter": "上弦月",
   "moon_phase_full_moon": "满月",

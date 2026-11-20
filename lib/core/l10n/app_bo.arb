@@ -546,6 +546,64 @@
       }
     }
   },
+  "calendar_choose_calendar": "ལོ་ཐོ་འདེམས།",
+  "calendar_tradition_vajrayana": "རྡོ་རྗེ་ཐེག་པ།",
+  "calendar_tradition_theravada": "གནས་བརྟན་པ།",
+  "calendar_tradition_mahayana": "ཐེག་པ་ཆེན་པོ།",
+  "calendar_type_phugpa": "བོད། (ཕུག་ལུགས།)",
+  "calendar_type_tsurphu": "བོད། (མཚུར་ལུགས།)",
+  "calendar_type_nyingmapa": "རྙིང་མ།",
+  "calendar_type_sinhalese": "སིང་ག་ལ།",
+  "calendar_type_thai": "ཐའི།",
+  "calendar_type_burmese": "འབར་མ།",
+  "calendar_type_lao": "ལའོ།",
+  "calendar_type_chinese": "རྒྱ་ནག",
+  "calendar_type_vietnamese": "ཝེད་ནམ།",
+  "calendar_type_korean": "ཀོ་རི་ཡ།",
+  "calendar_type_japanese": "ཉི་ཧོང་།",
+  "calendar_today": "དེ་རིང་།",
+  "calendar_no_events": "བྱེད་སྒོ་མེད།",
+  "calendar_source_lunar": "ཟླ་ཐོ།",
+  "calendar_add_event": "བྱེད་སྒོ་སྣོན།",
+  "calendar_event_name": "བྱེད་སྒོའི་མིང་།",
+  "calendar_event_name_hint": "ཁྱེད་ཀྱི་ལོ་ཐོར་བྱེད་སྒོ་ཞིག་སྣོན།",
+  "calendar_repeat": "བསྐྱར་ཟློས།",
+  "calendar_does_not_repeat": "བསྐྱར་ཟློས་མི་བྱེད།",
+  "calendar_repeat_weekly": "བདུན་ཕྲག་རེ་བཞིན།",
+  "calendar_repeat_monthly": "ཟླ་བ་རེ་བཞིན།",
+  "calendar_repeat_yearly": "ལོ་རེ་བཞིན།",
+  "calendar_repeat_monthly_lunar": "ཟླ་བ་རེ་བཞིན། (ཚེས་{day})",
+  "@calendar_repeat_monthly_lunar": {
+    "placeholders": {
+      "day": {
+        "type": "String"
+      }
+    }
+  },
+  "calendar_repeat_yearly_lunar": "ལོ་རེ་བཞིན། (ཟླ་ཚེས།)",
+  "calendar_delete_event": "བྱེད་སྒོ་སུབས།",
+  "calendar_delete_event_title": "བྱེད་སྒོ་སུབས་སམ།",
+  "calendar_delete_event_body": "\"{title}\" ཁྱེད་ཀྱི་ལོ་ཐོ་ནས་སུབས་ངེས། འདི་ཕྱིར་ལོག་བྱེད་ཐབས་མེད།",
+  "@calendar_delete_event_body": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "calendar_delete_repeating_title": "བསྐྱར་ཟློས་བྱེད་སྒོ་སུབས་སམ།",
+  "calendar_delete_repeating_body": "\"{title}\" ({repeat}) ཡི་ཚེས་གྲངས་ཚང་མ་ཁྱེད་ཀྱི་ལོ་ཐོ་ནས་སུབས་ངེས། འདི་ཕྱིར་ལོག་བྱེད་ཐབས་མེད།",
+  "@calendar_delete_repeating_body": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      },
+      "repeat": {
+        "type": "String"
+      }
+    }
+  },
+  "calendar_event_deleted": "བྱེད་སྒོ་སུབས་ཟིན།",
   "moon_phase_new_moon": "གནམ་སྟོང་།",
   "moon_phase_first_quarter": "ཡར་ངོའི་ཟླ་ཕྱེད།",
   "moon_phase_full_moon": "ཟླ་ཉ།",

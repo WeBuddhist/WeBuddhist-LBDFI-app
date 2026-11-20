@@ -563,6 +563,64 @@
       }
     }
   },
+  "calendar_choose_calendar": "कैलेंडर चुनें",
+  "calendar_tradition_vajrayana": "वज्रयान",
+  "calendar_tradition_theravada": "थेरवाद",
+  "calendar_tradition_mahayana": "महायान",
+  "calendar_type_phugpa": "तिब्बती (फुगपा)",
+  "calendar_type_tsurphu": "तिब्बती (त्सुरफू)",
+  "calendar_type_nyingmapa": "ञिङमा",
+  "calendar_type_sinhalese": "सिंहली",
+  "calendar_type_thai": "थाई",
+  "calendar_type_burmese": "बर्मी",
+  "calendar_type_lao": "लाओ",
+  "calendar_type_chinese": "चीनी",
+  "calendar_type_vietnamese": "वियतनामी",
+  "calendar_type_korean": "कोरियाई",
+  "calendar_type_japanese": "जापानी",
+  "calendar_today": "आज",
+  "calendar_no_events": "कोई कार्यक्रम नहीं",
+  "calendar_source_lunar": "चंद्र कैलेंडर",
+  "calendar_add_event": "कार्यक्रम जोड़ें",
+  "calendar_event_name": "कार्यक्रम का नाम",
+  "calendar_event_name_hint": "अपने कैलेंडर में कार्यक्रम जोड़ें",
+  "calendar_repeat": "दोहराएँ",
+  "calendar_does_not_repeat": "दोहराया नहीं जाता",
+  "calendar_repeat_weekly": "साप्ताहिक",
+  "calendar_repeat_monthly": "मासिक",
+  "calendar_repeat_yearly": "वार्षिक",
+  "calendar_repeat_monthly_lunar": "मासिक (चंद्र तिथि {day})",
+  "@calendar_repeat_monthly_lunar": {
+    "placeholders": {
+      "day": {
+        "type": "String"
+      }
+    }
+  },
+  "calendar_repeat_yearly_lunar": "वार्षिक (चंद्र तिथि)",
+  "calendar_delete_event": "कार्यक्रम हटाएँ",
+  "calendar_delete_event_title": "कार्यक्रम हटाएँ?",
+  "calendar_delete_event_body": "\"{title}\" आपके कैलेंडर से हटा दिया जाएगा। इसे पूर्ववत नहीं किया जा सकता।",
+  "@calendar_delete_event_body": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "calendar_delete_repeating_title": "दोहराया जाने वाला कार्यक्रम हटाएँ?",
+  "calendar_delete_repeating_body": "\"{title}\" ({repeat}) की सभी तिथियाँ आपके कैलेंडर से हटा दी जाएँगी। इसे पूर्ववत नहीं किया जा सकता।",
+  "@calendar_delete_repeating_body": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      },
+      "repeat": {
+        "type": "String"
+      }
+    }
+  },
+  "calendar_event_deleted": "कार्यक्रम हटा दिया गया",
   "moon_phase_new_moon": "अमावस्या",
   "moon_phase_first_quarter": "प्रथम चतुर्थांश",
   "moon_phase_full_moon": "पूर्णिमा",
