@@ -578,6 +578,13 @@ class AuthNotifier extends StateNotifier<AuthState> {
     } catch (e) {
       _logger.warning('Mala flush on logout failed (ignored): $e');
     }
+    // The mala catalogue cache is per account (rows carry `last_used_at`);
+    // drop it, and any shared legacy one, so the next account starts clean.
+    try {
+      await ref.read(malaLocalDataSourceProvider).clearCatalogues();
+    } catch (e) {
+      _logger.warning('Mala catalogue clear on logout failed (ignored): $e');
+    }
     // Prayers tapped just before their sheet closed may still be going out.
     await ref.read(pendingPrayerSendsProvider).settle();
     await pushUnregister;
