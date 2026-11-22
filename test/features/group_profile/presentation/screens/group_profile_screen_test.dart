@@ -22,6 +22,7 @@ import 'package:flutter_pecha/features/group_profile/domain/repositories/group_p
 import 'package:flutter_pecha/features/group_profile/presentation/providers/group_post_providers.dart';
 import 'package:flutter_pecha/features/group_profile/presentation/providers/group_profile_providers.dart';
 import 'package:flutter_pecha/features/group_profile/presentation/screens/group_profile_screen.dart';
+import 'package:flutter_pecha/features/group_profile/presentation/widgets/group_profile_drawer.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -119,6 +120,7 @@ void main() {
   Future<ProviderContainer> pump(
     WidgetTester tester, {
     bool startCollapsed = false,
+    Widget? home,
     Map<String, SpaceUnread> unread = const {},
   }) async {
     final container = ProviderContainer(
@@ -163,10 +165,9 @@ void main() {
           locale: const Locale('en'),
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
-          home: GroupProfileScreen(
-            groupId: 'g1',
-            startCollapsed: startCollapsed,
-          ),
+          home:
+              home ??
+              GroupProfileScreen(groupId: 'g1', startCollapsed: startCollapsed),
         ),
       ),
     );
@@ -305,6 +306,58 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.text('Leave space'), findsOneWidget);
+      await unmount(tester);
+    });
+  });
+
+  group('group drawer', () {
+    // Opened from drawer:// links; it has no app bar, so the room buttons
+    // ride on its handle row.
+    Future<void> openDrawer(
+      WidgetTester tester, {
+      Map<String, SpaceUnread> unread = const {},
+    }) async {
+      await pump(
+        tester,
+        unread: unread,
+        home: Builder(
+          builder:
+              (context) => Scaffold(
+                body: TextButton(
+                  onPressed: () => GroupProfileDrawer.show(context, 'g1'),
+                  child: const Text('open'),
+                ),
+              ),
+        ),
+      );
+      await tester.tap(find.text('open'));
+      await tester.pumpAndSettle();
+    }
+
+    testWidgets('a member gets prayer requests and chat', (tester) async {
+      await openDrawer(tester, unread: const {'g1': SpaceUnread(chat: true)});
+
+      expect(appBarButton('Prayer requests'), findsOneWidget);
+      expect(appBarButton('Chat'), findsOneWidget);
+      expect(
+        find.descendant(
+          of: appBarButton('Chat'),
+          matching: find.byType(ConnectUnreadDot),
+        ),
+        findsOneWidget,
+      );
+      // Invite and the ⋮ member menu still show in the body.
+      expect(find.text('Invite'), findsOneWidget);
+      expect(find.byIcon(AppAssets.dotsThreeVertical), findsOneWidget);
+      await unmount(tester);
+    });
+
+    testWidgets('a visitor gets neither', (tester) async {
+      remote.isMember = false;
+      await openDrawer(tester);
+
+      expect(appBarButton('Prayer requests'), findsNothing);
+      expect(appBarButton('Chat'), findsNothing);
       await unmount(tester);
     });
   });
