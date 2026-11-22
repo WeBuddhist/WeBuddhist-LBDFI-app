@@ -52,4 +52,44 @@ void main() {
       expect(prefs.getString(StorageKeys.connectLastSpaceId), 'b');
     });
   });
+
+  group('connectOpenedSpacesProvider', () {
+    test('reads the opened spaces and records a new one', () async {
+      SharedPreferences.setMockInitialValues({
+        StorageKeys.connectOpenedSpaceIds: ['a'],
+      });
+      final container = ProviderContainer();
+      addTearDown(container.dispose);
+
+      container.read(connectOpenedSpacesProvider);
+      await Future<void>.delayed(Duration.zero);
+      expect(container.read(connectOpenedSpacesProvider).ids, {'a'});
+      expect(container.read(connectOpenedSpacesProvider).loaded, isTrue);
+
+      await container
+          .read(connectOpenedSpacesProvider.notifier)
+          .markOpened('b');
+      expect(container.read(connectOpenedSpacesProvider).ids, {'a', 'b'});
+      final prefs = await SharedPreferences.getInstance();
+      expect(
+        prefs.getStringList(StorageKeys.connectOpenedSpaceIds),
+        unorderedEquals(['a', 'b']),
+      );
+    });
+
+    test('keeps a space marked before the stored ids were read', () async {
+      SharedPreferences.setMockInitialValues({
+        StorageKeys.connectOpenedSpaceIds: ['a'],
+      });
+      final container = ProviderContainer();
+      addTearDown(container.dispose);
+
+      await container
+          .read(connectOpenedSpacesProvider.notifier)
+          .markOpened('b');
+      await Future<void>.delayed(Duration.zero);
+      expect(container.read(connectOpenedSpacesProvider).ids, {'a', 'b'});
+      expect(container.read(connectOpenedSpacesProvider).loaded, isTrue);
+    });
+  });
 }

@@ -207,6 +207,10 @@ class StorageKeys {
   /// Space the Connect tab last showed, by group id.
   static const String connectLastSpaceId = 'connect_last_space_id';
 
+  /// Group ids of the spaces the Connect tab has already opened, so a space
+  /// opens on its info the first time and on its feed after that.
+  static const String connectOpenedSpaceIds = 'connect_opened_space_ids';
+
   // ========== BUSINESS LOGIC ==========
   /// Last profile update timestamp
   static const String lastProfileUpdate = 'last_profile_update';
