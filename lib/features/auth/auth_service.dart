@@ -103,9 +103,13 @@ class AuthService {
             scopes: {"openid", "profile", "email", "offline_access"},
           );
 
+      // Start the new session *before* storing it, so a rejection from a
+      // renewal that began under the old session is ignored by
+      // [_guardRenewal] and cannot clear the credentials we are about to save.
+      _resetRenewalGuard();
+
       // Store credentials in the credentials manager
       await _auth0.credentialsManager.storeCredentials(credentials);
-      _resetRenewalGuard();
       _logger.info('Credentials stored successfully');
 
       // VERIFY STORAGE IMMEDIATELY AFTER STORING
