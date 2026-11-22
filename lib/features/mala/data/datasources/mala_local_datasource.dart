@@ -203,6 +203,20 @@ class MalaLocalDataSource {
     await _box.deleteAll(_legacyCatalogueKeys(language));
   }
 
+  /// Deletes every cached catalogue: each account's v3 one and the shared
+  /// legacy ones. Called on logout, so a device keeps no catalogue of an
+  /// account that has signed out, and the next account can't be served a
+  /// legacy list filtered by someone else's saved traditions. Counts
+  /// (`{userId}:{presetId}`) are kept.
+  Future<void> clearCatalogues() async {
+    final keys =
+        _box.keys
+            .cast<String>()
+            .where((k) => k.startsWith('catalogue:'))
+            .toList();
+    await _box.deleteAll(keys);
+  }
+
   LocalMalaState read(String userId, String presetId) {
     final raw = _box.get(_key(userId, presetId));
     if (raw == null) return const LocalMalaState();

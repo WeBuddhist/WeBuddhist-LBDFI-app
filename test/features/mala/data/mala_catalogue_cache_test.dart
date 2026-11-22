@@ -234,4 +234,28 @@ void main() {
     expect(remote.fetches, 1);
     expect(load.isLeft(), isTrue, reason: 'only the refresh hides errors');
   });
+
+  test(
+    'clearing on logout drops every catalogue but keeps the counts',
+    () async {
+      final local = MalaLocalDataSource();
+      final presets = [PresetAccumulatorModel.fromJson(_preset('a'))];
+      await local.writeCatalogue('u1', 'en', presets);
+      await local.writeCatalogue('u2', 'bo', presets);
+      await box().put('catalogue:v2:en', jsonEncode([_preset('old')]));
+      await box().put('catalogue:en', jsonEncode([_preset('older')]));
+      await local.recordTap('u1', 'a');
+
+      await local.clearCatalogues();
+
+      expect(local.readCatalogue('u1', 'en', allowLegacy: true), isNull);
+      expect(local.readCatalogue('u2', 'bo', allowLegacy: true), isNull);
+      expect(box().keys.where((k) => '$k'.startsWith('catalogue:')), isEmpty);
+      expect(
+        local.read('u1', 'a').isDirty,
+        isTrue,
+        reason: 'unsynced tap kept',
+      );
+    },
+  );
 }
