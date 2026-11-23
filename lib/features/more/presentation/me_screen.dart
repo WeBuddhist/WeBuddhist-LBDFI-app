@@ -10,6 +10,7 @@ import 'package:flutter_pecha/core/l10n/generated/app_localizations.dart';
 import 'package:flutter_pecha/core/theme/app_colors.dart';
 import 'package:flutter_pecha/features/auth/presentation/providers/state_providers.dart';
 import 'package:flutter_pecha/features/auth/presentation/utils/auth_analytics.dart';
+import 'package:flutter_pecha/features/auth/presentation/utils/start_sign_in.dart';
 import 'package:flutter_pecha/features/more/domain/entities/user_stats.dart';
 import 'package:flutter_pecha/shared/utils/helper_functions.dart';
 import 'package:flutter_pecha/shared/widgets/main_tab_app_bar.dart';
@@ -180,12 +181,13 @@ class _GuestView extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final authState = ref.watch(authProvider);
-    final authNotifier = ref.read(authProvider.notifier);
     void startLogin(String connection) {
-      ref
-          .read(authAnalyticsProvider)
-          .loginStarted(method: connection, source: AuthSource.meScreen);
-      authNotifier.login(connection: connection, source: AuthSource.meScreen);
+      startSignIn(
+        context,
+        ref,
+        connection: connection,
+        source: AuthSource.meScreen,
+      );
     }
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final isIOS = Platform.isIOS;

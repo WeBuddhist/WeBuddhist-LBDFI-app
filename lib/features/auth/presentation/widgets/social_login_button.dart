@@ -1,10 +1,8 @@
 // Widget for social login buttons
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_pecha/features/auth/presentation/providers/auth_notifier.dart';
-import 'package:flutter_pecha/features/auth/presentation/providers/state_providers.dart';
-import 'package:flutter_pecha/features/auth/presentation/screens/phone_login_screen.dart';
 import 'package:flutter_pecha/features/auth/presentation/utils/auth_analytics.dart';
+import 'package:flutter_pecha/features/auth/presentation/utils/start_sign_in.dart';
 
 class SocialLoginButton extends ConsumerWidget {
   const SocialLoginButton({
@@ -31,7 +29,6 @@ class SocialLoginButton extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final authNotifier = ref.read(authProvider.notifier);
     return SizedBox(
       width: double.infinity,
       height: 56,
@@ -49,17 +46,13 @@ class SocialLoginButton extends ConsumerWidget {
           ),
           elevation: 0,
         ),
-        onPressed: () async {
-          ref
-              .read(authAnalyticsProvider)
-              .loginStarted(method: connection, source: source);
-          // Phone sign-in takes a number and a code, on its own screen.
-          if (connection == AuthNotifier.phoneConnection) {
-            await PhoneLoginScreen.open(context, source: source);
-            return;
-          }
-          await authNotifier.login(connection: connection, source: source);
-        },
+        onPressed:
+            () => startSignIn(
+              context,
+              ref,
+              connection: connection,
+              source: source,
+            ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
