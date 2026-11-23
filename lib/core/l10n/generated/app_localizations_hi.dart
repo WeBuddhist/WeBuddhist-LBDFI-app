@@ -1120,6 +1120,9 @@ class AppLocalizationsHi extends AppLocalizations {
   String get continueWithPhone => 'फ़ोन के साथ जारी रखें';
 
   @override
+  String get login_last_used => 'Last used';
+
+  @override
   String get phone_login_title => 'Enter your phone number';
 
   @override

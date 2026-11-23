@@ -53,6 +53,41 @@ void main() {
     );
   });
 
+  test('remembers which method the Auth0 login used', () async {
+    for (final (subject, method) in [
+      ('google-oauth2|1', 'google'),
+      ('apple|001.abc', 'apple'),
+      ('sms|65f0', 'phone'),
+    ]) {
+      SharedPreferences.setMockInitialValues({
+        ...auth0Build,
+        StorageKeys.currentUserId: subject,
+      });
+      await LegacyAuth0CleanupImpl(
+        clearAuth0Credentials: (_, _) async {},
+      ).run();
+
+      // Marks that button "Last used" when the person signs in again.
+      final prefs = await SharedPreferences.getInstance();
+      expect(
+        prefs.getString(StorageKeys.lastSignInMethod),
+        method,
+        reason: subject,
+      );
+    }
+  });
+
+  test('an Auth0 login of a kind the app no longer offers marks nothing', () async {
+    SharedPreferences.setMockInitialValues({
+      ...auth0Build,
+      StorageKeys.currentUserId: 'auth0|1',
+    });
+    await LegacyAuth0CleanupImpl(clearAuth0Credentials: (_, _) async {}).run();
+
+    final prefs = await SharedPreferences.getInstance();
+    expect(prefs.getString(StorageKeys.lastSignInMethod), isNull);
+  });
+
   test('a profile cached without an id cannot be matched later', () async {
     SharedPreferences.setMockInitialValues({
       ...auth0Build,

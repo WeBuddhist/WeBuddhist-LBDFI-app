@@ -165,3 +165,55 @@ class LoginErrorText extends StatelessWidget {
     );
   }
 }
+
+/// Puts a small "Last used" tag on the top edge of a sign-in button when
+/// [show] is true: the method this phone last signed in with. After signing
+/// out, or after the one-time sign-out when updating from an Auth0 build, it
+/// keeps people from picking another method and landing in a new, empty
+/// account.
+///
+/// It sits on the button's edge rather than inside it, so a long translated
+/// label never has to make room.
+class LastUsedTag extends StatelessWidget {
+  const LastUsedTag({super.key, required this.show, required this.child});
+
+  final bool show;
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    if (!show) return child;
+    final theme = Theme.of(context);
+    return Stack(
+      clipBehavior: Clip.none,
+      children: [
+        child,
+        PositionedDirectional(
+          top: -9,
+          end: 18,
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+            decoration: BoxDecoration(
+              color: theme.colorScheme.onSurface,
+              borderRadius: BorderRadius.circular(10),
+              // Keeps it apart from a button of the same colour (Apple's).
+              border: Border.all(
+                color: theme.scaffoldBackgroundColor,
+                width: 1.5,
+              ),
+            ),
+            child: Text(
+              context.l10n.login_last_used,
+              style: TextStyle(
+                fontSize: 11,
+                height: 1.3,
+                fontWeight: FontWeight.w600,
+                color: theme.colorScheme.surface,
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}

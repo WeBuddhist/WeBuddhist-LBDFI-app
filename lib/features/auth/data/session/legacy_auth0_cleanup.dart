@@ -78,6 +78,7 @@ class LegacyAuth0CleanupImpl implements LegacyAuth0Cleanup {
   Future<void> _rememberLocalUserId(SharedPreferences prefs) async {
     final localUserId = prefs.getString(StorageKeys.currentUserId);
     if (localUserId == null || localUserId.isEmpty) return;
+    await _rememberSignInMethod(prefs, localUserId);
     final backendUserId = _cachedProfileId(prefs);
     if (backendUserId == null) {
       // Cached before profiles carried an id. Without it a later sign-in
@@ -87,6 +88,24 @@ class LegacyAuth0CleanupImpl implements LegacyAuth0Cleanup {
     }
     await prefs.setString(StorageKeys.legacyAuth0UserId, localUserId);
     await prefs.setString(StorageKeys.legacyAuth0BackendUserId, backendUserId);
+  }
+
+  /// Everyone updating has to sign in again, and someone who picks another
+  /// method than before gets a new, empty account. The Auth0 subject says
+  /// which one they used (`google-oauth2|…`, `apple|…`, `sms|…`), so the
+  /// sign-in buttons can mark it "Last used".
+  Future<void> _rememberSignInMethod(
+    SharedPreferences prefs,
+    String auth0Subject,
+  ) async {
+    final method = switch (auth0Subject.split('|').first) {
+      'google-oauth2' => 'google',
+      'apple' => 'apple',
+      'sms' => 'phone',
+      _ => null,
+    };
+    if (method == null) return;
+    await prefs.setString(StorageKeys.lastSignInMethod, method);
   }
 
   String? _cachedProfileId(SharedPreferences prefs) {

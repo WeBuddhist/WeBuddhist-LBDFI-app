@@ -2069,6 +2069,12 @@ abstract class AppLocalizations {
   /// **'Continue with phone'**
   String get continueWithPhone;
 
+  /// Small tag on the sign-in button for the method this phone last signed in with
+  ///
+  /// In en, this message translates to:
+  /// **'Last used'**
+  String get login_last_used;
+
   /// No description provided for @phone_login_title.
   ///
   /// In en, this message translates to:

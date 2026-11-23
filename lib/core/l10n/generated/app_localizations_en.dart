@@ -1113,6 +1113,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get continueWithPhone => 'Continue with phone';
 
   @override
+  String get login_last_used => 'Last used';
+
+  @override
   String get phone_login_title => 'Enter your phone number';
 
   @override

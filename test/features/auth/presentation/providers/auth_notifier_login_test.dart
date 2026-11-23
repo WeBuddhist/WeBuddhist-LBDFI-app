@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter_pecha/core/analytics/analytics_events.dart';
@@ -52,6 +53,10 @@ AuthCredentials _credentials(String userId) {
 class _Repository implements AuthRepository {
   bool legacySessionRemoved = false;
   bool storedSession = false;
+  bool guest = false;
+
+  /// When set, a Google login waits for it before answering.
+  Completer<void>? googleHold;
 
   Either<Failure, AuthCredentials> google = const Left(
     UnknownFailure('not set'),
@@ -81,7 +86,7 @@ class _Repository implements AuthRepository {
       Right(storedSession);
 
   @override
-  Future<Either<Failure, bool>> isGuestMode() async => const Right(false);
+  Future<Either<Failure, bool>> isGuestMode() async => Right(guest);
 
   @override
   Future<Either<Failure, void>> clearGuestMode() async => const Right(null);
@@ -93,7 +98,10 @@ class _Repository implements AuthRepository {
   }
 
   @override
-  Future<Either<Failure, AuthCredentials>> loginWithGoogle() async => google;
+  Future<Either<Failure, AuthCredentials>> loginWithGoogle() async {
+    await googleHold?.future;
+    return google;
+  }
 
   @override
   Future<Either<Failure, PhoneCodeStart>> requestPhoneCode(
@@ -262,7 +270,107 @@ void main() {
     });
   });
 
+  group('Google and Apple sign in where the person is', () {
+    test('no splash: the launch flag stays off while the login runs', () async {
+      repository.googleHold = Completer<void>();
+      repository.google = Right(_credentials('backend-user-1'));
+      final notifier = await start();
+
+      final login = notifier.login(connection: 'google');
+      await Future<void>.delayed(Duration.zero);
+
+      // The route guard shows the splash on isLoading. A sign-in must not
+      // set it, or the screen the person is on is lost.
+      expect(notifier.state.isSigningIn, isTrue);
+      expect(notifier.state.isLoading, isFalse);
+
+      repository.googleHold!.complete();
+      await login;
+      await notifier.stream.firstWhere((s) => s.isLoggedIn);
+
+      expect(notifier.state.isSigningIn, isFalse);
+    });
+
+    test('a guest stays a guest, on their screen, until signed in', () async {
+      repository.guest = true;
+      repository.googleHold = Completer<void>();
+      repository.google = Right(_credentials('backend-user-1'));
+      final notifier = await start();
+      expect(notifier.state.isGuest, isTrue);
+
+      final login = notifier.login(
+        connection: 'google',
+        source: AuthSource.loginDrawer,
+      );
+      await Future<void>.delayed(Duration.zero);
+      expect(notifier.state.isGuest, isTrue);
+      expect(notifier.state.isLoggedIn, isTrue);
+
+      repository.googleHold!.complete();
+      await login;
+      await notifier.stream.firstWhere((s) => !s.isGuest);
+
+      expect(notifier.state.isLoggedIn, isTrue);
+      expect(notifier.state.isSigningIn, isFalse);
+    });
+
+    test('a guest who cancels is still a guest, with the spinner gone', () async {
+      repository.guest = true;
+      repository.google = const Left(
+        LoginFailure(
+          'Google login failed: AuthException: Login was cancelled by user',
+          LoginFailureReason.cancelled,
+        ),
+      );
+      final notifier = await start();
+
+      await notifier.login(connection: 'google');
+
+      expect(notifier.state.isGuest, isTrue);
+      expect(notifier.state.isSigningIn, isFalse);
+      expect(notifier.state.isLoading, isFalse);
+    });
+  });
+
   group('phone sign-in', () {
+    test('Android reading the SMS signs in from the code screen', () async {
+      final sms = Completer<AuthCredentials?>();
+      repository.phoneCode = Right(
+        PhoneCodeStart.codeSent(verificationId: 'v-1', autoSignIn: sms.future),
+      );
+      final notifier = await start();
+
+      await notifier.requestPhoneCode(
+        '+919876543210',
+        source: AuthSource.loginPage,
+      );
+      expect(notifier.state.isLoggedIn, isFalse);
+
+      sms.complete(_credentials('backend-user-8'));
+      await notifier.stream.firstWhere((s) => s.isLoggedIn);
+
+      expect(storage.values[StorageKeys.currentUserId], 'backend-user-8');
+      expect(succeededLogin().properties, {
+        AnalyticsProperties.method: 'sms',
+        AnalyticsProperties.source: 'login_page',
+      });
+    });
+
+    test('no SMS read: the code screen just keeps waiting', () async {
+      repository.phoneCode = Right(
+        PhoneCodeStart.codeSent(
+          verificationId: 'v-1',
+          autoSignIn: Future.value(),
+        ),
+      );
+      final notifier = await start();
+
+      await notifier.requestPhoneCode('+919876543210');
+      await Future<void>.delayed(Duration.zero);
+
+      expect(notifier.state.isLoggedIn, isFalse);
+    });
+
     test('a sent code is handed to the screen without signing in', () async {
       repository.phoneCode = const Right(
         PhoneCodeStart.codeSent(verificationId: 'v-1', resendToken: 3),

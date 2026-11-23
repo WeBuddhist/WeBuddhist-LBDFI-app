@@ -57,6 +57,12 @@ class StorageKeys {
   /// How the signed-in account logged in: `google`, `apple` or `phone`.
   static const String signInMethod = 'sign_in_method';
 
+  /// The method last used to sign in on this phone. Unlike [signInMethod] it
+  /// is kept after signing out, so the sign-in buttons can mark it "Last
+  /// used" and the person does not pick another by mistake and land in a
+  /// different, empty account.
+  static const String lastSignInMethod = 'last_sign_in_method';
+
   /// Current onboarding step
   static const String onboardingStep = 'onboarding_step';
 

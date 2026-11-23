@@ -18,7 +18,16 @@ const _kSentinel = Object();
 
 class AuthState {
   final bool isLoggedIn;
+
+  /// The launch restore is still deciding who is signed in. The route guard
+  /// shows the splash for as long as this is true.
   final bool isLoading;
+
+  /// A Google or Apple sign-in is running. Unlike [isLoading] it does not
+  /// move the app to the splash: the person stays where they tapped the
+  /// button, which shows a spinner, so a guest who signs in from a prompt
+  /// carries on where they were, and one who cancels or fails sees why.
+  final bool isSigningIn;
   final bool isGuest;
   final String? errorMessage;
 
@@ -39,6 +48,7 @@ class AuthState {
     required this.isLoggedIn,
     this.isGuest = false,
     this.isLoading = false,
+    this.isSigningIn = false,
     this.errorMessage,
     this.hasCompletedOnboarding,
     this.loginError,
@@ -47,6 +57,7 @@ class AuthState {
   AuthState copyWith({
     bool? isLoggedIn,
     bool? isLoading,
+    bool? isSigningIn,
     bool? isGuest,
     String? errorMessage,
     LoginFailureReason? loginError,
@@ -56,6 +67,7 @@ class AuthState {
   }) => AuthState(
     isLoggedIn: isLoggedIn ?? this.isLoggedIn,
     isLoading: isLoading ?? this.isLoading,
+    isSigningIn: isSigningIn ?? this.isSigningIn,
     isGuest: isGuest ?? this.isGuest,
     errorMessage: errorMessage,
     loginError: loginError,

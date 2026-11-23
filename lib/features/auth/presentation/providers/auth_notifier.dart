@@ -149,10 +149,10 @@ class AuthNotifier extends StateNotifier<AuthState> {
     if (_reconciling) return;
     _reconciling = true;
     try {
-      // Let a launch restore finish; isLoading after it means a login is running.
+      // Let a launch restore finish, and leave a running login alone.
       final inFlight = _restoreInFlight;
       if (inFlight != null) await inFlight;
-      if (state.isLoading) return;
+      if (state.isLoading || state.isSigningIn) return;
       if (state.isLoggedIn && !state.isGuest) {
         _logger.info('Connectivity restored — reconciling user profile');
         await ref.read(userProvider.notifier).refreshUser();
@@ -441,7 +441,9 @@ class AuthNotifier extends StateNotifier<AuthState> {
   /// [requestPhoneCode] and [verifyPhoneCode].
   Future<void> login({String? connection, AuthSource? source}) async {
     _bumpAuthEpoch();
-    state = state.copyWith(isLoading: true, errorMessage: null);
+    // Not `isLoading`: that would send the app to the splash and lose the
+    // screen the person is on. See [AuthState.isSigningIn].
+    state = state.copyWith(isSigningIn: true, errorMessage: null);
 
     final loginResult = await _loginUseCase(
       LoginParams(connection: connection),
@@ -499,6 +501,19 @@ class AuthNotifier extends StateNotifier<AuthState> {
         source: source,
       );
     }
+    // Android may read the SMS and sign in by itself while the code screen
+    // is up. Signing in closes that screen, like a typed code does.
+    unawaited(
+      start.autoSignIn?.then((autoCredentials) async {
+        if (autoCredentials == null || !mounted) return;
+        _bumpAuthEpoch();
+        await _handleSuccessfulLogin(
+          autoCredentials,
+          connection: phoneConnection,
+          source: source,
+        );
+      }),
+    );
     return Right(start);
   }
 
@@ -563,6 +578,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
     );
     state = state.copyWith(
       isLoading: false,
+      isSigningIn: false,
       errorMessage: 'Login failed: ${failure.message}',
       loginError: showOnLoginScreen ? loginFailure.reason : null,
     );
@@ -604,11 +620,17 @@ class AuthNotifier extends StateNotifier<AuthState> {
     _authAnalytics.loginSucceeded(method: connection, source: source);
 
     // 3. Prefetch onboarding status and full user profile so the route guard
-    //    can decide instantly.
-    ref.read(cacheInterceptorProvider).clearUserScoped();
-    final onboardingStatus = await _fetchOnboardingStatusSafe();
-    if (!_isAuthEpochCurrent(epoch)) return;
-    await ref.read(userProvider.notifier).initializeUser();
+    //    can decide instantly. Best effort: the tokens are stored, so a
+    //    failure here must not leave the sign-in spinner up for good.
+    bool? onboardingStatus;
+    try {
+      ref.read(cacheInterceptorProvider).clearUserScoped();
+      onboardingStatus = await _fetchOnboardingStatusSafe();
+      if (!_isAuthEpochCurrent(epoch)) return;
+      await ref.read(userProvider.notifier).initializeUser();
+    } catch (e, st) {
+      _logger.error('Post-login step failed — finishing the sign-in', e, st);
+    }
 
     // 4. Update auth state — triggers the router refresh.
     _applyAuthenticatedLoginState(
@@ -869,6 +891,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
     state = state.copyWith(
       isLoggedIn: false,
       isLoading: false,
+      isSigningIn: false,
       isGuest: false,
       hasCompletedOnboarding: null,
     );
@@ -888,6 +911,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
     state = state.copyWith(
       isLoggedIn: true,
       isLoading: false,
+      isSigningIn: false,
       isGuest: false,
       hasCompletedOnboarding: onboardingStatus,
       errorMessage: null,

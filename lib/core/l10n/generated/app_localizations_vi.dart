@@ -1120,6 +1120,9 @@ class AppLocalizationsVi extends AppLocalizations {
   String get continueWithPhone => 'Tiếp tục bằng số điện thoại';
 
   @override
+  String get login_last_used => 'Last used';
+
+  @override
   String get phone_login_title => 'Enter your phone number';
 
   @override

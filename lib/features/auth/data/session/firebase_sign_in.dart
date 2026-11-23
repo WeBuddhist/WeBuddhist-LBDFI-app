@@ -45,12 +45,21 @@ sealed class PhoneVerificationStart {
 
 /// An SMS went out; the person types the code in.
 class PhoneVerificationCodeSent extends PhoneVerificationStart {
-  const PhoneVerificationCodeSent({required this.verificationId, this.resendToken});
+  const PhoneVerificationCodeSent({
+    required this.verificationId,
+    this.resendToken,
+    this.autoVerified,
+  });
 
   final String verificationId;
 
   /// Pass back to resend to the same number (Android only).
   final int? resendToken;
+
+  /// Android can read the SMS itself. When it does, this completes with the
+  /// proof and nobody has to type the code. Completes with null when the
+  /// wait for the SMS ran out; never completes on iOS.
+  final Future<FirebaseProof?>? autoVerified;
 }
 
 /// Android verified the number without a code.
@@ -184,6 +193,7 @@ class FirebaseSignInImpl implements FirebaseSignIn {
   }) async {
     final auth = _auth;
     final started = Completer<PhoneVerificationStart>();
+    final autoVerified = Completer<FirebaseProof?>();
     void fail(Object error) {
       if (!started.isCompleted) started.completeError(error);
     }
@@ -193,18 +203,27 @@ class FirebaseSignInImpl implements FirebaseSignIn {
         phoneNumber: phoneNumber,
         forceResendingToken: resendToken,
         verificationCompleted: (credential) async {
-          // Once the code screen is up the person finishes there.
-          if (started.isCompleted) return;
+          // Android only. Before the code screen is up: the number was
+          // verified without an SMS. After: Android read the SMS itself.
+          final instant = !started.isCompleted;
+          if (!instant && autoVerified.isCompleted) return;
           try {
             final proof = await _proofFor(
               auth,
               () => auth.signInWithCredential(credential),
             );
-            if (!started.isCompleted) {
+            if (instant && !started.isCompleted) {
               started.complete(PhoneVerificationAutoVerified(proof));
+            } else if (!autoVerified.isCompleted) {
+              autoVerified.complete(proof);
             }
           } catch (e) {
-            fail(e);
+            if (instant) {
+              fail(e);
+            } else if (!autoVerified.isCompleted) {
+              // The person can still type the code.
+              autoVerified.complete(null);
+            }
           }
         },
         verificationFailed: (e) => fail(_fromFirebase(e)),
@@ -214,10 +233,13 @@ class FirebaseSignInImpl implements FirebaseSignIn {
             PhoneVerificationCodeSent(
               verificationId: verificationId,
               resendToken: resendToken,
+              autoVerified: autoVerified.future,
             ),
           );
         },
-        codeAutoRetrievalTimeout: (_) {},
+        codeAutoRetrievalTimeout: (_) {
+          if (!autoVerified.isCompleted) autoVerified.complete(null);
+        },
       );
     } on FirebaseAuthException catch (e) {
       fail(_fromFirebase(e));

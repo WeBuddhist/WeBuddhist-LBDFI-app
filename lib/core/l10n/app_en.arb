@@ -536,6 +536,10 @@
   "continueWithGoogle": "Continue with Google",
   "continueWithApple": "Continue with Apple",
   "continueWithPhone": "Continue with phone",
+  "login_last_used": "Last used",
+  "@login_last_used": {
+    "description": "Small tag on the sign-in button for the method this phone last signed in with"
+  },
   "phone_login_title": "Enter your phone number",
   "phone_login_subtitle": "We'll text you a code to confirm it's you.",
   "phone_login_number_hint": "Phone number",

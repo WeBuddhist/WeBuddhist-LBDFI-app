@@ -2182,6 +2182,13 @@ class TolgeeAppLocalizations extends AppLocalizations {
   );
 
   @override
+  String get login_last_used => TolgeeBridge.get(
+    localeName,
+    'login_last_used',
+    () => _fallback.login_last_used,
+  );
+
+  @override
   String get phone_login_title => TolgeeBridge.get(
     localeName,
     'phone_login_title',

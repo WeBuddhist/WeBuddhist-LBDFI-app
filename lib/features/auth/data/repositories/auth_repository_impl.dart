@@ -82,6 +82,9 @@ class AuthRepositoryImpl implements AuthRepository {
         PhoneCodeStart.codeSent(
           verificationId: start.verificationId!,
           resendToken: start.resendToken,
+          autoSignIn: start.autoSignIn?.then(
+            (tokens) => tokens == null ? null : _toAuthCredentials(tokens),
+          ),
         ),
       );
     } catch (e) {

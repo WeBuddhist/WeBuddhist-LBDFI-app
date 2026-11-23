@@ -168,6 +168,7 @@ class AuthService {
           return PhoneLoginStart.codeSent(
             verificationId: start.verificationId,
             resendToken: start.resendToken,
+            autoSignIn: _autoSignIn(start.autoVerified, attempt),
           );
         case PhoneVerificationAutoVerified():
           return PhoneLoginStart.signedIn(
@@ -176,6 +177,25 @@ class AuthService {
       }
     } catch (e) {
       throw _loginFailure(methodPhone, e);
+    }
+  }
+
+  /// Android can read the SMS code itself. When it does, finish the sign-in
+  /// without the person typing anything. Completes with null when that did
+  /// not happen, or when the person got there first by typing the code (the
+  /// attempt has moved on) or left.
+  Future<SessionTokens?> _autoSignIn(
+    Future<FirebaseProof?>? autoVerified,
+    int attempt,
+  ) async {
+    if (autoVerified == null) return null;
+    final proof = await autoVerified;
+    if (proof == null) return null;
+    try {
+      return await _exchange(methodPhone, proof, attempt: attempt);
+    } catch (e) {
+      _logger.warning('Automatic phone sign-in did not finish: $e');
+      return null;
     }
   }
 
@@ -255,6 +275,8 @@ class AuthService {
     try {
       final prefs = await SharedPreferences.getInstance();
       await prefs.setString(StorageKeys.signInMethod, method);
+      // Outlives sign-out: marks the "Last used" button next time.
+      await prefs.setString(StorageKeys.lastSignInMethod, method);
     } catch (e) {
       _logger.warning('Failed to remember the sign-in method: $e');
     }
@@ -563,11 +585,13 @@ class PhoneLoginStart {
   const PhoneLoginStart.codeSent({
     required String this.verificationId,
     this.resendToken,
+    this.autoSignIn,
   }) : session = null;
 
   const PhoneLoginStart.signedIn(SessionTokens this.session)
     : verificationId = null,
-      resendToken = null;
+      resendToken = null,
+      autoSignIn = null;
 
   /// Set when an SMS code went out.
   final String? verificationId;
@@ -575,6 +599,10 @@ class PhoneLoginStart {
 
   /// Set when the number was verified without a code (Android).
   final SessionTokens? session;
+
+  /// After a code went out: completes with the session if Android reads the
+  /// SMS and signs in by itself, with null if it does not.
+  final Future<SessionTokens?>? autoSignIn;
 }
 
 class AuthException implements Exception {

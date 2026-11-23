@@ -163,7 +163,7 @@ class _LoginDrawerState extends ConsumerState<LoginDrawer>
                     ),
                     const SizedBox(height: 32),
                     // Sign-in buttons
-                    if (authState.isLoading)
+                    if (authState.isLoading || authState.isSigningIn)
                       const Padding(
                         padding: EdgeInsets.symmetric(vertical: 24),
                         child: CircularProgressIndicator(),

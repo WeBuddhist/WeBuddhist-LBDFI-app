@@ -417,6 +417,73 @@ void main() {
       expect(store.tokens, isNotNull);
     });
 
+    test('Android reading the SMS signs in without a typed code', () async {
+      final sms = Completer<FirebaseProof?>();
+      signIn.phoneStart = PhoneVerificationCodeSent(
+        verificationId: 'v-1',
+        autoVerified: sms.future,
+      );
+      api.exchangeResults.add(session);
+
+      final start = await auth.requestPhoneCode('+919876543210');
+      expect(store.tokens, isNull);
+
+      sms.complete(const FirebaseProof(idToken: 'firebase-auto'));
+      final tokens = await start.autoSignIn;
+
+      expect(tokens?.accessToken, session.accessToken);
+      expect(store.tokens, isNotNull);
+      expect(api.exchanges.single.token, 'firebase-auto');
+      final prefs = await SharedPreferences.getInstance();
+      expect(prefs.getString(StorageKeys.signInMethod), 'phone');
+    });
+
+    test('a code typed first wins: the late automatic sign-in is dropped',
+        () async {
+      final sms = Completer<FirebaseProof?>();
+      signIn.phoneStart = PhoneVerificationCodeSent(
+        verificationId: 'v-1',
+        autoVerified: sms.future,
+      );
+      final start = await auth.requestPhoneCode('+919876543210');
+
+      api.exchangeResults.add(session);
+      await auth.loginWithPhoneCode(verificationId: 'v-1', smsCode: '123456');
+      sms.complete(const FirebaseProof(idToken: 'firebase-auto'));
+
+      expect(await start.autoSignIn, isNull);
+      // Only the typed code's exchange was ever stored.
+      expect(store.tokens?.accessToken, session.accessToken);
+    });
+
+    test('no SMS read (iOS, or the wait ran out): nothing happens', () async {
+      signIn.phoneStart = PhoneVerificationCodeSent(
+        verificationId: 'v-1',
+        autoVerified: Future.value(),
+      );
+
+      final start = await auth.requestPhoneCode('+919876543210');
+
+      expect(await start.autoSignIn, isNull);
+      expect(api.exchanges, isEmpty);
+    });
+
+    test('an automatic sign-in the backend refuses leaves the code screen',
+        () async {
+      signIn.phoneStart = PhoneVerificationCodeSent(
+        verificationId: 'v-1',
+        autoVerified: Future.value(
+          const FirebaseProof(idToken: 'firebase-auto'),
+        ),
+      );
+      api.exchangeResults.add(const AuthApiException(503, null));
+
+      final start = await auth.requestPhoneCode('+919876543210');
+
+      expect(await start.autoSignIn, isNull);
+      expect(store.tokens, isNull);
+    });
+
     test('a number Firebase refuses reports why', () async {
       signIn.phoneStart = const FirebaseSignInException('invalid-phone-number');
       await expectLater(
@@ -640,6 +707,18 @@ void main() {
       expect(prefs.getString(StorageKeys.signInMethod), isNull);
       expect(prefs.getBool('is_guest_mode'), isNull);
       expect(signIn.providerSignOuts, 1);
+    });
+
+    test('the method last used on this phone survives signing out', () async {
+      api.exchangeResults.add(session);
+      await auth.loginWithGoogle();
+
+      await auth.localLogout();
+
+      // What marks the "Last used" button the next time.
+      final prefs = await SharedPreferences.getInstance();
+      expect(prefs.getString(StorageKeys.lastSignInMethod), 'google');
+      expect(prefs.getString(StorageKeys.signInMethod), isNull);
     });
   });
 
