@@ -1214,5 +1214,7 @@
   "mala_images_load_error": "तस्बिरहरू लोड गर्न सकिएन",
   "mala_bookmarked": "बुकमार्क गरियो",
   "mala_beads_load_error": "दानाका शैलीहरू लोड गर्न सकिएन",
-  "mala_appearance_save_failed": "सुरक्षित गर्न सकिएन। कृपया फेरि प्रयास गर्नुहोस्"
+  "mala_appearance_save_failed": "सुरक्षित गर्न सकिएन। कृपया फेरि प्रयास गर्नुहोस्",
+  "splash_tagline_1": "हामी बौद्धहरू सँगै साधना गर्छौं",
+  "splash_tagline_2": "हामी बौद्धहरू दैनिक साधना गर्छौं"
 }

@@ -1214,5 +1214,7 @@
   "mala_images_load_error": "Зургийг ачаалж чадсангүй",
   "mala_bookmarked": "Хавчуурганд нэмсэн",
   "mala_beads_load_error": "Мөхлөгийн загваруудыг ачаалж чадсангүй",
-  "mala_appearance_save_failed": "Хадгалж чадсангүй. Дахин оролдоно уу"
+  "mala_appearance_save_failed": "Хадгалж чадсангүй. Дахин оролдоно уу",
+  "splash_tagline_1": "Бид буддистууд хамтдаа бясалгадаг",
+  "splash_tagline_2": "Бид буддистууд өдөр бүр бясалгадаг"
 }

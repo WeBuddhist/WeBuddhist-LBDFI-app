@@ -1204,5 +1204,7 @@
   "mala_images_load_error": "無法載入圖片",
   "mala_bookmarked": "已加入書籤",
   "mala_beads_load_error": "無法載入念珠款式",
-  "mala_appearance_save_failed": "無法儲存。請再試一次"
+  "mala_appearance_save_failed": "無法儲存。請再試一次",
+  "splash_tagline_1": "我們佛弟子一起修持",
+  "splash_tagline_2": "我們佛弟子每日修持"
 }

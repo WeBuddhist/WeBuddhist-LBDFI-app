@@ -4113,10 +4113,10 @@ class AppLocalizationsHi extends AppLocalizations {
       'A timer with this duration, sound, and title already exists.';
 
   @override
-  String get splash_tagline_1 => 'We Buddhists practice together';
+  String get splash_tagline_1 => 'हम बौद्ध साथ मिलकर साधना करते हैं';
 
   @override
-  String get splash_tagline_2 => 'We Buddhists practice daily';
+  String get splash_tagline_2 => 'हम बौद्ध प्रतिदिन साधना करते हैं';
 
   @override
   String get timer_create_custom => 'Create a custom timer';

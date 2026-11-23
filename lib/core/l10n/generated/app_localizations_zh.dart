@@ -3957,10 +3957,10 @@ class AppLocalizationsZh extends AppLocalizations {
       'A timer with this duration, sound, and title already exists.';
 
   @override
-  String get splash_tagline_1 => 'We Buddhists practice together';
+  String get splash_tagline_1 => '我們佛弟子一起修持';
 
   @override
-  String get splash_tagline_2 => 'We Buddhists practice daily';
+  String get splash_tagline_2 => '我們佛弟子每日修持';
 
   @override
   String get timer_create_custom => 'Create a custom timer';
