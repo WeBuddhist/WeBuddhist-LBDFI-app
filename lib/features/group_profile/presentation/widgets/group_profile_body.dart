@@ -92,9 +92,16 @@ class _GroupProfileBodyState extends ConsumerState<GroupProfileBody>
   /// The community page's outer scroll, the one that moves the header.
   final ScrollController _outerScrollController = ScrollController();
 
-  /// Whether [GroupProfileBody.startCollapsed] has been applied, so it
-  /// happens once per page and never fights the member's own scrolling.
-  bool _didStartCollapsed = false;
+  /// The outer offset [GroupProfileBody.startCollapsed] left the page at,
+  /// null until the first jump. The header can still grow after it (an
+  /// admin's reports row arriving, a cached profile replaced by a fresh
+  /// one), so the end is re-pinned on later builds while the member has
+  /// not scrolled away from it.
+  double? _collapsedOffset;
+
+  /// Set once the member scrolls the collapsed page (or scrolled before it
+  /// could collapse), so [startCollapsed] never fights their own scrolling.
+  bool _collapseSettled = false;
 
   /// Last tab reported, so settling twice or rebuilding the controller when
   /// the tab set changes does not report the same tab again.
@@ -328,16 +335,29 @@ class _GroupProfileBodyState extends ConsumerState<GroupProfileBody>
     super.dispose();
   }
 
-  /// Scrolls the header away once, the first frame the tabs are laid out.
+  /// Scrolls the header away, from the first frame the tabs are laid out.
   /// The outer scroll's end is exactly the header's scrollable height (the
-  /// pinned tab bar stays), so nothing needs measuring.
+  /// pinned tab bar stays), so nothing needs measuring. Called from every
+  /// build so a header that grows after the first jump is scrolled away
+  /// too; it stops as soon as the member scrolls the page themselves.
   void _maybeStartCollapsed() {
-    if (!widget.startCollapsed || _didStartCollapsed) return;
-    _didStartCollapsed = true;
+    if (!widget.startCollapsed || _collapseSettled) return;
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (!mounted || !_outerScrollController.hasClients) return;
+      if (!mounted || _collapseSettled || !_outerScrollController.hasClients) {
+        return;
+      }
       final position = _outerScrollController.position;
-      _outerScrollController.jumpTo(position.maxScrollExtent);
+      final pinned = _collapsedOffset;
+      final memberScrolled =
+          pinned == null ? position.pixels > 0 : position.pixels != pinned;
+      if (memberScrolled) {
+        _collapseSettled = true;
+        return;
+      }
+      final end = position.maxScrollExtent;
+      if (end == pinned) return;
+      _outerScrollController.jumpTo(end);
+      _collapsedOffset = end;
       // The title's position is only current after the next layout.
       WidgetsBinding.instance.addPostFrameCallback(
         (_) => _syncAppBarTitleVisibility(),
@@ -1813,7 +1833,7 @@ class _GroupFollowButton extends ConsumerWidget {
           if (showMenu) ...[
             const SizedBox(width: 12),
             _RoundActionButton(
-              icon: AppAssets.dotsThreeVertical,
+              icon: AppAssets.dotsThreeVerticalBold,
               tooltip: MaterialLocalizations.of(context).showMenuTooltip,
               size: buttonHeight,
               isDark: isDark,

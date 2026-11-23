@@ -21,6 +21,7 @@ import 'package:flutter_pecha/features/group_profile/domain/entities/group_profi
 import 'package:flutter_pecha/features/group_profile/domain/repositories/group_post_repository.dart';
 import 'package:flutter_pecha/features/group_profile/presentation/providers/group_post_providers.dart';
 import 'package:flutter_pecha/features/group_profile/presentation/providers/group_profile_providers.dart';
+import 'package:flutter_pecha/features/group_profile/presentation/providers/group_reports_providers.dart';
 import 'package:flutter_pecha/features/group_profile/presentation/screens/group_profile_screen.dart';
 import 'package:flutter_pecha/features/group_profile/presentation/widgets/group_profile_drawer.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -57,6 +58,18 @@ class _NoopAnalytics implements AnalyticsService {
 
 class _FakePostRepository extends Fake
     implements GroupPostRepositoryInterface {}
+
+/// Reports queue whose total the test raises after the page has settled.
+class _StubReports extends StateNotifier<GroupReportsState>
+    implements GroupReportsNotifier {
+  _StubReports() : super(const GroupReportsState(hasLoaded: true));
+
+  void setTotal(int total) =>
+      state = GroupReportsState(total: total, hasLoaded: true);
+
+  @override
+  dynamic noSuchMethod(Invocation invocation) => Future<void>.value();
+}
 
 /// One space with nothing posted, so only the Members tab shows.
 class _FakeRemote extends GroupProfileRemoteDatasource {
@@ -122,6 +135,8 @@ void main() {
     bool startCollapsed = false,
     Widget? home,
     Map<String, SpaceUnread> unread = const {},
+    String? role,
+    _StubReports? reports,
   }) async {
     final container = ProviderContainer(
       overrides: [
@@ -138,7 +153,7 @@ void main() {
         groupMyPermissionProvider.overrideWith(
           () => GroupMyPermissionNotifier(
             (ref, groupId, bind) =>
-                GroupPostPermission(groupId: groupId, role: null),
+                GroupPostPermission(groupId: groupId, role: role),
           ),
         ),
         groupPostsProvider.overrideWith(
@@ -154,6 +169,8 @@ void main() {
           ),
         ),
         unreadSpacesProvider.overrideWithValue(unread),
+        if (reports != null)
+          groupReportsProvider.overrideWith((ref, groupId) => reports),
       ],
     );
     addTearDown(container.dispose);
@@ -209,7 +226,8 @@ void main() {
       expect(appBarButton('Prayer requests'), findsOneWidget);
       expect(appBarButton('Chat'), findsOneWidget);
       // The only ⋮ is the round one beside Invite, below the app bar.
-      final menu = find.byIcon(AppAssets.dotsThreeVertical);
+      final menu = find.byIcon(AppAssets.dotsThreeVerticalBold);
+      expect(find.byIcon(AppAssets.dotsThreeVertical), findsNothing);
       expect(menu, findsOneWidget);
       expect(
         tester.getTopLeft(menu).dy,
@@ -260,6 +278,7 @@ void main() {
       expect(appBarButton('Prayer requests'), findsNothing);
       expect(appBarButton('Chat'), findsNothing);
       expect(find.byIcon(AppAssets.dotsThreeVertical), findsNothing);
+      expect(find.byIcon(AppAssets.dotsThreeVerticalBold), findsNothing);
       await unmount(tester);
     });
 
@@ -281,7 +300,7 @@ void main() {
       await pump(tester);
 
       final invite = find.text('Invite');
-      final menu = find.byIcon(AppAssets.dotsThreeVertical);
+      final menu = find.byIcon(AppAssets.dotsThreeVerticalBold);
       expect(invite, findsOneWidget);
       expect(menu, findsOneWidget);
       // ⋮ sits after Invite on the same row.
@@ -302,7 +321,7 @@ void main() {
     testWidgets('⋮ opens the member sheet', (tester) async {
       await pump(tester);
 
-      await tester.tap(find.byIcon(AppAssets.dotsThreeVertical));
+      await tester.tap(find.byIcon(AppAssets.dotsThreeVerticalBold));
       await tester.pumpAndSettle();
 
       expect(find.text('Leave space'), findsOneWidget);
@@ -348,7 +367,7 @@ void main() {
       );
       // Invite and the ⋮ member menu still show in the body.
       expect(find.text('Invite'), findsOneWidget);
-      expect(find.byIcon(AppAssets.dotsThreeVertical), findsOneWidget);
+      expect(find.byIcon(AppAssets.dotsThreeVerticalBold), findsOneWidget);
       await unmount(tester);
     });
 
@@ -401,6 +420,55 @@ void main() {
       expect(outerOffset(tester), 0);
       expect(find.text('Invite'), findsOneWidget);
       expect(titleOpacity(tester), 0);
+      await unmount(tester);
+    });
+
+    testWidgets('a header that grows afterwards stays scrolled away', (
+      tester,
+    ) async {
+      final reports = _StubReports();
+      await pump(tester, startCollapsed: true, role: 'ADMIN', reports: reports);
+
+      final position =
+          tester
+              .widget<NestedScrollView>(find.byType(NestedScrollView))
+              .controller!
+              .position;
+      final collapsedEnd = position.maxScrollExtent;
+      expect(position.pixels, collapsedEnd);
+
+      // The reports queue answers after the page collapsed: an admin's
+      // reports row joins the header, which grows past the old end.
+      reports.setTotal(3);
+      await tester.pumpAndSettle();
+
+      // The row is in the header, scrolled away above the viewport.
+      expect(find.text('Reports', skipOffstage: false), findsOneWidget);
+      expect(position.maxScrollExtent, greaterThan(collapsedEnd));
+      expect(position.pixels, position.maxScrollExtent);
+      expect(titleOpacity(tester), 1);
+      await unmount(tester);
+    });
+
+    testWidgets('a header that grows after the member scrolled is left alone', (
+      tester,
+    ) async {
+      final reports = _StubReports();
+      await pump(tester, startCollapsed: true, role: 'ADMIN', reports: reports);
+
+      await tester.fling(
+        find.byType(NestedScrollView),
+        const Offset(0, 600),
+        2000,
+      );
+      await tester.pumpAndSettle();
+      expect(outerOffset(tester), 0);
+
+      reports.setTotal(3);
+      await tester.pumpAndSettle();
+
+      expect(find.text('Reports'), findsOneWidget);
+      expect(outerOffset(tester), 0);
       await unmount(tester);
     });
   });
