@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'package:flutter_pecha/features/group_chat/data/models/chat_visible_name.dart';
 import 'package:flutter_pecha/features/group_chat/data/models/chat_message_dto.dart';
 import 'package:flutter_pecha/features/group_chat/data/models/chat_room_mantra_dto.dart';
 
@@ -91,7 +92,10 @@ class ChatRoomDTO extends Equatable {
           byType != null ? _readInt(byType[ChatMessageDTO.typePrayer]) : 0,
       otherUserId: json['other_user_id']?.toString(),
       otherUserEmail: json['other_user_email'] as String?,
-      otherUserName: json['other_user_name'] as String?,
+      otherUserName: chatVisibleName(
+        json['other_user_display_name'],
+        json['other_user_name'],
+      ),
       isOfficial: json['is_official'] == true,
       mantra:
           mantraJson is Map<String, dynamic>

@@ -7,7 +7,6 @@ import 'package:flutter_pecha/core/theme/app_colors.dart';
 import 'package:flutter_pecha/features/auth/presentation/providers/state_providers.dart';
 import 'package:flutter_pecha/features/group_chat/data/models/chat_message_dto.dart';
 import 'package:flutter_pecha/features/group_chat/presentation/providers/my_prayer_requests_providers.dart';
-import 'package:flutter_pecha/features/group_chat/presentation/utils/chat_sender.dart';
 import 'package:flutter_pecha/features/group_chat/presentation/widgets/group_chat_delete_dialog.dart';
 import 'package:flutter_pecha/features/group_chat/presentation/widgets/new_prayer_request_sheet.dart';
 import 'package:flutter_pecha/features/group_chat/presentation/widgets/prayer_request_tile.dart';
@@ -157,8 +156,8 @@ class _MyPrayerRequestsScreenState
     }
 
     final user = ref.watch(userProvider).user;
-    final selfName =
-        joinChatName(user?.firstName, user?.lastName) ?? l10n.event_prayer_you;
+    // Your own name as others see it: the display name, then first and last.
+    final selfName = user?.visibleNameOrNull ?? l10n.event_prayer_you;
     final rows = <_Row>[
       if (state.active.isNotEmpty) ...[
         _SectionRow(l10n.event_prayer_section_active),
