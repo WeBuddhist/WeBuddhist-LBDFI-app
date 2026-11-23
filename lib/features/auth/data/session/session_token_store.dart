@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 /// The backend's own tokens: the app session since sign-in moved to Firebase.
@@ -27,6 +29,11 @@ abstract class SessionTokenStore {
 
 /// Keychain (iOS) / encrypted storage (Android), with the tokens held in
 /// memory after the first read so requests do not hit the keystore each time.
+///
+/// The pair is kept as **one** value. Two separate entries could be left half
+/// replaced by a failed or interrupted write: one account's access token
+/// beside another's refresh token, which the next refresh would turn into a
+/// silent switch of account.
 class SecureSessionTokenStore implements SessionTokenStore {
   SecureSessionTokenStore([FlutterSecureStorage? storage])
     : _storage =
@@ -38,8 +45,9 @@ class SecureSessionTokenStore implements SessionTokenStore {
             ),
           );
 
-  static const accessTokenKey = 'session_access_token';
-  static const refreshTokenKey = 'session_refresh_token';
+  static const sessionKey = 'session_tokens';
+  static const _accessField = 'access_token';
+  static const _refreshField = 'refresh_token';
 
   final FlutterSecureStorage _storage;
 
@@ -49,18 +57,7 @@ class SecureSessionTokenStore implements SessionTokenStore {
   @override
   Future<SessionTokens?> read() async {
     if (_loaded) return _cached;
-    final accessToken = await _storage.read(key: accessTokenKey);
-    final refreshToken = await _storage.read(key: refreshTokenKey);
-    _cached =
-        (accessToken == null ||
-                accessToken.isEmpty ||
-                refreshToken == null ||
-                refreshToken.isEmpty)
-            ? null
-            : SessionTokens(
-              accessToken: accessToken,
-              refreshToken: refreshToken,
-            );
+    _cached = _decode(await _storage.read(key: sessionKey));
     _loaded = true;
     return _cached;
   }
@@ -71,15 +68,42 @@ class SecureSessionTokenStore implements SessionTokenStore {
     // and then only the next launch asks for a sign-in.
     _cached = tokens;
     _loaded = true;
-    await _storage.write(key: accessTokenKey, value: tokens.accessToken);
-    await _storage.write(key: refreshTokenKey, value: tokens.refreshToken);
+    await _storage.write(
+      key: sessionKey,
+      value: jsonEncode({
+        _accessField: tokens.accessToken,
+        _refreshField: tokens.refreshToken,
+      }),
+    );
   }
 
   @override
   Future<void> clear() async {
     _cached = null;
     _loaded = true;
-    await _storage.delete(key: accessTokenKey);
-    await _storage.delete(key: refreshTokenKey);
+    await _storage.delete(key: sessionKey);
+  }
+
+  /// null for nothing stored, or a value that is not a complete pair.
+  static SessionTokens? _decode(String? stored) {
+    if (stored == null || stored.isEmpty) return null;
+    try {
+      final json = jsonDecode(stored);
+      if (json is! Map) return null;
+      final accessToken = json[_accessField];
+      final refreshToken = json[_refreshField];
+      if (accessToken is! String ||
+          accessToken.isEmpty ||
+          refreshToken is! String ||
+          refreshToken.isEmpty) {
+        return null;
+      }
+      return SessionTokens(
+        accessToken: accessToken,
+        refreshToken: refreshToken,
+      );
+    } catch (_) {
+      return null;
+    }
   }
 }
