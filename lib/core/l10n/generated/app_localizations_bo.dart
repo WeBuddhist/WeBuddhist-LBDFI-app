@@ -1125,75 +1125,74 @@ class AppLocalizationsBo extends AppLocalizations {
   String get continueWithPhone => 'ཁ་པར་བརྒྱུད་ནས་མུ་མཐུད་རོགས།';
 
   @override
-  String get login_last_used => 'Last used';
+  String get login_last_used => 'ཐེངས་སྔོན་མར་བེད་སྤྱོད་བྱས།';
 
   @override
-  String get phone_login_title => 'Enter your phone number';
+  String get phone_login_title => 'ཁྱེད་ཀྱི་ཁ་པར་ཨང་གྲངས་འཇུག་རོགས།';
 
   @override
   String get phone_login_subtitle =>
-      'We\'ll text you a code to confirm it\'s you.';
+      'ཁྱེད་རང་ཡིན་པ་གཏན་འཁེལ་བྱེད་ཆེད། ང་ཚོས་འཕྲིན་ཐུང་བརྒྱུད་ནས་ཨང་རྟགས་ཤིག་བསྐུར་རྒྱུ་ཡིན།';
 
   @override
-  String get phone_login_number_hint => 'Phone number';
+  String get phone_login_number_hint => 'ཁ་པར་ཨང་གྲངས།';
 
   @override
-  String get phone_login_country_search => 'Search country';
+  String get phone_login_country_search => 'རྒྱལ་ཁབ་འཚོལ།';
 
   @override
-  String get phone_login_send_code => 'Send code';
+  String get phone_login_send_code => 'ཨང་རྟགས་བསྐུར།';
 
   @override
-  String get phone_login_code_title => 'Enter the code';
+  String get phone_login_code_title => 'ཨང་རྟགས་འཇུག་རོགས།';
 
   @override
   String phone_login_code_subtitle(String phoneNumber) {
-    return 'We sent a 6-digit code to $phoneNumber.';
+    return 'ང་ཚོས་ $phoneNumber ལ་ཨང་ཀི་ 6 ཅན་གྱི་ཨང་རྟགས་བསྐུར་ཟིན།';
   }
 
   @override
-  String get phone_login_code_hint => '6-digit code';
+  String get phone_login_code_hint => 'ཨང་ཀི་ 6 ཅན་གྱི་ཨང་རྟགས།';
 
   @override
-  String get phone_login_verify => 'Verify';
+  String get phone_login_verify => 'གཏན་འཁེལ་བྱེད།';
 
   @override
-  String get phone_login_resend => 'Resend code';
+  String get phone_login_resend => 'ཨང་རྟགས་བསྐྱར་དུ་བསྐུར།';
 
   @override
   String phone_login_resend_in(int seconds) {
-    return 'Resend code in ${seconds}s';
+    return 'སྐར་ཆ་ $seconds རྗེས་ཨང་རྟགས་བསྐྱར་དུ་བསྐུར་ཆོག';
   }
 
   @override
-  String get phone_login_change_number => 'Change number';
+  String get phone_login_change_number => 'ཨང་གྲངས་བརྗེ།';
 
   @override
-  String get login_error_invalid_phone => 'Enter a valid phone number.';
+  String get login_error_invalid_phone => 'ཁ་པར་ཨང་གྲངས་ཡང་དག་པ་ཞིག་འཇུག་རོགས།';
 
   @override
   String get login_error_invalid_code =>
-      'That code isn\'t right. Check it and try again.';
+      'ཨང་རྟགས་དེ་མ་འགྲིག ཞིབ་བཤེར་བྱས་ནས་བསྐྱར་དུ་ཚོད་ལྟ་བྱོས།';
 
   @override
   String get login_error_code_expired =>
-      'That code has expired. Request a new one.';
+      'ཨང་རྟགས་དེའི་དུས་ཚོད་རྫོགས་ཟིན། གསར་པ་ཞིག་ལེན་རོགས།';
 
   @override
   String get login_error_too_many_requests =>
-      'Too many attempts. Please try again later.';
+      'ཚོད་ལྟ་ཐེངས་མང་དྲགས་སོང་། རྗེས་སུ་བསྐྱར་དུ་ཚོད་ལྟ་བྱོས།';
 
   @override
   String get login_error_network =>
-      'Check your internet connection and try again.';
+      'དྲ་རྒྱའི་འབྲེལ་མཐུད་ལ་ཞིབ་བཤེར་བྱས་ནས་བསྐྱར་དུ་ཚོད་ལྟ་བྱོས།';
 
   @override
   String get login_error_email_not_verified =>
-      'This account\'s email address isn\'t verified yet. Verify it with your provider and try again.';
+      'རྩིས་ཁྲ་འདིའི་གློག་འཕྲིན་ཁ་བྱང་གཏན་འཁེལ་བྱས་མེད། ཁྱེད་ཀྱི་ཞབས་ཞུ་མཁོ་སྤྲོད་པ་བརྒྱུད་ནས་གཏན་འཁེལ་བྱས་རྗེས་བསྐྱར་དུ་ཚོད་ལྟ་བྱོས།';
 
   @override
-  String get login_error_generic =>
-      'We couldn\'t sign you in. Please try again.';
+  String get login_error_generic => 'ནང་འཛུལ་བྱེད་མ་ཐུབ། བསྐྱར་དུ་ཚོད་ལྟ་བྱོས།';
 
   @override
   String get exploreAsGuest => 'མགྲོན་པོའི་ངོ་བོར་ཉུལ་ཞིབ་བྱོས།';

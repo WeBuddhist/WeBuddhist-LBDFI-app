@@ -1108,75 +1108,73 @@ class AppLocalizationsTh extends AppLocalizations {
   String get continueWithPhone => 'ดำเนินการต่อด้วยเบอร์โทรศัพท์';
 
   @override
-  String get login_last_used => 'Last used';
+  String get login_last_used => 'ใช้ล่าสุด';
 
   @override
-  String get phone_login_title => 'Enter your phone number';
+  String get phone_login_title => 'กรอกหมายเลขโทรศัพท์ของคุณ';
 
   @override
   String get phone_login_subtitle =>
-      'We\'ll text you a code to confirm it\'s you.';
+      'เราจะส่งรหัสทาง SMS เพื่อยืนยันว่าเป็นคุณ';
 
   @override
-  String get phone_login_number_hint => 'Phone number';
+  String get phone_login_number_hint => 'หมายเลขโทรศัพท์';
 
   @override
-  String get phone_login_country_search => 'Search country';
+  String get phone_login_country_search => 'ค้นหาประเทศ';
 
   @override
-  String get phone_login_send_code => 'Send code';
+  String get phone_login_send_code => 'ส่งรหัส';
 
   @override
-  String get phone_login_code_title => 'Enter the code';
+  String get phone_login_code_title => 'กรอกรหัส';
 
   @override
   String phone_login_code_subtitle(String phoneNumber) {
-    return 'We sent a 6-digit code to $phoneNumber.';
+    return 'เราได้ส่งรหัส 6 หลักไปที่ $phoneNumber แล้ว';
   }
 
   @override
-  String get phone_login_code_hint => '6-digit code';
+  String get phone_login_code_hint => 'รหัส 6 หลัก';
 
   @override
-  String get phone_login_verify => 'Verify';
+  String get phone_login_verify => 'ยืนยัน';
 
   @override
-  String get phone_login_resend => 'Resend code';
+  String get phone_login_resend => 'ส่งรหัสอีกครั้ง';
 
   @override
   String phone_login_resend_in(int seconds) {
-    return 'Resend code in ${seconds}s';
+    return 'ส่งรหัสอีกครั้งได้ใน $seconds วินาที';
   }
 
   @override
-  String get phone_login_change_number => 'Change number';
+  String get phone_login_change_number => 'เปลี่ยนหมายเลข';
 
   @override
-  String get login_error_invalid_phone => 'Enter a valid phone number.';
+  String get login_error_invalid_phone => 'กรุณากรอกหมายเลขโทรศัพท์ที่ถูกต้อง';
 
   @override
   String get login_error_invalid_code =>
-      'That code isn\'t right. Check it and try again.';
+      'รหัสไม่ถูกต้อง กรุณาตรวจสอบแล้วลองอีกครั้ง';
 
   @override
-  String get login_error_code_expired =>
-      'That code has expired. Request a new one.';
+  String get login_error_code_expired => 'รหัสหมดอายุแล้ว กรุณาขอรหัสใหม่';
 
   @override
   String get login_error_too_many_requests =>
-      'Too many attempts. Please try again later.';
+      'ลองหลายครั้งเกินไป กรุณาลองใหม่ภายหลัง';
 
   @override
   String get login_error_network =>
-      'Check your internet connection and try again.';
+      'กรุณาตรวจสอบการเชื่อมต่ออินเทอร์เน็ตแล้วลองอีกครั้ง';
 
   @override
   String get login_error_email_not_verified =>
-      'This account\'s email address isn\'t verified yet. Verify it with your provider and try again.';
+      'อีเมลของบัญชีนี้ยังไม่ได้รับการยืนยัน กรุณายืนยันกับผู้ให้บริการของคุณแล้วลองอีกครั้ง';
 
   @override
-  String get login_error_generic =>
-      'We couldn\'t sign you in. Please try again.';
+  String get login_error_generic => 'ไม่สามารถเข้าสู่ระบบได้ กรุณาลองอีกครั้ง';
 
   @override
   String get exploreAsGuest => 'สำรวจในฐานะผู้เยี่ยมชม';

@@ -1126,75 +1126,74 @@ class AppLocalizationsMy extends AppLocalizations {
   String get continueWithPhone => 'ဖုန်းဖြင့် ဆက်လက်ရန်';
 
   @override
-  String get login_last_used => 'Last used';
+  String get login_last_used => 'နောက်ဆုံးအသုံးပြုခဲ့သည်';
 
   @override
-  String get phone_login_title => 'Enter your phone number';
+  String get phone_login_title => 'သင့်ဖုန်းနံပါတ်ကို ထည့်ပါ';
 
   @override
   String get phone_login_subtitle =>
-      'We\'ll text you a code to confirm it\'s you.';
+      'သင်ဖြစ်ကြောင်း အတည်ပြုရန် ကုဒ်တစ်ခုကို စာတိုဖြင့် ပို့ပေးပါမည်။';
 
   @override
-  String get phone_login_number_hint => 'Phone number';
+  String get phone_login_number_hint => 'ဖုန်းနံပါတ်';
 
   @override
-  String get phone_login_country_search => 'Search country';
+  String get phone_login_country_search => 'နိုင်ငံရှာရန်';
 
   @override
-  String get phone_login_send_code => 'Send code';
+  String get phone_login_send_code => 'ကုဒ်ပို့ရန်';
 
   @override
-  String get phone_login_code_title => 'Enter the code';
+  String get phone_login_code_title => 'ကုဒ်ထည့်ပါ';
 
   @override
   String phone_login_code_subtitle(String phoneNumber) {
-    return 'We sent a 6-digit code to $phoneNumber.';
+    return '$phoneNumber သို့ ဂဏန်း ၆ လုံးပါ ကုဒ်ကို ပို့ပြီးပါပြီ။';
   }
 
   @override
-  String get phone_login_code_hint => '6-digit code';
+  String get phone_login_code_hint => 'ဂဏန်း ၆ လုံးကုဒ်';
 
   @override
-  String get phone_login_verify => 'Verify';
+  String get phone_login_verify => 'အတည်ပြုရန်';
 
   @override
-  String get phone_login_resend => 'Resend code';
+  String get phone_login_resend => 'ကုဒ်ပြန်ပို့ရန်';
 
   @override
   String phone_login_resend_in(int seconds) {
-    return 'Resend code in ${seconds}s';
+    return '$seconds စက္ကန့်အကြာတွင် ကုဒ်ပြန်ပို့နိုင်သည်';
   }
 
   @override
-  String get phone_login_change_number => 'Change number';
+  String get phone_login_change_number => 'နံပါတ်ပြောင်းရန်';
 
   @override
-  String get login_error_invalid_phone => 'Enter a valid phone number.';
+  String get login_error_invalid_phone => 'မှန်ကန်သော ဖုန်းနံပါတ်ကို ထည့်ပါ။';
 
   @override
   String get login_error_invalid_code =>
-      'That code isn\'t right. Check it and try again.';
+      'ကုဒ်မမှန်ပါ။ စစ်ဆေးပြီး ထပ်ကြိုးစားပါ။';
 
   @override
   String get login_error_code_expired =>
-      'That code has expired. Request a new one.';
+      'ကုဒ်သက်တမ်းကုန်သွားပါပြီ။ ကုဒ်အသစ်တောင်းပါ။';
 
   @override
   String get login_error_too_many_requests =>
-      'Too many attempts. Please try again later.';
+      'ကြိုးစားမှုအကြိမ်ရေ များလွန်းပါသည်။ နောက်မှ ထပ်ကြိုးစားပါ။';
 
   @override
   String get login_error_network =>
-      'Check your internet connection and try again.';
+      'အင်တာနက်ချိတ်ဆက်မှုကို စစ်ဆေးပြီး ထပ်ကြိုးစားပါ။';
 
   @override
   String get login_error_email_not_verified =>
-      'This account\'s email address isn\'t verified yet. Verify it with your provider and try again.';
+      'ဤအကောင့်၏ အီးမေးလ်လိပ်စာကို အတည်မပြုရသေးပါ။ သင့်ဝန်ဆောင်မှုပေးသူထံတွင် အတည်ပြုပြီး ထပ်ကြိုးစားပါ။';
 
   @override
-  String get login_error_generic =>
-      'We couldn\'t sign you in. Please try again.';
+  String get login_error_generic => 'အကောင့်ဝင်၍ မရပါ။ ထပ်ကြိုးစားပါ။';
 
   @override
   String get exploreAsGuest => 'ဧည့်သည်အဖြစ် လေ့လာရန်';

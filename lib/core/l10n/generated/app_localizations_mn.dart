@@ -1124,75 +1124,74 @@ class AppLocalizationsMn extends AppLocalizations {
   String get continueWithPhone => 'Утсаар үргэлжлүүлэх';
 
   @override
-  String get login_last_used => 'Last used';
+  String get login_last_used => 'Сүүлд ашигласан';
 
   @override
-  String get phone_login_title => 'Enter your phone number';
+  String get phone_login_title => 'Утасны дугаараа оруулна уу';
 
   @override
   String get phone_login_subtitle =>
-      'We\'ll text you a code to confirm it\'s you.';
+      'Таныг мөн эсэхийг баталгаажуулахын тулд бид танд код илгээнэ.';
 
   @override
-  String get phone_login_number_hint => 'Phone number';
+  String get phone_login_number_hint => 'Утасны дугаар';
 
   @override
-  String get phone_login_country_search => 'Search country';
+  String get phone_login_country_search => 'Улс хайх';
 
   @override
-  String get phone_login_send_code => 'Send code';
+  String get phone_login_send_code => 'Код илгээх';
 
   @override
-  String get phone_login_code_title => 'Enter the code';
+  String get phone_login_code_title => 'Кодоо оруулна уу';
 
   @override
   String phone_login_code_subtitle(String phoneNumber) {
-    return 'We sent a 6-digit code to $phoneNumber.';
+    return 'Бид $phoneNumber дугаар руу 6 оронтой код илгээлээ.';
   }
 
   @override
-  String get phone_login_code_hint => '6-digit code';
+  String get phone_login_code_hint => '6 оронтой код';
 
   @override
-  String get phone_login_verify => 'Verify';
+  String get phone_login_verify => 'Баталгаажуулах';
 
   @override
-  String get phone_login_resend => 'Resend code';
+  String get phone_login_resend => 'Кодыг дахин илгээх';
 
   @override
   String phone_login_resend_in(int seconds) {
-    return 'Resend code in ${seconds}s';
+    return '$seconds секундын дараа кодыг дахин илгээх';
   }
 
   @override
-  String get phone_login_change_number => 'Change number';
+  String get phone_login_change_number => 'Дугаар солих';
 
   @override
-  String get login_error_invalid_phone => 'Enter a valid phone number.';
+  String get login_error_invalid_phone => 'Зөв утасны дугаар оруулна уу.';
 
   @override
   String get login_error_invalid_code =>
-      'That code isn\'t right. Check it and try again.';
+      'Код буруу байна. Шалгаад дахин оролдоно уу.';
 
   @override
   String get login_error_code_expired =>
-      'That code has expired. Request a new one.';
+      'Кодын хугацаа дууссан. Шинэ код авна уу.';
 
   @override
   String get login_error_too_many_requests =>
-      'Too many attempts. Please try again later.';
+      'Хэт олон удаа оролдлоо. Дараа дахин оролдоно уу.';
 
   @override
   String get login_error_network =>
-      'Check your internet connection and try again.';
+      'Интернэт холболтоо шалгаад дахин оролдоно уу.';
 
   @override
   String get login_error_email_not_verified =>
-      'This account\'s email address isn\'t verified yet. Verify it with your provider and try again.';
+      'Энэ бүртгэлийн имэйл хаяг баталгаажаагүй байна. Үйлчилгээ үзүүлэгчээрээ баталгаажуулаад дахин оролдоно уу.';
 
   @override
-  String get login_error_generic =>
-      'We couldn\'t sign you in. Please try again.';
+  String get login_error_generic => 'Нэвтэрч чадсангүй. Дахин оролдоно уу.';
 
   @override
   String get exploreAsGuest => 'Зочноор судлах';

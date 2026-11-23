@@ -1120,75 +1120,72 @@ class AppLocalizationsVi extends AppLocalizations {
   String get continueWithPhone => 'Tiếp tục bằng số điện thoại';
 
   @override
-  String get login_last_used => 'Last used';
+  String get login_last_used => 'Dùng lần trước';
 
   @override
-  String get phone_login_title => 'Enter your phone number';
+  String get phone_login_title => 'Nhập số điện thoại của bạn';
 
   @override
   String get phone_login_subtitle =>
-      'We\'ll text you a code to confirm it\'s you.';
+      'Chúng tôi sẽ gửi mã qua tin nhắn để xác nhận đó là bạn.';
 
   @override
-  String get phone_login_number_hint => 'Phone number';
+  String get phone_login_number_hint => 'Số điện thoại';
 
   @override
-  String get phone_login_country_search => 'Search country';
+  String get phone_login_country_search => 'Tìm quốc gia';
 
   @override
-  String get phone_login_send_code => 'Send code';
+  String get phone_login_send_code => 'Gửi mã';
 
   @override
-  String get phone_login_code_title => 'Enter the code';
+  String get phone_login_code_title => 'Nhập mã';
 
   @override
   String phone_login_code_subtitle(String phoneNumber) {
-    return 'We sent a 6-digit code to $phoneNumber.';
+    return 'Chúng tôi đã gửi mã gồm 6 chữ số đến $phoneNumber.';
   }
 
   @override
-  String get phone_login_code_hint => '6-digit code';
+  String get phone_login_code_hint => 'Mã 6 chữ số';
 
   @override
-  String get phone_login_verify => 'Verify';
+  String get phone_login_verify => 'Xác minh';
 
   @override
-  String get phone_login_resend => 'Resend code';
+  String get phone_login_resend => 'Gửi lại mã';
 
   @override
   String phone_login_resend_in(int seconds) {
-    return 'Resend code in ${seconds}s';
+    return 'Gửi lại mã sau $seconds giây';
   }
 
   @override
-  String get phone_login_change_number => 'Change number';
+  String get phone_login_change_number => 'Đổi số';
 
   @override
-  String get login_error_invalid_phone => 'Enter a valid phone number.';
+  String get login_error_invalid_phone => 'Vui lòng nhập số điện thoại hợp lệ.';
 
   @override
   String get login_error_invalid_code =>
-      'That code isn\'t right. Check it and try again.';
+      'Mã không đúng. Hãy kiểm tra và thử lại.';
 
   @override
-  String get login_error_code_expired =>
-      'That code has expired. Request a new one.';
+  String get login_error_code_expired => 'Mã đã hết hạn. Hãy yêu cầu mã mới.';
 
   @override
   String get login_error_too_many_requests =>
-      'Too many attempts. Please try again later.';
+      'Quá nhiều lần thử. Vui lòng thử lại sau.';
 
   @override
-  String get login_error_network =>
-      'Check your internet connection and try again.';
+  String get login_error_network => 'Hãy kiểm tra kết nối internet và thử lại.';
 
   @override
   String get login_error_email_not_verified =>
-      'This account\'s email address isn\'t verified yet. Verify it with your provider and try again.';
+      'Địa chỉ email của tài khoản này chưa được xác minh. Hãy xác minh với nhà cung cấp của bạn rồi thử lại.';
 
   @override
-  String get login_error_generic =>
-      'We couldn\'t sign you in. Please try again.';
+  String get login_error_generic => 'Không thể đăng nhập. Vui lòng thử lại.';
 
   @override
   String get exploreAsGuest => 'Khám phá với tư cách khách';

@@ -1129,75 +1129,76 @@ class AppLocalizationsNe extends AppLocalizations {
   String get continueWithPhone => 'फोनसँग जारी राख्नुहोस्';
 
   @override
-  String get login_last_used => 'Last used';
+  String get login_last_used => 'पछिल्लो पटक प्रयोग गरिएको';
 
   @override
-  String get phone_login_title => 'Enter your phone number';
+  String get phone_login_title => 'आफ्नो फोन नम्बर प्रविष्ट गर्नुहोस्';
 
   @override
   String get phone_login_subtitle =>
-      'We\'ll text you a code to confirm it\'s you.';
+      'तपाईं नै हुनुहुन्छ भनी पुष्टि गर्न हामी तपाईंलाई एउटा कोड पठाउनेछौं।';
 
   @override
-  String get phone_login_number_hint => 'Phone number';
+  String get phone_login_number_hint => 'फोन नम्बर';
 
   @override
-  String get phone_login_country_search => 'Search country';
+  String get phone_login_country_search => 'देश खोज्नुहोस्';
 
   @override
-  String get phone_login_send_code => 'Send code';
+  String get phone_login_send_code => 'कोड पठाउनुहोस्';
 
   @override
-  String get phone_login_code_title => 'Enter the code';
+  String get phone_login_code_title => 'कोड प्रविष्ट गर्नुहोस्';
 
   @override
   String phone_login_code_subtitle(String phoneNumber) {
-    return 'We sent a 6-digit code to $phoneNumber.';
+    return 'हामीले $phoneNumber मा ६ अङ्कको कोड पठाएका छौं।';
   }
 
   @override
-  String get phone_login_code_hint => '6-digit code';
+  String get phone_login_code_hint => '६ अङ्कको कोड';
 
   @override
-  String get phone_login_verify => 'Verify';
+  String get phone_login_verify => 'प्रमाणित गर्नुहोस्';
 
   @override
-  String get phone_login_resend => 'Resend code';
+  String get phone_login_resend => 'कोड फेरि पठाउनुहोस्';
 
   @override
   String phone_login_resend_in(int seconds) {
-    return 'Resend code in ${seconds}s';
+    return '$seconds सेकेन्डमा कोड फेरि पठाउनुहोस्';
   }
 
   @override
-  String get phone_login_change_number => 'Change number';
+  String get phone_login_change_number => 'नम्बर परिवर्तन गर्नुहोस्';
 
   @override
-  String get login_error_invalid_phone => 'Enter a valid phone number.';
+  String get login_error_invalid_phone =>
+      'कृपया मान्य फोन नम्बर प्रविष्ट गर्नुहोस्।';
 
   @override
   String get login_error_invalid_code =>
-      'That code isn\'t right. Check it and try again.';
+      'यो कोड मिलेन। जाँचेर फेरि प्रयास गर्नुहोस्।';
 
   @override
   String get login_error_code_expired =>
-      'That code has expired. Request a new one.';
+      'यो कोडको म्याद सकियो। नयाँ कोड माग्नुहोस्।';
 
   @override
   String get login_error_too_many_requests =>
-      'Too many attempts. Please try again later.';
+      'धेरै पटक प्रयास भयो। कृपया पछि फेरि प्रयास गर्नुहोस्।';
 
   @override
   String get login_error_network =>
-      'Check your internet connection and try again.';
+      'आफ्नो इन्टरनेट जडान जाँचेर फेरि प्रयास गर्नुहोस्।';
 
   @override
   String get login_error_email_not_verified =>
-      'This account\'s email address isn\'t verified yet. Verify it with your provider and try again.';
+      'यो खाताको इमेल ठेगाना अझै प्रमाणित भएको छैन। आफ्नो प्रदायकमार्फत प्रमाणित गरेर फेरि प्रयास गर्नुहोस्।';
 
   @override
   String get login_error_generic =>
-      'We couldn\'t sign you in. Please try again.';
+      'हामीले तपाईंलाई साइन इन गराउन सकेनौं। कृपया फेरि प्रयास गर्नुहोस्।';
 
   @override
   String get exploreAsGuest => 'अतिथिको रूपमा अन्वेषण गर्नुहोस्';
