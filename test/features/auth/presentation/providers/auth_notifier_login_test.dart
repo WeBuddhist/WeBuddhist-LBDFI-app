@@ -47,11 +47,6 @@ AuthCredentials _credentials(String userId) {
   );
 }
 
-const _namesRequired = LoginFailure(
-  'Apple login failed: names',
-  LoginFailureReason.profileNamesRequired,
-);
-
 /// The repository under the real use cases. Each sign-in call answers with
 /// the value set for it.
 class _Repository implements AuthRepository {
@@ -67,13 +62,8 @@ class _Repository implements AuthRepository {
   Either<Failure, AuthCredentials> phoneLogin = const Left(
     UnknownFailure('not set'),
   );
-  Either<Failure, AuthCredentials> names = const Left(
-    UnknownFailure('not set'),
-  );
 
   final List<String> requestedNumbers = [];
-  ({String first, String last})? submittedNames;
-  int cancels = 0;
   int logouts = 0;
 
   @override
@@ -119,18 +109,6 @@ class _Repository implements AuthRepository {
     required String verificationId,
     required String smsCode,
   }) async => phoneLogin;
-
-  @override
-  Future<Either<Failure, AuthCredentials>> completeLoginWithNames({
-    required String firstName,
-    required String lastName,
-  }) async {
-    submittedNames = (first: firstName, last: lastName);
-    return names;
-  }
-
-  @override
-  void cancelPendingLogin() => cancels++;
 
   @override
   dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
@@ -252,6 +230,36 @@ void main() {
       await start();
       expect(analytics.resets, 0);
     });
+
+    test('the same account keeps the id its local data is under', () async {
+      // What the cleanup remembered: the Auth0 subject this account's mala
+      // counts, timer stops and plan actions are stored under.
+      storage.values[StorageKeys.legacyAuth0UserId] = 'google-oauth2|1';
+      storage.values[StorageKeys.legacyAuth0BackendUserId] = 'backend-user-1';
+      repository.google = Right(_credentials('backend-user-1'));
+      final notifier = await start();
+
+      await notifier.login(connection: 'google');
+      await notifier.stream.firstWhere((s) => s.isLoggedIn);
+
+      expect(storage.values[StorageKeys.currentUserId], 'google-oauth2|1');
+      // The same person in analytics too.
+      expect(analytics.identified, ['google-oauth2|1']);
+    });
+
+    test('another account on that phone gets its own id', () async {
+      storage.values[StorageKeys.legacyAuth0UserId] = 'google-oauth2|1';
+      storage.values[StorageKeys.legacyAuth0BackendUserId] = 'backend-user-1';
+      repository.google = Right(_credentials('backend-user-9'));
+      final notifier = await start();
+
+      await notifier.login(connection: 'google');
+      await notifier.stream.firstWhere((s) => s.isLoggedIn);
+
+      expect(storage.values[StorageKeys.currentUserId], 'backend-user-9');
+      // The first account's id is still there for when it returns.
+      expect(storage.values[StorageKeys.legacyAuth0UserId], 'google-oauth2|1');
+    });
   });
 
   group('phone sign-in', () {
@@ -330,7 +338,6 @@ void main() {
 
       expect(failure?.reason, LoginFailureReason.invalidCode);
       expect(notifier.state.isLoggedIn, isFalse);
-      expect(notifier.state.needsProfileNames, isFalse);
       // The phone screen shows it; the login page underneath must not too.
       expect(notifier.state.loginError, isNull);
     });
@@ -350,109 +357,51 @@ void main() {
     });
   });
 
-  group('a new account that needs a name', () {
-    test('asks for the name instead of failing the login', () async {
-      repository.google = const Left(_namesRequired);
+  group('a first-time account goes to onboarding', () {
+    /// A new account: the backend says onboarding is not done yet.
+    Future<AuthNotifier> startNewAccount() async {
       final notifier = await start();
+      when(
+        container.read(onboardingRepositoryProvider).isOnboardingCompleted(),
+      ).thenAnswer((_) async => const Right(false));
+      return notifier;
+    }
 
-      await notifier.login(connection: 'google', source: AuthSource.loginPage);
-
-      expect(notifier.state.needsProfileNames, isTrue);
-      expect(notifier.state.isLoading, isFalse);
-      expect(notifier.state.isLoggedIn, isFalse);
-      expect(notifier.state.errorMessage, isNull);
-      expect(notifier.state.loginError, isNull);
-      expect(failedLogins(), isEmpty);
-    });
-
-    test('the name finishes the same login, method and source', () async {
-      repository.google = const Left(_namesRequired);
-      repository.names = Right(_credentials('backend-user-3'));
-      final notifier = await start();
-      await notifier.login(connection: 'google', source: AuthSource.meScreen);
-
-      final failure = await notifier.submitProfileNames(
-        firstName: 'Pema',
-        lastName: 'Lhamo',
-      );
-
-      expect(failure, isNull);
-      expect(repository.submittedNames, (first: 'Pema', last: 'Lhamo'));
-      expect(notifier.state.isLoggedIn, isTrue);
-      expect(notifier.state.needsProfileNames, isFalse);
-      expect(succeededLogin().properties, {
-        AnalyticsProperties.method: 'google',
-        AnalyticsProperties.source: 'me_screen',
-      });
-    });
-
-    test('also after a phone code', () async {
-      repository.phoneLogin = const Left(_namesRequired);
-      repository.names = Right(_credentials('backend-user-4'));
-      final notifier = await start();
+    test('after a phone code', () async {
+      repository.phoneLogin = Right(_credentials('backend-user-3'));
+      final notifier = await startNewAccount();
 
       final failure = await notifier.verifyPhoneCode(
         verificationId: 'v-1',
         smsCode: '123456',
-        source: AuthSource.loginPage,
       );
-      expect(failure?.reason, LoginFailureReason.profileNamesRequired);
-      expect(notifier.state.needsProfileNames, isTrue);
 
-      await notifier.submitProfileNames(firstName: 'Pema', lastName: 'Lhamo');
-
+      // No name is asked for during sign-in; the route guard sends an
+      // account with onboarding still to do there, where a phone account is
+      // asked what to call it.
+      expect(failure, isNull);
       expect(notifier.state.isLoggedIn, isTrue);
-      expect(succeededLogin().properties[AnalyticsProperties.method], 'sms');
+      expect(notifier.state.hasCompletedOnboarding, isFalse);
     });
 
-    test('closing the form drops the waiting login', () async {
-      repository.google = const Left(_namesRequired);
-      final notifier = await start();
+    test('after Google or Apple', () async {
+      repository.google = Right(_credentials('backend-user-4'));
+      final notifier = await startNewAccount();
+
       await notifier.login(connection: 'google');
+      await notifier.stream.firstWhere((s) => s.isLoggedIn);
 
-      notifier.cancelProfileNames();
-
-      expect(notifier.state.needsProfileNames, isFalse);
-      expect(notifier.state.isLoggedIn, isFalse);
-      expect(repository.cancels, 1);
+      expect(notifier.state.hasCompletedOnboarding, isFalse);
     });
 
-    test('a retryable failure keeps the form open', () async {
-      repository.google = const Left(_namesRequired);
-      repository.names = const Left(
-        LoginFailure('Profile login failed: x', LoginFailureReason.network),
-      );
+    test('a returning account skips it', () async {
+      repository.google = Right(_credentials('backend-user-5'));
       final notifier = await start();
+
       await notifier.login(connection: 'google');
+      await notifier.stream.firstWhere((s) => s.isLoggedIn);
 
-      final failure = await notifier.submitProfileNames(
-        firstName: 'Pema',
-        lastName: 'Lhamo',
-      );
-
-      expect(failure?.reason, LoginFailureReason.network);
-      expect(notifier.state.needsProfileNames, isTrue);
-    });
-
-    test('a login too old to finish stops waiting', () async {
-      repository.google = const Left(_namesRequired);
-      repository.names = const Left(
-        LoginFailure(
-          'Profile login failed: x',
-          LoginFailureReason.pendingLoginExpired,
-        ),
-      );
-      final notifier = await start();
-      await notifier.login(connection: 'google');
-
-      final failure = await notifier.submitProfileNames(
-        firstName: 'Pema',
-        lastName: 'Lhamo',
-      );
-
-      expect(failure?.reason, LoginFailureReason.pendingLoginExpired);
-      expect(notifier.state.needsProfileNames, isFalse);
-      expect(notifier.state.isLoggedIn, isFalse);
+      expect(notifier.state.hasCompletedOnboarding, isTrue);
     });
   });
 
@@ -492,7 +441,6 @@ void main() {
 
     expect(notifier.state.isLoading, isFalse);
     expect(notifier.state.isLoggedIn, isFalse);
-    expect(notifier.state.needsProfileNames, isFalse);
     // For the login page to word; a cancel words to nothing.
     expect(notifier.state.loginError, LoginFailureReason.cancelled);
     final failed = analytics.events.singleWhere(

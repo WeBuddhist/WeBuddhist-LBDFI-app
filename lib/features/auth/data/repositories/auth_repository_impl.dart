@@ -101,21 +101,6 @@ class AuthRepositoryImpl implements AuthRepository {
     ),
   );
 
-  @override
-  Future<Either<Failure, AuthCredentials>> completeLoginWithNames({
-    required String firstName,
-    required String lastName,
-  }) => _login(
-    'Profile',
-    () => _authService.completeLoginWithNames(
-      firstName: firstName,
-      lastName: lastName,
-    ),
-  );
-
-  @override
-  void cancelPendingLogin() => _authService.cancelPendingLogin();
-
   Future<Either<Failure, AuthCredentials>> _login(
     String provider,
     Future<SessionTokens> Function() signIn,
@@ -324,10 +309,6 @@ LoginFailureReason loginFailureReasonFor(Object error) {
   final code = error is AuthException ? error.code : null;
   return switch (code) {
     AuthService.cancelledCode => LoginFailureReason.cancelled,
-    AuthService.profileNamesRequiredCode =>
-      LoginFailureReason.profileNamesRequired,
-    AuthService.pendingLoginExpiredCode =>
-      LoginFailureReason.pendingLoginExpired,
     'invalid-phone-number' ||
     'missing-phone-number' => LoginFailureReason.invalidPhoneNumber,
     'invalid-verification-code' ||

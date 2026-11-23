@@ -41,16 +41,6 @@ abstract class AuthRepository {
     required String smsCode,
   });
 
-  /// Finish a sign-in that failed with
-  /// [LoginFailureReason.profileNamesRequired]: a new account needs a name.
-  Future<Either<Failure, AuthCredentials>> completeLoginWithNames({
-    required String firstName,
-    required String lastName,
-  });
-
-  /// Drop a sign-in that was waiting for a name.
-  void cancelPendingLogin();
-
   /// Logout (local - clears credentials from device)
   Future<Either<Failure, void>> localLogout();
 

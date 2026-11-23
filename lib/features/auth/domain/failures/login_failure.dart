@@ -5,13 +5,6 @@ enum LoginFailureReason {
   /// The person closed the sign-in sheet. Nothing to show.
   cancelled,
 
-  /// The account is new and needs a first and last name. Not an error: ask
-  /// for them and finish the same sign-in.
-  profileNamesRequired,
-
-  /// The sign-in that was waiting for a name is gone or too old.
-  pendingLoginExpired,
-
   invalidPhoneNumber,
   invalidCode,
 

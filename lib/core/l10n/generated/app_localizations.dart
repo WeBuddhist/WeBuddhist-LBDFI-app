@@ -2141,36 +2141,6 @@ abstract class AppLocalizations {
   /// **'Change number'**
   String get phone_login_change_number;
 
-  /// No description provided for @login_names_title.
-  ///
-  /// In en, this message translates to:
-  /// **'What\'s your name?'**
-  String get login_names_title;
-
-  /// No description provided for @login_names_subtitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Add your name to finish setting up your account.'**
-  String get login_names_subtitle;
-
-  /// No description provided for @login_first_name.
-  ///
-  /// In en, this message translates to:
-  /// **'First name'**
-  String get login_first_name;
-
-  /// No description provided for @login_last_name.
-  ///
-  /// In en, this message translates to:
-  /// **'Last name'**
-  String get login_last_name;
-
-  /// No description provided for @login_names_required.
-  ///
-  /// In en, this message translates to:
-  /// **'Enter your first and last name'**
-  String get login_names_required;
-
   /// No description provided for @login_error_invalid_phone.
   ///
   /// In en, this message translates to:
@@ -2206,12 +2176,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'This account\'s email address isn\'t verified yet. Verify it with your provider and try again.'**
   String get login_error_email_not_verified;
-
-  /// No description provided for @login_error_session_expired.
-  ///
-  /// In en, this message translates to:
-  /// **'Sign-in took too long. Please start again.'**
-  String get login_error_session_expired;
 
   /// No description provided for @login_error_generic.
   ///

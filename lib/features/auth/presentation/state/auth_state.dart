@@ -30,11 +30,6 @@ class AuthState {
   /// home; [AuthNotifier] retries the fetch in the background.
   final bool? hasCompletedOnboarding;
 
-  /// A sign-in is waiting for a first and last name: the account is new and
-  /// the provider shared none. The login page and drawer open the name form
-  /// when this turns true.
-  final bool needsProfileNames;
-
   /// Why the last Google or Apple sign-in failed, for the login page and
   /// drawer to show under their buttons. Like [errorMessage], cleared by the
   /// next state change. Phone sign-in shows its failures on its own screen.
@@ -46,7 +41,6 @@ class AuthState {
     this.isLoading = false,
     this.errorMessage,
     this.hasCompletedOnboarding,
-    this.needsProfileNames = false,
     this.loginError,
   });
 
@@ -56,7 +50,6 @@ class AuthState {
     bool? isGuest,
     String? errorMessage,
     LoginFailureReason? loginError,
-    bool? needsProfileNames,
     // Use _kSentinel as default so passing null explicitly resets the field to
     // null rather than being treated as "no change".
     Object? hasCompletedOnboarding = _kSentinel,
@@ -66,7 +59,6 @@ class AuthState {
     isGuest: isGuest ?? this.isGuest,
     errorMessage: errorMessage,
     loginError: loginError,
-    needsProfileNames: needsProfileNames ?? this.needsProfileNames,
     hasCompletedOnboarding: identical(hasCompletedOnboarding, _kSentinel)
         ? this.hasCompletedOnboarding
         : hasCompletedOnboarding as bool?,

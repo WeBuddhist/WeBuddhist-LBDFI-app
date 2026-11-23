@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:auth0_flutter/auth0_flutter.dart';
 import 'package:flutter_pecha/core/storage/storage_keys.dart';
 import 'package:flutter_pecha/core/utils/app_logger.dart';
@@ -49,8 +51,8 @@ class LegacyAuth0CleanupImpl implements LegacyAuth0Cleanup {
         // Local only: clears the Keychain / encrypted storage entry. It does
         // not call Auth0, so it works offline and after the tenant is gone.
         await _clearAuth0Credentials(domain, clientId);
-        // Markers of the signed-in Auth0 account. The user id was the Auth0
-        // subject (`google-oauth2|…`); the new one is the backend user id.
+        await _rememberLocalUserId(prefs);
+        // Markers of the signed-in Auth0 account.
         await prefs.remove(StorageKeys.currentUserId);
         await prefs.remove(StorageKeys.userData);
         await prefs.remove(cachedDomainKey);
@@ -64,6 +66,38 @@ class LegacyAuth0CleanupImpl implements LegacyAuth0Cleanup {
       // Not marked done, so the next launch tries again.
       _logger.warning('Could not remove the earlier Auth0 session: $e');
       return false;
+    }
+  }
+
+  /// Local data is keyed by the user id, which was the Auth0 subject
+  /// (`google-oauth2|…`) and would now be the backend user id. Counts, timer
+  /// stops and plan actions not yet sent to the server sit under the old one,
+  /// and would never be found again. So the old id is remembered beside the
+  /// account's backend id (from the cached profile), and `AuthNotifier` goes
+  /// on using it when that same account signs back in.
+  Future<void> _rememberLocalUserId(SharedPreferences prefs) async {
+    final localUserId = prefs.getString(StorageKeys.currentUserId);
+    if (localUserId == null || localUserId.isEmpty) return;
+    final backendUserId = _cachedProfileId(prefs);
+    if (backendUserId == null) {
+      // Cached before profiles carried an id. Without it a later sign-in
+      // cannot be matched to this account, so its local data stays put.
+      _logger.warning('No backend id cached for the Auth0 account');
+      return;
+    }
+    await prefs.setString(StorageKeys.legacyAuth0UserId, localUserId);
+    await prefs.setString(StorageKeys.legacyAuth0BackendUserId, backendUserId);
+  }
+
+  String? _cachedProfileId(SharedPreferences prefs) {
+    try {
+      final stored = prefs.getString(StorageKeys.userData);
+      if (stored == null) return null;
+      final profile = jsonDecode(stored);
+      final id = profile is Map ? profile['id']?.toString().trim() : null;
+      return id == null || id.isEmpty ? null : id;
+    } catch (_) {
+      return null;
     }
   }
 

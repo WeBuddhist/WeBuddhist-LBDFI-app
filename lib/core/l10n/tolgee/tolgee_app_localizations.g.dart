@@ -2268,41 +2268,6 @@ class TolgeeAppLocalizations extends AppLocalizations {
   );
 
   @override
-  String get login_names_title => TolgeeBridge.get(
-    localeName,
-    'login_names_title',
-    () => _fallback.login_names_title,
-  );
-
-  @override
-  String get login_names_subtitle => TolgeeBridge.get(
-    localeName,
-    'login_names_subtitle',
-    () => _fallback.login_names_subtitle,
-  );
-
-  @override
-  String get login_first_name => TolgeeBridge.get(
-    localeName,
-    'login_first_name',
-    () => _fallback.login_first_name,
-  );
-
-  @override
-  String get login_last_name => TolgeeBridge.get(
-    localeName,
-    'login_last_name',
-    () => _fallback.login_last_name,
-  );
-
-  @override
-  String get login_names_required => TolgeeBridge.get(
-    localeName,
-    'login_names_required',
-    () => _fallback.login_names_required,
-  );
-
-  @override
   String get login_error_invalid_phone => TolgeeBridge.get(
     localeName,
     'login_error_invalid_phone',
@@ -2342,13 +2307,6 @@ class TolgeeAppLocalizations extends AppLocalizations {
     localeName,
     'login_error_email_not_verified',
     () => _fallback.login_error_email_not_verified,
-  );
-
-  @override
-  String get login_error_session_expired => TolgeeBridge.get(
-    localeName,
-    'login_error_session_expired',
-    () => _fallback.login_error_session_expired,
   );
 
   @override

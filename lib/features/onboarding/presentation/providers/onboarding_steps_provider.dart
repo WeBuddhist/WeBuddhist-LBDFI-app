@@ -5,10 +5,10 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 /// The onboarding pages for the signed-in account, in order.
 ///
-/// A phone account has no email to build a username from, so the backend
-/// generates one; phone accounts pick their own display name and username on
-/// an extra [OnboardingStep.profile] page. Accounts that already finished
-/// onboarding never see it.
+/// A phone sign-in shares no name, so a phone account is created with a
+/// placeholder name and a generated username; phone accounts pick their own
+/// display name and username on an extra [OnboardingStep.profile] page.
+/// Accounts that already finished onboarding never see it.
 final onboardingStepsProvider = Provider.autoDispose<List<OnboardingStep>>((
   ref,
 ) {

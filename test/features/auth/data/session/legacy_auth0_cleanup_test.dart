@@ -10,7 +10,7 @@ void main() {
     LegacyAuth0CleanupImpl.cachedClientIdKey: 'client-1',
     LegacyAuth0CleanupImpl.cachedAudienceKey: 'https://api.test',
     StorageKeys.currentUserId: 'google-oauth2|1',
-    StorageKeys.userData: '{"email":"tenzin@example.com"}',
+    StorageKeys.userData: '{"id":"backend-user-1","email":"tenzin@example.com"}',
     StorageKeys.firstLaunch: true,
   };
 
@@ -33,6 +33,40 @@ void main() {
     expect(prefs.getString(LegacyAuth0CleanupImpl.cachedClientIdKey), isNull);
     // Unrelated preferences stay.
     expect(prefs.getBool(StorageKeys.firstLaunch), isTrue);
+  });
+
+  test('remembers the id local data is keyed by, with the backend id', () async {
+    SharedPreferences.setMockInitialValues(auth0Build);
+    final cleanup = LegacyAuth0CleanupImpl(
+      clearAuth0Credentials: (_, _) async {},
+    );
+
+    await cleanup.run();
+
+    // Unsynced mala counts, timer stops and plan actions sit under the Auth0
+    // subject. It is kept so the same account can go on using it.
+    final prefs = await SharedPreferences.getInstance();
+    expect(prefs.getString(StorageKeys.legacyAuth0UserId), 'google-oauth2|1');
+    expect(
+      prefs.getString(StorageKeys.legacyAuth0BackendUserId),
+      'backend-user-1',
+    );
+  });
+
+  test('a profile cached without an id cannot be matched later', () async {
+    SharedPreferences.setMockInitialValues({
+      ...auth0Build,
+      StorageKeys.userData: '{"email":"tenzin@example.com"}',
+    });
+    final cleanup = LegacyAuth0CleanupImpl(
+      clearAuth0Credentials: (_, _) async {},
+    );
+
+    expect(await cleanup.run(), isTrue);
+
+    final prefs = await SharedPreferences.getInstance();
+    expect(prefs.getString(StorageKeys.legacyAuth0UserId), isNull);
+    expect(prefs.getString(StorageKeys.legacyAuth0BackendUserId), isNull);
   });
 
   test('runs once: a later sign-in is never touched', () async {

@@ -1,7 +1,6 @@
 import 'package:flutter_pecha/features/auth/domain/usecases/clear_guest_mode_and_onboarding_usecase.dart';
 import 'package:flutter_pecha/features/auth/domain/usecases/delete_account_usecase.dart';
 import 'package:flutter_pecha/features/auth/domain/usecases/clear_guest_mode_usecase.dart';
-import 'package:flutter_pecha/features/auth/domain/usecases/complete_login_with_names_usecase.dart';
 import 'package:flutter_pecha/features/auth/domain/usecases/continue_as_guest_usecase.dart';
 import 'package:flutter_pecha/features/auth/domain/usecases/get_credentials_usecase.dart';
 import 'package:flutter_pecha/features/auth/domain/usecases/get_current_user_usecase.dart';
@@ -41,12 +40,6 @@ final loginWithPhoneCodeUseCaseProvider = Provider<LoginWithPhoneCodeUseCase>((
 ) {
   return LoginWithPhoneCodeUseCase(ref.watch(authRepositoryProvider));
 });
-
-/// Provider for CompleteLoginWithNamesUseCase.
-final completeLoginWithNamesUseCaseProvider =
-    Provider<CompleteLoginWithNamesUseCase>((ref) {
-      return CompleteLoginWithNamesUseCase(ref.watch(authRepositoryProvider));
-    });
 
 /// Provider for InitializeAuthUseCase.
 final initializeAuthUseCaseProvider = Provider<InitializeAuthUseCase>((ref) {

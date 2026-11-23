@@ -222,23 +222,28 @@ class _PhoneLoginScreenState extends ConsumerState<PhoneLoginScreen>
     final error = _error == null ? null : loginFailureText(l10n, _error!);
     final askingForCode = _verificationId != null;
 
-    return Scaffold(
-      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        scrolledUnderElevation: 0,
-      ),
-      body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.fromLTRB(24, 8, 24, 24),
-          child: AutofillGroup(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children:
-                  askingForCode
-                      ? _codeStep(context, error)
-                      : _numberStep(context, error),
+    // No leaving while a code is being sent or checked: the answer would
+    // still arrive, and could sign in someone who thought they had backed out.
+    return PopScope(
+      canPop: !_busy,
+      child: Scaffold(
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+        appBar: AppBar(
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          scrolledUnderElevation: 0,
+        ),
+        body: SafeArea(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.fromLTRB(24, 8, 24, 24),
+            child: AutofillGroup(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children:
+                    askingForCode
+                        ? _codeStep(context, error)
+                        : _numberStep(context, error),
+              ),
             ),
           ),
         ),

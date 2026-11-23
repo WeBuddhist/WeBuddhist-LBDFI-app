@@ -4,7 +4,6 @@ import 'package:flutter_pecha/core/constants/app_assets.dart';
 import 'package:flutter_pecha/core/extensions/context_ext.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_pecha/features/auth/presentation/providers/state_providers.dart';
-import 'package:flutter_pecha/features/auth/presentation/screens/profile_names_screen.dart';
 import 'package:flutter_pecha/features/auth/presentation/utils/auth_analytics.dart';
 import 'package:go_router/go_router.dart';
 import 'login_form_widgets.dart';
@@ -83,8 +82,6 @@ class _LoginDrawerState extends ConsumerState<LoginDrawer>
   @override
   Widget build(BuildContext context) {
     final authState = ref.watch(authProvider);
-    // A new account that needs a name before its sign-in can finish.
-    openProfileNamesWhenNeeded(ref, context);
     final isIOS = Platform.isIOS;
     final l10n = context.l10n;
 

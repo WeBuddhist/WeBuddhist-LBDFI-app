@@ -9,14 +9,6 @@ void main() {
 
   test('AuthService codes', () {
     expect(reasonFor(AuthService.cancelledCode), LoginFailureReason.cancelled);
-    expect(
-      reasonFor(AuthService.profileNamesRequiredCode),
-      LoginFailureReason.profileNamesRequired,
-    );
-    expect(
-      reasonFor(AuthService.pendingLoginExpiredCode),
-      LoginFailureReason.pendingLoginExpired,
-    );
     expect(reasonFor('network'), LoginFailureReason.network);
     expect(reasonFor('not-configured'), LoginFailureReason.notConfigured);
   });
@@ -42,6 +34,7 @@ void main() {
 
   test('anything else is unknown, including untyped errors', () {
     expect(reasonFor('http_500'), LoginFailureReason.unknown);
+    expect(reasonFor('http_422'), LoginFailureReason.unknown);
     expect(reasonFor('app-not-authorized'), LoginFailureReason.unknown);
     expect(reasonFor(null), LoginFailureReason.unknown);
     expect(

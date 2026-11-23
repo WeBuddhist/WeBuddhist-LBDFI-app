@@ -1149,22 +1149,6 @@ class AppLocalizationsTh extends AppLocalizations {
   String get phone_login_change_number => 'Change number';
 
   @override
-  String get login_names_title => 'What\'s your name?';
-
-  @override
-  String get login_names_subtitle =>
-      'Add your name to finish setting up your account.';
-
-  @override
-  String get login_first_name => 'First name';
-
-  @override
-  String get login_last_name => 'Last name';
-
-  @override
-  String get login_names_required => 'Enter your first and last name';
-
-  @override
   String get login_error_invalid_phone => 'Enter a valid phone number.';
 
   @override
@@ -1186,10 +1170,6 @@ class AppLocalizationsTh extends AppLocalizations {
   @override
   String get login_error_email_not_verified =>
       'This account\'s email address isn\'t verified yet. Verify it with your provider and try again.';
-
-  @override
-  String get login_error_session_expired =>
-      'Sign-in took too long. Please start again.';
 
   @override
   String get login_error_generic =>

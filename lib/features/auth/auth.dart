@@ -9,6 +9,7 @@ library;
 
 // Domain - Entities
 export 'domain/entities/user.dart';
+export 'domain/entities/account_names.dart';
 export 'domain/entities/auth_credentials.dart';
 export 'domain/entities/phone_code_start.dart';
 
@@ -21,7 +22,6 @@ export 'domain/repositories/auth_repository.dart';
 // Domain - Use Cases
 export 'domain/usecases/clear_guest_mode_and_onboarding_usecase.dart';
 export 'domain/usecases/clear_guest_mode_usecase.dart';
-export 'domain/usecases/complete_login_with_names_usecase.dart';
 export 'domain/usecases/continue_as_guest_usecase.dart';
 export 'domain/usecases/get_credentials_usecase.dart';
 export 'domain/usecases/get_current_user_usecase.dart';
@@ -60,7 +60,6 @@ export 'presentation/providers/user_notifier.dart';
 // Presentation - Screens
 export 'presentation/screens/login_page.dart';
 export 'presentation/screens/phone_login_screen.dart';
-export 'presentation/screens/profile_names_screen.dart';
 export 'presentation/screens/profile_page.dart';
 
 // Presentation - Widgets

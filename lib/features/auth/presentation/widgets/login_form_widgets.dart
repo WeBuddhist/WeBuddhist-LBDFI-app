@@ -6,8 +6,8 @@ import 'package:flutter_pecha/features/auth/presentation/providers/state_provide
 import 'package:flutter_pecha/features/auth/presentation/utils/login_failure_text.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-/// Field styling shared by the phone sign-in and name forms: the outlined,
-/// 12-radius field the onboarding profile step uses.
+/// Field styling for the phone sign-in screen: the outlined, 12-radius field
+/// the onboarding profile step uses.
 InputDecoration loginFieldDecoration(
   BuildContext context, {
   String? hintText,
@@ -123,9 +123,9 @@ class LoginFormHeader extends StatelessWidget {
   }
 }
 
-/// Closes the sign-in screen it is mixed into as soon as the person is signed
-/// in, wherever that screen sits in the stack: the phone screen stays under
-/// the name form while a new account is being named.
+/// Closes the phone sign-in screen as soon as the person is signed in. It is
+/// pushed over the login page or drawer rather than being a route the guard
+/// knows, so nothing else would take it away.
 mixin CloseWhenSignedIn<T extends ConsumerStatefulWidget> on ConsumerState<T> {
   /// Call from `build`.
   void closeWhenSignedIn() {

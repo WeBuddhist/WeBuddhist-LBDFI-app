@@ -142,34 +142,6 @@ class MockAuthService extends _i1.Mock implements _i3.AuthService {
           as _i5.Future<_i2.SessionTokens>);
 
   @override
-  _i5.Future<_i2.SessionTokens> completeLoginWithNames({
-    required String? firstName,
-    required String? lastName,
-  }) =>
-      (super.noSuchMethod(
-            Invocation.method(#completeLoginWithNames, [], {
-              #firstName: firstName,
-              #lastName: lastName,
-            }),
-            returnValue: _i5.Future<_i2.SessionTokens>.value(
-              _FakeSessionTokens_0(
-                this,
-                Invocation.method(#completeLoginWithNames, [], {
-                  #firstName: firstName,
-                  #lastName: lastName,
-                }),
-              ),
-            ),
-          )
-          as _i5.Future<_i2.SessionTokens>);
-
-  @override
-  void cancelPendingLogin() => super.noSuchMethod(
-    Invocation.method(#cancelPendingLogin, []),
-    returnValueForMissingStub: null,
-  );
-
-  @override
   _i5.Future<_i2.SessionTokens> getCredentials() =>
       (super.noSuchMethod(
             Invocation.method(#getCredentials, []),

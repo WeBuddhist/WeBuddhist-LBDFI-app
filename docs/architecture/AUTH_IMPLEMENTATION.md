@@ -22,7 +22,6 @@ The web app and the Studio work the same way (backend doc:
 ```
  LoginPage / LoginDrawer ── Google, Apple ──┐
  PhoneLoginScreen ── number, SMS code ──────┤
- ProfileNamesScreen ── first + last name ───┤
                                             ▼
                               AuthNotifier (authProvider)
                                             │  use cases (domain/usecases)
@@ -63,9 +62,18 @@ All of `data/session/` sits behind `AuthService`; nothing else imports it.
    `auth.refresh_token`.
 4. `AuthService` stores them in `SessionTokenStore` and records the sign-in
    method (`StorageKeys.signInMethod`: `google`, `apple` or `phone`).
-5. `AuthNotifier._handleSuccessfulLogin` stores the user id (the access
-   token's `sub`, the **backend user id**), identifies the user for analytics,
-   prefetches onboarding status and the profile, then flips auth state.
+5. `AuthNotifier._handleSuccessfulLogin` stores the local user id (the access
+   token's `sub`, the **backend user id** — or, for the account that was
+   signed in when the app moved off Auth0, the id it had then, see
+   [Moving from Auth0](#moving-from-auth0)), identifies the user for
+   analytics, prefetches onboarding status and the profile, then flips auth
+   state.
+
+A sign-in the person has left cannot finish behind their back. `AuthService`
+counts attempts (`_loginAttempt`): starting another sign-in or signing out
+bumps it, and an exchange that answers under an older value is dropped
+instead of being stored. The phone screen also refuses to close while a code
+is being sent or checked.
 
 ### Why Firebase is signed out straight away
 
@@ -78,31 +86,46 @@ launch. So a sign-in user never outlives `FirebaseSignInImpl._proofFor`.
 The backend also accepts a Firebase ID token directly as a bearer. The app
 does not use that, for the same reason: one Firebase app holds one user.
 
-### New accounts need a name
+### New accounts need a name, and nobody is asked for one
 
 For an account that does not exist yet and has no first and last name, the
 exchange answers **422** ("First name and last name are required for a new
-profile"). That is not an error:
+profile"). Phone sign-in never has a name; Apple can withhold it; a Google
+account can have a single name.
 
-- `AuthService` keeps the Firebase proof in memory and throws
-  `profileNamesRequiredCode`.
-- `AuthNotifier` sets `AuthState.needsProfileNames`; the login page and the
-  drawer open `ProfileNamesScreen` (`openProfileNamesWhenNeeded`).
-- `submitProfileNames` resends **the same Firebase token** with the names.
+The app does not ask during sign-in. `AuthService._exchange` sends the
+exchange again, **same Firebase token**, with the gap filled by
+`AccountNames.complete`:
 
-Phone sign-ups always take this step. Google and Apple send the provider's
-display name, so they only reach it when that has no last name or is missing.
+| The provider shared | Sent as first / last |
+|---|---|
+| Nothing (phone, or Apple withholding the name) | `WeBuddhist` / `User` — `AccountNames.placeholder`, the same placeholder the Auth0 account creation used |
+| One name (`Tenzin`) | `Tenzin` / `Tenzin` |
 
-The exchange only accepts a sign-in younger than 10 minutes
-(`FIREBASE_TOKEN_MAX_AGE_SECONDS`). After that the resend gets a 401, which
-becomes `LoginFailureReason.pendingLoginExpired`: the person starts again.
+The filled-in names go only on that second try, so an existing account is
+never sent a made-up name.
+
+The owner then names the account:
+- **Phone accounts** get the onboarding step "What should we call you?"
+  (`OnboardingScreenProfile`: display name and username), as before.
+  `onboardingStepsProvider` adds it when `StorageKeys.signInMethod` is
+  `phone`.
+- **Any account still on the placeholder** has its first and last name
+  replaced by the display name its owner saves, in onboarding or Edit profile
+  (`UserNotifier.saveProfile`). Chat and member lists show people by first
+  and last name, so this is what stops them showing "WeBuddhist User".
+
+A first-time account of any kind goes through onboarding as usual: the
+backend reports onboarding as not completed and the route guard sends it
+there.
 
 ### Failures
 
 Every sign-in failure reaches the UI as a `LoginFailure` with a
 `LoginFailureReason` (`cancelled`, `invalidCode`, `codeExpired`,
 `tooManyRequests`, `network`, `emailNotVerified`, …). `loginFailureText`
-words it. `loginFailureReasonFor` in `auth_repository_impl.dart` maps the
+words it: on the phone screen for phone sign-in, under the buttons of the
+login page and drawer for Google and Apple (`AuthState.loginError`). `loginFailureReasonFor` in `auth_repository_impl.dart` maps the
 codes: `AuthService`'s own, Firebase's (`invalid-verification-code`, …) and
 `http_<status>` from the exchange.
 
@@ -114,7 +137,7 @@ codes: `AuthService`'s own, Firebase's (`invalid-verification-code`, …) and
 |---|---|
 | Access token | Backend JWT; `sub` = backend user id, plus `email` / `phone_number`. The API bearer. |
 | Refresh token | Sent to `POST /auth/refresh-token` (`{ "token": … }`) for a new access token. **The backend does not renew it**, so a session ends when it expires. |
-| Storage | `SecureSessionTokenStore`: `flutter_secure_storage` (Keychain, `first_unlock`, on iOS; encrypted storage on Android), cached in memory after the first read. |
+| Storage | `SecureSessionTokenStore`: `flutter_secure_storage` (Keychain, `first_unlock`, on iOS; encrypted storage on Android), cached in memory after the first read. The pair is **one** stored value, so an interrupted write can never leave one account's access token beside another's refresh token. |
 
 ### Refresh
 
@@ -162,12 +185,35 @@ phone number.
 - Recognises an Auth0 build by the tenant config it cached in preferences
   (`auth0_cfg_domain` / `auth0_cfg_client_id`).
 - Clears the Auth0 credentials (local only: no call to Auth0, works offline).
-- Removes `currentUserId` and the cached profile. The stored user id used to
-  be the Auth0 subject (`google-oauth2|…`); it is now the backend user id.
+- Remembers the id local data was keyed by (below), then removes
+  `currentUserId` and the cached profile.
 - Runs once (`legacy_auth0_session_cleared`). A failed clear is retried on
   the next launch.
 
 `AuthNotifier` then resets the analytics identity. Guests stay guests.
+
+### The local user id survives the move
+
+`StorageKeys.currentUserId` keys local data: mala counts, pending timer
+stops, pending plan actions and series enrolments, and every per-user cache.
+It is also the analytics identity. Under Auth0 it was the Auth0 subject
+(`google-oauth2|…`); a fresh sign-in now gives the backend user id. Switching
+ids would strand anything not yet sent to the server — counts made offline
+before updating would never be found again.
+
+So the cleanup stores the old id (`legacyAuth0UserId`) next to that account's
+backend id (`legacyAuth0BackendUserId`, read from the cached profile), and
+`AuthNotifier._localUserIdFor` keeps using the old id whenever **that same
+backend account** signs in on this phone. Any other account gets its backend
+id. The pair is kept for good: local data is not deleted on logout, so the
+account must find it again on every later sign-in.
+
+Consequences:
+- `currentUserId` is a local key, not always the backend id. Compare with ids
+  from the backend using the profile (`userProvider`).
+- Returning users keep their analytics identity.
+- A profile cached before profiles carried an `id` cannot be matched; that
+  account starts on its backend id and data left under the old one stays put.
 
 **To remove later**, once builds older than the switch are no longer
 supported: `auth0_flutter` in `pubspec.yaml`, `legacy_auth0_cleanup.dart`,

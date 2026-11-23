@@ -9,7 +9,7 @@ App-wide authentication and user profile. Firebase Authentication proves who the
 ## User-facing functionality
 
 - Firebase sign-in: Google, Apple (iOS), phone/SMS (own number + code screen)
-- Name form for new accounts the provider shared no name for
+- New accounts the provider shared no name for are created with a filled-in name (`AccountNames`), never a form; phone accounts name themselves in onboarding
 - One-time sign-out of the Auth0 session left by builds before the switch
 - Guest mode ("continue as guest")
 - Session restore on launch (offline-tolerant)
@@ -40,7 +40,7 @@ auth/
 | Token refresh | `auth_service.dart` (`getValidAccessToken` / `forceRefreshAccessToken`, single-flight `_refresh`), `core/network/auth_service_token_provider.dart`, `core/network/interceptors/retry_interceptor.dart` |
 | Auth0 → Firebase | `data/session/legacy_auth0_cleanup.dart` (the only `auth0_flutter` use left; remove with the package) |
 | Init | `domain/usecases/initialize_auth_usecase.dart` |
-| Login UI | `presentation/widgets/login_drawer.dart`, `presentation/screens/login_page.dart`, `auth_buttons.dart`, `social_login_button.dart`, `presentation/screens/phone_login_screen.dart`, `profile_names_screen.dart`, `presentation/utils/login_failure_text.dart` |
+| Login UI | `presentation/widgets/login_drawer.dart`, `presentation/screens/login_page.dart`, `auth_buttons.dart`, `social_login_button.dart`, `presentation/screens/phone_login_screen.dart`, `presentation/utils/login_failure_text.dart` |
 | Session side effects | `presentation/providers/user_session_bootstrap.dart` (clears auth-scoped HTTP cache + user providers on auth transitions) |
 | Analytics | `presentation/utils/auth_analytics.dart` |
 | Barrel | `auth.dart` |
@@ -57,7 +57,7 @@ auth/
 
 - **Firebase Authentication** (`firebase_auth`, `google_sign_in`) — proof of identity at sign-in only; signed out again at once
 - **Backend API** — `POST /auth/firebase/exchange`, `POST /auth/refresh-token`, `GET/POST/PATCH/DELETE /users/...`
-- **SharedPreferences** — guest mode, cached user ID (the backend user id), sign-in method
+- **SharedPreferences** — guest mode, cached user ID (the key local data is stored under: the backend user id, or the Auth0-era id for the account that was signed in at the move to Firebase), sign-in method
 - **`flutter_secure_storage`** — the session tokens (`SecureSessionTokenStore`)
 
 ## Cross-feature dependencies
@@ -97,7 +97,9 @@ Import from `features/auth/auth.dart`. Does **not** export `splash_screen.dart` 
 ### Don't
 
 - Don't store tokens in SharedPreferences — `SessionTokenStore` only
-- Don't read the sign-in provider from the user id: it is the backend user id now. Use `StorageKeys.signInMethod`
+- Don't read the sign-in provider from the user id. Use `StorageKeys.signInMethod`
+- Don't compare `StorageKeys.currentUserId` with ids the backend returns: it is a local key. Use the profile's id (`userProvider`)
+- Don't add a name prompt to sign-in: a missing name is filled in (`AccountNames.complete`) and replaced when the owner saves a display name (`UserNotifier.saveProfile`)
 - Don't merge `AuthNotifier` and `UserNotifier`
 - Don't break guest mode flows when adding auth requirements
 - Don't skip logout cleanup hooks (notifications, mala sync, cache)

@@ -195,24 +195,6 @@ void main() {
       expect(find.text(l10n.phone_login_code_title), findsOneWidget);
     });
 
-    testWidgets('a new account waiting for a name shows no error', (
-      tester,
-    ) async {
-      auth.verifyResult = const LoginFailure(
-        'x',
-        LoginFailureReason.profileNamesRequired,
-      );
-      final l10n = await open(tester);
-      await sendCode(tester, l10n);
-
-      await tester.enterText(find.byType(TextField), '123456');
-      await tester.pumpAndSettle();
-
-      expect(find.byType(PhoneLoginScreen), findsOneWidget);
-      expect(find.text(l10n.login_error_generic), findsNothing);
-      expect(find.text(l10n.login_error_invalid_code), findsNothing);
-    });
-
     testWidgets('resend waits, then reuses the number and the resend token', (
       tester,
     ) async {

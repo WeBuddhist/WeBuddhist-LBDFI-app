@@ -8,6 +8,7 @@ import 'package:flutter_pecha/features/auth/data/session/auth_token_api.dart';
 import 'package:flutter_pecha/features/auth/data/session/firebase_sign_in.dart';
 import 'package:flutter_pecha/features/auth/data/session/legacy_auth0_cleanup.dart';
 import 'package:flutter_pecha/features/auth/data/session/session_token_store.dart';
+import 'package:flutter_pecha/features/auth/domain/entities/account_names.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -42,7 +43,8 @@ class _Store implements SessionTokenStore {
 }
 
 class _Api implements AuthTokenApi {
-  /// Each exchange takes the next: tokens to return, or an error to throw.
+  /// Each exchange takes the next: tokens to return, an error to throw, or a
+  /// `Completer<SessionTokens>` to hold the call open.
   final List<Object> exchangeResults = [];
   final List<({String token, String? first, String? last})> exchanges = [];
 
@@ -60,6 +62,7 @@ class _Api implements AuthTokenApi {
     exchanges.add((token: firebaseToken, first: firstName, last: lastName));
     final result = exchangeResults.removeAt(0);
     if (result is SessionTokens) return result;
+    if (result is Completer<SessionTokens>) return result.future;
     throw result;
   }
 
@@ -239,86 +242,148 @@ void main() {
     });
   });
 
-  group('a new account that needs a name', () {
-    test('waits, then resends the same Firebase token with the names',
-        () async {
-      api.exchangeResults.add(const ProfileNamesRequiredException());
-      await expectLater(
-        auth.loginWithApple(),
-        throwsA(_authException(AuthService.profileNamesRequiredCode)),
-      );
-      expect(store.tokens, isNull);
+  group('a new account the provider shared no full name for', () {
+    test('phone: created with the placeholder, without asking', () async {
+      // The first exchange carries no name and is refused; the second is the
+      // same Firebase token with the placeholder.
+      api.exchangeResults.addAll([
+        const ProfileNamesRequiredException(),
+        session,
+      ]);
 
-      api.exchangeResults.add(session);
-      await auth.completeLoginWithNames(firstName: 'Pema', lastName: 'Lhamo');
+      await auth.loginWithPhoneCode(verificationId: 'v-1', smsCode: '123456');
 
-      expect(api.exchanges.last, (
-        token: 'firebase-apple',
-        first: 'Pema',
-        last: 'Lhamo',
-      ));
+      expect(api.exchanges, [
+        (token: 'firebase-phone', first: null, last: null),
+        (
+          token: 'firebase-phone',
+          first: AccountNames.placeholder.first,
+          last: AccountNames.placeholder.last,
+        ),
+      ]);
       expect(store.tokens?.accessToken, session.accessToken);
       final prefs = await SharedPreferences.getInstance();
-      expect(prefs.getString(StorageKeys.signInMethod), 'apple');
+      // What makes onboarding ask a phone account what to call it.
+      expect(prefs.getString(StorageKeys.signInMethod), 'phone');
     });
 
-    test('names with nothing waiting are refused', () async {
-      await expectLater(
-        auth.completeLoginWithNames(firstName: 'Pema', lastName: 'Lhamo'),
-        throwsA(_authException(AuthService.pendingLoginExpiredCode)),
+    test('Google with a single name: that name stands for both', () async {
+      signIn.google = const FirebaseProof(
+        idToken: 'firebase-google',
+        firstName: 'Tenzin',
       );
+      api.exchangeResults.addAll([
+        const ProfileNamesRequiredException(),
+        session,
+      ]);
+
+      await auth.loginWithGoogle();
+
+      expect(api.exchanges.last, (
+        token: 'firebase-google',
+        first: 'Tenzin',
+        last: 'Tenzin',
+      ));
+      expect(store.tokens, isNotNull);
     });
 
-    test('a cancelled wait cannot be finished later', () async {
-      api.exchangeResults.add(const ProfileNamesRequiredException());
-      await expectLater(auth.loginWithApple(), throwsA(isA<AuthException>()));
+    test('Apple withholding the name: the placeholder', () async {
+      api.exchangeResults.addAll([
+        const ProfileNamesRequiredException(),
+        session,
+      ]);
 
-      auth.cancelPendingLogin();
+      await auth.loginWithApple();
 
-      await expectLater(
-        auth.completeLoginWithNames(firstName: 'Pema', lastName: 'Lhamo'),
-        throwsA(_authException(AuthService.pendingLoginExpiredCode)),
-      );
+      expect(api.exchanges.last.first, AccountNames.placeholder.first);
+      expect(api.exchanges.last.last, AccountNames.placeholder.last);
     });
 
-    test('a sign-in too old for the backend has to start again', () async {
-      api.exchangeResults.add(const ProfileNamesRequiredException());
-      await expectLater(auth.loginWithApple(), throwsA(isA<AuthException>()));
+    test('an existing account is never sent a made-up name', () async {
+      // Apple shares no name on a later sign-in. The account exists, so the
+      // first exchange succeeds and nothing is filled in.
+      api.exchangeResults.add(session);
 
-      // The exchange only accepts a recent sign-in.
-      api.exchangeResults.add(
-        const AuthApiException(401, 'Invalid Firebase token'),
-      );
+      await auth.loginWithApple();
+
+      expect(api.exchanges.single, (
+        token: 'firebase-apple',
+        first: null,
+        last: null,
+      ));
+    });
+
+    test('still refused with names filled in: a failure, not a loop', () async {
+      api.exchangeResults.addAll([
+        const ProfileNamesRequiredException(),
+        const ProfileNamesRequiredException(),
+      ]);
+
       await expectLater(
-        auth.completeLoginWithNames(firstName: 'Pema', lastName: 'Lhamo'),
-        throwsA(_authException(AuthService.pendingLoginExpiredCode)),
+        auth.loginWithApple(),
+        throwsA(_authException('http_422')),
       );
-      // And it is not kept for another try.
+      expect(api.exchanges, hasLength(2));
+      expect(store.tokens, isNull);
+    });
+  });
+
+  group('a sign-in the person left', () {
+    final other = SessionTokens(
+      accessToken: _jwt(tag: 'other'),
+      refreshToken: 'refresh-other',
+    );
+
+    test('an exchange that answers late does not replace a newer sign-in',
+        () async {
+      final pending = Completer<SessionTokens>();
+      api.exchangeResults.add(pending);
+      final first = auth.loginWithApple();
+      await Future<void>.delayed(Duration.zero);
+
+      // The person gives up on Apple and signs in with Google instead.
+      api.exchangeResults.add(other);
+      await auth.loginWithGoogle();
+      pending.complete(session);
+
       await expectLater(
-        auth.completeLoginWithNames(firstName: 'Pema', lastName: 'Lhamo'),
-        throwsA(_authException(AuthService.pendingLoginExpiredCode)),
+        first,
+        throwsA(_authException(AuthService.cancelledCode)),
       );
+      expect(store.tokens?.refreshToken, 'refresh-other');
+      final prefs = await SharedPreferences.getInstance();
+      expect(prefs.getString(StorageKeys.signInMethod), 'google');
+    });
+
+    test('nor is its retry with filled-in names sent', () async {
+      final pending = Completer<SessionTokens>();
+      api.exchangeResults.add(pending);
+      final first = auth.loginWithApple();
+      await Future<void>.delayed(Duration.zero);
+
+      api.exchangeResults.add(other);
+      await auth.loginWithGoogle();
+      pending.completeError(const ProfileNamesRequiredException());
+
+      await expectLater(
+        first,
+        throwsA(_authException(AuthService.cancelledCode)),
+      );
+      // Apple's first try and Google's: no third call for the abandoned one.
       expect(api.exchanges, hasLength(2));
     });
 
-    test('a network failure keeps the wait so the form can retry', () async {
-      api.exchangeResults.add(const ProfileNamesRequiredException());
-      await expectLater(auth.loginWithApple(), throwsA(isA<AuthException>()));
+    test('signing out drops an exchange still on the wire', () async {
+      final pending = Completer<SessionTokens>();
+      api.exchangeResults.add(pending);
+      final login = auth.loginWithGoogle();
+      await Future<void>.delayed(Duration.zero);
 
-      api.exchangeResults.add(
-        DioException(
-          requestOptions: RequestOptions(path: '/x'),
-          type: DioExceptionType.connectionTimeout,
-        ),
-      );
-      await expectLater(
-        auth.completeLoginWithNames(firstName: 'Pema', lastName: 'Lhamo'),
-        throwsA(_authException('network')),
-      );
+      await auth.localLogout();
+      pending.complete(session);
 
-      api.exchangeResults.add(session);
-      await auth.completeLoginWithNames(firstName: 'Pema', lastName: 'Lhamo');
-      expect(store.tokens, isNotNull);
+      await expectLater(login, throwsA(isA<AuthException>()));
+      expect(store.tokens, isNull);
     });
   });
 

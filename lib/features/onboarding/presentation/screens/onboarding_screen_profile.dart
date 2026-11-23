@@ -20,8 +20,9 @@ final _logger = AppLogger('OnboardingScreenProfile');
 
 /// Onboarding screen for phone accounts: choose a display name and username.
 ///
-/// A phone account has no email to build a username from, so the backend
-/// generates one; this step lets the person choose both. Continue saves the username first
+/// A phone account is created with a placeholder name and a generated
+/// username; this step lets the person choose both. The display name also
+/// replaces the placeholder first and last name (`UserNotifier.saveProfile`). Continue saves the username first
 /// (PATCH /users/username) because it is the one the backend can refuse, then
 /// the display name (POST /users/info).
 ///

@@ -11,6 +11,7 @@ import 'package:flutter_pecha/features/auth/data/session/auth_token_api.dart';
 import 'package:flutter_pecha/features/auth/data/session/firebase_sign_in.dart';
 import 'package:flutter_pecha/features/auth/data/session/legacy_auth0_cleanup.dart';
 import 'package:flutter_pecha/features/auth/data/session/session_token_store.dart';
+import 'package:flutter_pecha/features/auth/domain/entities/account_names.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 /// Sign-in and the session.
@@ -74,13 +75,6 @@ class AuthService {
   /// Terminal only where we know we are online, see [isTokenRenewalFailed].
   static const String refreshRefusedCode = 'refresh_refused';
 
-  /// [AuthException.code]: the account is new and needs a first and last
-  /// name. Finish with [completeLoginWithNames].
-  static const String profileNamesRequiredCode = 'profile_names_required';
-
-  /// [AuthException.code]: the sign-in waiting for names is gone or too old.
-  static const String pendingLoginExpiredCode = 'pending_login_expired';
-
   /// [AuthException.code]: the person closed the sign-in sheet.
   static const String cancelledCode = 'cancelled';
 
@@ -91,9 +85,11 @@ class AuthService {
   /// session can neither store its token in the next nor clear it.
   int _sessionGeneration = 0;
 
-  /// A sign-in the backend refused for want of names, kept to resend.
-  FirebaseProof? _pendingProof;
-  String? _pendingMethod;
+  /// Bumped when a sign-in starts or the session ends. An exchange that
+  /// answers under another value belongs to an attempt the person has left
+  /// (started another sign-in, signed out), and is dropped instead of
+  /// becoming the session.
+  int _loginAttempt = 0;
 
   /// True once, after [initialize] removed an Auth0 session from an earlier
   /// build. See [takeLegacySessionRemoved].
@@ -162,6 +158,7 @@ class AuthService {
   }) async {
     try {
       await initialize();
+      final attempt = ++_loginAttempt;
       final start = await _firebase.verifyPhoneNumber(
         phoneNumber,
         resendToken: resendToken,
@@ -174,7 +171,7 @@ class AuthService {
           );
         case PhoneVerificationAutoVerified():
           return PhoneLoginStart.signedIn(
-            await _exchange(methodPhone, start.proof),
+            await _exchange(methodPhone, start.proof, attempt: attempt),
           );
       }
     } catch (e) {
@@ -194,55 +191,15 @@ class AuthService {
     ),
   );
 
-  /// Finishes a sign-in that stopped at [profileNamesRequiredCode].
-  Future<SessionTokens> completeLoginWithNames({
-    required String firstName,
-    required String lastName,
-  }) async {
-    final proof = _pendingProof;
-    final method = _pendingMethod;
-    if (proof == null || method == null) {
-      throw AuthException(
-        'The sign-in is no longer waiting for a name',
-        code: pendingLoginExpiredCode,
-      );
-    }
-    try {
-      return await _exchange(
-        method,
-        proof,
-        firstName: firstName,
-        lastName: lastName,
-      );
-    } catch (e) {
-      // The exchange only takes a recent sign-in. Past that the proof is
-      // spent, and the person starts again.
-      if (e is AuthApiException && e.statusCode == 401) {
-        cancelPendingLogin();
-        throw AuthException(
-          'The sign-in took too long to finish',
-          code: pendingLoginExpiredCode,
-        );
-      }
-      throw _loginFailure(method, e);
-    }
-  }
-
-  /// Drops a sign-in that was waiting for names.
-  void cancelPendingLogin() {
-    _pendingProof = null;
-    _pendingMethod = null;
-  }
-
   Future<SessionTokens> _login(
     String method,
     Future<FirebaseProof> Function() signIn,
   ) async {
     try {
       await initialize();
-      cancelPendingLogin();
+      final attempt = ++_loginAttempt;
       final proof = await signIn();
-      return await _exchange(method, proof);
+      return await _exchange(method, proof, attempt: attempt);
     } catch (e) {
       throw _loginFailure(method, e);
     }
@@ -251,25 +208,32 @@ class AuthService {
   Future<SessionTokens> _exchange(
     String method,
     FirebaseProof proof, {
-    String? firstName,
-    String? lastName,
+    required int attempt,
   }) async {
-    final SessionTokens tokens;
+    SessionTokens tokens;
     try {
       tokens = await _tokenApi.exchangeFirebaseToken(
         firebaseToken: proof.idToken,
-        firstName: firstName ?? proof.firstName,
-        lastName: lastName ?? proof.lastName,
+        firstName: proof.firstName,
+        lastName: proof.lastName,
       );
     } on ProfileNamesRequiredException {
-      _pendingProof = proof;
-      _pendingMethod = method;
-      throw AuthException(
-        'A first and last name are needed for a new account',
-        code: profileNamesRequiredCode,
+      // A new account, and the provider did not share a first and last name
+      // (phone never does). Nobody is asked for one mid sign-in: the missing
+      // part is filled in, and the account's owner names it afterwards, in
+      // onboarding or Edit profile.
+      //
+      // Only on this second try: an existing account must not be handed a
+      // made-up name the backend might act on.
+      _throwIfLeft(attempt);
+      final names = AccountNames.complete(proof.firstName, proof.lastName);
+      tokens = await _tokenApi.exchangeFirebaseToken(
+        firebaseToken: proof.idToken,
+        firstName: names.first,
+        lastName: names.last,
       );
     }
-    cancelPendingLogin();
+    _throwIfLeft(attempt);
     // Start the new session *before* storing it, so a refresh that began
     // under the old one cannot overwrite or clear the tokens saved here.
     _sessionGeneration++;
@@ -277,6 +241,12 @@ class AuthService {
     await _saveSignInMethod(method);
     _logger.info('Signed in with $method; session tokens stored');
     return tokens;
+  }
+
+  /// The exchange answered for an attempt the person has already left.
+  void _throwIfLeft(int attempt) {
+    if (attempt == _loginAttempt) return;
+    throw AuthException('Login was cancelled by user', code: cancelledCode);
   }
 
   /// Shown in Settings ("Signed in with Google"). The backend's tokens do not
@@ -304,6 +274,14 @@ class AuthService {
         return AuthException('Login is not configured', code: error.code);
       }
       return AuthException('Sign-in failed (${error.code})', code: error.code);
+    }
+    if (error is ProfileNamesRequiredException) {
+      // Refused again with names filled in: nothing more the app can add.
+      _logger.warning('Exchange for $method still asks for names');
+      return AuthException(
+        'Sign-in was refused (HTTP 422)',
+        code: 'http_422',
+      );
     }
     if (error is AuthApiException) {
       _logger.warning('Exchange for $method failed: $error');
@@ -435,7 +413,8 @@ class AuthService {
   /// The backend has no session to end; its tokens simply stop being used.
   Future<void> localLogout() async {
     _sessionGeneration++;
-    cancelPendingLogin();
+    // Disowns an exchange still on the wire: its answer signs no one in.
+    _loginAttempt++;
     try {
       await _tokens.clear();
     } catch (e) {
