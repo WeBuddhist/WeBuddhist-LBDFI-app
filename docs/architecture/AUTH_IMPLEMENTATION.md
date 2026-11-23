@@ -2,301 +2,283 @@
 
 ## Overview
 
-WeBuddhist uses Auth0 (Universal Login via `auth0_flutter`) for sign-in and
-sends the Auth0 **access token** (a JWT minted for the API `audience`) as the
-bearer to the backend. The ID token is used only client-side, for identity
-(the `sub` claim → `currentUserId`).
+People sign in with **Firebase Authentication** (Google, Apple or phone).
+Firebase only proves who they are: the app exchanges the Firebase **ID token**
+with the backend for the backend's own **access and refresh tokens**, and
+those are the session from then on. The access token is the API bearer.
 
-> Rewritten Oct 2026. The previous version described an `http`-based
-> `ApiClient` and ID-token bearer (`getValidIdToken` / `refreshIdToken`); that
-> code no longer exists.
+The web app and the Studio work the same way (backend doc:
+`documentation/firebase-auth.md` in WeBuddhist-Backend).
+
+> Rewritten Nov 2026 for the move from Auth0 to Firebase. The Oct 2026
+> version described Auth0 Universal Login, the Auth0 access token as the
+> bearer and the Auth0 credentials manager as the refresh path; none of that
+> is used any more. See [Moving from Auth0](#moving-from-auth0).
 
 ---
 
 ## Architecture Diagram
 
 ```
-┌──────────────────────────────────────────────────────────────────┐
-│                         Flutter Application                       │
-│                                                                    │
-│  UI (LoginPage, LoginDrawer) ──► AuthNotifier (authProvider)       │
-│                                   │  use cases (domain/usecases)   │
-│                                   ▼                                │
-│                          AuthRepositoryImpl ──► AuthService        │
-│                                                  (singleton)       │
-│                                                     ▲              │
-│  Dio (dioProvider)                                  │              │
-│   AuthInterceptor ──► AuthServiceTokenProvider ─────┤              │
-│   RetryInterceptor (401 / bearer-less 403) ─────────┘              │
-│        │ permanent failure → AuthNotifier.handleSessionExpired()   │
-└────────┼───────────────────────────────────────────────────────────┘
-         ▼
-   Auth0 SDK credentialsManager  ──►  Keychain / Keystore
+ LoginPage / LoginDrawer ── Google, Apple ──┐
+ PhoneLoginScreen ── number, SMS code ──────┤
+ ProfileNamesScreen ── first + last name ───┤
+                                            ▼
+                              AuthNotifier (authProvider)
+                                            │  use cases (domain/usecases)
+                                            ▼
+                                   AuthRepositoryImpl
+                                            │
+                                            ▼
+                         AuthService (singleton, auth_service.dart)
+                           │            │                 │
+              FirebaseSignIn       AuthTokenApi      SessionTokenStore
+        (firebase_auth +        (bare Dio)           (Keychain / encrypted
+         google_sign_in)   POST /auth/firebase/exchange   storage)
+                           POST /auth/refresh-token
+
+ Dio (dioProvider)
+   AuthInterceptor ──► AuthServiceTokenProvider ──► AuthService.getValidAccessToken()
+   RetryInterceptor (401 / bearer-less 403) ──────► AuthService.forceRefreshAccessToken()
 ```
+
+All of `data/session/` sits behind `AuthService`; nothing else imports it.
 
 ---
 
-## Design Decisions
+## Sign-in
 
-### 1. Access token as the API bearer
+1. `FirebaseSignIn` signs in with the provider and reads the Firebase ID token.
+   - **Google:** `google_sign_in` → Google ID token →
+     `FirebaseAuth.signInWithCredential`.
+   - **Apple:** `FirebaseAuth.signInWithProvider(AppleAuthProvider)` — the
+     native sheet on iOS. The button is only shown on iOS.
+   - **Phone:** `FirebaseAuth.verifyPhoneNumber` sends an SMS; the code is
+     turned into a credential and signed in. Android can verify some numbers
+     without a code, which completes the sign-in from the number step.
+2. It **signs out of Firebase again at once**. The token stays valid for the
+   exchange (a client sign-out does not revoke it).
+3. `AuthTokenApi.exchangeFirebaseToken` posts it to
+   `POST /auth/firebase/exchange` and gets `auth.access_token` and
+   `auth.refresh_token`.
+4. `AuthService` stores them in `SessionTokenStore` and records the sign-in
+   method (`StorageKeys.signInMethod`: `google`, `apple` or `phone`).
+5. `AuthNotifier._handleSuccessfulLogin` stores the user id (the access
+   token's `sub`, the **backend user id**), identifies the user for analytics,
+   prefetches onboarding status and the profile, then flips auth state.
 
-- Login requests `audience: ConfigService.auth0Audience`, so the access token
-  is a verifiable JWT. `AuthService.getValidAccessToken()` is the only bearer
-  source; ID tokens are never sent to the API.
-- Sessions created before the audience was configured hold an **opaque**
-  access token that the backend rejects and refresh cannot upgrade.
-  `AuthService.isUsableApiAccessToken` + `AuthException(code:
-  'opaque_access_token')` treat that as a permanent session loss (forces
-  re-login). This is a **transitional migration net**; the backend no longer
-  issues opaque tokens to new sessions.
+### Why Firebase is signed out straight away
 
-### 2. The credentials manager is the only refresh path
+The app has one Firebase user, and it belongs to live updates:
+`FirebaseSessionNotifier` signs in with a **custom token whose uid is the
+backend user id**, and the Firestore rules depend on that uid. A Google or
+phone Firebase user left signed in would be mistaken for it on the next
+launch. So a sign-in user never outlives `FirebaseSignInImpl._proofFor`.
 
-`AuthService._validCredentials()` funnels every caller through Auth0's
-`credentialsManager` (`credentials(minTtl: 120)` proactively,
-`renewCredentials()` when forced). It is **single-flight**: concurrent callers
-share one in-flight call, a forced caller never joins a non-forced read, and a
-forced fetch is sequenced *after* any running call so a rotating refresh
-token is never consumed twice. Awaiters time out after 20 s. Never call
-`_auth0.api.renewCredentials` directly.
+The backend also accepts a Firebase ID token directly as a bearer. The app
+does not use that, for the same reason: one Firebase app holds one user.
 
-### 3. Singleton `AuthService`
+### New accounts need a name
 
-`AuthService.instance` owns the single `Auth0` client. `initialize()` is
-single-flight and loads config from `ConfigService`.
+For an account that does not exist yet and has no first and last name, the
+exchange answers **422** ("First name and last name are required for a new
+profile"). That is not an error:
 
-### 4. Riverpod + use cases
+- `AuthService` keeps the Firebase proof in memory and throws
+  `profileNamesRequiredCode`.
+- `AuthNotifier` sets `AuthState.needsProfileNames`; the login page and the
+  drawer open `ProfileNamesScreen` (`openProfileNamesWhenNeeded`).
+- `submitProfileNames` resends **the same Firebase token** with the names.
 
-`authProvider` (`StateNotifierProvider<AuthNotifier, AuthState>`, in
-`presentation/providers/state_providers.dart`) builds `AuthNotifier` from
-use-case providers (`presentation/providers/use_case_providers.dart`).
-Profile data is a separate notifier (`userProvider` / `UserNotifier`).
+Phone sign-ups always take this step. Google and Apple send the provider's
+display name, so they only reach it when that has no last name or is missing.
 
----
+The exchange only accepts a sign-in younger than 10 minutes
+(`FIREBASE_TOKEN_MAX_AGE_SECONDS`). After that the resend gets a 401, which
+becomes `LoginFailureReason.pendingLoginExpired`: the person starts again.
 
-## Component Details
+### Failures
 
-### ConfigService (`lib/features/auth/application/config_service.dart`)
-
-Fetches `domain`, `client_id`, `audience` (legacy key `auth0Audience`) from
-`GET {BASE_API_URL}/props` (8 s timeout) and caches them in
-SharedPreferences, so Auth0 can be built offline. Falls back to
-`AUTH0_AUDIENCE` from `.env`. `auth0Scheme` comes from `AUTH0_SCHEME`.
-
-### AuthService (`lib/features/auth/auth_service.dart`)
-
-```dart
-Future<void> initialize()
-Future<Credentials?> loginWithGoogle()   // connection 'google-oauth2', prompt=select_account
-Future<Credentials?> loginWithApple()    // connection 'apple'
-Future<Credentials?> loginWithPhone()    // connection 'sms' (Universal Login passwordless)
-Future<Credentials?> getCredentials()    // launch restore; minTtl 120 s
-Future<String?> getValidAccessToken()    // proactive (request path)
-Future<String?> forceRefreshAccessToken()// reactive 401 path; throws on opaque token
-Future<String?> getIdTokenForIdentity()
-Future<bool> hasValidCredentials()       // false is INDETERMINATE; timeout → true
-Future<void> localLogout()               // clear credentials + guest flag + local identity
-Future<void> globalLogout()              // also ends the Auth0 web session (unused by UI)
-static bool isSessionPermanentlyLost(Object e) // no creds / no refresh token / opaque
-static bool isTokenRenewalFailed(Object e)     // RENEW_FAILED
-// guest flag: saveGuestMode / continueAsGuest / isGuestMode / clearGuestMode
-```
-
-### Network layer (`lib/core/network/`, wired in `lib/core/di/core_providers.dart`)
-
-- `AuthInterceptor` — for paths matched by `ProtectedRoutes.isProtected` or
-  `isOptional` (`lib/core/config/protected_routes.dart`) attaches
-  `Authorization: Bearer <access token>` from `AuthServiceTokenProvider`
-  (which swallows errors → request goes out without a bearer).
-- `RetryInterceptor` — on **401**, or **403 without an Authorization header**
-  on a protected/optional route (FastAPI `HTTPBearer` answers a missing header
-  with 403), queues the request, runs one `forceRefreshAccessToken()`, and
-  replays the queue with the new token on a bare Dio. Network errors are
-  retried with backoff (opt out with `extra['no_retry']`).
-- The library Dio (`libraryDioProvider`) is unauthenticated.
-
-### AuthNotifier (`presentation/providers/auth_notifier.dart`)
-
-```dart
-class AuthState {
-  final bool isLoggedIn;              // true for guests too
-  final bool isLoading;
-  final bool isGuest;
-  final String? errorMessage;
-  final bool? hasCompletedOnboarding; // null = unknown → route guard fails open
-}
-```
-
-Uses an **auth epoch** (bumped on login/logout/expiry) so stale async
-continuations never re-apply a logged-in state.
+Every sign-in failure reaches the UI as a `LoginFailure` with a
+`LoginFailureReason` (`cancelled`, `invalidCode`, `codeExpired`,
+`tooManyRequests`, `network`, `emailNotVerified`, …). `loginFailureText`
+words it. `loginFailureReasonFor` in `auth_repository_impl.dart` maps the
+codes: `AuthService`'s own, Firebase's (`invalid-verification-code`, …) and
+`http_<status>` from the exchange.
 
 ---
 
-## Security Architecture
+## The session
 
-### Token Storage
+| | |
+|---|---|
+| Access token | Backend JWT; `sub` = backend user id, plus `email` / `phone_number`. The API bearer. |
+| Refresh token | Sent to `POST /auth/refresh-token` (`{ "token": … }`) for a new access token. **The backend does not renew it**, so a session ends when it expires. |
+| Storage | `SecureSessionTokenStore`: `flutter_secure_storage` (Keychain, `first_unlock`, on iOS; encrypted storage on Android), cached in memory after the first read. |
 
-Auth0 `credentialsManager` (iOS Keychain / Android Keystore). The app stores
-no tokens in SharedPreferences or `flutter_secure_storage`. SharedPreferences
-holds only the guest flag, `currentUserId`, cached profile JSON and the cached
-Auth0 config.
+### Refresh
 
-### Token Transmission
+- **Ahead of a request:** `getValidAccessToken()` returns the stored token,
+  or refreshes first when it is within 120 s of expiry.
+- **After a 401:** `RetryInterceptor` calls `forceRefreshAccessToken()` and
+  replays the queued requests with the new token.
+- **One at a time:** every caller shares the refresh in flight
+  (`_inflightRefresh`). Do not add another refresh path.
+- **Session generation:** a counter bumped on login and logout. A refresh
+  that began under one session neither stores its token in the next nor
+  clears it.
 
-HTTPS; `Authorization: Bearer` only on protected/optional routes.
-`LoggingInterceptor` masks the header (`Bearer ***`).
+### When a session ends
 
-### Backend auth responses (observed)
+A session ends only on evidence, never on a failed read or a timeout.
 
-- Missing header → **403**
-- Invalid / non-JWT bearer → **401**
-- JWT-shaped but unverifiable bearer → **500** (backend bug; not retried as auth)
+| What happened | `AuthException.code` | Launch restore | After a 401 |
+|---|---|---|---|
+| Nothing stored | `no_session` | logged out | logged out |
+| Refresh answered **401** (expired, revoked, account gone) | `refresh_rejected` — tokens cleared | logged out | logged out |
+| Refresh answered another **4xx** | `refresh_refused` | session kept | logged out |
+| Offline, timeout, **5xx**, keystore error | — | session kept | session kept |
 
----
+`AuthService.isSessionPermanentlyLost` covers the first two rows;
+`isTokenRenewalFailed` adds the third. The 401 path is stricter because the
+server has just answered: we are provably online and talking to the right
+backend, so a refused refresh there would otherwise loop 401s forever.
 
-## Error Handling Strategy
-
-```
-credentials error
-   ├─ no credentials / no refresh token / opaque token → permanent
-   ├─ RENEW_FAILED
-   │    ├─ at launch (getCredentials)   → transient: keep session (likely offline)
-   │    └─ on reactive 401 path         → permanent (server answered, so online)
-   └─ anything else (IO, timeout)       → transient: keep session
-```
-
-Permanent on the request path (and the user is not a guest) →
-`RetryInterceptor.onAuthExpired` → `AuthNotifier.handleSessionExpired()`
-(flip to logged out, clear local credentials, reset analytics identity). The
-router then redirects to `/login` and remembers the pending route.
-
-Login errors: `WebAuthenticationException` (`a0.session.user_cancelled` →
-"cancelled") → `AuthException` → `AuthenticationFailure`.
+`AuthNotifier.handleSessionExpired()` (wired in `core/di/core_providers.dart`)
+flips state, clears the tokens and resets analytics.
 
 ---
 
-## Deployment Considerations
+## Moving from Auth0
 
-### Environment Variables (`.env.<flavor>`)
+Builds before this one kept an Auth0 session in the Auth0 credentials
+manager, which this build cannot use. Like the web app, the first launch
+after updating **signs that session out once**; the person signs in again and
+lands in the same account, because the backend matches on verified email or
+phone number.
 
-```env
-BASE_API_URL=...      # also used for GET /props
-AUTH0_SCHEME=org.pecha.app            # per flavor
-AUTH0_AUDIENCE=...                    # fallback when /props has none
-```
+`LegacyAuth0CleanupImpl` (run from `AuthService.initialize`):
 
-Domain and client ID come from `/props`, not `.env`.
+- Recognises an Auth0 build by the tenant config it cached in preferences
+  (`auth0_cfg_domain` / `auth0_cfg_client_id`).
+- Clears the Auth0 credentials (local only: no call to Auth0, works offline).
+- Removes `currentUserId` and the cached profile. The stored user id used to
+  be the Auth0 subject (`google-oauth2|…`); it is now the backend user id.
+- Runs once (`legacy_auth0_session_cleared`). A failed clear is retried on
+  the next launch.
 
-### Auth0 Configuration
+`AuthNotifier` then resets the analytics identity. Guests stay guests.
 
-Native application; Authorization Code + Refresh Token grants; refresh-token
-rotation enabled; API audience configured so access tokens are JWTs. Callback
-URLs per flavor: see `GOOGLE_LOGIN_FIX.md`.
-
----
-
-## Login Flow
-
-```
-LoginPage / LoginDrawer button
-  → AuthNotifier.login(connection: 'google' | 'apple' | 'sms', source:)
-      → epoch++ ; isLoading = true
-      → LoginUseCase → AuthService._loginWithConnection (Universal Login, audience, offline_access)
-      → credentialsManager.storeCredentials
-  → _handleSuccessfulLogin
-      → clear guest flag
-      → currentUserId = id_token.sub ; analytics identify
-      → clear auth-scoped HTTP cache
-      → prefetch onboarding status + initializeUser()
-      → state = logged in (only if epoch unchanged) → router redirect
-```
+**To remove later**, once builds older than the switch are no longer
+supported: `auth0_flutter` in `pubspec.yaml`, `legacy_auth0_cleanup.dart`,
+the Auth0 `RedirectActivity` and `manifestPlaceholders` on Android, the
+`auth0` URL scheme in `Info.plist`, `AUTH0_SCHEME` in the xcconfigs, and the
+`webcredentials:` associated domain plus `AUTH0_DOMAIN` in the entitlements
+template and the iOS workflow.
 
 ---
 
-## Token Refresh Flow
+## Native setup
 
-```
-Request to protected route
-  → AuthInterceptor → getValidAccessToken()
-      → credentialsManager.credentials(minTtl: 120)  // renews only near expiry
-  → 401 (or bearer-less 403)?
-      → RetryInterceptor queues request; first one calls forceRefreshAccessToken()
-          → credentialsManager.renewCredentials()  (single-flight)
-          → token opaque? → AuthException(opaque_access_token) → permanent
-      → success: replay every queued request with the new bearer
-      → permanent failure (non-guest): handleSessionExpired(); fail queue
-      → transient failure: fail queue, keep session
-```
+Everything is in the Firebase project `webuddhist-app`, shared with the web
+app, the Studio and the backend. The ID token's audience is the project, so
+the app must stay in it.
 
----
+### iOS
 
-## Logout Flow
+- `GoogleService-Info.plist` per flavor (`ios/Runner/config/<flavor>/`) must
+  carry `CLIENT_ID` and `REVERSED_CLIENT_ID`. `google_sign_in` is given the
+  client id from the bundled file at runtime (`FirebaseSignInImpl`).
+- `GOOGLE_REVERSED_CLIENT_ID` in `ios/Flutter/<flavor>-*.xcconfig` feeds the
+  `google-sign-in` URL scheme in `Info.plist`. It must match that flavor's
+  plist. Phone sign-in's reCAPTCHA fallback returns on the same scheme.
+- `com.apple.developer.applesignin` in `Runner.entitlements`,
+  `Runner-dev.entitlements` and `Runner.entitlements.template`. The App IDs
+  need the *Sign in with Apple* capability, and the provisioning profiles CI
+  uses must be regenerated after it is enabled.
+- Phone sign-in verifies the app with a silent push (APNs is already set up
+  for FCM) and falls back to reCAPTCHA.
 
-`AuthNotifier.logout()` (the only UI logout; `globalLogout` is unused):
+### Android
 
-```
-start push-device unregister (needs the JWT)
-→ state = logged out (epoch++) ; clear auth-scoped HTTP cache
-→ flush mala counts ; settle pending prayer sends ; await push unregister
-→ AuthService.localLogout() (credentials, guest flag, currentUserId, user data)
-→ clear userProvider ; clear pending deep-link route
-→ cancel scheduled routine notifications ; reset analytics identity
-```
+- `google-services.json` per flavor must contain a web OAuth client
+  (`client_type: 3`); `google_sign_in` reads it from there.
+- The app's **SHA-1 and SHA-256** fingerprints must be registered on the
+  Firebase Android apps: debug, upload and **Play App Signing**. Without them
+  Google sign-in fails (often reported as "cancelled") and phone sign-in
+  answers `app-not-authorized`.
 
-The push service also deletes the FCM token on any signed-out snapshot.
+### Firebase console
 
----
-
-## State Restoration
-
-```
-AuthNotifier constructor → _restoreLoginState() (single-flight)
-  → Android fresh install: clear residual credentials
-  → InitializeAuthUseCase (ConfigService /props or cache)
-  → hasValidCredentials()?
-      ├─ yes → getCredentials()
-      │        ├─ ok        → currentUserId, identify, prefetch onboarding + user
-      │        │              (each step ≤10 s budget) → logged in
-      │        ├─ permanent → guest check
-      │        └─ transient → keep session logged in (offline); refresh later
-      └─ no  → guest flag? → guest : logged out
-  → never leaves isLoading = true
-Connectivity offline→online → reconcile (refresh user, or re-run restore)
-```
+Google, Apple and Phone providers enabled (they already are, for the web and
+the Studio).
 
 ---
 
-## Best Practices
+## Network layer
 
-1. Get the bearer only via `AuthService.getValidAccessToken()` (normally through
-   `AuthInterceptor`); add new authenticated endpoints to `ProtectedRoutes`.
-2. Never add a second refresh path; go through `_validCredentials`.
-3. Treat `hasValidCredentials() == false` as indeterminate — log out only on
-   typed permanent errors.
-4. Respect the auth epoch for any async work that writes auth state.
-5. Persist `currentUserId` before flipping auth state.
+`lib/core/network/`, wired in `lib/core/di/core_providers.dart`.
+
+- **`AuthInterceptor`** attaches `Authorization: Bearer <access token>` on
+  routes in `ProtectedRoutes` (and optional ones when signed in).
+- **`RetryInterceptor`** handles 401, and 403 on a request that went out
+  without a bearer (FastAPI's `HTTPBearer` answers a missing header with
+  403). It refreshes once, queues concurrent failures and replays them.
+- **`AuthTokenApi`** uses its own bare Dio: a 401 from the exchange or the
+  refresh is an answer, not a reason to refresh.
+
+Observed backend responses: missing header → 403, invalid token → 401.
+
+---
+
+## Logout
+
+`AuthNotifier.logout()`: unregister the push device and flush reader settings
+while the token still works, flip state, clear the auth-scoped HTTP cache,
+flush mala counts, settle pending prayer sends, `AuthService.localLogout()`
+(tokens, guest flag, `currentUserId`, cached profile, sign-in method; forgets
+the Google account so the next sign-in asks which one), clear the profile and
+pending route, cancel notifications, reset analytics.
+
+There is no server-side session to end: the backend's tokens simply stop
+being used.
+
+## State restoration
+
+`AuthNotifier._runRestoreLoginState()` on launch:
+
+1. First launch on Android clears any residual session (backups are off). iOS
+   keeps the Keychain so a reinstall stays signed in.
+2. `initialize` — the one-time Auth0 sign-out above.
+3. `hasValidCredentials` — is a session stored? A `false` here is
+   indeterminate (a failed keystore read looks the same), so it never logs
+   anyone out by itself.
+4. `getCredentials` — refreshes an expiring access token. A permanent failure
+   falls through to the guest check; a transient one keeps the session and
+   retries on the next request.
 
 ---
 
 ## Troubleshooting
 
+### Google sign-in closes at once on Android, reported as cancelled
+A configuration error: Credential Manager reports most of them as a cancel.
+Check the SHA fingerprints for that build's signing key, and that
+`google-services.json` has a `client_type: 3` entry.
+
+### Phone sign-in fails with `app-not-authorized` or `missing-client-identifier`
+Android: SHA-256 not registered. iOS: no APNs token and no reCAPTCHA URL
+scheme — check `GOOGLE_REVERSED_CLIENT_ID` for the flavor.
+
+### "Sign-in was refused (HTTP 401)" right after a successful provider sign-in
+The exchange refused the Firebase token: the app is built against a different
+Firebase project than the backend, or the device clock is wrong (the backend
+checks the sign-in time).
+
+### Everyone is logged out after N days
+The refresh token expired; the backend does not renew it
+(`REFRESH_TOKEN_EXPIRE_DAYS`).
+
 ### 401 loop
-Check the access token is a JWT (audience configured in `/props` / `.env`).
-Opaque tokens are converted into a forced re-login.
-
-### Requests go out without a bearer
-`AuthServiceTokenProvider` swallows credential errors and returns null; look
-for `Failed to get valid access token` in logs. The backend answers 403, which
-`RetryInterceptor` treats as an auth failure on protected routes.
-
-### User unexpectedly logged out
-Look for `Token refresh failed permanently` / `Session is unrecoverable`
-(refresh token revoked, expired or rotated away).
-
-### Login fails with "An unexpected error occurred during login"
-Auth0 was never initialised (first launch with `/props` unreachable and no
-cached config). Restore re-runs on reconnect.
-
----
-
-**Last Updated:** October 22, 2026
+Should not happen: a refused refresh on the 401 path ends the session. If it
+does, check that the failure reaches `RetryInterceptor.onAuthExpired`.
