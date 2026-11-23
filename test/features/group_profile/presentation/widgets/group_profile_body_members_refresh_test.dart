@@ -11,7 +11,6 @@ import 'package:flutter_pecha/features/auth/presentation/providers/user_notifier
 import 'package:flutter_pecha/features/auth/presentation/state/auth_state.dart';
 import 'package:flutter_pecha/features/auth/presentation/state/user_state.dart';
 import 'package:flutter_pecha/features/connect/domain/entities/connect_post.dart';
-import 'package:flutter_pecha/features/connect/presentation/providers/connect_space_providers.dart';
 import 'package:flutter_pecha/features/group_profile/data/datasource/group_profile_remote_datasource.dart';
 import 'package:flutter_pecha/features/group_profile/data/repositories/group_profile_repository_impl.dart';
 import 'package:flutter_pecha/features/group_profile/domain/entities/group_post_permission.dart';
@@ -52,7 +51,8 @@ class _NoopAnalytics implements AnalyticsService {
   dynamic noSuchMethod(Invocation invocation) => Future<void>.value();
 }
 
-class _FakePostRepository extends Fake implements GroupPostRepositoryInterface {}
+class _FakePostRepository extends Fake
+    implements GroupPostRepositoryInterface {}
 
 class _FakeRemote extends GroupProfileRemoteDatasource {
   _FakeRemote() : super(dio: Dio());
@@ -157,12 +157,14 @@ void main() {
           (ref, groupId) => GroupPostsNotifier(
             repository: _FakePostRepository(),
             groupId: groupId,
-            stored: ConnectPostsPage(posts: const [], skip: 0, limit: 20, total: 0),
+            stored: ConnectPostsPage(
+              posts: const [],
+              skip: 0,
+              limit: 20,
+              total: 0,
+            ),
           ),
         ),
-        // The chat and prayer buttons read their unread dot from the chats
-        // list, which this test does not load.
-        unreadSpacesProvider.overrideWithValue(const {}),
       ],
     );
     addTearDown(container.dispose);
