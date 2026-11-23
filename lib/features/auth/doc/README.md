@@ -8,7 +8,7 @@ App-wide authentication and user profile. Firebase Authentication proves who the
 
 ## User-facing functionality
 
-- Firebase sign-in: Google, Apple (iOS), phone/SMS (own number + code screen)
+- Firebase sign-in: Google, Apple (iOS), phone/SMS (own number + code screen). Google and Apple run in place (`AuthState.isSigningIn`, no splash); the button last used on this phone is tagged "Last used"
 - New accounts the provider shared no name for are created with a filled-in name (`AccountNames`), never a form; phone accounts name themselves in onboarding
 - One-time sign-out of the Auth0 session left by builds before the switch
 - Guest mode ("continue as guest")
@@ -109,7 +109,7 @@ Import from `features/auth/auth.dart`. Does **not** export `splash_screen.dart` 
 | Task | Where to start |
 |------|----------------|
 | New profile field | `domain/entities/user.dart` → model → remote datasource → use case → `UserNotifier` |
-| New login method | `data/session/firebase_sign_in.dart`, `auth_service.dart`, `auth_buttons.dart` / `login_drawer.dart`, `auth_notifier.dart` |
+| New login method | `data/session/firebase_sign_in.dart`, `auth_service.dart`, `presentation/utils/start_sign_in.dart` (every button starts here), `auth_buttons.dart` / `login_drawer.dart` / the guest view in `more/presentation/me_screen.dart`, `auth_notifier.dart` |
 | Route guard change | `core/config/router/route_guard.dart` + `auth_state.dart` |
 | Token issue | `auth_service.dart`, `core/network/interceptors/auth_interceptor.dart`, `retry_interceptor.dart` (the `Get/ForceRefreshAccessTokenUseCase` classes exist but are not used by the request path) |
 

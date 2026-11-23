@@ -54,7 +54,10 @@ All of `data/session/` sits behind `AuthService`; nothing else imports it.
      native sheet on iOS. The button is only shown on iOS.
    - **Phone:** `FirebaseAuth.verifyPhoneNumber` sends an SMS; the code is
      turned into a credential and signed in. Android can verify some numbers
-     without a code, which completes the sign-in from the number step.
+     without a code, which completes the sign-in from the number step, and
+     it can read the SMS itself, which completes it from the code step
+     without typing (`PhoneCodeStart.autoSignIn`). A code typed first wins:
+     the automatic sign-in belongs to an older attempt and is dropped.
 2. It **signs out of Firebase again at once**. The token stays valid for the
    exchange (a client sign-out does not revoke it).
 3. `AuthTokenApi.exchangeFirebaseToken` posts it to
@@ -74,6 +77,33 @@ counts attempts (`_loginAttempt`): starting another sign-in or signing out
 bumps it, and an exchange that answers under an older value is dropped
 instead of being stored. The phone screen also refuses to close while a code
 is being sent or checked.
+
+### Where the person is while signing in
+
+Every "Continue with …" button (login page, login drawer, guest Me tab)
+starts through `startSignIn`.
+
+- **Google and Apple** run in place. `AuthNotifier.login` sets
+  `AuthState.isSigningIn`, and the buttons give way to a spinner. It does
+  **not** set `isLoading`: the route guard shows the splash on that, which
+  would replace the screen the person is on. So a guest who signs in from a
+  prompt carries on where they were, and one who cancels or fails stays put
+  and sees why (`AuthState.loginError`).
+- **Phone** opens `PhoneLoginScreen` over wherever it started, and closes
+  itself once signed in.
+
+A new account still goes to onboarding: the route guard sends it there when
+auth state turns signed in with onboarding not done.
+
+### "Last used"
+
+The method last used to sign in on this phone is kept in
+`StorageKeys.lastSignInMethod`, which survives signing out, and the matching
+button carries a "Last used" tag (`LastUsedTag`, via
+`lastSignInMethodProvider`). Someone who picks a different method than before
+gets a new, empty account, and after the move from Auth0 everyone has to
+choose again: the Auth0 cleanup fills it in from the old login's subject
+(`google-oauth2|…`, `apple|…`, `sms|…`).
 
 ### Why Firebase is signed out straight away
 
