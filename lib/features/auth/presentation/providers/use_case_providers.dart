@@ -1,6 +1,7 @@
 import 'package:flutter_pecha/features/auth/domain/usecases/clear_guest_mode_and_onboarding_usecase.dart';
 import 'package:flutter_pecha/features/auth/domain/usecases/delete_account_usecase.dart';
 import 'package:flutter_pecha/features/auth/domain/usecases/clear_guest_mode_usecase.dart';
+import 'package:flutter_pecha/features/auth/domain/usecases/complete_login_with_names_usecase.dart';
 import 'package:flutter_pecha/features/auth/domain/usecases/continue_as_guest_usecase.dart';
 import 'package:flutter_pecha/features/auth/domain/usecases/get_credentials_usecase.dart';
 import 'package:flutter_pecha/features/auth/domain/usecases/get_current_user_usecase.dart';
@@ -9,8 +10,10 @@ import 'package:flutter_pecha/features/auth/domain/usecases/has_valid_credential
 import 'package:flutter_pecha/features/auth/domain/usecases/initialize_auth_usecase.dart';
 import 'package:flutter_pecha/features/auth/domain/usecases/is_guest_mode_usecase.dart';
 import 'package:flutter_pecha/features/auth/domain/usecases/login_usecase.dart';
+import 'package:flutter_pecha/features/auth/domain/usecases/login_with_phone_code_usecase.dart';
 import 'package:flutter_pecha/features/auth/domain/usecases/logout_usecase.dart';
 import 'package:flutter_pecha/features/auth/domain/usecases/force_refresh_access_token_usecase.dart';
+import 'package:flutter_pecha/features/auth/domain/usecases/request_phone_code_usecase.dart';
 import 'package:flutter_pecha/features/auth/domain/usecases/update_user_info_usecase.dart';
 import 'package:flutter_pecha/features/auth/domain/usecases/update_username_usecase.dart';
 import 'package:flutter_pecha/features/auth/domain/usecases/upload_avatar_usecase.dart';
@@ -24,6 +27,26 @@ final loginUseCaseProvider = Provider<LoginUseCase>((ref) {
   final repository = ref.watch(authRepositoryProvider);
   return LoginUseCase(repository);
 });
+
+/// Provider for RequestPhoneCodeUseCase.
+final requestPhoneCodeUseCaseProvider = Provider<RequestPhoneCodeUseCase>((
+  ref,
+) {
+  return RequestPhoneCodeUseCase(ref.watch(authRepositoryProvider));
+});
+
+/// Provider for LoginWithPhoneCodeUseCase.
+final loginWithPhoneCodeUseCaseProvider = Provider<LoginWithPhoneCodeUseCase>((
+  ref,
+) {
+  return LoginWithPhoneCodeUseCase(ref.watch(authRepositoryProvider));
+});
+
+/// Provider for CompleteLoginWithNamesUseCase.
+final completeLoginWithNamesUseCaseProvider =
+    Provider<CompleteLoginWithNamesUseCase>((ref) {
+      return CompleteLoginWithNamesUseCase(ref.watch(authRepositoryProvider));
+    });
 
 /// Provider for InitializeAuthUseCase.
 final initializeAuthUseCaseProvider = Provider<InitializeAuthUseCase>((ref) {

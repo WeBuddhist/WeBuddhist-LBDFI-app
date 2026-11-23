@@ -22,7 +22,7 @@ class StorageKeys {
   /// Refresh token for getting new access tokens
   static const String refreshToken = 'refresh_token';
 
-  /// ID token from Auth0
+  /// Unused since sign-in moved to Firebase; kept so the key is not reused.
   static const String idToken = 'id_token';
 
   /// User ID
@@ -35,6 +35,9 @@ class StorageKeys {
   /// ID of the currently logged-in user, written before the router fires
   /// so feature code can resolve the active account.
   static const String currentUserId = 'current_user_id';
+
+  /// How the signed-in account logged in: `google`, `apple` or `phone`.
+  static const String signInMethod = 'sign_in_method';
 
   /// Current onboarding step
   static const String onboardingStep = 'onboarding_step';

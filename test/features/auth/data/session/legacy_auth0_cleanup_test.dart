@@ -1,0 +1,104 @@
+import 'package:flutter_pecha/core/storage/storage_keys.dart';
+import 'package:flutter_pecha/features/auth/data/session/legacy_auth0_cleanup.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+void main() {
+  /// What an Auth0 build left in preferences for a signed-in account.
+  const auth0Build = <String, Object>{
+    LegacyAuth0CleanupImpl.cachedDomainKey: 'tenant.auth0.com',
+    LegacyAuth0CleanupImpl.cachedClientIdKey: 'client-1',
+    LegacyAuth0CleanupImpl.cachedAudienceKey: 'https://api.test',
+    StorageKeys.currentUserId: 'google-oauth2|1',
+    StorageKeys.userData: '{"email":"tenzin@example.com"}',
+    StorageKeys.firstLaunch: true,
+  };
+
+  test('removes the Auth0 session an earlier build left', () async {
+    SharedPreferences.setMockInitialValues(auth0Build);
+    final cleared = <(String, String)>[];
+    final cleanup = LegacyAuth0CleanupImpl(
+      clearAuth0Credentials: (domain, clientId) async {
+        cleared.add((domain, clientId));
+      },
+    );
+
+    expect(await cleanup.run(), isTrue);
+
+    expect(cleared, [('tenant.auth0.com', 'client-1')]);
+    final prefs = await SharedPreferences.getInstance();
+    expect(prefs.getString(StorageKeys.currentUserId), isNull);
+    expect(prefs.getString(StorageKeys.userData), isNull);
+    expect(prefs.getString(LegacyAuth0CleanupImpl.cachedDomainKey), isNull);
+    expect(prefs.getString(LegacyAuth0CleanupImpl.cachedClientIdKey), isNull);
+    // Unrelated preferences stay.
+    expect(prefs.getBool(StorageKeys.firstLaunch), isTrue);
+  });
+
+  test('runs once: a later sign-in is never touched', () async {
+    SharedPreferences.setMockInitialValues(auth0Build);
+    var clears = 0;
+    final cleanup = LegacyAuth0CleanupImpl(
+      clearAuth0Credentials: (_, _) async => clears++,
+    );
+    await cleanup.run();
+
+    // The person signs in again with Firebase.
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(StorageKeys.currentUserId, 'backend-user-id');
+
+    expect(await cleanup.run(), isFalse);
+    expect(clears, 1);
+    expect(prefs.getString(StorageKeys.currentUserId), 'backend-user-id');
+  });
+
+  test('a fresh install has nothing to remove', () async {
+    SharedPreferences.setMockInitialValues({});
+    var clears = 0;
+    final cleanup = LegacyAuth0CleanupImpl(
+      clearAuth0Credentials: (_, _) async => clears++,
+    );
+
+    expect(await cleanup.run(), isFalse);
+    expect(clears, 0);
+    final prefs = await SharedPreferences.getInstance();
+    expect(prefs.getBool(LegacyAuth0CleanupImpl.doneKey), isTrue);
+  });
+
+  test('a guest on an Auth0 build stays a guest', () async {
+    SharedPreferences.setMockInitialValues({
+      LegacyAuth0CleanupImpl.cachedDomainKey: 'tenant.auth0.com',
+      LegacyAuth0CleanupImpl.cachedClientIdKey: 'client-1',
+      'is_guest_mode': true,
+    });
+    final cleanup = LegacyAuth0CleanupImpl(
+      clearAuth0Credentials: (_, _) async {},
+    );
+
+    await cleanup.run();
+
+    final prefs = await SharedPreferences.getInstance();
+    expect(prefs.getBool('is_guest_mode'), isTrue);
+  });
+
+  test('a failed clear is tried again on the next launch', () async {
+    SharedPreferences.setMockInitialValues(auth0Build);
+    var attempts = 0;
+    final cleanup = LegacyAuth0CleanupImpl(
+      clearAuth0Credentials: (_, _) async {
+        attempts++;
+        if (attempts == 1) throw StateError('keychain unavailable');
+      },
+    );
+
+    expect(await cleanup.run(), isFalse);
+    final prefs = await SharedPreferences.getInstance();
+    expect(prefs.getBool(LegacyAuth0CleanupImpl.doneKey), isNull);
+    // Nothing half-removed: the account markers wait for the retry.
+    expect(prefs.getString(StorageKeys.currentUserId), 'google-oauth2|1');
+
+    expect(await cleanup.run(), isTrue);
+    expect(attempts, 2);
+    expect(prefs.getString(StorageKeys.currentUserId), isNull);
+  });
+}

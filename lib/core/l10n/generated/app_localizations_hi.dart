@@ -1120,6 +1120,94 @@ class AppLocalizationsHi extends AppLocalizations {
   String get continueWithPhone => 'फ़ोन के साथ जारी रखें';
 
   @override
+  String get phone_login_title => 'Enter your phone number';
+
+  @override
+  String get phone_login_subtitle =>
+      'We\'ll text you a code to confirm it\'s you.';
+
+  @override
+  String get phone_login_number_hint => 'Phone number';
+
+  @override
+  String get phone_login_country_search => 'Search country';
+
+  @override
+  String get phone_login_send_code => 'Send code';
+
+  @override
+  String get phone_login_code_title => 'Enter the code';
+
+  @override
+  String phone_login_code_subtitle(String phoneNumber) {
+    return 'We sent a 6-digit code to $phoneNumber.';
+  }
+
+  @override
+  String get phone_login_code_hint => '6-digit code';
+
+  @override
+  String get phone_login_verify => 'Verify';
+
+  @override
+  String get phone_login_resend => 'Resend code';
+
+  @override
+  String phone_login_resend_in(int seconds) {
+    return 'Resend code in ${seconds}s';
+  }
+
+  @override
+  String get phone_login_change_number => 'Change number';
+
+  @override
+  String get login_names_title => 'What\'s your name?';
+
+  @override
+  String get login_names_subtitle =>
+      'Add your name to finish setting up your account.';
+
+  @override
+  String get login_first_name => 'First name';
+
+  @override
+  String get login_last_name => 'Last name';
+
+  @override
+  String get login_names_required => 'Enter your first and last name';
+
+  @override
+  String get login_error_invalid_phone => 'Enter a valid phone number.';
+
+  @override
+  String get login_error_invalid_code =>
+      'That code isn\'t right. Check it and try again.';
+
+  @override
+  String get login_error_code_expired =>
+      'That code has expired. Request a new one.';
+
+  @override
+  String get login_error_too_many_requests =>
+      'Too many attempts. Please try again later.';
+
+  @override
+  String get login_error_network =>
+      'Check your internet connection and try again.';
+
+  @override
+  String get login_error_email_not_verified =>
+      'This account\'s email address isn\'t verified yet. Verify it with your provider and try again.';
+
+  @override
+  String get login_error_session_expired =>
+      'Sign-in took too long. Please start again.';
+
+  @override
+  String get login_error_generic =>
+      'We couldn\'t sign you in. Please try again.';
+
+  @override
   String get exploreAsGuest => 'अतिथि के रूप में एक्सप्लोर करें';
 
   @override

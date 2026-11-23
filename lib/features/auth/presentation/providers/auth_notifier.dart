@@ -10,6 +10,11 @@ import 'package:flutter_pecha/core/utils/app_logger.dart';
 import 'package:flutter_pecha/features/notifications/data/services/routine_notification_service.dart';
 import 'package:flutter_pecha/core/utils/local_storage_service.dart';
 import 'package:flutter_pecha/features/auth/domain/entities/auth_credentials.dart';
+import 'package:flutter_pecha/features/auth/domain/entities/phone_code_start.dart';
+import 'package:flutter_pecha/features/auth/domain/failures/login_failure.dart';
+import 'package:flutter_pecha/features/auth/domain/usecases/complete_login_with_names_usecase.dart';
+import 'package:flutter_pecha/features/auth/domain/usecases/login_with_phone_code_usecase.dart';
+import 'package:flutter_pecha/features/auth/domain/usecases/request_phone_code_usecase.dart';
 import 'package:flutter_pecha/features/auth/domain/usecases/clear_guest_mode_and_onboarding_usecase.dart';
 import 'package:flutter_pecha/features/auth/domain/usecases/clear_guest_mode_usecase.dart';
 import 'package:flutter_pecha/features/auth/domain/usecases/continue_as_guest_usecase.dart';
@@ -36,8 +41,13 @@ import 'package:flutter_pecha/shared/domain/base_classes/usecase.dart';
 import 'package:flutter_pecha/features/auth/presentation/providers/state_providers.dart';
 import 'package:flutter_pecha/features/auth/presentation/state/auth_state.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:fpdart/fpdart.dart';
 
 class AuthNotifier extends StateNotifier<AuthState> {
+  /// The `method` phone sign-in is reported under in analytics. Kept from the
+  /// Auth0 connection name so charts stay continuous across the switch.
+  static const String phoneConnection = 'sms';
+
   final LoginUseCase _loginUseCase;
   final InitializeAuthUseCase _initializeAuthUseCase;
   final HasValidCredentialsUseCase _hasValidCredentialsUseCase;
@@ -67,6 +77,10 @@ class AuthNotifier extends StateNotifier<AuthState> {
   /// Epoch of the auth attempt analytics is identified as, or null once
   /// reset. See [_resetAnalyticsIdentity].
   int? _identityEpoch;
+
+  /// The login that stopped to ask for a name, so finishing it reports the
+  /// same method and source.
+  ({String? connection, AuthSource? source})? _pendingLogin;
 
   /// Prevents overlapping background onboarding refetches.
   bool _onboardingFetchInFlight = false;
@@ -132,10 +146,10 @@ class AuthNotifier extends StateNotifier<AuthState> {
   ///   so it also drives a silent token renewal via the interceptor; a dead
   ///   session surfaces as a 401 handled by the reactive-401 path, not here.
   /// - Not a confirmed real login (guest / logged out): the launch may have
-  ///   fallen through to guest because auth init (`ConfigService.loadConfig`)
-  ///   or `hasValidCredentials()` failed without a network. Re-run the restore
-  ///   now that we're online so a real stored session is recovered without a
-  ///   relaunch. A genuine guest with no credentials simply stays a guest.
+  ///   fallen through to guest because `hasValidCredentials()` could not read
+  ///   the stored session. Re-run the restore so a real stored session is
+  ///   recovered without a relaunch. A genuine guest with no credentials
+  ///   simply stays a guest.
   Future<void> _reconcileOnReconnect() async {
     if (_reconciling) return;
     _reconciling = true;
@@ -208,14 +222,17 @@ class AuthNotifier extends StateNotifier<AuthState> {
 
       // Initialize auth
       final initResult = await _initializeAuthUseCase(const NoParams());
-      initResult.fold(
-        (failure) {
-          _logger.error('Failed to initialize auth: ${failure.message}');
-        },
-        (_) {
-          _logger.debug('Auth initialized successfully');
-        },
-      );
+      final legacySessionRemoved = initResult.fold((failure) {
+        _logger.error('Failed to initialize auth: ${failure.message}');
+        return false;
+      }, (removed) => removed);
+      if (legacySessionRemoved) {
+        // Updated from an Auth0 build: that login is gone and the person
+        // signs in again. As on expiry, the next session must not carry the
+        // old identity (it was the Auth0 subject, not the backend user id).
+        _logger.info('Auth0 session from an earlier build was signed out');
+        await _resetAnalyticsIdentity();
+      }
 
       // Check if we have any credentials at all
       final credentialsResult = await _hasValidCredentialsUseCase(
@@ -260,7 +277,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
     credentialsResult.fold((f) => failure = f, (creds) => credentials = creds);
 
     // Happy path: we have a fresh token.
-    if (credentials != null && credentials!.idToken.isNotEmpty) {
+    if (credentials != null && credentials!.accessToken.isNotEmpty) {
       final epoch = _authEpoch;
       bool? onboardingStatus;
 
@@ -269,7 +286,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
       try {
         // Store currentUserId before updating auth state so feature code can
         // resolve the active account when the router refreshes.
-        final userId = _extractUserIdFromToken(credentials!.idToken);
+        final userId = _extractUserIdFromToken(credentials!.accessToken);
         if (userId != null) {
           await ref
               .read(localStorageServiceProvider)
@@ -424,6 +441,8 @@ class AuthNotifier extends StateNotifier<AuthState> {
     );
   }
 
+  /// Google or Apple sign-in. Phone sign-in takes two steps: see
+  /// [requestPhoneCode] and [verifyPhoneCode].
   Future<void> login({String? connection, AuthSource? source}) async {
     _bumpAuthEpoch();
     state = state.copyWith(isLoading: true, errorMessage: null);
@@ -433,18 +452,12 @@ class AuthNotifier extends StateNotifier<AuthState> {
     );
     loginResult.fold(
       (failure) {
-        _logger.error('Login failed: ${failure.message}');
-        _authAnalytics.loginFailed(
-          method: connection,
+        _onLoginFailure(
+          failure,
+          connection: connection,
           source: source,
-          failureMessage: failure.message,
+          showOnLoginScreen: true,
         );
-        state = state.copyWith(
-          isLoading: false,
-          errorMessage: 'Login failed: ${failure.message}',
-        );
-        // A login this one superseded may have identified its user already.
-        unawaited(_resetAnalyticsIdentity(onlyIfStale: true));
       },
       (credentials) {
         unawaited(
@@ -458,12 +471,165 @@ class AuthNotifier extends StateNotifier<AuthState> {
     );
   }
 
+  /// Sends an SMS sign-in code to [phoneNumber] (E.164). The phone screen
+  /// keeps its own progress, so this leaves `isLoading` alone.
+  ///
+  /// Right: the code went out, or Android verified the number without one
+  /// and the person is signed in ([PhoneCodeStart.isSignedIn]).
+  Future<Either<LoginFailure, PhoneCodeStart>> requestPhoneCode(
+    String phoneNumber, {
+    int? resendToken,
+    AuthSource? source,
+  }) async {
+    final result = await ref.read(requestPhoneCodeUseCaseProvider)(
+      RequestPhoneCodeParams(
+        phoneNumber: phoneNumber,
+        resendToken: resendToken,
+      ),
+    );
+    final failure = result.fold((f) => f, (_) => null);
+    if (failure != null) {
+      return Left(
+        _onLoginFailure(failure, connection: phoneConnection, source: source),
+      );
+    }
+    final start = result.getOrElse((_) => throw StateError('unreachable'));
+    final credentials = start.credentials;
+    if (credentials != null) {
+      _bumpAuthEpoch();
+      await _handleSuccessfulLogin(
+        credentials,
+        connection: phoneConnection,
+        source: source,
+      );
+    }
+    return Right(start);
+  }
+
+  /// Finishes a phone sign-in with the code from the SMS. Returns null once
+  /// signed in, or the failure for the screen to word.
+  Future<LoginFailure?> verifyPhoneCode({
+    required String verificationId,
+    required String smsCode,
+    AuthSource? source,
+  }) async {
+    _bumpAuthEpoch();
+    final result = await ref.read(loginWithPhoneCodeUseCaseProvider)(
+      LoginWithPhoneCodeParams(
+        verificationId: verificationId,
+        smsCode: smsCode,
+      ),
+    );
+    return _finishInteractiveLogin(
+      result,
+      connection: phoneConnection,
+      source: source,
+    );
+  }
+
+  /// Finishes the sign-in that is waiting for a name
+  /// ([AuthState.needsProfileNames]). Returns null once signed in, or the
+  /// failure for the form to word.
+  Future<LoginFailure?> submitProfileNames({
+    required String firstName,
+    required String lastName,
+  }) async {
+    final pending = _pendingLogin;
+    _bumpAuthEpoch();
+    final result = await ref.read(completeLoginWithNamesUseCaseProvider)(
+      CompleteLoginWithNamesParams(firstName: firstName, lastName: lastName),
+    );
+    return _finishInteractiveLogin(
+      result,
+      connection: pending?.connection,
+      source: pending?.source,
+    );
+  }
+
+  /// The person closed the name form: drop the sign-in that was waiting.
+  void cancelProfileNames() {
+    ref.read(completeLoginWithNamesUseCaseProvider).cancel();
+    _pendingLogin = null;
+    if (state.needsProfileNames) {
+      state = state.copyWith(needsProfileNames: false);
+    }
+  }
+
+  Future<LoginFailure?> _finishInteractiveLogin(
+    Either<Failure, AuthCredentials> result, {
+    String? connection,
+    AuthSource? source,
+  }) async {
+    final failure = result.fold((f) => f, (_) => null);
+    if (failure != null) {
+      return _onLoginFailure(failure, connection: connection, source: source);
+    }
+    await _handleSuccessfulLogin(
+      result.getOrElse((_) => throw StateError('unreachable')),
+      connection: connection,
+      source: source,
+    );
+    return null;
+  }
+
+  /// A sign-in step failed. A new account that needs a name is not an error:
+  /// it turns [AuthState.needsProfileNames] on and waits. Anything else is
+  /// reported and returned for the screen to word.
+  ///
+  /// [showOnLoginScreen] puts the reason in [AuthState.loginError] for a
+  /// sign-in that has no screen of its own to show it on (Google, Apple).
+  LoginFailure _onLoginFailure(
+    Failure failure, {
+    String? connection,
+    AuthSource? source,
+    bool showOnLoginScreen = false,
+  }) {
+    final loginFailure =
+        failure is LoginFailure
+            ? failure
+            : LoginFailure(failure.message, LoginFailureReason.unknown);
+
+    if (loginFailure.reason == LoginFailureReason.profileNamesRequired) {
+      _logger.info('New account needs a name before sign-in can finish');
+      _pendingLogin = (connection: connection, source: source);
+      state = state.copyWith(
+        isLoading: false,
+        errorMessage: null,
+        needsProfileNames: true,
+      );
+      return loginFailure;
+    }
+
+    _logger.error('Login failed: ${failure.message}');
+    _authAnalytics.loginFailed(
+      method: connection,
+      source: source,
+      failureMessage: failure.message,
+    );
+    if (loginFailure.reason == LoginFailureReason.pendingLoginExpired) {
+      _pendingLogin = null;
+    }
+    state = state.copyWith(
+      isLoading: false,
+      errorMessage: 'Login failed: ${failure.message}',
+      loginError: showOnLoginScreen ? loginFailure.reason : null,
+      needsProfileNames:
+          loginFailure.reason == LoginFailureReason.pendingLoginExpired
+              ? false
+              : null,
+    );
+    // A login this one superseded may have identified its user already.
+    unawaited(_resetAnalyticsIdentity(onlyIfStale: true));
+    return loginFailure;
+  }
+
   Future<void> _handleSuccessfulLogin(
     AuthCredentials credentials, {
     String? connection,
     AuthSource? source,
   }) async {
     final epoch = _authEpoch;
+    _pendingLogin = null;
 
     // 1. Clear the guest mode flag from storage before the router fires.
     await _clearGuestMode();
@@ -471,7 +637,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
 
     // 2. Persist the user's ID before updating auth state.
     //    The router refreshes the moment auth state changes.
-    final userId = _extractUserIdFromToken(credentials.idToken);
+    final userId = _extractUserIdFromToken(credentials.accessToken);
     if (userId != null) {
       await ref
           .read(localStorageServiceProvider)
@@ -521,11 +687,11 @@ class AuthNotifier extends StateNotifier<AuthState> {
     );
   }
 
-  /// Extracts the user ID (sub claim) from a JWT ID token without verification.
-  /// Used only to identify the user for onboarding tracking — not for auth.
-  static String? _extractUserIdFromToken(String idToken) {
+  /// Extracts the backend user id (`sub` claim) from the access token without
+  /// verification. Used only to key local data and analytics — not for auth.
+  static String? _extractUserIdFromToken(String accessToken) {
     try {
-      final parts = idToken.split('.');
+      final parts = accessToken.split('.');
       if (parts.length != 3) return null;
       final payload = base64Url.decode(base64Url.normalize(parts[1]));
       final claims = jsonDecode(utf8.decode(payload)) as Map<String, dynamic>;
@@ -732,6 +898,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
       isLoading: false,
       isGuest: false,
       hasCompletedOnboarding: null,
+      needsProfileNames: false,
     );
   }
 
@@ -752,6 +919,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
       isGuest: false,
       hasCompletedOnboarding: onboardingStatus,
       errorMessage: null,
+      needsProfileNames: false,
     );
     _logger.info(logMessage);
   }

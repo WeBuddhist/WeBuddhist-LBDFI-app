@@ -2069,6 +2069,156 @@ abstract class AppLocalizations {
   /// **'Continue with phone'**
   String get continueWithPhone;
 
+  /// No description provided for @phone_login_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter your phone number'**
+  String get phone_login_title;
+
+  /// No description provided for @phone_login_subtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'We\'ll text you a code to confirm it\'s you.'**
+  String get phone_login_subtitle;
+
+  /// No description provided for @phone_login_number_hint.
+  ///
+  /// In en, this message translates to:
+  /// **'Phone number'**
+  String get phone_login_number_hint;
+
+  /// No description provided for @phone_login_country_search.
+  ///
+  /// In en, this message translates to:
+  /// **'Search country'**
+  String get phone_login_country_search;
+
+  /// No description provided for @phone_login_send_code.
+  ///
+  /// In en, this message translates to:
+  /// **'Send code'**
+  String get phone_login_send_code;
+
+  /// No description provided for @phone_login_code_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter the code'**
+  String get phone_login_code_title;
+
+  /// No description provided for @phone_login_code_subtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'We sent a 6-digit code to {phoneNumber}.'**
+  String phone_login_code_subtitle(String phoneNumber);
+
+  /// No description provided for @phone_login_code_hint.
+  ///
+  /// In en, this message translates to:
+  /// **'6-digit code'**
+  String get phone_login_code_hint;
+
+  /// No description provided for @phone_login_verify.
+  ///
+  /// In en, this message translates to:
+  /// **'Verify'**
+  String get phone_login_verify;
+
+  /// No description provided for @phone_login_resend.
+  ///
+  /// In en, this message translates to:
+  /// **'Resend code'**
+  String get phone_login_resend;
+
+  /// No description provided for @phone_login_resend_in.
+  ///
+  /// In en, this message translates to:
+  /// **'Resend code in {seconds}s'**
+  String phone_login_resend_in(int seconds);
+
+  /// No description provided for @phone_login_change_number.
+  ///
+  /// In en, this message translates to:
+  /// **'Change number'**
+  String get phone_login_change_number;
+
+  /// No description provided for @login_names_title.
+  ///
+  /// In en, this message translates to:
+  /// **'What\'s your name?'**
+  String get login_names_title;
+
+  /// No description provided for @login_names_subtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Add your name to finish setting up your account.'**
+  String get login_names_subtitle;
+
+  /// No description provided for @login_first_name.
+  ///
+  /// In en, this message translates to:
+  /// **'First name'**
+  String get login_first_name;
+
+  /// No description provided for @login_last_name.
+  ///
+  /// In en, this message translates to:
+  /// **'Last name'**
+  String get login_last_name;
+
+  /// No description provided for @login_names_required.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter your first and last name'**
+  String get login_names_required;
+
+  /// No description provided for @login_error_invalid_phone.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a valid phone number.'**
+  String get login_error_invalid_phone;
+
+  /// No description provided for @login_error_invalid_code.
+  ///
+  /// In en, this message translates to:
+  /// **'That code isn\'t right. Check it and try again.'**
+  String get login_error_invalid_code;
+
+  /// No description provided for @login_error_code_expired.
+  ///
+  /// In en, this message translates to:
+  /// **'That code has expired. Request a new one.'**
+  String get login_error_code_expired;
+
+  /// No description provided for @login_error_too_many_requests.
+  ///
+  /// In en, this message translates to:
+  /// **'Too many attempts. Please try again later.'**
+  String get login_error_too_many_requests;
+
+  /// No description provided for @login_error_network.
+  ///
+  /// In en, this message translates to:
+  /// **'Check your internet connection and try again.'**
+  String get login_error_network;
+
+  /// No description provided for @login_error_email_not_verified.
+  ///
+  /// In en, this message translates to:
+  /// **'This account\'s email address isn\'t verified yet. Verify it with your provider and try again.'**
+  String get login_error_email_not_verified;
+
+  /// No description provided for @login_error_session_expired.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign-in took too long. Please start again.'**
+  String get login_error_session_expired;
+
+  /// No description provided for @login_error_generic.
+  ///
+  /// In en, this message translates to:
+  /// **'We couldn\'t sign you in. Please try again.'**
+  String get login_error_generic;
+
   /// No description provided for @exploreAsGuest.
   ///
   /// In en, this message translates to:
