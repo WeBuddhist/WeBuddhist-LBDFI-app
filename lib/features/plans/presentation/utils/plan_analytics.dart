@@ -170,15 +170,6 @@ class PlanAnalytics {
       AnalyticsProperties.daysSinceEnrolled: daysSinceEnrolled,
     });
   }
-
-  /// A debounced catalog search returned its first page. Only the length of
-  /// the query is sent: the text itself could be personal.
-  void planSearched({required int queryLength, required int resultCount}) {
-    _analytics.trackInBackground(AnalyticsEvents.planSearched, {
-      AnalyticsProperties.queryLength: queryLength,
-      AnalyticsProperties.resultCount: resultCount,
-    });
-  }
 }
 
 final planAnalyticsProvider = Provider<PlanAnalytics>((ref) {

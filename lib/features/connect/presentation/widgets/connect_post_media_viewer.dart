@@ -41,6 +41,7 @@ class ConnectPostMediaViewer extends StatefulWidget {
   }) {
     return Navigator.of(context, rootNavigator: true).push(
       PageRouteBuilder<void>(
+        settings: const RouteSettings(name: 'connect-post-media'),
         opaque: false,
         // The scaffold paints the black, so it can fade while dragging down.
         barrierColor: Colors.transparent,

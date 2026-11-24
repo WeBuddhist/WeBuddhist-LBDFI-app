@@ -553,6 +553,10 @@ The older mala calls stay on v1.
 `MalaSessionTracker` groups from the first counted bead until the screen
 closes, the app backgrounds, or five minutes pass without a bead.
 
+`mala_screen_opened` carries `source` (`MalaOpenSource`): whoever pushes
+`/mala` puts it in the route's extra under `'source'`, and the route hands it
+to `MalaScreen`.
+
 ## Tests (`test/features/mala/`)
 
 - `mala_counter_notifier_test.dart` — seed merge, post-reset stale-count guard,

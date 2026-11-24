@@ -192,14 +192,28 @@ void main() {
 
   test('login prompt events carry the feature that asked for login', () {
     analytics.loginPromptShown(feature: 'home-group-event');
-    analytics.loginPromptDismissed(feature: 'home-group-event');
+    analytics.loginPromptDismissed(
+      feature: 'home-group-event',
+      loginAttempted: false,
+    );
 
     expect(service.eventNames, [
       AnalyticsEvents.loginPromptShown,
       AnalyticsEvents.loginPromptDismissed,
     ]);
-    for (final event in service.events) {
-      expect(event.properties, {'feature': 'home-group-event'});
-    }
+    expect(service.events.first.properties, {'feature': 'home-group-event'});
+    expect(service.events.last.properties, {
+      'feature': 'home-group-event',
+      'login_attempted': false,
+    });
+  });
+
+  test('a dismissal says whether a login was started from the prompt', () {
+    analytics.loginPromptDismissed(feature: 'mala', loginAttempted: true);
+
+    expect(service.events.single.properties, {
+      'feature': 'mala',
+      'login_attempted': true,
+    });
   });
 }

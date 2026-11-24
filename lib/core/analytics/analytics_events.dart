@@ -15,7 +15,6 @@ abstract final class AnalyticsEvents {
   static const String planPreviewed = 'plan_previewed';
   static const String planAddedToPractices = 'plan_added_to_practices';
   static const String planUnenrolled = 'plan_unenrolled';
-  static const String planSearched = 'plan_searched';
 
   // Series
   static const String seriesViewed = 'series_viewed';
@@ -69,8 +68,6 @@ abstract final class AnalyticsEvents {
   static const String onboardingStepViewed = 'onboarding_step_viewed';
   static const String onboardingLanguageSelected =
       'onboarding_language_selected';
-  static const String onboardingEventPlanSelected =
-      'onboarding_event_plan_selected';
 
   // Auth and guest conversion (§5.3)
   static const String authLoginStarted = 'auth_login_started';
@@ -81,7 +78,6 @@ abstract final class AnalyticsEvents {
   static const String homeViewed = 'home_viewed';
   static const String tabViewed = 'tab_viewed';
   static const String seriesEnrolled = 'series_enrolled';
-  static const String seriesUnenrolled = 'series_unenrolled';
 
   // Me page
   static const String meItemTapped = 'me_item_tapped';
@@ -224,11 +220,11 @@ abstract final class AnalyticsProperties {
   static const String uiLanguage = 'ui_language';
   static const String durationMs = 'duration_ms';
   static const String traditionsCount = 'traditions_count';
-  static const String eventPlanSelected = 'event_plan_selected';
 
   // Auth
   static const String isNewUser = 'is_new_user';
   static const String feature = 'feature';
+  static const String loginAttempted = 'login_attempted';
 
   // Home / sharing
   static const String hasRoutine = 'has_routine';

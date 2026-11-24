@@ -362,13 +362,14 @@ class _MyAppState extends ConsumerState<MyApp> with WidgetsBindingObserver {
       unawaited(ref.read(readerLayoutLanguageGuardProvider).sync(next));
     });
 
-    // Bottom tabs are not routes, so Clarity's screen name for the home
-    // shell has to follow the selected tab from here, and PostHog's
-    // route-based screen events never see a tab change.
+    // Bottom tabs are not routes, so the screen name Clarity and PostHog give
+    // the home shell has to follow the selected tab from here. Both are told
+    // before tab_viewed is sent, so that event carries the new tab's name.
     ref.listen<int>(mainNavigationIndexProvider, (previous, next) {
       if (previous == next) return;
       final tab = MainTab.values[next].name;
       ClarityAnalyticsService.instance.setTab(tab);
+      PostHogAnalyticsService.instance.setTab(tab);
       ref.read(homeAnalyticsProvider).tabViewed(tab: tab);
     });
 
