@@ -65,8 +65,9 @@ enum LoginFailureCode {
     LoginFailureCode.unexpected => 'unexpected',
   };
 
-  /// Reads the text the Auth0 SDKs and [AuthService] produce; the repository
-  /// keeps only that text, not the exception or its code.
+  /// Reads the text [AuthService] produces (and, before the move to
+  /// Firebase, the Auth0 SDKs). Analytics is given only that text, not the
+  /// exception or its code.
   factory LoginFailureCode.fromMessage(String message) {
     final text = message.toLowerCase();
     if (text.contains('user closed the browser') ||
@@ -97,7 +98,8 @@ class AuthAnalytics {
 
   final AnalyticsService _analytics;
 
-  /// The user tapped a provider button; [method] is the Auth0 connection.
+  /// The user tapped a provider button; [method] is `google`, `apple` or
+  /// `sms` (the Auth0 connection names, kept so charts stay continuous).
   void loginStarted({required String method, required AuthSource source}) {
     _analytics.trackInBackground(AnalyticsEvents.authLoginStarted, {
       AnalyticsProperties.method: method,

@@ -214,6 +214,18 @@ void main() async {
     overrides: [routineLocalStorageProvider.overrideWithValue(routineStorage)],
   );
 
+  // The launch splash is the first screen drawn, so read the saved theme and
+  // language before it: otherwise its first frames follow the phone's theme
+  // and the default language. The native launch screen covers the wait.
+  try {
+    await Future.wait([
+      container.read(themeModeProvider.notifier).ensureInitialized(),
+      container.read(localeProvider.notifier).ensureInitialized(),
+    ]);
+  } catch (e) {
+    _logger.warning('Error preloading theme and language: $e');
+  }
+
   // Set container reference for notification navigation
   NotificationService.setContainer(container);
 
