@@ -277,12 +277,17 @@ class _RecitationsSearchScreenState
     final booksPending = wantsBooks && (bookAsync.isLoading || queryPending);
     final chantsPending = wantsText && chantState.isLoading;
 
+    // Only once every source answered for this query: a failed source has
+    // stopped loading too, and counting it would send a wrong total and
+    // block the correct one when the retry succeeds.
+    final spacesAsync = ref.watch(spaceChantsProvider);
     _trackSearchOnceSettled(
       settled:
           !queryPending &&
-          !bookAsync.isLoading &&
-          !ref.watch(spaceChantsProvider).isLoading &&
+          _succeeded(bookAsync) &&
+          _succeeded(spacesAsync) &&
           !chantState.isLoading &&
+          chantState.error == null &&
           chantState.query.trim() == _bookQuery,
       resultCount:
           books.length +
@@ -435,9 +440,18 @@ class _RecitationsSearchScreenState
     );
   }
 
+  /// Finished and successful: not loading or refreshing, no thrown error,
+  /// and the result is not a [Failure] (these sources return failures as a
+  /// value).
+  static bool _succeeded<T>(AsyncValue<Either<Failure, T>> value) =>
+      !value.isLoading &&
+      !value.hasError &&
+      (value.valueOrNull?.isRight() ?? false);
+
   /// Sends `search_performed` once per settled query, counting every result
-  /// the screen can show: chant books, library chants and space chants. Run
-  /// after the frame, since it is called from build.
+  /// the screen can show: chant books, library chants and space chants. Only
+  /// successful answers count, so a failed query stays open and its retry is
+  /// sent. Run after the frame, since it is called from build.
   void _trackSearchOnceSettled({
     required bool settled,
     required int resultCount,
