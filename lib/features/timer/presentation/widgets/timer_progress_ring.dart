@@ -10,6 +10,7 @@ class TimerProgressRing extends StatelessWidget {
     required this.child,
     this.size = 280,
     this.strokeWidth = 3,
+    this.progressColor,
   });
 
   /// Elapsed fraction from 0.0 (not started) to 1.0 (complete).
@@ -17,13 +18,15 @@ class TimerProgressRing extends StatelessWidget {
   final Widget child;
   final double size;
   final double strokeWidth;
+  final Color? progressColor;
 
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final trackColor =
         isDark ? AppColors.cardBorderDark : const Color(0xFFDADADA);
-    final progressColor = Theme.of(context).colorScheme.onSurface;
+    final activeProgressColor =
+        progressColor ?? Theme.of(context).colorScheme.onSurface;
 
     return SizedBox(
       width: size,
@@ -32,7 +35,7 @@ class TimerProgressRing extends StatelessWidget {
         painter: _TimerRingPainter(
           progress: progress.clamp(0.0, 1.0),
           trackColor: trackColor,
-          progressColor: progressColor,
+          progressColor: activeProgressColor,
           strokeWidth: strokeWidth,
         ),
         child: Center(child: child),

@@ -52,7 +52,7 @@ class ActiveTimerScreen extends ConsumerStatefulWidget {
 class _ActiveTimerScreenState extends ConsumerState<ActiveTimerScreen>
     with WidgetsBindingObserver {
   static const _countdownStart = 3;
-  static const _ringSize = 280.0;
+  static const _ringSize = 310.0;
   static const _controlsSpacing = 48.0;
   static const _controlsHeight = 56.0;
   static const _centerTextHeight = 48.0;
@@ -64,6 +64,8 @@ class _ActiveTimerScreenState extends ConsumerState<ActiveTimerScreen>
   int _countdownValue = _countdownStart;
   int _remainingMs = 0;
   bool _isPaused = false;
+  int _savedEarlyMs = 0;
+  bool _isSavedEarly = false;
 
   /// Absolute wall-clock instant the running session ends — the single source
   /// of truth for how much time is left. The periodic timer below only decides
@@ -472,6 +474,7 @@ class _ActiveTimerScreenState extends ConsumerState<ActiveTimerScreen>
       _endsAt = null;
       _isPaused = false;
       _phase = _TimerPhase.finished;
+      _isSavedEarly = false;
     });
 
     if (playBell) {
@@ -552,23 +555,31 @@ class _ActiveTimerScreenState extends ConsumerState<ActiveTimerScreen>
   }
 
   void _finish() {
-    if (_hasLeft) return;
-    _hasLeft = true;
     _timer?.cancel();
+    _timer = null;
     unawaited(_keepAlive.stop());
     unawaited(_ambientPlayer.stop());
+    _clearBackgroundSurfaces();
+
+    final elapsedMs = _elapsedMs;
+    _savedEarlyMs = elapsedMs;
+    _isSavedEarly = true;
+
     if (_phase == _TimerPhase.running) {
       _reportTimerStop();
       _trackDiscarded();
     }
-    _clearBackgroundSurfaces();
-    context.pop();
+
+    setState(() {
+      _phase = _TimerPhase.finished;
+    });
   }
 
   void _discardSession() {
     if (_hasLeft) return;
     _hasLeft = true;
     _timer?.cancel();
+    _timer = null;
     unawaited(_keepAlive.stop());
     unawaited(_ambientPlayer.stop());
     if (_phase == _TimerPhase.running) _trackDiscarded();
@@ -756,169 +767,320 @@ class _ActiveTimerScreenState extends ConsumerState<ActiveTimerScreen>
     unawaited(_liveActivity.end());
   }
 
+  String _formatElapsedPhrase(int durationMs) {
+    return PresetTimer.formatLabel(
+      durationMs,
+      hours: context.l10n.timer_duration_hr,
+      minutes: context.l10n.timer_min,
+      seconds: context.l10n.timer_duration_sec,
+    );
+  }
+
+  void _showDiscardDialog() {
+    final elapsedMs = _elapsedMs;
+    final elapsedPhrase = _formatElapsedPhrase(elapsedMs);
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
+    showDialog<void>(
+      context: context,
+      barrierColor: Colors.black.withOpacity(0.5),
+      builder: (dialogContext) {
+        final textTheme = Theme.of(dialogContext).textTheme;
+        final textColor = Theme.of(dialogContext).colorScheme.onSurface;
+        return Dialog(
+          backgroundColor: isDark ? AppColors.surfaceDark : AppColors.surfaceWhite,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+            side: BorderSide(
+              color: isDark ? AppColors.cardBorderDark : const Color(0xFFDADADA),
+            ),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(24),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  context.l10n.timer_discard_title,
+                  textAlign: TextAlign.center,
+                  style: textTheme.titleLarge?.copyWith(
+                    fontWeight: FontWeight.w600,
+                    color: textColor,
+                  ),
+                ),
+                const SizedBox(height: 12),
+                Text(
+                  context.l10n.timer_discard_message(elapsedPhrase),
+                  textAlign: TextAlign.center,
+                  style: textTheme.bodyMedium?.copyWith(
+                    color: isDark ? AppColors.textTertiaryDark : AppColors.textSecondary,
+                  ),
+                ),
+                const SizedBox(height: 24),
+                SizedBox(
+                  width: double.infinity,
+                  child: OutlinedButton(
+                    onPressed: () {
+                      Navigator.of(dialogContext).pop();
+                      _discardSession();
+                    },
+                    style: OutlinedButton.styleFrom(
+                      foregroundColor: AppColors.danger,
+                      side: const BorderSide(color: AppColors.danger),
+                      padding: const EdgeInsets.symmetric(vertical: 14),
+                      shape: const StadiumBorder(),
+                    ),
+                    child: Text(
+                      context.l10n.timer_discard_session,
+                      style: const TextStyle(fontWeight: FontWeight.w500),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 12),
+                SizedBox(
+                  width: double.infinity,
+                  child: OutlinedButton(
+                    onPressed: () {
+                      Navigator.of(dialogContext).pop();
+                      _finish();
+                    },
+                    style: OutlinedButton.styleFrom(
+                      foregroundColor: textColor,
+                      side: BorderSide(
+                        color: isDark ? AppColors.cardBorderDark : const Color(0xFFDADADA),
+                      ),
+                      padding: const EdgeInsets.symmetric(vertical: 14),
+                      shape: const StadiumBorder(),
+                    ),
+                    child: Text(
+                      context.l10n.timer_save_session,
+                      style: const TextStyle(fontWeight: FontWeight.w500),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     final textTheme = Theme.of(context).textTheme;
     final textColor = Theme.of(context).colorScheme.onSurface;
-    final finishFontSize = textTheme.labelLarge?.fontSize ?? 16.0;
-
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final isCountdown = _phase == _TimerPhase.countdown;
+
+    ref.watch(ambientSoundsFutureProvider);
+    final ambientSoundsById = ref.watch(ambientSoundByIdProvider);
+    final ambientSoundName = widget.presetTimer.ambientSoundId != null
+        ? ambientSoundsById[widget.presetTimer.ambientSoundId]?.name
+        : null;
+    final durationStr = _formatElapsedPhrase(widget.presetTimer.durationMs);
 
     return PopScope(
-      canPop: false,
+      canPop: _phase == _TimerPhase.finished,
       onPopInvokedWithResult: (didPop, _) {
-        if (didPop || _phase != _TimerPhase.countdown) return;
-        _discardSession();
+        if (didPop) return;
+        if (_phase == _TimerPhase.countdown) {
+          _discardSession();
+        }
       },
       child: Scaffold(
         backgroundColor: Theme.of(context).scaffoldBackgroundColor,
         body: SafeArea(
           child: Column(
             children: [
+              if (_phase == _TimerPhase.running)
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        ambientSoundName != null ? '$durationStr · $ambientSoundName' : durationStr,
+                        style: textTheme.titleMedium?.copyWith(
+                          color: isDark ? AppColors.textSecondaryDark : AppColors.textSecondary,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                      IconButton(
+                        constraints: const BoxConstraints(minWidth: 44, minHeight: 44),
+                        padding: EdgeInsets.zero,
+                        icon: const Icon(AppAssets.dotsThree),
+                        onPressed: _showDiscardDialog,
+                        color: textColor,
+                      ),
+                    ],
+                  ),
+                )
+              else
+                const SizedBox(height: 60),
+
               Expanded(
                 child: Center(
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      TimerProgressRing(
-                        size: _ringSize,
-                        progress: _elapsedProgress,
-                        child: _buildCenterContent(textColor),
+                      GestureDetector(
+                        onTap: (_phase == _TimerPhase.running && _isPaused) ? _togglePause : null,
+                        behavior: HitTestBehavior.opaque,
+                        child: TimerProgressRing(
+                          size: 310,
+                          progress: _phase == _TimerPhase.finished ? 1.0 : _elapsedProgress,
+                          progressColor: _phase == _TimerPhase.finished ? const Color(0xFFFDAE33) : null,
+                          child: _buildCenterContent(textColor),
+                        ),
                       ),
-                      if (isCountdown) ...[
+                      if (_phase == _TimerPhase.countdown) ...[
                         const SizedBox(height: 28),
                         Text(
                           l10n.timer_starting,
                           style: TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.w400,
-                            color:
-                                isDark
-                                    ? AppColors.textTertiaryDark
-                                    : AppColors.textSecondary,
+                            color: isDark ? AppColors.textTertiaryDark : AppColors.textSecondary,
+                          ),
+                        ),
+                      ] else if (_phase == _TimerPhase.finished) ...[
+                        const SizedBox(height: 28),
+                        Text(
+                          _isSavedEarly ? l10n.timer_session_saved : l10n.timer_session_complete,
+                          style: textTheme.headlineMedium?.copyWith(
+                            fontWeight: FontWeight.w600,
+                            color: textColor,
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          l10n.timer_saved_to_practice(
+                            _formatElapsedPhrase(_isSavedEarly ? _savedEarlyMs : _totalMs),
+                          ),
+                          style: textTheme.bodyLarge?.copyWith(
+                            color: isDark ? AppColors.textTertiaryDark : AppColors.textSecondary,
                           ),
                         ),
                       ] else ...[
-                        const SizedBox(height: _controlsSpacing),
-                        SizedBox(
-                          height: _controlsHeight,
-                          child:
-                              _phase == _TimerPhase.running
-                                  ? IconButton(
-                                    onPressed: _togglePause,
-                                    iconSize: 40,
-                                    padding: EdgeInsets.zero,
-                                    constraints: const BoxConstraints(
-                                      minWidth: _controlsHeight,
-                                      minHeight: _controlsHeight,
-                                    ),
-                                    icon: Icon(
-                                      _isPaused
-                                          ? AppAssets.play
-                                          : AppAssets.pause,
-                                      color: textColor,
-                                    ),
-                                  )
-                                  : null,
-                        ),
+                        const SizedBox(height: 48),
                       ],
                     ],
                   ),
                 ),
               ),
-              if (isCountdown)
+
+              if (_phase == _TimerPhase.countdown)
                 Padding(
                   padding: const EdgeInsets.fromLTRB(24, 0, 24, 32),
                   child: Center(
-                    child: FilledButton(
+                    child: OutlinedButton(
                       onPressed: _discardSession,
-                      style: FilledButton.styleFrom(
-                        elevation: 0,
-                        backgroundColor:
-                            isDark
-                                ? AppColors.chipBackgroundDark
-                                : AppColors.grey100,
+                      style: OutlinedButton.styleFrom(
                         foregroundColor: textColor,
+                        side: BorderSide(
+                          color: isDark ? AppColors.cardBorderDark : const Color(0xFFDADADA),
+                        ),
                         padding: const EdgeInsets.symmetric(
                           horizontal: 36,
                           vertical: 14,
                         ),
                         shape: const StadiumBorder(),
-                        textStyle: const TextStyle(
+                      ),
+                      child: Text(
+                        l10n.cancel,
+                        style: const TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w500,
                         ),
                       ),
-                      child: Text(l10n.cancel),
+                    ),
+                  ),
+                )
+              else if (_phase == _TimerPhase.finished)
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(24, 0, 24, 32),
+                  child: SizedBox(
+                    width: double.infinity,
+                    child: FilledButton(
+                      onPressed: () {
+                        context.pop();
+                      },
+                      style: FilledButton.styleFrom(
+                        backgroundColor: textColor,
+                        foregroundColor: Theme.of(context).colorScheme.surface,
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        shape: const StadiumBorder(),
+                      ),
+                      child: Text(
+                        l10n.done,
+                        style: const TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
                     ),
                   ),
                 )
               else
                 Padding(
                   padding: const EdgeInsets.fromLTRB(24, 0, 24, 32),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
+                  child: Row(
                     children: [
-                      IgnorePointer(
-                        ignoring: !_showFinish,
-                        child: Opacity(
-                          opacity: _showFinish ? 1 : 0,
-                          child: Center(
-                            child: OutlinedButton(
-                              onPressed: _finish,
-                              style: OutlinedButton.styleFrom(
-                                foregroundColor: textColor,
-                                side: BorderSide(color: textColor),
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 46,
-                                  vertical: 16,
-                                ),
-                                shape: const StadiumBorder(),
-                                backgroundColor:
-                                    Theme.of(context).brightness ==
-                                            Brightness.dark
-                                        ? AppColors.surfaceDark
-                                        : AppColors.surfaceWhite,
-                              ),
-                              child: Text(
-                                l10n.timer_finish,
-                                strutStyle: context.tibetanStrutStyle(
-                                  finishFontSize,
-                                ),
-                                style: textTheme.labelLarge?.copyWith(
+                      Expanded(
+                        child: OutlinedButton(
+                          onPressed: _finish,
+                          style: OutlinedButton.styleFrom(
+                            foregroundColor: textColor,
+                            side: BorderSide(
+                              color: isDark ? AppColors.cardBorderDark : const Color(0xFFDADADA),
+                            ),
+                            padding: const EdgeInsets.symmetric(vertical: 16),
+                            shape: const StadiumBorder(),
+                            backgroundColor: isDark ? AppColors.surfaceDark : AppColors.surfaceWhite,
+                          ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Container(
+                                width: 14,
+                                height: 14,
+                                decoration: BoxDecoration(
                                   color: textColor,
+                                  borderRadius: BorderRadius.circular(2),
+                                ),
+                              ),
+                              const SizedBox(width: 8),
+                              Text(
+                                l10n.timer_finish,
+                                style: const TextStyle(
+                                  fontSize: 16,
                                   fontWeight: FontWeight.w500,
                                 ),
                               ),
-                            ),
+                            ],
                           ),
                         ),
                       ),
-                      const SizedBox(height: 16),
-                      IgnorePointer(
-                        ignoring: !_showDiscard,
-                        child: Opacity(
-                          opacity: _showDiscard ? 1 : 0,
-                          child: TextButton(
-                            onPressed: _discardSession,
-                            style: TextButton.styleFrom(
-                              foregroundColor: textColor,
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 16,
-                                vertical: 8,
-                              ),
-                            ),
-                            child: Text(
-                              l10n.timer_discard_session,
-                              strutStyle: context.tibetanStrutStyle(
-                                finishFontSize,
-                              ),
-                              style: textTheme.labelLarge?.copyWith(
-                                color: textColor,
-                                fontWeight: FontWeight.w500,
-                              ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: FilledButton.icon(
+                          onPressed: _togglePause,
+                          style: FilledButton.styleFrom(
+                            backgroundColor: textColor,
+                            foregroundColor: Theme.of(context).colorScheme.surface,
+                            padding: const EdgeInsets.symmetric(vertical: 16),
+                            shape: const StadiumBorder(),
+                          ),
+                          icon: Icon(
+                            _isPaused ? AppAssets.play : AppAssets.pause,
+                            size: 18,
+                          ),
+                          label: Text(
+                            _isPaused ? l10n.timer_resume : l10n.player_pause,
+                            style: const TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w500,
                             ),
                           ),
                         ),
@@ -935,28 +1097,61 @@ class _ActiveTimerScreenState extends ConsumerState<ActiveTimerScreen>
 
   Widget _buildCenterContent(Color textColor) {
     final textTheme = Theme.of(context).textTheme;
-    final text =
-        _phase == _TimerPhase.countdown
-            ? '$_countdownValue'
-            : _formatDuration(_remainingMs);
-
     final isCountdown = _phase == _TimerPhase.countdown;
+    final isFinished = _phase == _TimerPhase.finished;
 
-    return SizedBox(
-      height: isCountdown ? 64 : _centerTextHeight,
-      child: Center(
-        child: Text(
-          text,
-          style: textTheme.displaySmall?.copyWith(
-            fontSize: isCountdown ? 56 : _durationFontSize,
-            fontWeight: isCountdown ? FontWeight.w500 : FontWeight.w600,
-            height: 1,
-            letterSpacing: isCountdown ? 0 : 1,
-            color: textColor,
+    if (isCountdown) {
+      return SizedBox(
+        height: 64,
+        child: Center(
+          child: Text(
+            '$_countdownValue',
+            style: textTheme.displaySmall?.copyWith(
+              fontSize: 56,
+              fontWeight: FontWeight.w500,
+              height: 1,
+              color: textColor,
+            ),
           ),
         ),
-      ),
-    );
+      );
+    } else if (isFinished) {
+      return const Icon(
+        AppAssets.check,
+        size: 64,
+        color: Color(0xFFFDAE33),
+      );
+    } else {
+      final timeText = _formatDuration(_remainingMs, separator: ':');
+      return Column(
+        mainAxisSize: MainAxisSize.min,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text(
+            timeText,
+            style: TextStyle(
+              fontSize: 48,
+              fontWeight: FontWeight.w600,
+              height: 1,
+              color: textColor,
+            ),
+          ),
+          if (_isPaused) ...[
+            const SizedBox(height: 8),
+            Text(
+              context.l10n.timer_paused_caption,
+              style: TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.w400,
+                color: Theme.of(context).brightness == Brightness.dark
+                    ? AppColors.textTertiaryDark
+                    : AppColors.textSecondary,
+              ),
+            ),
+          ],
+        ],
+      );
+    }
   }
 
   String _formatDuration(int ms, {String separator = ' : '}) {

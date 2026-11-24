@@ -3891,12 +3891,10 @@ class TolgeeAppLocalizations extends AppLocalizations {
 
   @override
   String group_removed_message(String group, String duration) =>
-      TolgeeBridge.format(
-        localeName,
-        'group_removed_message',
-        <String, Object>{'group': group, 'duration': duration},
-        () => _fallback.group_removed_message(group, duration),
-      );
+      TolgeeBridge.format(localeName, 'group_removed_message', <String, Object>{
+        'group': group,
+        'duration': duration,
+      }, () => _fallback.group_removed_message(group, duration));
 
   @override
   String group_removed_message_no_date(String group) => TolgeeBridge.format(
@@ -5579,12 +5577,10 @@ class TolgeeAppLocalizations extends AppLocalizations {
 
   @override
   String event_replay_session(String day, String session) =>
-      TolgeeBridge.format(
-        localeName,
-        'event_replay_session',
-        <String, Object>{'day': day, 'session': session},
-        () => _fallback.event_replay_session(day, session),
-      );
+      TolgeeBridge.format(localeName, 'event_replay_session', <String, Object>{
+        'day': day,
+        'session': session,
+      }, () => _fallback.event_replay_session(day, session));
 
   @override
   String get event_replay_recording => TolgeeBridge.get(
@@ -8159,6 +8155,64 @@ class TolgeeAppLocalizations extends AppLocalizations {
   );
 
   @override
+  String get timer_resume => TolgeeBridge.get(
+    localeName,
+    'timer_resume',
+    () => _fallback.timer_resume,
+  );
+
+  @override
+  String get timer_paused_caption => TolgeeBridge.get(
+    localeName,
+    'timer_paused_caption',
+    () => _fallback.timer_paused_caption,
+  );
+
+  @override
+  String get timer_discard_title => TolgeeBridge.get(
+    localeName,
+    'timer_discard_title',
+    () => _fallback.timer_discard_title,
+  );
+
+  @override
+  String timer_discard_message(String elapsed) => TolgeeBridge.format(
+    localeName,
+    'timer_discard_message',
+    <String, Object>{'elapsed': elapsed},
+    () => _fallback.timer_discard_message(elapsed),
+  );
+
+  @override
+  String get timer_save_session => TolgeeBridge.get(
+    localeName,
+    'timer_save_session',
+    () => _fallback.timer_save_session,
+  );
+
+  @override
+  String get timer_session_saved => TolgeeBridge.get(
+    localeName,
+    'timer_session_saved',
+    () => _fallback.timer_session_saved,
+  );
+
+  @override
+  String get timer_session_complete => TolgeeBridge.get(
+    localeName,
+    'timer_session_complete',
+    () => _fallback.timer_session_complete,
+  );
+
+  @override
+  String timer_saved_to_practice(String elapsed) => TolgeeBridge.format(
+    localeName,
+    'timer_saved_to_practice',
+    <String, Object>{'elapsed': elapsed},
+    () => _fallback.timer_saved_to_practice(elapsed),
+  );
+
+  @override
   String get reader_display_title => TolgeeBridge.get(
     localeName,
     'reader_display_title',
@@ -8320,12 +8374,10 @@ class TolgeeAppLocalizations extends AppLocalizations {
 
   @override
   String reader_round_position(String current, String total) =>
-      TolgeeBridge.format(
-        localeName,
-        'reader_round_position',
-        <String, Object>{'current': current, 'total': total},
-        () => _fallback.reader_round_position(current, total),
-      );
+      TolgeeBridge.format(localeName, 'reader_round_position', <String, Object>{
+        'current': current,
+        'total': total,
+      }, () => _fallback.reader_round_position(current, total));
 
   @override
   String reader_round_number(String current) => TolgeeBridge.format(
@@ -8337,12 +8389,10 @@ class TolgeeAppLocalizations extends AppLocalizations {
 
   @override
   String reader_count_position(String current, String total) =>
-      TolgeeBridge.format(
-        localeName,
-        'reader_count_position',
-        <String, Object>{'current': current, 'total': total},
-        () => _fallback.reader_count_position(current, total),
-      );
+      TolgeeBridge.format(localeName, 'reader_count_position', <String, Object>{
+        'current': current,
+        'total': total,
+      }, () => _fallback.reader_count_position(current, total));
 
   @override
   String reader_show_script_in(String language) => TolgeeBridge.format(
