@@ -1291,5 +1291,7 @@
   "group_event_duration": "དུས་ཡུན།",
   "group_event_duration_decrease": "དུས་ཡུན་ཐུང་དུ་ཐོངས།",
   "group_event_duration_increase": "དུས་ཡུན་རིང་དུ་ཐོངས།",
-  "timer_duration_hours": "ཆུ་ཚོད།"
+  "timer_duration_hours": "ཆུ་ཚོད།",
+  "splash_tagline_1": "ང་ཚོ་ནང་པས་མཉམ་དུ་ཉམས་ལེན་བྱེད།",
+  "splash_tagline_2": "ང་ཚོ་ནང་པས་ཉིན་ལྟར་ཉམས་ལེན་བྱེད།"
 }
