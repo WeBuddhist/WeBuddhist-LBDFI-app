@@ -54,11 +54,21 @@ class _LoginDrawerState extends ConsumerState<LoginDrawer>
   late final AuthAnalytics _analytics;
   bool _loggedIn = false;
 
+  /// A login started here shows the splash screen while it runs, and that
+  /// closes this drawer before the login can finish.
+  bool _loginAttempted = false;
+
   @override
   void initState() {
     super.initState();
     _analytics = ref.read(authAnalyticsProvider);
     _analytics.loginPromptShown(feature: widget.feature);
+    ref.listenManual<bool>(
+      authProvider.select((state) => state.isLoading),
+      (_, isLoading) {
+        if (isLoading) _loginAttempted = true;
+      },
+    );
     _animationController = AnimationController(
       duration: const Duration(milliseconds: 300),
       vsync: this,
@@ -73,8 +83,14 @@ class _LoginDrawerState extends ConsumerState<LoginDrawer>
 
   @override
   void dispose() {
-    // Closed by drag, barrier or back rather than by a login.
-    if (!_loggedIn) _analytics.loginPromptDismissed(feature: widget.feature);
+    // Closed by drag, barrier or back, or by the splash screen of a login
+    // started here; login_attempted tells the two apart.
+    if (!_loggedIn) {
+      _analytics.loginPromptDismissed(
+        feature: widget.feature,
+        loginAttempted: _loginAttempted,
+      );
+    }
     _animationController.dispose();
     super.dispose();
   }

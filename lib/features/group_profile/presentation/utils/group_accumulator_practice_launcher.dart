@@ -10,6 +10,7 @@ import 'package:flutter_pecha/features/group_profile/presentation/widgets/group_
 import 'package:flutter_pecha/features/mala/domain/entities/mantra.dart';
 import 'package:flutter_pecha/features/mala/presentation/providers/mala_providers.dart';
 import 'package:flutter_pecha/features/mala/presentation/providers/mala_sync_manager.dart';
+import 'package:flutter_pecha/features/mala/presentation/utils/mala_analytics.dart';
 import 'package:flutter_pecha/features/plans/presentation/widgets/plan_navigation/plan_navigator.dart';
 import 'package:flutter_pecha/features/reader/data/models/navigation_context.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -84,6 +85,7 @@ Future<bool> pushGroupAccumulatorMala(
           'presetId': detail.presetAccumulatorId,
           'groupAccumulatorId': detail.id,
           'groupAccumulatorEnded': ended,
+          'source': MalaOpenSource.groupAccumulation,
         },
       );
       return true;
@@ -94,6 +96,7 @@ Future<bool> pushGroupAccumulatorMala(
           'groupAccumulator': detail,
           'groupAccumulatorId': detail.id,
           'groupAccumulatorEnded': ended,
+          'source': MalaOpenSource.groupAccumulation,
         },
       );
       return true;

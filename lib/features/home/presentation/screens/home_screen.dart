@@ -29,6 +29,7 @@ import 'package:flutter_pecha/features/home/presentation/widgets/my_practices_st
 import 'package:flutter_pecha/features/home/presentation/widgets/my_practices_stats_card_skeleton.dart';
 import 'package:flutter_pecha/features/home/presentation/widgets/verse_of_day_carousel.dart';
 import 'package:flutter_pecha/features/home/presentation/widgets/verse_of_day_skeleton.dart';
+import 'package:flutter_pecha/features/mala/presentation/utils/mala_analytics.dart';
 import 'package:flutter_pecha/features/notifications/application/notification_sync_engine.dart';
 import 'package:flutter_pecha/features/plans/data/utils/plan_utils.dart';
 import 'package:flutter_pecha/features/plans/presentation/providers/user_plans_provider.dart';
@@ -262,12 +263,12 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   /// Opens a login-only feature shortcut (Mala, Timer). Guests are prompted to
   /// sign in via the login drawer instead of navigating, since these features
   /// need an authenticated account to persist progress.
-  void _openGatedFeature(String route) {
+  void _openGatedFeature(String route, {Object? extra}) {
     if (ref.read(authProvider).isGuest) {
       LoginDrawer.show(context, ref);
       return;
     }
-    context.push(route);
+    context.push(route, extra: extra);
   }
 
   void _navigateToSeries(Series series) {
@@ -374,7 +375,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   const SizedBox(height: HomeScreenConstants.cardSpacing),
                   HomeShortcutsRow(
                     onTimerTap: () => _openGatedFeature('/home/timers'),
-                    onMalaTap: () => _openGatedFeature('/mala'),
+                    onMalaTap:
+                        () => _openGatedFeature(
+                          '/mala',
+                          extra: {'source': MalaOpenSource.home},
+                        ),
                   ),
                   const SizedBox(height: HomeScreenConstants.cardSpacing),
                   _buildMyPracticesSection(),

@@ -2,6 +2,7 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_pecha/core/analytics/entry_analytics.dart';
 import 'package:flutter_pecha/core/config/router/app_routes.dart';
 import 'package:flutter_pecha/core/utils/app_logger.dart';
+import 'package:flutter_pecha/features/mala/presentation/utils/mala_analytics.dart';
 import 'package:flutter_pecha/features/reader/data/models/navigation_context.dart';
 import 'package:go_router/go_router.dart';
 
@@ -282,7 +283,7 @@ class DeepLinkRouter {
       final presetId = segments[2];
       return _DeepLinkDestination(
         AppRoutes.mala,
-        extra: {'presetId': presetId},
+        extra: {'presetId': presetId, 'source': MalaOpenSource.deepLink},
         routeKind: 'mala',
         targetId: presetId,
         opensOnTop: true,

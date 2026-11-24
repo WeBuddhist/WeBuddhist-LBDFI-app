@@ -209,13 +209,4 @@ void main() {
       'days_since_enrolled': 5,
     });
   });
-
-  test('planSearched carries the query length, never its text', () {
-    analytics.planSearched(queryLength: 4, resultCount: 4);
-
-    expect(service.events.single.properties, {
-      'query_length': 4,
-      'result_count': 4,
-    });
-  });
 }

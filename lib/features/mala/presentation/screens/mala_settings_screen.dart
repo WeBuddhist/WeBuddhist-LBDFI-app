@@ -64,6 +64,7 @@ class MalaSettingsScreen extends ConsumerWidget {
   }) {
     return Navigator.of(context, rootNavigator: true).push(
       MaterialPageRoute<MalaSettingsOutcome>(
+        settings: const RouteSettings(name: 'mala-settings'),
         builder: (_) => MalaSettingsScreen(mantra: mantra, space: space),
       ),
     );

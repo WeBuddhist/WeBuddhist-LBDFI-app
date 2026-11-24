@@ -61,16 +61,9 @@ class OnboardingAnalytics {
     _traditionsCount = count;
   }
 
-  void eventPlanSelected({required String planId, required String planName}) {
-    _analytics.trackInBackground(AnalyticsEvents.onboardingEventPlanSelected, {
-      AnalyticsProperties.planId: planId,
-      AnalyticsProperties.planName: planName,
-    });
-  }
-
   /// Onboarding was marked complete on the server. `duration_ms` is null when
   /// this instance never saw the flow start.
-  void onboardingCompleted({required bool eventPlanSelected}) {
+  void onboardingCompleted() {
     final startedAt = _startedAt;
     _analytics.trackInBackground(AnalyticsEvents.onboardingCompleted, {
       AnalyticsProperties.durationMs:
@@ -78,7 +71,6 @@ class OnboardingAnalytics {
               ? null
               : _now().difference(startedAt).inMilliseconds,
       AnalyticsProperties.traditionsCount: _traditionsCount,
-      AnalyticsProperties.eventPlanSelected: eventPlanSelected,
     });
   }
 }

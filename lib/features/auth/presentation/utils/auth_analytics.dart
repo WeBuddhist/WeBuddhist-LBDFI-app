@@ -147,10 +147,16 @@ class AuthAnalytics {
     });
   }
 
-  /// The login drawer closed without a login.
-  void loginPromptDismissed({required String feature}) {
+  /// The login drawer closed before a login finished in it. [loginAttempted]
+  /// is true when a login was started from the drawer: the splash screen
+  /// shown while it runs closes the drawer.
+  void loginPromptDismissed({
+    required String feature,
+    required bool loginAttempted,
+  }) {
     _analytics.trackInBackground(AnalyticsEvents.loginPromptDismissed, {
       AnalyticsProperties.feature: feature,
+      AnalyticsProperties.loginAttempted: loginAttempted,
     });
   }
 }
