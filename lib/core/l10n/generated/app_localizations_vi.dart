@@ -73,6 +73,16 @@ class AppLocalizationsVi extends AppLocalizations {
   }
 
   @override
+  String home_practices_sessions(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count buổi',
+    );
+    return '$_temp0';
+  }
+
+  @override
   String get home_shortcut_plans => 'Lộ trình';
 
   @override

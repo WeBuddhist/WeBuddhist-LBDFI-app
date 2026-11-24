@@ -140,6 +140,14 @@ class TolgeeAppLocalizations extends AppLocalizations {
   );
 
   @override
+  String home_practices_sessions(int count) => TolgeeBridge.format(
+    localeName,
+    'home_practices_sessions',
+    <String, Object>{'count': count},
+    () => _fallback.home_practices_sessions(count),
+  );
+
+  @override
   String get home_shortcut_plans => TolgeeBridge.get(
     localeName,
     'home_shortcut_plans',

@@ -227,6 +227,12 @@ abstract class AppLocalizations {
   /// **'{count} chants'**
   String home_recitation_count(int count);
 
+  /// No description provided for @home_practices_sessions.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural,\n=1 {1 session}\nother {{count} sessions}\n}'**
+  String home_practices_sessions(int count);
+
   /// No description provided for @home_shortcut_plans.
   ///
   /// In en, this message translates to:

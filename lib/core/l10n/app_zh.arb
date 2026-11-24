@@ -33,6 +33,14 @@
       }
     }
   },
+  "home_practices_sessions": "{count, plural,\nother {{count} 座}\n}",
+  "@home_practices_sessions": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "home_shortcut_plans": "計劃",
   "home_chants": "持誦",
   "home_mala": "念珠",

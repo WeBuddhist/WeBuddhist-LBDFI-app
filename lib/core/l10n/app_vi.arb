@@ -19,6 +19,7 @@
   "home_overall_stats": "Thống kê tổng quan",
   "home_plans_count": "{count} lộ trình",
   "home_recitation_count": "{count} bài tụng",
+  "home_practices_sessions": "{count, plural,\nother {{count} buổi}\n}",
   "home_shortcut_plans": "Lộ trình",
   "home_chants": "Bài tụng",
   "home_mala": "Chuỗi hạt",

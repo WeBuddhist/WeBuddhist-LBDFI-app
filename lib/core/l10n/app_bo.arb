@@ -33,6 +33,14 @@
       }
     }
   },
+  "home_practices_sessions": "{count, plural,\n=1 {ཐུན་ 1}\nother {ཐུན་ {count}}\n}",
+  "@home_practices_sessions": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "home_shortcut_plans": "ཐུན་འཆར།",
   "home_chants": "ཞལ་འདོན།",
   "home_mala": "ཕྲེང་བ།",

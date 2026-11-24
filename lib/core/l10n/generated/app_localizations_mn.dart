@@ -73,6 +73,17 @@ class AppLocalizationsMn extends AppLocalizations {
   }
 
   @override
+  String home_practices_sessions(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count хичээл',
+      one: '1 хичээл',
+    );
+    return '$_temp0';
+  }
+
+  @override
   String get home_shortcut_plans => 'Төлөвлөгөө';
 
   @override

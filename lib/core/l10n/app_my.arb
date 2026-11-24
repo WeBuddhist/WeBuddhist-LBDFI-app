@@ -19,6 +19,7 @@
   "home_overall_stats": "စုစုပေါင်း စာရင်းအင်း",
   "home_plans_count": "သင်ခန်းစာအစီအစဉ် {count} ခု",
   "home_recitation_count": "ရွတ်ဆိုရန်စာ {count} ပုဒ်",
+  "home_practices_sessions": "{count, plural,\nother {{count} ကြိမ်}\n}",
   "home_shortcut_plans": "သင်ခန်းစာအစီအစဉ်များ",
   "home_chants": "ရွတ်ဆိုရန်စာများ",
   "home_mala": "ပုတီး",

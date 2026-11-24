@@ -73,6 +73,17 @@ class AppLocalizationsNe extends AppLocalizations {
   }
 
   @override
+  String home_practices_sessions(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count सत्रहरू',
+      one: '1 सत्र',
+    );
+    return '$_temp0';
+  }
+
+  @override
   String get home_shortcut_plans => 'योजनाहरू';
 
   @override

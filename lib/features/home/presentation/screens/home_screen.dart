@@ -283,28 +283,30 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     );
   }
 
+  /// Always shown to members, 0 included; a failed read leaves the count
+  /// out. Guests have no practices to count.
   Widget _buildMyPracticesSection() {
-    final routineInfoAsync = ref.watch(routineInfoFutureProvider);
+    final isGuest = ref.watch(
+      authProvider.select((auth) => !auth.isLoggedIn || auth.isGuest),
+    );
+    if (isGuest) return const SizedBox.shrink();
 
-    return routineInfoAsync.when(
-      data: (infoEither) {
-        return infoEither.fold((_) => const SizedBox.shrink(), (info) {
-          if (info.seriesCount == 0 && info.recitationCount == 0) {
-            return const SizedBox.shrink();
-          }
-          return MyPracticesStatsCard(
-            routineInfo: info,
-            onTap: () {
-              ref
-                  .read(homeAnalyticsProvider)
-                  .cardTapped(section: HomeSection.stats);
-              context.pushNamed('my-practices');
-            },
-          );
-        });
+    final routineInfoAsync = ref.watch(routineInfoFutureProvider);
+    if (routineInfoAsync.isLoading && !routineInfoAsync.hasValue) {
+      return const MyPracticesStatsCardSkeleton();
+    }
+    final count = routineInfoAsync.valueOrNull?.fold(
+      (_) => null,
+      (info) => info.totalCount,
+    );
+    return MyPracticesStatsCard(
+      count: count,
+      onTap: () {
+        ref
+            .read(homeAnalyticsProvider)
+            .cardTapped(section: HomeSection.stats);
+        context.pushNamed('my-practices');
       },
-      loading: () => const MyPracticesStatsCardSkeleton(),
-      error: (_, __) => const SizedBox.shrink(),
     );
   }
 

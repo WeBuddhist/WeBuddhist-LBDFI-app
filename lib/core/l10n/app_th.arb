@@ -19,6 +19,7 @@
   "home_overall_stats": "สถิติโดยรวม",
   "home_plans_count": "{count} แผนการปฏิบัติ",
   "home_recitation_count": "{count} บทสวด",
+  "home_practices_sessions": "{count, plural,\nother {{count} ครั้ง}\n}",
   "home_shortcut_plans": "แผนการปฏิบัติ",
   "home_chants": "บทสวด",
   "home_mala": "ลูกประคำ",
