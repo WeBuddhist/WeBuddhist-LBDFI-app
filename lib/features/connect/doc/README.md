@@ -8,9 +8,10 @@ Social hub tab: unified feed, group events, and group discovery from followed co
 
 ## User-facing functionality
 
-- Main nav **Connect** tab: guests and members with no spaces see a landing page (hero with space search, then popular spaces); otherwise the page of the space last opened, with ☰ opening **Your spaces** to switch
+- Main nav **Connect** tab: guests and members with no spaces see a landing page (hero with space search, then the "Looking for" spaces list sorted Popular / Newly added / Most active); otherwise the page of the space last opened, with ☰ opening **Your spaces** to switch
 - **Feed** — merged posts, events, practices from followed groups, shown on Home as "From the community" (preview + full screen); posts carry likes and comments
-- Group search (`GroupSearchScreen`), reached from the landing page and Your spaces
+- Group search (`GroupSearchScreen`), reached from the landing page and Your spaces: matches on top (joined spaces included), the same "Looking for" list below
+- Discover and search read `GET /api/v2/spaces` (`ApiConfig.spacesV2Path`); the sort is `discoverSpaceSortProvider` (`SpaceSort` → `sort_by`), shared by both screens, each sort with its own stored first page
 - Post detail (drawer from a card, or `/home/posts/:postId` route from a push) with comment thread
 - Optimistic pending join/unjoin while API catches up
 
@@ -39,6 +40,7 @@ connect/
 | Search | `group_search_provider.dart`, `group_search_screen.dart` |
 | Post detail | `connect_post_detail_screen.dart` (`ConnectPostDetailPanel`), `connect_post_detail_drawer.dart` |
 | Optimistic UI | `pendingJoinedGroupsProvider`, `pendingUnjoinedGroupIdsProvider` |
+| Analytics | `presentation/utils/connect_analytics.dart`; `ConnectPostCard` tracks only when given a `ConnectPostPlacement`, and a surface must watch `connectPostViewTrackerProvider` (keyed by `placement.viewScope`) for as long as one visit lasts; a group page passes its own `visitId` so two open copies count separately |
 | Barrel | `connect.dart` (screen only) |
 
 ## State management
@@ -46,7 +48,7 @@ connect/
 - `StateNotifierProvider.autoDispose` with explicit state classes per tab (`myUnifiedConnectFeedProvider` / `discoverUnifiedConnectFeedProvider`, events, practices, `discoverGroupsProvider`, `groupSearchProvider`, `connectPostCommentsProvider` family)
 - `FutureProvider`: `myGroupsProvider`
 - `StateProvider`: pending join/unjoin optimistic state
-- `joinedSpacesProvider` — joined spaces merged with pending joins/leaves; `connectLastSpaceProvider` — space the tab last showed (SharedPreferences)
+- `joinedSpacesProvider` — joined spaces merged with pending joins/leaves; `connectLastSpaceProvider` — space the tab last showed (SharedPreferences); `connectOpenedSpacesProvider` — spaces the tab has opened, for the landing rule (first visit opens on the space info, later visits on the feed with the header scrolled away)
 - `homeCommunityFeedProvider` — Home shows the member's own feed, falling back to Discover once it loads empty
 
 ## Data sources
@@ -57,7 +59,7 @@ connect/
 ## Cross-feature dependencies
 
 - **auth** — guest gating, login prompts
-- **group_chat** — `chatRoomsProvider` / `chatRoomsPushRefreshProvider` drive the ☰ unread dot (`unreadSpaceIdsProvider`)
+- **group_chat** — `chatRoomsProvider` / `chatRoomsPushRefreshProvider` drive the unread dots (`unreadSpacesProvider`): the bottom-nav Connect tab for any space (`MainNavigationBottomBar`), ☰ for another space, the space in "Your spaces", then the space page: a dot on the chat button and/or on 🙏, never a number (`SpaceUnread`, from v2's per-type `unread`). Marking one type read clears its badge at once (`ChatRoomsNotifier.markReadLocally`)
 - **group_profile** — entities (`GroupProfile`, `GroupEvent`, `GroupPractice`), repository, follow invalidation
 - **core** — `contentLanguageProvider`, theme
 

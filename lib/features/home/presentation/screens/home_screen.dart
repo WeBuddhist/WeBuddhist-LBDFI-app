@@ -27,7 +27,7 @@ import 'package:flutter_pecha/features/home/presentation/providers/home_poems_pr
 import 'package:flutter_pecha/features/home/presentation/widgets/poems_section.dart';
 import 'package:flutter_pecha/features/home/presentation/widgets/my_practices_stats_card.dart';
 import 'package:flutter_pecha/features/home/presentation/widgets/my_practices_stats_card_skeleton.dart';
-import 'package:flutter_pecha/features/home/presentation/widgets/verse_of_day_card.dart';
+import 'package:flutter_pecha/features/home/presentation/widgets/verse_of_day_carousel.dart';
 import 'package:flutter_pecha/features/home/presentation/widgets/verse_of_day_skeleton.dart';
 import 'package:flutter_pecha/features/notifications/application/notification_sync_engine.dart';
 import 'package:flutter_pecha/features/plans/data/utils/plan_utils.dart';
@@ -241,7 +241,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       ),
       if (events != null) events.refresh(),
       ref.read(homePoemsPreviewSourceProvider).refresh(),
-      ref.read(verseOfDayDomainRepositoryProvider).refreshVerseOfDay(
+      // The verse-of-the-day week; also stores today's verse on its own.
+      ref.read(verseOfDayDomainRepositoryProvider).refreshRecentVerses(
         language: language,
       ),
       ref.read(todayEventsDomainRepositoryProvider).refreshTodayEvents(
@@ -321,25 +322,36 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
   /// Likes and comments live in their own providers, which stay alive with
   /// the card, so invalidating the verse alone leaves their counts stale.
+  ///
+  /// Covers every day of the week that has a card on screen; a day whose
+  /// providers don't exist loads fresh when its card first shows.
   void _refreshVerseOfDayEngagement() {
-    final verseId = ref
-        .read(verseOfDayFutureProvider)
-        .valueOrNull
-        ?.fold((_) => null, (verse) => verse.id);
-    if (verseId == null || verseId.isEmpty) return;
+    final weekIds =
+        ref
+            .read(recentVersesOfDayProvider)
+            .valueOrNull
+            ?.fold((_) => null, (verses) => verses.map((v) => v.id)) ??
+        const <String>[];
 
-    ref.read(verseOfDayLikesProvider(verseId).notifier).load();
-    ref.read(verseOfDayCommentsProvider(verseId).notifier).loadInitial();
+    for (final verseId in weekIds) {
+      if (verseId.isEmpty) continue;
+      if (ref.exists(verseOfDayLikesProvider(verseId))) {
+        ref.read(verseOfDayLikesProvider(verseId).notifier).load();
+      }
+      if (ref.exists(verseOfDayCommentsProvider(verseId))) {
+        ref.read(verseOfDayCommentsProvider(verseId).notifier).loadInitial();
+      }
+    }
   }
 
   Widget _buildVerseOfDaySection() {
-    final verseAsync = ref.watch(verseOfDayFutureProvider);
+    final versesAsync = ref.watch(recentVersesOfDayProvider);
 
-    return verseAsync.when(
-      data: (verseEither) {
-        return verseEither.fold(
+    return versesAsync.when(
+      data: (versesEither) {
+        return versesEither.fold(
           (_) => const SizedBox.shrink(),
-          (verse) => VerseOfDayCard(verseOfDay: verse),
+          (verses) => VerseOfDayCarousel(verses: verses),
         );
       },
       loading: () => const VerseOfDaySkeleton(),

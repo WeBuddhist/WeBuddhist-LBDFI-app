@@ -164,20 +164,19 @@
   "recitations_search_for": "尋找持誦內容",
   "recitations_no_found": "尚無相關持誦內容",
   "recitations_no_content": "沒有可用的持誦",
-  "my_recitation_collection_new_title": "新持誦集",
+  "chant_book_new_title": "新持誦集",
   "my_recitation_collection_next": "下一步",
   "my_recitation_collection_create": "建立",
-  "my_recitation_collection_create_button": "建立持誦集",
   "my_recitation_collection_change_title": "變更標題",
   "my_recitation_collection_change": "變更",
   "my_recitation_collection_add_chants": "新增持誦",
   "my_recitation_collection_search_chants": "搜尋持誦",
-  "my_recitation_collection_add_to_collection": "加入持誦集",
-  "my_recitation_collection_edit": "編輯持誦集",
-  "my_recitation_collection_delete": "刪除持誦集",
-  "my_recitation_collection_delete_title": "要刪除持誦集嗎？",
-  "my_recitation_collection_delete_message": "此持誦集將被永久刪除",
-  "my_recitation_collection_fallback_title": "持誦集",
+  "chant_book_add_to": "加入持誦集",
+  "chant_book_edit": "編輯持誦集",
+  "chant_book_delete": "刪除持誦集",
+  "chant_book_delete_title": "要刪除持誦集嗎？",
+  "chant_book_delete_message": "此持誦集將被永久刪除",
+  "chant_book_fallback_title": "持誦集",
   "my_recitation_collection_unavailable": "已無法使用",
   "my_recitation_collection_chant_count": "{count, plural,\n=0 {0 段持誦}\n=1 {1 段持誦}\nother {{count} 段持誦}\n}",
   "@my_recitation_collection_chant_count": {
@@ -195,8 +194,8 @@
       }
     }
   },
-  "bookmarks_empty_chant_collections_title": "尚無加入書籤的法本",
-  "bookmarks_empty_chant_collections_subtitle": "將法本加入書籤，，即可收藏於此",
+  "chant_book_bookmarks_empty_title": "尚無加入書籤的持誦集",
+  "chant_book_bookmarks_empty_subtitle": "將持誦集加入書籤，即可收藏於此",
   "notification_allow_title": "允許通知",
   "notification_allow_subtitle_disabled": "需要權限。請點此前往「設定」授權",
   "notification_snack_permission_denied": "通知已被封鎖。請在「設定」中開啟",
@@ -360,6 +359,11 @@
   "anonymous": "匿名",
   "noContentAvailable": "沒有可用內容",
   "unableToLoad": "無法載入，請再試一次",
+  "reader_not_translated": "未翻譯",
+  "error_offline_title": "沒有網路連線",
+  "error_server_title": "目前無法載入",
+  "reader_error_server_message": "目前無法載入此經文，請稍後再試。",
+  "chants_error_server_message": "目前無法載入持誦，請稍後再試。",
   "somethingWrong": "出了點問題，請檢查您的連接並重試",
   "source": "來源",
   "noTasks": "沒有可用任務",
@@ -541,6 +545,64 @@
       }
     }
   },
+  "calendar_choose_calendar": "選擇日曆",
+  "calendar_tradition_vajrayana": "金剛乘",
+  "calendar_tradition_theravada": "上座部",
+  "calendar_tradition_mahayana": "大乘",
+  "calendar_type_phugpa": "藏曆（浦派）",
+  "calendar_type_tsurphu": "藏曆（楚布派）",
+  "calendar_type_nyingmapa": "寧瑪派",
+  "calendar_type_sinhalese": "僧伽羅曆",
+  "calendar_type_thai": "泰曆",
+  "calendar_type_burmese": "緬甸曆",
+  "calendar_type_lao": "寮國曆",
+  "calendar_type_chinese": "農曆",
+  "calendar_type_vietnamese": "越南曆",
+  "calendar_type_korean": "韓國曆",
+  "calendar_type_japanese": "日本曆",
+  "calendar_today": "今天",
+  "calendar_no_events": "沒有活動",
+  "calendar_source_lunar": "陰曆",
+  "calendar_add_event": "新增活動",
+  "calendar_event_name": "活動名稱",
+  "calendar_event_name_hint": "在日曆中新增活動",
+  "calendar_repeat": "重複",
+  "calendar_does_not_repeat": "不重複",
+  "calendar_repeat_weekly": "每週",
+  "calendar_repeat_monthly": "每月",
+  "calendar_repeat_yearly": "每年",
+  "calendar_repeat_monthly_lunar": "每月（陰曆{day}日）",
+  "@calendar_repeat_monthly_lunar": {
+    "placeholders": {
+      "day": {
+        "type": "String"
+      }
+    }
+  },
+  "calendar_repeat_yearly_lunar": "每年（陰曆日期）",
+  "calendar_delete_event": "刪除活動",
+  "calendar_delete_event_title": "刪除活動？",
+  "calendar_delete_event_body": "「{title}」將從你的日曆中移除。此操作無法復原。",
+  "@calendar_delete_event_body": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "calendar_delete_repeating_title": "刪除重複活動？",
+  "calendar_delete_repeating_body": "「{title}」（{repeat}）的所有日期都將從你的日曆中移除。此操作無法復原。",
+  "@calendar_delete_repeating_body": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      },
+      "repeat": {
+        "type": "String"
+      }
+    }
+  },
+  "calendar_event_deleted": "已刪除活動",
   "moon_phase_new_moon": "新月",
   "moon_phase_first_quarter": "上弦月",
   "moon_phase_full_moon": "满月",
@@ -614,15 +676,15 @@
   "group_members_empty": "尚無成員",
   "group_member_admin": "管理員",
   "group_remove_member": "移除 {name}",
-  "group_remove_member_title": "要從社群中移除嗎？",
-  "group_remove_member_message": "{name} 將被移出此社群，且在禁令解除前無法重新加入",
-  "group_remove_member_blocked_for": "封鎖期間：",
+  "group_remove_member_title": "移除 {name}",
+  "group_remove_member_message": "對方將被移出此社群，且在 {duration} 內無法重新加入。",
+  "group_remove_member_blocked_for": "無法重新加入的期限",
   "group_remove_member_duration_day": "1 天",
   "group_remove_member_duration_days": "{count} 天",
   "group_remove_member_duration_year": "1 年",
   "group_remove_member_reason_label": "原因（選填）",
-  "group_remove_member_reason_hint": "其他...",
-  "group_remove_member_action": "移除",
+  "group_remove_member_reason_hint": "您為什麼要移除此成員？",
+  "group_remove_member_action": "移除成員",
   "group_remove_member_success": "已將 {name} 移出社群",
   "group_remove_member_error": "無法移除此成員，請再試一次",
   "group_join_banned_until": "您已被移出此社群，在 {date} 之前無法重新加入",
@@ -668,7 +730,7 @@
   "group_accumulator_session_share_message": "我在 WeBuddhist 上 {group} 社群的共修計數「{accumulation}」中完成了 {count} 遍持誦，快來加入我吧！",
   "group_accumulator_session_share_message_no_group": "我在 WeBuddhist 上的共修計數活動「{accumulation}」中完成了 {count} 遍的持誦，快來加入我吧！",
   "group_accumulator_session_share_error": "無法分享課誦，請重試",
-  "share_this_quote": "分享這句話",
+  "share_this_verse": "分享這段偈頌",
   "shared_from": "分享自",
   "verse_share_error": "無法分享引文，請再試一次",
   "share_app_message": "我一直在用這個應用程式培養每日佛法修持的習慣，覺得您也會喜歡。",
@@ -684,6 +746,21 @@
   "share_plan_subject": "在WeBuddhist上和我一起吧",
   "share_group_invite_message": "來這個社群和我一起吧。讓我們在 WeBuddhist 上一起修持！",
   "connect_subtitle": "尋找你的社群，一起修持",
+  "connect_looking_for": "正在尋找",
+  "connect_sort_spaces": "排序社群",
+  "connect_sort_popular": "熱門",
+  "connect_sort_newly_added": "最新加入",
+  "connect_sort_most_active": "最活躍",
+  "connect_find_your_space": "尋找你的社群",
+  "connect_your_spaces": "你的社群",
+  "connect_no_spaces_match": "找不到符合「{query}」的社群",
+  "@connect_no_spaces_match": {
+    "placeholders": {
+      "query": {
+        "type": "String"
+      }
+    }
+  },
   "discover_groups": "探索社群",
   "my_groups": "我的社群",
   "see_all": "查看全部",
@@ -1105,7 +1182,7 @@
       }
     }
   },
-  "practice_collection_already_added": "此持誦集已在您的修持中",
+  "chant_book_already_in_practices": "此持誦集已在您的修持中",
   "practice_group_accumulator_already_added": "此共修計數已在您的修持中",
   "event_prayer_edit_request": "編輯迴向祈願內容",
   "event_prayer_delete_title": "要刪除此迴向祈願?",
@@ -1143,5 +1220,46 @@
   "reader_show_script_in": "{language}顯示方式",
   "reader_verse_label": "偈頌 {number}",
   "reader_tab_commentary": "注釋",
-  "reader_tab_versions": "版本"
+  "reader_tab_versions": "版本",
+  "chants_filter_all": "全部",
+  "chants_chant_books": "持誦集",
+  "chants_filter_single_chants": "單篇持誦",
+  "chants_my_chant_books_title": "我的持誦集",
+  "chants_text_only": "純文字持誦",
+  "chants_from_your_spaces": "來自你的社群",
+  "chants_explore_more": "探索更多",
+  "chants_create_chant_book": "持誦集",
+  "chants_open_chant": "開啟持誦",
+  "chants_your_spaces": "你的社群",
+  "chants_other_spaces": "其他社群",
+  "chants_search_hint_chant_books": "搜尋持誦與持誦集",
+  "chants_cant_find": "找不到你要的經文嗎？",
+  "chants_request_text": "申請經文",
+  "chants_request_done": "已申請",
+  "chants_request_sent": "謝謝，我們已收到你的申請。",
+  "chants_request_limit": "你今天已送出許多申請，請稍後再試。",
+  "chants_with_audio": "有音檔的持誦",
+  "chants_audio_chants": "音檔持誦",
+  "reader_no_resources_title": "此段落尚無注釋或版本",
+  "reader_no_resources_subtitle": "我們會定期新增文本，請稍後再來查看",
+  "mala_section_practice": "修持",
+  "mala_section_appearance": "外觀",
+  "mala_section_save_share": "儲存與分享",
+  "mala_mantra_animation": "咒語動畫",
+  "mala_play_animation": "播放動畫",
+  "mala_speed": "速度",
+  "mala_animation_off": "關閉",
+  "mala_bead_style": "念珠款式",
+  "mala_bead_default": "預設",
+  "mala_use_this_style": "使用此款式",
+  "mala_bead_style_updated": "念珠款式已更新",
+  "mala_change_image": "更換圖片",
+  "mala_use_image": "使用",
+  "mala_restore_default_image": "恢復預設",
+  "mala_image_updated": "圖片已更新",
+  "mala_images_empty": "沒有可用的圖片",
+  "mala_images_load_error": "無法載入圖片",
+  "mala_bookmarked": "已加入書籤",
+  "mala_beads_load_error": "無法載入念珠款式",
+  "mala_appearance_save_failed": "無法儲存。請再試一次"
 }

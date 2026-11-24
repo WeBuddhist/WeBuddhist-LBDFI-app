@@ -229,24 +229,18 @@ class _ReaderVerseSheetState extends ConsumerState<ReaderVerseSheet> {
               ],
             ),
           ),
-          if (tabs.isNotEmpty)
-            Padding(
-              // The track lands 72 below the top, as WF13; its tap target
-              // reaches 2 past it either way.
-              padding: const EdgeInsets.fromLTRB(16, 10, 16, 6),
-              child: ReaderSheetSegments<ReaderResourceTab>(
-                values: tabs,
-                selected: tabs.contains(open) ? open! : tabs.first,
-                labelOf:
-                    (tab) => switch (tab) {
-                      ReaderResourceTab.commentary => l10n.reader_tab_commentary,
-                      ReaderResourceTab.versions => l10n.reader_tab_versions,
-                      ReaderResourceTab.videos => l10n.reader_videos,
-                      ReaderResourceTab.rootText => l10n.root_text,
-                    },
-                onSelected: _onTab,
-              ),
-            ),
+          ReaderResourceTabBar(
+            tabs: tabs,
+            selected: open,
+            labelOf:
+                (tab) => switch (tab) {
+                  ReaderResourceTab.commentary => l10n.reader_tab_commentary,
+                  ReaderResourceTab.versions => l10n.reader_tab_versions,
+                  ReaderResourceTab.videos => l10n.reader_videos,
+                  ReaderResourceTab.rootText => l10n.root_text,
+                },
+            onSelected: _onTab,
+          ),
           Expanded(
             child: switch (open) {
               // Keyed by verse: a new verse's list starts on its first
@@ -275,9 +269,14 @@ class _ReaderVerseSheetState extends ConsumerState<ReaderVerseSheet> {
                 onOpened: () => _track(ReaderAction.video),
               ),
               // The verse's counts are loading; the first tab with
-              // something opens once they arrive.
+              // something opens once they arrive. A verse with nothing at
+              // all says so.
               null =>
-                info.isLoading ? const CommentarySkeleton() : const SizedBox(),
+                info.isLoading
+                    ? const CommentarySkeleton()
+                    : info.hasValue && tabs.isEmpty
+                    ? const ReaderNoResources()
+                    : const SizedBox(),
             },
           ),
         ],
@@ -304,6 +303,119 @@ List<ReaderResourceTab> readerResourceTabs(
     if (info.videos.isNotEmpty) ReaderResourceTab.videos,
     if (info.relatedText.hasRootText) ReaderResourceTab.rootText,
   ];
+}
+
+/// The row under a verse sheet's header (#1146): the segmented tabs when
+/// the verse has two or more, a plain label naming the one it has when it
+/// has a single one (a lone segment reads as a button that does nothing),
+/// and nothing when it has none.
+class ReaderResourceTabBar extends ConsumerWidget {
+  const ReaderResourceTabBar({
+    super.key,
+    required this.tabs,
+    required this.selected,
+    required this.labelOf,
+    required this.onSelected,
+  });
+
+  final List<ReaderResourceTab> tabs;
+  final ReaderResourceTab? selected;
+  final String Function(ReaderResourceTab tab) labelOf;
+  final ValueChanged<ReaderResourceTab> onSelected;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    if (tabs.isEmpty) return const SizedBox.shrink();
+    if (tabs.length == 1) {
+      final palette = ReaderPalette.resolve(Theme.of(context), ref);
+      return Padding(
+        // Lined up with the language chips below it.
+        padding: const EdgeInsets.fromLTRB(
+          readerVerseSheetInset,
+          10,
+          readerVerseSheetInset,
+          6,
+        ),
+        child: Semantics(
+          header: true,
+          child: Text(
+            labelOf(tabs.single),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: readerSheetText(
+              context,
+              ReaderSheetTextRole.segmentSelected,
+              color: palette.ink,
+            ),
+          ),
+        ),
+      );
+    }
+    return Padding(
+      // The track lands 72 below the top, as WF13; its tap target reaches 2
+      // past it either way.
+      padding: const EdgeInsets.fromLTRB(16, 10, 16, 6),
+      child: ReaderSheetSegments<ReaderResourceTab>(
+        values: tabs,
+        selected: tabs.contains(selected) ? selected! : tabs.first,
+        labelOf: labelOf,
+        onSelected: onSelected,
+      ),
+    );
+  }
+}
+
+/// The sheet of a verse with no commentaries, versions, videos or root
+/// text: an open book in a soft circle, "No commentaries or versions
+/// available for this segment" and a line saying more are coming.
+class ReaderNoResources extends ConsumerWidget {
+  const ReaderNoResources({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final palette = ReaderPalette.resolve(Theme.of(context), ref);
+    final l10n = context.l10n;
+    return Center(
+      child: SingleChildScrollView(
+        padding: const EdgeInsets.fromLTRB(32, 16, 32, 32),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              width: 64,
+              height: 64,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: palette.drawerChip,
+              ),
+              child: Icon(AppAssets.bookOpen, size: 24, color: palette.ink),
+            ),
+            const SizedBox(height: 16),
+            Text(
+              l10n.reader_no_resources_title,
+              textAlign: TextAlign.center,
+              style: readerSheetText(
+                context,
+                ReaderSheetTextRole.group,
+                color: palette.ink,
+              ).copyWith(height: 1.5),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              l10n.reader_no_resources_subtitle,
+              textAlign: TextAlign.center,
+              style: readerSheetText(
+                context,
+                ReaderSheetTextRole.chip,
+                color: palette.sheetMuted,
+                weight: FontWeight.w400,
+              ).copyWith(height: 1.4),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 }
 
 /// "Verse 1.113" and the verse's actions.
@@ -530,7 +642,11 @@ String readerPlainText(String html) {
   var text = html;
   for (final tag in const ['sup', 'i']) {
     text = text.replaceAll(
-      RegExp('<$tag(?:\\s[^>]*)?>.*?<\\/$tag>', caseSensitive: false, dotAll: true),
+      RegExp(
+        '<$tag(?:\\s[^>]*)?>.*?<\\/$tag>',
+        caseSensitive: false,
+        dotAll: true,
+      ),
       '',
     );
   }

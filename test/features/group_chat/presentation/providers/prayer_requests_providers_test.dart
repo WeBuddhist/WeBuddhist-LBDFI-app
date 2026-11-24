@@ -1,5 +1,9 @@
 import 'dart:async';
 
+import 'package:flutter_pecha/core/analytics/analytics_events.dart';
+import 'package:flutter_pecha/core/analytics/analytics_providers.dart';
+import 'package:flutter_pecha/core/analytics/analytics_service.dart';
+import 'package:flutter_pecha/core/analytics/no_op_analytics_service.dart';
 import 'package:flutter_pecha/core/config/locale/locale_notifier.dart';
 import 'package:flutter_pecha/core/error/failures.dart';
 import 'package:flutter_pecha/core/realtime/realtime_providers.dart';
@@ -23,6 +27,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:fpdart/fpdart.dart';
 
+import '../../../../core/analytics/recording_analytics_service.dart';
 import '../../../../helpers/fake_realtime_signals.dart';
 
 ChatMessageDTO _prayer(
@@ -327,9 +332,16 @@ class _FakeGroupChatRepository implements GroupChatRepository {
 
   final markedRead = <String>[];
 
+  /// The `message_type` of each mark-read, null for every type.
+  final markedReadTypes = <String?>[];
+
   @override
-  Future<Either<Failure, Unit>> markRoomRead(String roomId) async {
+  Future<Either<Failure, Unit>> markRoomRead(
+    String roomId, {
+    String? messageType,
+  }) async {
     markedRead.add(roomId);
+    markedReadTypes.add(messageType);
     return const Right(unit);
   }
 
@@ -503,9 +515,11 @@ void main() {
     PrayerPacing pacing = _instant,
     String translationLanguage = 'EN',
     String mantraLanguage = 'en',
+    AnalyticsService analytics = const NoOpAnalyticsService(),
   }) {
     return ProviderContainer(
       overrides: [
+        analyticsServiceProvider.overrideWithValue(analytics),
         groupChatRepositoryProvider.overrideWithValue(repository),
         prayerPacingProvider.overrideWithValue(pacing),
         prayerTranslationLanguageProvider.overrideWithValue(
@@ -964,6 +978,24 @@ void main() {
       expect(notifier.state.mantra, isNull);
     });
 
+    test('the room counts as fetched only once its requests load, so a '
+        'failed list never marks the board read', () async {
+      repository =
+          _FakeGroupChatRepository(history: [_prayer('a')])
+            ..listFailure = const ServerFailure('boom');
+      container = buildContainer();
+
+      final notifier = _keepAlive(container);
+      await _settle();
+      expect(notifier.state.roomId, 'room-1');
+      expect(notifier.state.fetchedRoomId, isNull);
+
+      repository.listFailure = null;
+      await notifier.retry();
+      await _settle();
+      expect(notifier.state.fetchedRoomId, 'room-1');
+    });
+
     test('send posts a PRAYER message and inserts it at the top', () async {
       repository = _FakeGroupChatRepository(history: [_prayer('a')]);
       container = buildContainer();
@@ -1295,6 +1327,103 @@ void main() {
       expect(_byId(notifier, 'a').prayerCount, 7);
       expect(_byId(notifier, 'a').prayedByMe, isTrue);
       expect(_byId(notifier, 'a').myPrayerCount, 1);
+    });
+
+    group('analytics', () {
+      late RecordingAnalyticsService analytics;
+
+      List<TrackedEvent> tracked(String name) =>
+          analytics.events.where((event) => event.name == name).toList();
+
+      setUp(() => analytics = RecordingAnalyticsService());
+
+      test('a confirmed pray call counts its prayers', () async {
+        repository = _FakeGroupChatRepository(history: [_prayer('a')]);
+        container = buildContainer(analytics: analytics);
+
+        final notifier = _keepAlive(container);
+        await _settle();
+        notifier.pray('a');
+        await _settle();
+
+        expect(tracked(AnalyticsEvents.prayerRequestPrayed).single.properties, {
+          'group_id': null,
+          'event_id': 'e1',
+          'room_id': 'room-1',
+          'message_id': 'a',
+          'prayer_count': 1,
+        });
+      });
+
+      test('a failed pray call counts nothing', () async {
+        repository = _FakeGroupChatRepository(history: [_prayer('a')])
+          ..prayFailure = const NetworkFailure('offline');
+        container = buildContainer(analytics: analytics);
+
+        final notifier = _keepAlive(container);
+        await _settle();
+        notifier.pray('a');
+        await _settle();
+
+        expect(tracked(AnalyticsEvents.prayerRequestPrayed), isEmpty);
+      });
+
+      test('prayers sent after the sheet closes still count', () async {
+        repository = _FakeGroupChatRepository(history: [_prayer('a')]);
+        container = buildContainer(analytics: analytics);
+
+        final notifier = _keepAlive(container);
+        await _settle();
+        notifier.pray('a');
+        container.dispose();
+        await _settle();
+
+        final prayers = tracked(AnalyticsEvents.prayerRequestPrayed);
+        expect(
+          prayers.fold<int>(
+            0,
+            (total, event) => total + (event.properties['prayer_count'] as int),
+          ),
+          repository.prayedCounts.fold<int>(0, (total, count) => total + count),
+        );
+        expect(prayers, isNotEmpty);
+      });
+
+      test('a new request sends ids only, never its words', () async {
+        repository = _FakeGroupChatRepository(history: const []);
+        container = buildContainer(analytics: analytics);
+
+        final notifier = _keepAlive(container);
+        await _settle();
+        final result = await notifier.send(
+          'Private words',
+          intention: 'health',
+        );
+
+        expect(result.isRight(), isTrue);
+        final properties =
+            tracked(AnalyticsEvents.prayerRequestCreated).single.properties;
+        expect(properties.keys.toSet(), {
+          'group_id',
+          'event_id',
+          'room_id',
+          'message_id',
+        });
+        expect(properties.values, isNot(contains('Private words')));
+        expect(properties.values, isNot(contains('health')));
+      });
+
+      test('only marking a request accomplished counts', () async {
+        repository = _FakeGroupChatRepository(history: [_prayer('a')]);
+        container = buildContainer(analytics: analytics);
+
+        final notifier = _keepAlive(container);
+        await _settle();
+        await notifier.setCompleted('a', isCompleted: true);
+        await notifier.setCompleted('a', isCompleted: false);
+
+        expect(tracked(AnalyticsEvents.prayerRequestCompleted), hasLength(1));
+      });
     });
 
     test('praying again keeps the prayer and adds to my count', () async {
@@ -2096,6 +2225,7 @@ void main() {
       await _settle();
       expect(notifier.state.requests.map((r) => r.id), ['b', 'a']);
       expect(repository.markedRead, ['room-1']);
+      expect(repository.markedReadTypes, [ChatMessageDTO.typePrayer]);
 
       // A prayer on a loaded row is not a new request.
       repository.history = [_prayer('b', count: 1), _prayer('a')];
@@ -2105,6 +2235,38 @@ void main() {
       await _settle();
       expect(_byId(notifier, 'b').prayerCount, 1);
       expect(repository.markedRead, ['room-1']);
+    });
+
+    test('new requests on a space board mark only prayer requests read', () async {
+      repository = _FakeGroupChatRepository(history: [_prayer('a')]);
+      final signals = FakeRealtimeSignals();
+      container = ProviderContainer(
+        overrides: [
+          groupChatRepositoryProvider.overrideWithValue(repository),
+          prayerPacingProvider.overrideWithValue(_instant),
+          prayerTranslationLanguageProvider.overrideWithValue('EN'),
+          prayerMantraLanguageProvider.overrideWithValue('en'),
+          realtimeSignalsProvider.overrideWithValue(signals),
+          firebaseSignedInProvider.overrideWith((ref) => true),
+        ],
+      );
+      container.listen(prayerRequestsProvider(_groupScope), (_, _) {});
+      await _settle();
+      container.listen(
+        prayerRoomLiveProvider((scope: _groupScope, roomId: 'room-1')),
+        (_, _) {},
+      );
+      await _settle();
+
+      repository.history = [_prayer('b'), _prayer('a')];
+      signals.emit(SignalPaths.chatRoom('room-1'), {
+        'prayers_changed_at': DateTime.utc(2026, 10, 29),
+      });
+      await _settle();
+
+      // The space's chat shares the room and keeps its own unread count.
+      expect(repository.markedRead, ['room-1']);
+      expect(repository.markedReadTypes, [ChatMessageDTO.typePrayer]);
     });
 
     test('a request added past the end under oldest can be paged to', () async {

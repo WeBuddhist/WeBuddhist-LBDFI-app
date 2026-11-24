@@ -164,12 +164,6 @@ class AppLocalizationsMn extends AppLocalizations {
   String get mala_settings_section => 'Mala settings';
 
   @override
-  String get mala_others_section => 'Others';
-
-  @override
-  String get mala_mantra_speed => 'Mantra speed';
-
-  @override
   String get mala_speed_normal => 'Normal';
 
   @override
@@ -379,16 +373,13 @@ class AppLocalizationsMn extends AppLocalizations {
   String get recitations_no_content => 'Уншлага байхгүй байна';
 
   @override
-  String get my_recitation_collection_new_title => 'Шинэ цуглуулга';
+  String get chant_book_new_title => 'Шинэ магтаалын ном';
 
   @override
   String get my_recitation_collection_next => 'Дараах';
 
   @override
   String get my_recitation_collection_create => 'Үүсгэх';
-
-  @override
-  String get my_recitation_collection_create_button => 'Цуглуулга үүсгэх';
 
   @override
   String get my_recitation_collection_change_title => 'Гарчиг өөрчлөх';
@@ -403,23 +394,23 @@ class AppLocalizationsMn extends AppLocalizations {
   String get my_recitation_collection_search_chants => 'Уншлага хайх';
 
   @override
-  String get my_recitation_collection_add_to_collection => 'Цуглуулгад нэмэх';
+  String get chant_book_add_to => 'Магтаалын номд нэмэх';
 
   @override
-  String get my_recitation_collection_edit => 'Цуглуулга засах';
+  String get chant_book_edit => 'Магтаалын ном засах';
 
   @override
-  String get my_recitation_collection_delete => 'Цуглуулга устгах';
+  String get chant_book_delete => 'Магтаалын ном устгах';
 
   @override
-  String get my_recitation_collection_delete_title => 'Цуглуулгыг устгах уу?';
+  String get chant_book_delete_title => 'Магтаалын номыг устгах уу?';
 
   @override
-  String get my_recitation_collection_delete_message =>
-      'Энэ цуглуулга бүрмөсөн устгагдана';
+  String get chant_book_delete_message =>
+      'Энэ магтаалын ном бүрмөсөн устгагдана';
 
   @override
-  String get my_recitation_collection_fallback_title => 'Уншлагын цуглуулга';
+  String get chant_book_fallback_title => 'Магтаалын ном';
 
   @override
   String get my_recitation_collection_unavailable => 'Цаашид боломжгүй';
@@ -449,12 +440,12 @@ class AppLocalizationsMn extends AppLocalizations {
   }
 
   @override
-  String get bookmarks_empty_chant_collections_title =>
-      'Хараахан уншлагын цуглуулга хавчуургалаагүй байна';
+  String get chant_book_bookmarks_empty_title =>
+      'Хараахан магтаалын ном хавчуургалаагүй байна';
 
   @override
-  String get bookmarks_empty_chant_collections_subtitle =>
-      'Энд хадгалахын тулд цуглуулга хавчуургалаарай';
+  String get chant_book_bookmarks_empty_subtitle =>
+      'Энд хадгалахын тулд магтаалын ном хавчуургалаарай';
 
   @override
   String get notification_allow_title => 'Мэдэгдэл зөвшөөрөх';
@@ -623,13 +614,30 @@ class AppLocalizationsMn extends AppLocalizations {
   String get connect_landing_title => 'Connect with your Buddhist community';
 
   @override
-  String get connect_popular_spaces => 'Popular spaces';
+  String get connect_looking_for => 'Хайж буй';
 
   @override
-  String get connect_your_spaces => 'Your spaces';
+  String get connect_sort_spaces => 'Орон зайг эрэмбэлэх';
 
   @override
-  String get connect_find_a_space => 'Find a space';
+  String get connect_sort_popular => 'Алдартай';
+
+  @override
+  String get connect_sort_newly_added => 'Шинээр нэмэгдсэн';
+
+  @override
+  String get connect_sort_most_active => 'Хамгийн идэвхтэй';
+
+  @override
+  String get connect_find_your_space => 'Орон зайгаа олоорой';
+
+  @override
+  String connect_no_spaces_match(String query) {
+    return '\"$query\"-д тохирох орон зай олдсонгүй';
+  }
+
+  @override
+  String get connect_your_spaces => 'Таны орон зайнууд';
 
   @override
   String get connect_segment_my => 'Таны орон зай';
@@ -1162,6 +1170,23 @@ class AppLocalizationsMn extends AppLocalizations {
       'Ачаалах боломжгүй. Холболтоо шалгаад дахин оролдоно уу';
 
   @override
+  String get reader_not_translated => 'Орчуулаагүй';
+
+  @override
+  String get error_offline_title => 'Холболт алга';
+
+  @override
+  String get error_server_title => 'Одоогоор ачаалах боломжгүй';
+
+  @override
+  String get reader_error_server_message =>
+      'Энэ эхийг одоогоор ачаалах боломжгүй. Дараа дахин оролдоно уу.';
+
+  @override
+  String get chants_error_server_message =>
+      'Магтаалуудыг одоогоор ачаалах боломжгүй. Дараа дахин оролдоно уу.';
+
+  @override
   String get somethingWrong =>
       'Алдаа гарлаа. Холболтоо шалгаад дахин оролдоно уу';
 
@@ -1302,6 +1327,18 @@ class AppLocalizationsMn extends AppLocalizations {
 
   @override
   String get settings_edit_profile => 'Профайл засах';
+
+  @override
+  String get settings_signed_in_with_google => 'Signed in with Google';
+
+  @override
+  String get settings_signed_in_with_apple => 'Signed in with Apple';
+
+  @override
+  String get settings_signed_in_with_phone => 'Signed in with phone number';
+
+  @override
+  String get settings_signed_in_as => 'Signed in as';
 
   @override
   String get settings_theme => 'Загвар';
@@ -1539,6 +1576,118 @@ class AppLocalizationsMn extends AppLocalizations {
 
   @override
   String get calendar_title => 'Хуанли';
+
+  @override
+  String get calendar_choose_calendar => 'Хуанли сонгох';
+
+  @override
+  String get settings_calendar_row => 'Calendar';
+
+  @override
+  String get calendar_tradition_vajrayana => 'Очир хөлгөн';
+
+  @override
+  String get calendar_tradition_theravada => 'Тэравада';
+
+  @override
+  String get calendar_tradition_mahayana => 'Их хөлгөн';
+
+  @override
+  String get calendar_type_phugpa => 'Төвөд (Пүгба)';
+
+  @override
+  String get calendar_type_tsurphu => 'Төвөд (Цурпү)';
+
+  @override
+  String get calendar_type_nyingmapa => 'Нингма';
+
+  @override
+  String get calendar_type_sinhalese => 'Синхала';
+
+  @override
+  String get calendar_type_thai => 'Тай';
+
+  @override
+  String get calendar_type_burmese => 'Бирм';
+
+  @override
+  String get calendar_type_lao => 'Лаос';
+
+  @override
+  String get calendar_type_chinese => 'Хятад';
+
+  @override
+  String get calendar_type_vietnamese => 'Вьетнам';
+
+  @override
+  String get calendar_type_korean => 'Солонгос';
+
+  @override
+  String get calendar_type_japanese => 'Япон';
+
+  @override
+  String get calendar_today => 'Өнөөдөр';
+
+  @override
+  String get calendar_no_events => 'Арга хэмжээ алга';
+
+  @override
+  String get calendar_source_lunar => 'Билгийн тоолол';
+
+  @override
+  String get calendar_add_event => 'Арга хэмжээ нэмэх';
+
+  @override
+  String get calendar_event_name => 'Арга хэмжээний нэр';
+
+  @override
+  String get calendar_event_name_hint => 'Хуанлидаа арга хэмжээ нэмэх';
+
+  @override
+  String get calendar_repeat => 'Давтах';
+
+  @override
+  String get calendar_does_not_repeat => 'Давтахгүй';
+
+  @override
+  String get calendar_repeat_weekly => 'Долоо хоног бүр';
+
+  @override
+  String get calendar_repeat_monthly => 'Сар бүр';
+
+  @override
+  String get calendar_repeat_yearly => 'Жил бүр';
+
+  @override
+  String calendar_repeat_monthly_lunar(String day) {
+    return 'Сар бүр (билгийн $day-ний өдөр)';
+  }
+
+  @override
+  String get calendar_repeat_yearly_lunar => 'Жил бүр (билгийн огноо)';
+
+  @override
+  String get calendar_delete_event => 'Арга хэмжээ устгах';
+
+  @override
+  String get calendar_delete_event_title => 'Арга хэмжээг устгах уу?';
+
+  @override
+  String calendar_delete_event_body(String title) {
+    return '\"$title\" таны хуанлиас хасагдана. Үүнийг буцаах боломжгүй.';
+  }
+
+  @override
+  String get calendar_delete_repeating_title =>
+      'Давтагдах арга хэмжээг устгах уу?';
+
+  @override
+  String calendar_delete_repeating_body(String title, String repeat) {
+    return '\"$title\" ($repeat)-ийн бүх огноо таны хуанлиас хасагдана. Үүнийг буцаах боломжгүй.';
+  }
+
+  @override
+  String get calendar_event_deleted => 'Арга хэмжээ устгагдлаа';
 
   @override
   String get calendar_upcoming_events => 'Удахгүй болох арга хэмжээ';
@@ -1790,15 +1939,18 @@ class AppLocalizationsMn extends AppLocalizations {
   }
 
   @override
-  String get group_remove_member_title => 'Орон зайгаас хасах уу?';
-
-  @override
-  String group_remove_member_message(String name) {
-    return '$name энэ орон зайгаас хасагдах бөгөөд хориг цуцлагдах хүртэл дахин нэгдэх боломжгүй';
+  String group_remove_member_title(String name) {
+    return '$name-г хасах';
   }
 
   @override
-  String get group_remove_member_blocked_for => 'Хоригийн хугацаа:';
+  String group_remove_member_message(String duration) {
+    return 'Тэд энэ орон зайгаас хасагдах бөгөөд $duration-ийн турш дахин нэгдэх боломжгүй.';
+  }
+
+  @override
+  String get group_remove_member_blocked_for =>
+      'Дахин нэгдэх боломжгүй хугацаа';
 
   @override
   String get group_remove_member_duration_day => '1 өдөр';
@@ -1815,10 +1967,11 @@ class AppLocalizationsMn extends AppLocalizations {
   String get group_remove_member_reason_label => 'Шалтгаан (заавал биш)';
 
   @override
-  String get group_remove_member_reason_hint => 'Бусад...';
+  String get group_remove_member_reason_hint =>
+      'Та энэ гишүүнийг яагаад хасаж байна вэ?';
 
   @override
-  String get group_remove_member_action => 'Хасах';
+  String get group_remove_member_action => 'Гишүүнийг хасах';
 
   @override
   String group_remove_member_success(String name) {
@@ -1917,6 +2070,10 @@ class AppLocalizationsMn extends AppLocalizations {
       'Хуримтлалд нэгдэх боломжгүй байна. Дахин оролдоно уу';
 
   @override
+  String get group_accumulator_practice_unavailable =>
+      'This practice can\'t be opened right now.';
+
+  @override
   String get group_accumulator_join_before_practice =>
       'Дадлагадаа нэмэхээсээ өмнө энэ хуримтлалд нэгдээрэй';
 
@@ -1961,6 +2118,39 @@ class AppLocalizationsMn extends AppLocalizations {
 
   @override
   String get group_accumulator_finish_session => 'Хуралдааныг дуусгах';
+
+  @override
+  String get group_accumulator_completed_recitations =>
+      'You completed recitations';
+
+  @override
+  String get group_accumulator_recite_again => 'Recite again';
+
+  @override
+  String get group_accumulator_finish_and_count => 'Finish and count';
+
+  @override
+  String get group_accumulator_finish_without_counting =>
+      'Finish without counting';
+
+  @override
+  String group_accumulator_recitations_counted(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count recitations counted',
+      one: '1 recitation counted',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String group_accumulator_recitation_count_badge(int count) {
+    return '×$count';
+  }
+
+  @override
+  String get undo => 'Undo';
 
   @override
   String get group_accumulator_offline_recitation => 'Офлайн уншлага';
@@ -2025,7 +2215,7 @@ class AppLocalizationsMn extends AppLocalizations {
       'By this merit, may all beings\nbe free from suffering';
 
   @override
-  String get share_this_quote => 'Энэ ишлэлийг хуваалцах';
+  String get share_this_verse => 'Энэ шүлгийг хуваалцах';
 
   @override
   String get shared_from => 'Хуваалцсан:';
@@ -2652,8 +2842,8 @@ class AppLocalizationsMn extends AppLocalizations {
   String get group_post_updated => 'Таны өөрчлөлт хадгалагдлаа';
 
   @override
-  String get practice_collection_already_added =>
-      'Энэ цуглуулга таны дадлагад аль хэдийн байна';
+  String get chant_book_already_in_practices =>
+      'Энэ магтаалын ном таны дадлагад аль хэдийн байна';
 
   @override
   String get practice_group_accumulator_already_added =>
@@ -3931,6 +4121,10 @@ class AppLocalizationsMn extends AppLocalizations {
       'Duration must be greater than 0';
 
   @override
+  String get timer_duplicate_setup =>
+      'A timer with this duration, sound, and title already exists.';
+
+  @override
   String get splash_tagline_1 => 'We Buddhists practice together';
 
   @override
@@ -3944,6 +4138,9 @@ class AppLocalizationsMn extends AppLocalizations {
 
   @override
   String get timer_duration_hours => 'hours';
+
+  @override
+  String get timer_duration_hr => 'hr';
 
   @override
   String get timer_duration_sec => 'sec';
@@ -4049,4 +4246,132 @@ class AppLocalizationsMn extends AppLocalizations {
 
   @override
   String get reader_tab_versions => 'Хувилбарууд';
+
+  @override
+  String get chants_filter_all => 'Бүгд';
+
+  @override
+  String get chants_chant_books => 'Магтаалын ном';
+
+  @override
+  String get chants_filter_single_chants => 'Дан магтаал';
+
+  @override
+  String get chants_my_chant_books_title => 'Миний магтаалын ном';
+
+  @override
+  String get chants_text_only => 'Зөвхөн бичвэртэй магтаал';
+
+  @override
+  String get chants_from_your_spaces => 'Таны орон зайнаас';
+
+  @override
+  String get chants_explore_more => 'Бусдыг судлах';
+
+  @override
+  String get chants_create_chant_book => 'Магтаалын ном';
+
+  @override
+  String get chants_open_chant => 'Магтаал нээх';
+
+  @override
+  String get chants_your_spaces => 'Таны орон зайнууд';
+
+  @override
+  String get chants_other_spaces => 'Бусад орон зай';
+
+  @override
+  String get chants_search_hint_chant_books =>
+      'Магтаал болон магтаалын ном хайх';
+
+  @override
+  String get chants_cant_find => 'Хайж буй бичвэрээ олсонгүй юу?';
+
+  @override
+  String get chants_request_text => 'Бичвэр хүсэх';
+
+  @override
+  String get chants_request_done => 'Хүсэлт илгээсэн';
+
+  @override
+  String get chants_request_sent => 'Баярлалаа. Таны хүсэлтийг хүлээн авлаа.';
+
+  @override
+  String get chants_request_limit =>
+      'Та өнөөдөр олон хүсэлт илгээсэн байна. Дараа дахин оролдоно уу.';
+
+  @override
+  String get chants_with_audio => 'Аудиотой магтаал';
+
+  @override
+  String get chants_audio_chants => 'Аудио магтаал';
+
+  @override
+  String get reader_no_resources_title =>
+      'Энэ хэсэгт тайлбар эсвэл хувилбар байхгүй байна';
+
+  @override
+  String get reader_no_resources_subtitle =>
+      'Бид шинэ судар тогтмол нэмдэг; удахгүй дахин шалгаарай';
+
+  @override
+  String get mala_section_practice => 'Дадлага';
+
+  @override
+  String get mala_section_appearance => 'Харагдах байдал';
+
+  @override
+  String get mala_section_save_share => 'Хадгалах ба хуваалцах';
+
+  @override
+  String get mala_mantra_animation => 'Тарнины хөдөлгөөн';
+
+  @override
+  String get mala_play_animation => 'Хөдөлгөөн тоглуулах';
+
+  @override
+  String get mala_speed => 'Хурд';
+
+  @override
+  String get mala_animation_off => 'Унтраалттай';
+
+  @override
+  String get mala_bead_style => 'Мөхлөгийн загвар';
+
+  @override
+  String get mala_bead_default => 'Үндсэн';
+
+  @override
+  String get mala_use_this_style => 'Энэ загварыг ашиглах';
+
+  @override
+  String get mala_bead_style_updated => 'Мөхлөгийн загвар шинэчлэгдлээ';
+
+  @override
+  String get mala_change_image => 'Зураг солих';
+
+  @override
+  String get mala_use_image => 'Ашиглах';
+
+  @override
+  String get mala_restore_default_image => 'Үндсэн рүү буцаах';
+
+  @override
+  String get mala_image_updated => 'Зураг шинэчлэгдлээ';
+
+  @override
+  String get mala_images_empty => 'Зураг байхгүй';
+
+  @override
+  String get mala_images_load_error => 'Зургийг ачаалж чадсангүй';
+
+  @override
+  String get mala_bookmarked => 'Хавчуурганд нэмсэн';
+
+  @override
+  String get mala_beads_load_error => 'Мөхлөгийн загваруудыг ачаалж чадсангүй';
+
+  @override
+  String get mala_appearance_save_failed =>
+      'Хадгалж чадсангүй. Дахин оролдоно уу';
 }

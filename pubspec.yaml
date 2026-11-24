@@ -18,6 +18,9 @@ version: 2.42.0+105
 
 environment:
   sdk: ^3.7.2
+  # The Flutter CI builds with; see README "Requirements". Pub reads only the
+  # lower bound, so older Flutter fails here and newer is caught by CI.
+  flutter: 3.41.9
 
 # Dependencies specify other packages that your package needs in order to work.
 # To automatically upgrade your package dependencies to the latest versions
@@ -29,7 +32,7 @@ dependencies:
   flutter:
     sdk: flutter
 
-  airbridge_flutter_sdk: ^4.9.0 # check latest at pub.dev
+  airbridge_flutter_sdk: ^4.12.0 # 4.12+ supports Swift Package Manager
 
   # Audio
   just_audio: ^0.9.36
@@ -60,7 +63,8 @@ dependencies:
   flutter_riverpod: ^2.6.1
 
   # Authentication
-  auth0_flutter: ^1.9.0
+  # 2.5+ supports Swift Package Manager; stay on 2.x (3.x has breaking changes).
+  auth0_flutter: ^2.7.0
 
   # Environment
   flutter_dotenv: ^5.2.1
@@ -121,6 +125,9 @@ dependencies:
 
   # Shared preferences
   shared_preferences: ^2.5.3
+  # Reads the PostHog Android SDK's own preferences file (by name) once, to
+  # tell existing installs from new ones; see app_open_analytics.dart.
+  shared_preferences_android: ^2.4.23
   share_plus: ^12.0.2
   app_links: ^6.4.0
   screenshot: ^3.0.0
@@ -129,7 +136,6 @@ dependencies:
   # Vendored: adds a playInBackground flag for the live player.
   youtube_player_flutter:
     path: packages/youtube_player_flutter
-  image_gallery_saver_plus: ^4.0.1
   image_picker: ^1.1.2
 
   # Network connectivity
@@ -157,12 +163,13 @@ dependencies:
   firebase_messaging: ^16.4.1
   posthog_flutter: ^5.46.0
   package_info_plus: ^9.0.0
-  flutter_image_compress: ^2.4.0
+  flutter_image_compress: ^2.5.1
   pali_script_convertor: ^1.0.1
   clarity_flutter: ^1.10.0
   flutter_map: ^8.3.2
   latlong2: ^0.10.1
   wheel_picker: ^0.4.0
+  visibility_detector: ^0.4.0+2
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -198,6 +205,12 @@ flutter:
   # the material Icons class.
   uses-material-design: true
   generate: true
+
+  # iOS plugins resolve through Swift Package Manager (Firebase ships
+  # prebuilt binaries there). Only flutter_inappwebview_ios (pulled in by the
+  # vendored youtube_player_flutter) still needs CocoaPods.
+  config:
+    enable-swift-package-manager: true
 
   assets:
     - assets/images/

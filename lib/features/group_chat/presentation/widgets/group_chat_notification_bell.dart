@@ -98,6 +98,8 @@ class GroupChatNotificationBell extends ConsumerWidget {
       ..hideCurrentSnackBar()
       ..showSnackBar(
         SnackBar(
+          // An action would otherwise keep it up indefinitely.
+          persist: false,
           content: Text(l10n.group_notifications_master_off),
           action: SnackBarAction(
             label: l10n.group_notifications_open_settings,

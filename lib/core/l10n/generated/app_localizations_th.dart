@@ -161,12 +161,6 @@ class AppLocalizationsTh extends AppLocalizations {
   String get mala_settings_section => 'การตั้งค่าลูกประคำ';
 
   @override
-  String get mala_others_section => 'อื่น ๆ';
-
-  @override
-  String get mala_mantra_speed => 'ความเร็วมนต์';
-
-  @override
   String get mala_speed_normal => 'ปกติ';
 
   @override
@@ -373,16 +367,13 @@ class AppLocalizationsTh extends AppLocalizations {
   String get recitations_no_content => 'ไม่มีบทสวด';
 
   @override
-  String get my_recitation_collection_new_title => 'ชุดบทสวดใหม่';
+  String get chant_book_new_title => 'ชุดบทสวดใหม่';
 
   @override
   String get my_recitation_collection_next => 'ถัดไป';
 
   @override
   String get my_recitation_collection_create => 'สร้าง';
-
-  @override
-  String get my_recitation_collection_create_button => 'สร้างชุดบทสวด';
 
   @override
   String get my_recitation_collection_change_title => 'เปลี่ยนชื่อ';
@@ -397,23 +388,22 @@ class AppLocalizationsTh extends AppLocalizations {
   String get my_recitation_collection_search_chants => 'ค้นหาบทสวด';
 
   @override
-  String get my_recitation_collection_add_to_collection => 'เพิ่มในชุดบทสวด';
+  String get chant_book_add_to => 'เพิ่มในชุดบทสวด';
 
   @override
-  String get my_recitation_collection_edit => 'แก้ไขชุดบทสวด';
+  String get chant_book_edit => 'แก้ไขชุดบทสวด';
 
   @override
-  String get my_recitation_collection_delete => 'ลบชุดบทสวด';
+  String get chant_book_delete => 'ลบชุดบทสวด';
 
   @override
-  String get my_recitation_collection_delete_title => 'ลบชุดบทสวดใช่ไหม';
+  String get chant_book_delete_title => 'ลบชุดบทสวดใช่ไหม';
 
   @override
-  String get my_recitation_collection_delete_message =>
-      'ชุดบทสวดนี้จะถูกลบอย่างถาวร';
+  String get chant_book_delete_message => 'ชุดบทสวดนี้จะถูกลบอย่างถาวร';
 
   @override
-  String get my_recitation_collection_fallback_title => 'ชุดบทสวด';
+  String get chant_book_fallback_title => 'ชุดบทสวด';
 
   @override
   String get my_recitation_collection_unavailable => 'ไม่มีให้ใช้งานแล้ว';
@@ -443,11 +433,11 @@ class AppLocalizationsTh extends AppLocalizations {
   }
 
   @override
-  String get bookmarks_empty_chant_collections_title =>
+  String get chant_book_bookmarks_empty_title =>
       'ยังไม่มีชุดบทสวดที่บุ๊กมาร์กไว้';
 
   @override
-  String get bookmarks_empty_chant_collections_subtitle =>
+  String get chant_book_bookmarks_empty_subtitle =>
       'บุ๊กมาร์กรายการที่สนใจเพื่อเก็บไว้ที่นี่';
 
   @override
@@ -618,13 +608,30 @@ class AppLocalizationsTh extends AppLocalizations {
   String get connect_landing_title => 'Connect with your Buddhist community';
 
   @override
-  String get connect_popular_spaces => 'Popular spaces';
+  String get connect_looking_for => 'กำลังมองหา';
 
   @override
-  String get connect_your_spaces => 'Your spaces';
+  String get connect_sort_spaces => 'เรียงลำดับกลุ่ม';
 
   @override
-  String get connect_find_a_space => 'Find a space';
+  String get connect_sort_popular => 'ยอดนิยม';
+
+  @override
+  String get connect_sort_newly_added => 'เพิ่มใหม่';
+
+  @override
+  String get connect_sort_most_active => 'เคลื่อนไหวมากที่สุด';
+
+  @override
+  String get connect_find_your_space => 'ค้นหากลุ่มของคุณ';
+
+  @override
+  String connect_no_spaces_match(String query) {
+    return 'ไม่พบกลุ่มที่ตรงกับ \"$query\"';
+  }
+
+  @override
+  String get connect_your_spaces => 'กลุ่มของคุณ';
 
   @override
   String get connect_segment_my => 'กลุ่มของคุณ';
@@ -1147,6 +1154,23 @@ class AppLocalizationsTh extends AppLocalizations {
       'ไม่สามารถโหลดได้ ตรวจสอบการเชื่อมต่อแล้วลองอีกครั้ง';
 
   @override
+  String get reader_not_translated => 'ไม่ได้แปล';
+
+  @override
+  String get error_offline_title => 'ไม่มีการเชื่อมต่อ';
+
+  @override
+  String get error_server_title => 'โหลดไม่ได้ในขณะนี้';
+
+  @override
+  String get reader_error_server_message =>
+      'ไม่สามารถโหลดบทนี้ได้ในขณะนี้ โปรดลองอีกครั้งภายหลัง';
+
+  @override
+  String get chants_error_server_message =>
+      'ไม่สามารถโหลดบทสวดได้ในขณะนี้ โปรดลองอีกครั้งภายหลัง';
+
+  @override
   String get somethingWrong =>
       'เกิดข้อผิดพลาด ตรวจสอบการเชื่อมต่อแล้วลองอีกครั้ง';
 
@@ -1285,6 +1309,18 @@ class AppLocalizationsTh extends AppLocalizations {
 
   @override
   String get settings_edit_profile => 'แก้ไขโปรไฟล์';
+
+  @override
+  String get settings_signed_in_with_google => 'Signed in with Google';
+
+  @override
+  String get settings_signed_in_with_apple => 'Signed in with Apple';
+
+  @override
+  String get settings_signed_in_with_phone => 'Signed in with phone number';
+
+  @override
+  String get settings_signed_in_as => 'Signed in as';
 
   @override
   String get settings_theme => 'ธีม';
@@ -1513,6 +1549,117 @@ class AppLocalizationsTh extends AppLocalizations {
 
   @override
   String get calendar_title => 'ปฏิทิน';
+
+  @override
+  String get calendar_choose_calendar => 'เลือกปฏิทิน';
+
+  @override
+  String get settings_calendar_row => 'Calendar';
+
+  @override
+  String get calendar_tradition_vajrayana => 'วัชรยาน';
+
+  @override
+  String get calendar_tradition_theravada => 'เถรวาท';
+
+  @override
+  String get calendar_tradition_mahayana => 'มหายาน';
+
+  @override
+  String get calendar_type_phugpa => 'ทิเบต (ภุคปะ)';
+
+  @override
+  String get calendar_type_tsurphu => 'ทิเบต (ซูร์ภู)';
+
+  @override
+  String get calendar_type_nyingmapa => 'ญิงมา';
+
+  @override
+  String get calendar_type_sinhalese => 'สิงหล';
+
+  @override
+  String get calendar_type_thai => 'ไทย';
+
+  @override
+  String get calendar_type_burmese => 'พม่า';
+
+  @override
+  String get calendar_type_lao => 'ลาว';
+
+  @override
+  String get calendar_type_chinese => 'จีน';
+
+  @override
+  String get calendar_type_vietnamese => 'เวียดนาม';
+
+  @override
+  String get calendar_type_korean => 'เกาหลี';
+
+  @override
+  String get calendar_type_japanese => 'ญี่ปุ่น';
+
+  @override
+  String get calendar_today => 'วันนี้';
+
+  @override
+  String get calendar_no_events => 'ไม่มีกิจกรรม';
+
+  @override
+  String get calendar_source_lunar => 'ปฏิทินจันทรคติ';
+
+  @override
+  String get calendar_add_event => 'เพิ่มกิจกรรม';
+
+  @override
+  String get calendar_event_name => 'ชื่อกิจกรรม';
+
+  @override
+  String get calendar_event_name_hint => 'เพิ่มกิจกรรมลงในปฏิทินของคุณ';
+
+  @override
+  String get calendar_repeat => 'ทำซ้ำ';
+
+  @override
+  String get calendar_does_not_repeat => 'ไม่ทำซ้ำ';
+
+  @override
+  String get calendar_repeat_weekly => 'ทุกสัปดาห์';
+
+  @override
+  String get calendar_repeat_monthly => 'ทุกเดือน';
+
+  @override
+  String get calendar_repeat_yearly => 'ทุกปี';
+
+  @override
+  String calendar_repeat_monthly_lunar(String day) {
+    return 'ทุกเดือน (วันที่ $day ตามจันทรคติ)';
+  }
+
+  @override
+  String get calendar_repeat_yearly_lunar => 'ทุกปี (วันที่ตามจันทรคติ)';
+
+  @override
+  String get calendar_delete_event => 'ลบกิจกรรม';
+
+  @override
+  String get calendar_delete_event_title => 'ลบกิจกรรมไหม';
+
+  @override
+  String calendar_delete_event_body(String title) {
+    return '\"$title\" จะถูกลบออกจากปฏิทินของคุณ และไม่สามารถเรียกคืนได้';
+  }
+
+  @override
+  String get calendar_delete_repeating_title => 'ลบกิจกรรมที่ทำซ้ำไหม';
+
+  @override
+  String calendar_delete_repeating_body(String title, String repeat) {
+    return 'ทุกวันที่ของ \"$title\" ($repeat) จะถูกลบออกจากปฏิทินของคุณ และไม่สามารถเรียกคืนได้';
+  }
+
+  @override
+  String get calendar_event_deleted => 'ลบกิจกรรมแล้ว';
 
   @override
   String get calendar_upcoming_events => 'กิจกรรมที่กำลังจะมาถึง';
@@ -1761,15 +1908,17 @@ class AppLocalizationsTh extends AppLocalizations {
   }
 
   @override
-  String get group_remove_member_title => 'นำออกจากกลุ่มใช่ไหม';
-
-  @override
-  String group_remove_member_message(String name) {
-    return '$name จะถูกนำออกจากกลุ่มนี้ และเข้าร่วมใหม่ไม่ได้จนกว่าการระงับจะสิ้นสุด';
+  String group_remove_member_title(String name) {
+    return 'นำ $name ออก';
   }
 
   @override
-  String get group_remove_member_blocked_for => 'ระงับเป็นเวลา:';
+  String group_remove_member_message(String duration) {
+    return 'พวกเขาจะถูกนำออกจากกลุ่มนี้ และเข้าร่วมใหม่ไม่ได้เป็นเวลา $duration';
+  }
+
+  @override
+  String get group_remove_member_blocked_for => 'เข้าร่วมใหม่ไม่ได้เป็นเวลา';
 
   @override
   String get group_remove_member_duration_day => '1 วัน';
@@ -1786,10 +1935,10 @@ class AppLocalizationsTh extends AppLocalizations {
   String get group_remove_member_reason_label => 'เหตุผล (ไม่บังคับ)';
 
   @override
-  String get group_remove_member_reason_hint => 'อื่น ๆ...';
+  String get group_remove_member_reason_hint => 'ทำไมคุณจึงนำสมาชิกคนนี้ออก';
 
   @override
-  String get group_remove_member_action => 'นำออก';
+  String get group_remove_member_action => 'นำสมาชิกออก';
 
   @override
   String group_remove_member_success(String name) {
@@ -1888,6 +2037,10 @@ class AppLocalizationsTh extends AppLocalizations {
       'ไม่สามารถเข้าร่วมยอดสะสมได้ โปรดลองอีกครั้ง';
 
   @override
+  String get group_accumulator_practice_unavailable =>
+      'This practice can\'t be opened right now.';
+
+  @override
   String get group_accumulator_join_before_practice =>
       'เข้าร่วมยอดสะสมนี้ก่อนเพิ่มลงในการปฏิบัติของคุณ';
 
@@ -1932,6 +2085,39 @@ class AppLocalizationsTh extends AppLocalizations {
 
   @override
   String get group_accumulator_finish_session => 'จบการสวดครั้งนี้';
+
+  @override
+  String get group_accumulator_completed_recitations =>
+      'You completed recitations';
+
+  @override
+  String get group_accumulator_recite_again => 'Recite again';
+
+  @override
+  String get group_accumulator_finish_and_count => 'Finish and count';
+
+  @override
+  String get group_accumulator_finish_without_counting =>
+      'Finish without counting';
+
+  @override
+  String group_accumulator_recitations_counted(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count recitations counted',
+      one: '1 recitation counted',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String group_accumulator_recitation_count_badge(int count) {
+    return '×$count';
+  }
+
+  @override
+  String get undo => 'Undo';
 
   @override
   String get group_accumulator_offline_recitation => 'การสวดนอกแอป';
@@ -1995,7 +2181,7 @@ class AppLocalizationsTh extends AppLocalizations {
       'ด้วยบุญกุศลนี้ ขอสรรพสัตว์ทั้งหลาย\nจงพ้นจากความทุกข์';
 
   @override
-  String get share_this_quote => 'แชร์คำคมนี้';
+  String get share_this_verse => 'แชร์คาถานี้';
 
   @override
   String get shared_from => 'แชร์จาก';
@@ -2608,7 +2794,7 @@ class AppLocalizationsTh extends AppLocalizations {
   String get group_post_updated => 'บันทึกการเปลี่ยนแปลงแล้ว';
 
   @override
-  String get practice_collection_already_added =>
+  String get chant_book_already_in_practices =>
       'ชุดบทสวดนี้อยู่ในการปฏิบัติของคุณแล้ว';
 
   @override
@@ -3875,6 +4061,10 @@ class AppLocalizationsTh extends AppLocalizations {
       'ระยะเวลาต้องมากกว่า 0';
 
   @override
+  String get timer_duplicate_setup =>
+      'A timer with this duration, sound, and title already exists.';
+
+  @override
   String get splash_tagline_1 => 'พวกเราชาวพุทธปฏิบัติร่วมกัน';
 
   @override
@@ -3888,6 +4078,9 @@ class AppLocalizationsTh extends AppLocalizations {
 
   @override
   String get timer_duration_hours => 'ชั่วโมง';
+
+  @override
+  String get timer_duration_hr => 'hr';
 
   @override
   String get timer_duration_sec => 'วินาที';
@@ -3993,4 +4186,130 @@ class AppLocalizationsTh extends AppLocalizations {
 
   @override
   String get reader_tab_versions => 'Versions';
+
+  @override
+  String get chants_filter_all => 'All';
+
+  @override
+  String get chants_chant_books => 'Chant books';
+
+  @override
+  String get chants_filter_single_chants => 'Single chants';
+
+  @override
+  String get chants_my_chant_books_title => 'My chant books';
+
+  @override
+  String get chants_text_only => 'Text-only chants';
+
+  @override
+  String get chants_from_your_spaces => 'From your spaces';
+
+  @override
+  String get chants_explore_more => 'Explore more';
+
+  @override
+  String get chants_create_chant_book => 'Chant book';
+
+  @override
+  String get chants_open_chant => 'Open chant';
+
+  @override
+  String get chants_your_spaces => 'Your spaces';
+
+  @override
+  String get chants_other_spaces => 'Other spaces';
+
+  @override
+  String get chants_search_hint_chant_books => 'Search chants and chant books';
+
+  @override
+  String get chants_cant_find => 'Can\'t find the text you\'re looking for?';
+
+  @override
+  String get chants_request_text => 'Request text';
+
+  @override
+  String get chants_request_done => 'Requested';
+
+  @override
+  String get chants_request_sent => 'Thanks. We\'ve received your request.';
+
+  @override
+  String get chants_request_limit =>
+      'You\'ve sent a lot of requests today. Please try again later.';
+
+  @override
+  String get chants_with_audio => 'Chants with audio';
+
+  @override
+  String get chants_audio_chants => 'Audio chants';
+
+  @override
+  String get reader_no_resources_title =>
+      'ยังไม่มีอรรถกถาหรือฉบับแปลสำหรับส่วนนี้';
+
+  @override
+  String get reader_no_resources_subtitle =>
+      'เราเพิ่มคัมภีร์ใหม่อยู่เสมอ แวะกลับมาเร็ว ๆ นี้';
+
+  @override
+  String get mala_section_practice => 'การปฏิบัติ';
+
+  @override
+  String get mala_section_appearance => 'รูปลักษณ์';
+
+  @override
+  String get mala_section_save_share => 'บันทึกและแชร์';
+
+  @override
+  String get mala_mantra_animation => 'แอนิเมชันมนต์';
+
+  @override
+  String get mala_play_animation => 'เล่นแอนิเมชัน';
+
+  @override
+  String get mala_speed => 'ความเร็ว';
+
+  @override
+  String get mala_animation_off => 'ปิด';
+
+  @override
+  String get mala_bead_style => 'แบบเม็ดลูกประคำ';
+
+  @override
+  String get mala_bead_default => 'ค่าเริ่มต้น';
+
+  @override
+  String get mala_use_this_style => 'ใช้แบบนี้';
+
+  @override
+  String get mala_bead_style_updated => 'อัปเดตแบบเม็ดลูกประคำแล้ว';
+
+  @override
+  String get mala_change_image => 'เปลี่ยนรูปภาพ';
+
+  @override
+  String get mala_use_image => 'ใช้';
+
+  @override
+  String get mala_restore_default_image => 'คืนค่าเริ่มต้น';
+
+  @override
+  String get mala_image_updated => 'อัปเดตรูปภาพแล้ว';
+
+  @override
+  String get mala_images_empty => 'ไม่มีรูปภาพ';
+
+  @override
+  String get mala_images_load_error => 'โหลดรูปภาพไม่ได้';
+
+  @override
+  String get mala_bookmarked => 'บุ๊กมาร์กแล้ว';
+
+  @override
+  String get mala_beads_load_error => 'โหลดแบบเม็ดลูกประคำไม่ได้';
+
+  @override
+  String get mala_appearance_save_failed => 'บันทึกไม่สำเร็จ โปรดลองอีกครั้ง';
 }

@@ -31,8 +31,15 @@ forced-update prompt (`upgrader`).
 ## 📦 Getting Started
 
 ### Requirements
-- Flutter **3.41.9** (stable) — the version CI pins in `.github/workflows/*.yml`
-  (Dart SDK constraint in `pubspec.yaml`: `^3.7.2`)
+- Flutter **3.41.9** (stable). Everyone uses this one version, the one CI
+  builds with. `flutter pub get` fails on an older Flutter (`pubspec.yaml`),
+  and CI fails when `pubspec.lock` was made with a newer one
+  (`--enforce-lockfile`). With [FVM](https://fvm.app), run
+  `fvm use` to get it from `.fvmrc`.
+  To move to a new version, change it in one PR in every place it is set:
+  `pubspec.yaml`, `.fvmrc`, `.github/workflows/*.yml` and
+  this line, then run `flutter pub get` on the new version and commit
+  `pubspec.lock`.
 - Xcode (iOS/macOS) and Android Studio / JDK 17 (Android)
 
 ### 1. Clone the repository
@@ -43,8 +50,14 @@ cd WeBuddhist-app
 
 ### 2. Install dependencies
 ```sh
+flutter config --enable-swift-package-manager
 flutter pub get
 ```
+The iOS project uses Flutter's Swift Package Manager integration: plugins come
+in through `FlutterGeneratedPluginSwiftPackage`, and the committed
+`ios/Podfile.lock` only lists the pods SwiftPM cannot provide. CI enables the
+same flag. Building with it off re-adds every Firebase pod and rewrites
+`Podfile.lock`, so do not commit a lock produced that way.
 
 ### 3. Environment setup
 Each flavor entrypoint loads its own dotenv file (`lib/main_<flavor>.dart` →

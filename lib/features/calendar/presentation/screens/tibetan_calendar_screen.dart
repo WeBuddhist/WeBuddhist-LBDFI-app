@@ -1,11 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_pecha/core/core.dart';
 import 'package:flutter_pecha/core/extensions/context_ext.dart';
+import 'package:flutter_pecha/core/theme/app_colors.dart';
+import 'package:flutter_pecha/features/auth/presentation/providers/state_providers.dart';
+import 'package:flutter_pecha/features/auth/presentation/widgets/login_drawer.dart';
+import 'package:flutter_pecha/features/calendar/presentation/calendar_type_l10n.dart';
+import 'package:flutter_pecha/features/calendar/presentation/providers/calendar_event_sources_providers.dart';
+import 'package:flutter_pecha/features/calendar/presentation/providers/calendar_type_providers.dart';
 import 'package:flutter_pecha/features/calendar/presentation/providers/tibetan_calendar_providers.dart';
+import 'package:flutter_pecha/features/calendar/presentation/widgets/calendar_events_section.dart';
 import 'package:flutter_pecha/features/calendar/presentation/widgets/calendar_header_card.dart';
 import 'package:flutter_pecha/features/calendar/presentation/widgets/calendar_month_nav.dart';
+import 'package:flutter_pecha/features/calendar/presentation/widgets/personal_event_sheet.dart';
 import 'package:flutter_pecha/features/calendar/presentation/widgets/tibetan_calendar_grid.dart';
-import 'package:flutter_pecha/features/calendar/presentation/widgets/upcoming_events_list.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
@@ -34,7 +41,11 @@ class _TibetanCalendarScreenState extends ConsumerState<TibetanCalendarScreen>
     super.initState();
     WidgetsBinding.instance.addObserver(this);
     // Fresh entry to the screen always shows today.
-    WidgetsBinding.instance.addPostFrameCallback((_) => _syncToToday());
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _syncToToday();
+      // Events change while the app runs; old ones show until this lands.
+      if (mounted) ref.invalidate(calendarFeedProvider);
+    });
   }
 
   @override
@@ -61,11 +72,18 @@ class _TibetanCalendarScreenState extends ConsumerState<TibetanCalendarScreen>
     if (!mounted) return;
     final today = dateOnly(DateTime.now());
     _lastSyncedDay = today;
-    ref.read(selectedCalendarDayProvider.notifier).state = today;
-    ref.read(focusedCalendarMonthProvider.notifier).state = DateTime(
-      today.year,
-      today.month,
-      1,
+    showCalendarToday(ref);
+  }
+
+  void _addEvent() {
+    final auth = ref.read(authProvider);
+    if (auth.isGuest || !auth.isLoggedIn) {
+      LoginDrawer.show(context, ref);
+      return;
+    }
+    PersonalEventSheet.show(
+      context,
+      date: ref.read(selectedCalendarDayProvider),
     );
   }
 
@@ -91,15 +109,41 @@ class _TibetanCalendarScreenState extends ConsumerState<TibetanCalendarScreen>
             }
           },
         ),
-        title: Text(
-          l10n.calendar_title,
-          strutStyle: context.tibetanStrutStyle(
-            theme.textTheme.titleLarge?.fontSize ?? 22,
-          ),
-          style: theme.textTheme.titleLarge?.copyWith(
-            fontWeight: FontWeight.w700,
-          ),
+        title: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              l10n.calendar_title,
+              strutStyle: context.tibetanStrutStyle(
+                theme.textTheme.titleLarge?.fontSize ?? 22,
+                compact: true,
+              ),
+              style: theme.textTheme.titleLarge?.copyWith(
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+            // Which calendar the dates are in; change it in Settings.
+            Text(
+              calendarTypeLabel(l10n, ref.watch(selectedCalendarTypeProvider)),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              strutStyle: context.tibetanStrutStyle(
+                theme.textTheme.bodySmall?.fontSize ?? 12,
+                compact: true,
+              ),
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: AppColors.grey600,
+              ),
+            ),
+          ],
         ),
+        actions: [
+          IconButton(
+            icon: const Icon(AppAssets.plus, size: 24),
+            tooltip: l10n.calendar_add_event,
+            onPressed: _addEvent,
+          ),
+        ],
       ),
       body: SafeArea(
         top: false,
@@ -110,7 +154,7 @@ class _TibetanCalendarScreenState extends ConsumerState<TibetanCalendarScreen>
             children: const [
               CalendarHeaderCard(),
               SizedBox(height: 24),
-              UpcomingEventsList(),
+              CalendarEventsSection(),
               SizedBox(height: 16),
               CalendarMonthNav(),
               SizedBox(height: 8),

@@ -39,6 +39,10 @@ class StorageKeys {
   /// Current onboarding step
   static const String onboardingStep = 'onboarding_step';
 
+  // ========== CALENDAR ==========
+  /// Calendar type the calendar is shown in (`phugpa`, `tsurphu`, …)
+  static const String calendarType = 'calendar_type';
+
   /// Onboarding data JSON
   static const String onboardingData = 'onboarding_data';
 
@@ -94,6 +98,11 @@ class StorageKeys {
 
   /// Daily reminder enabled flag
   static const String dailyReminderEnabled = 'daily_reminder_enabled';
+
+  /// Set once this install has asked for the OS notification permission. Tells
+  /// a first ask from a blocked one on Android; analytics only.
+  static const String notificationPermissionAsked =
+      'notification_permission_asked';
 
   /// App-level master notification toggle. When false the app cancels all
   /// scheduled notifications without touching OS permission. Re-enabling
@@ -163,6 +172,14 @@ class StorageKeys {
   /// language's defaults; the library keys are left alone.
   static const String readerLayoutLanguage = 'reader_layouts_language';
 
+  /// The account the reader settings on this device last synced with, so one
+  /// account's settings are never uploaded to another.
+  static const String readerSettingsOwner = 'reader_settings_owner';
+
+  /// JSON of the reader settings last known to be on the server. Local values
+  /// that differ from it have not been saved yet.
+  static const String readerSettingsSynced = 'reader_settings_synced';
+
   /// Bead-tap sound on the mala counter. Default: true.
   static const String malaSoundEnabled = 'mala_sound_enabled';
 
@@ -175,12 +192,24 @@ class StorageKeys {
   /// Scroll speed multiplier for the mantra text marquee. Default: 1.0.
   static const String malaMantraSpeed = 'mala_mantra_speed';
 
+  /// Whether the mantra text marquee scrolls. Default: true.
+  static const String malaPlayAnimation = 'mala_play_animation';
+
   /// Per-preset accumulation source: `personal` or `group:{uuid}`.
   static const String malaAccumulationSelectionPrefix =
       'mala_accumulation_selection_';
 
+  /// Per user (`{prefix}{userId}`): the preset the user last counted on here,
+  /// as JSON `{preset_id, at}`. Orders the mala carousel before the server
+  /// has the count.
+  static const String malaLastUsedPresetPrefix = 'mala_last_used_preset_';
+
   /// Space the Connect tab last showed, by group id.
   static const String connectLastSpaceId = 'connect_last_space_id';
+
+  /// Group ids of the spaces the Connect tab has already opened, so a space
+  /// opens on its info the first time and on its feed after that.
+  static const String connectOpenedSpaceIds = 'connect_opened_space_ids';
 
   // ========== BUSINESS LOGIC ==========
   /// Last profile update timestamp

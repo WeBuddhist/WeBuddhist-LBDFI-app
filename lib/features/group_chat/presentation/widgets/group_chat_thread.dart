@@ -26,6 +26,7 @@ import 'package:flutter_pecha/features/group_chat/presentation/widgets/group_cha
 import 'package:flutter_pecha/features/group_chat/presentation/widgets/group_chat_emoji_picker.dart';
 import 'package:flutter_pecha/features/group_chat/presentation/widgets/group_chat_emoji_pill.dart';
 import 'package:flutter_pecha/features/group_chat/presentation/widgets/group_chat_empty_state.dart';
+import 'package:flutter_pecha/features/group_chat/presentation/widgets/group_chat_skeleton.dart';
 import 'package:flutter_pecha/features/group_chat/presentation/widgets/group_chat_message_bubble.dart';
 import 'package:flutter_pecha/features/group_chat/presentation/widgets/group_chat_report_sheet.dart';
 import 'package:flutter_pecha/features/group_chat/presentation/widgets/group_chat_reactions_sheet.dart';
@@ -341,6 +342,8 @@ class _GroupChatThreadState extends ConsumerState<GroupChatThread> {
   }) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
+        // An action would otherwise keep it up indefinitely.
+        persist: false,
         content: Text(message),
         action: SnackBarAction(
           label: actionLabel,
@@ -972,7 +975,7 @@ class _GroupChatThreadState extends ConsumerState<GroupChatThread> {
     });
 
     if (!state.hasLoaded && state.messages.isEmpty) {
-      return const Center(child: CircularProgressIndicator());
+      return const GroupChatSkeleton();
     }
 
     if (state.error != null && state.messages.isEmpty) {

@@ -134,11 +134,11 @@ class AppLocalizationsEn extends AppLocalizations {
   String get mala_reset_count => 'Reset count';
 
   @override
-  String get mala_reset_title => 'Reset this mala?';
+  String get mala_reset_title => 'Reset count?';
 
   @override
   String get mala_reset_count_confirm =>
-      'Your current count will go back to zero, but your accumulations will stay in your lifetime total';
+      'This mala\'s count goes back to 0. Your lifetime total stays the same';
 
   @override
   String get mala_reset_confirm => 'Reset';
@@ -165,12 +165,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get mala_settings_section => 'Mala settings';
 
   @override
-  String get mala_others_section => 'Others';
-
-  @override
-  String get mala_mantra_speed => 'Mantra speed';
-
-  @override
   String get mala_speed_normal => 'Normal';
 
   @override
@@ -185,7 +179,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get mala_group_accumulations => 'Add recitation to';
 
   @override
-  String get mala_groups_section => 'Events';
+  String get mala_groups_section => 'Groups';
 
   @override
   String get mala_group_untitled => 'Untitled space';
@@ -377,16 +371,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get recitations_no_content => 'No recitations available';
 
   @override
-  String get my_recitation_collection_new_title => 'New Collection';
+  String get chant_book_new_title => 'New chant book';
 
   @override
   String get my_recitation_collection_next => 'Next';
 
   @override
   String get my_recitation_collection_create => 'Create';
-
-  @override
-  String get my_recitation_collection_create_button => 'Create collection';
 
   @override
   String get my_recitation_collection_change_title => 'Change title';
@@ -401,23 +392,23 @@ class AppLocalizationsEn extends AppLocalizations {
   String get my_recitation_collection_search_chants => 'Search chants';
 
   @override
-  String get my_recitation_collection_add_to_collection => 'Add to collection';
+  String get chant_book_add_to => 'Add to chant book';
 
   @override
-  String get my_recitation_collection_edit => 'Edit collection';
+  String get chant_book_edit => 'Edit chant book';
 
   @override
-  String get my_recitation_collection_delete => 'Delete collection';
+  String get chant_book_delete => 'Delete chant book';
 
   @override
-  String get my_recitation_collection_delete_title => 'Delete collection?';
+  String get chant_book_delete_title => 'Delete chant book?';
 
   @override
-  String get my_recitation_collection_delete_message =>
-      'This collection will be permanently removed';
+  String get chant_book_delete_message =>
+      'This chant book will be permanently removed';
 
   @override
-  String get my_recitation_collection_fallback_title => 'Chant collection';
+  String get chant_book_fallback_title => 'Chant book';
 
   @override
   String get my_recitation_collection_unavailable => 'No longer available';
@@ -447,11 +438,11 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get bookmarks_empty_chant_collections_title =>
-      'No chant collections bookmarked yet';
+  String get chant_book_bookmarks_empty_title =>
+      'No chant books bookmarked yet';
 
   @override
-  String get bookmarks_empty_chant_collections_subtitle =>
+  String get chant_book_bookmarks_empty_subtitle =>
       'Bookmark one to save it here';
 
   @override
@@ -496,10 +487,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get notification_row_timer => 'Timer';
 
   @override
-  String get notification_row_group_posts => 'Space posts';
+  String get notification_row_group_posts => 'Group posts';
 
   @override
-  String get notification_row_group_chats => 'Space chats';
+  String get notification_row_group_chats => 'Group chats';
 
   @override
   String get notification_row_my_prayer_requests => 'My prayer requests';
@@ -620,13 +611,30 @@ class AppLocalizationsEn extends AppLocalizations {
   String get connect_landing_title => 'Connect with your Buddhist community';
 
   @override
-  String get connect_popular_spaces => 'Popular spaces';
+  String get connect_looking_for => 'Looking for';
+
+  @override
+  String get connect_sort_spaces => 'Sort spaces';
+
+  @override
+  String get connect_sort_popular => 'Popular';
+
+  @override
+  String get connect_sort_newly_added => 'Newly added';
+
+  @override
+  String get connect_sort_most_active => 'Most active';
+
+  @override
+  String get connect_find_your_space => 'Find your space';
+
+  @override
+  String connect_no_spaces_match(String query) {
+    return 'No spaces match \"$query\"';
+  }
 
   @override
   String get connect_your_spaces => 'Your spaces';
-
-  @override
-  String get connect_find_a_space => 'Find a space';
 
   @override
   String get connect_segment_my => 'Your spaces';
@@ -1151,6 +1159,23 @@ class AppLocalizationsEn extends AppLocalizations {
       'Unable to load. Check your connection and try again';
 
   @override
+  String get reader_not_translated => 'Not translated';
+
+  @override
+  String get error_offline_title => 'No connection';
+
+  @override
+  String get error_server_title => 'Can\'t load right now';
+
+  @override
+  String get reader_error_server_message =>
+      'This text can\'t be loaded right now. Please try again later.';
+
+  @override
+  String get chants_error_server_message =>
+      'Chants can\'t be loaded right now. Please try again later.';
+
+  @override
   String get somethingWrong =>
       'Something went wrong. Check your connection and try again';
 
@@ -1291,6 +1316,18 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get settings_edit_profile => 'Edit profile';
+
+  @override
+  String get settings_signed_in_with_google => 'Signed in with Google';
+
+  @override
+  String get settings_signed_in_with_apple => 'Signed in with Apple';
+
+  @override
+  String get settings_signed_in_with_phone => 'Signed in with phone number';
+
+  @override
+  String get settings_signed_in_as => 'Signed in as';
 
   @override
   String get settings_theme => 'Theme';
@@ -1520,6 +1557,117 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get calendar_title => 'Calendar';
+
+  @override
+  String get calendar_choose_calendar => 'Choose calendar';
+
+  @override
+  String get settings_calendar_row => 'Calendar';
+
+  @override
+  String get calendar_tradition_vajrayana => 'Vajrayana';
+
+  @override
+  String get calendar_tradition_theravada => 'Theravada';
+
+  @override
+  String get calendar_tradition_mahayana => 'Mahayana';
+
+  @override
+  String get calendar_type_phugpa => 'Tibetan (Phugpa)';
+
+  @override
+  String get calendar_type_tsurphu => 'Tibetan (Tsurphu)';
+
+  @override
+  String get calendar_type_nyingmapa => 'Nyingma';
+
+  @override
+  String get calendar_type_sinhalese => 'Sinhalese';
+
+  @override
+  String get calendar_type_thai => 'Thai';
+
+  @override
+  String get calendar_type_burmese => 'Burmese';
+
+  @override
+  String get calendar_type_lao => 'Lao';
+
+  @override
+  String get calendar_type_chinese => 'Chinese';
+
+  @override
+  String get calendar_type_vietnamese => 'Vietnamese';
+
+  @override
+  String get calendar_type_korean => 'Korean';
+
+  @override
+  String get calendar_type_japanese => 'Japanese';
+
+  @override
+  String get calendar_today => 'Today';
+
+  @override
+  String get calendar_no_events => 'No events';
+
+  @override
+  String get calendar_source_lunar => 'Lunar calendar';
+
+  @override
+  String get calendar_add_event => 'Add event';
+
+  @override
+  String get calendar_event_name => 'Event name';
+
+  @override
+  String get calendar_event_name_hint => 'Add an event to your calendar';
+
+  @override
+  String get calendar_repeat => 'Repeat';
+
+  @override
+  String get calendar_does_not_repeat => 'Does not repeat';
+
+  @override
+  String get calendar_repeat_weekly => 'Weekly';
+
+  @override
+  String get calendar_repeat_monthly => 'Monthly';
+
+  @override
+  String get calendar_repeat_yearly => 'Yearly';
+
+  @override
+  String calendar_repeat_monthly_lunar(String day) {
+    return 'Monthly ($day lunar)';
+  }
+
+  @override
+  String get calendar_repeat_yearly_lunar => 'Yearly (lunar date)';
+
+  @override
+  String get calendar_delete_event => 'Delete event';
+
+  @override
+  String get calendar_delete_event_title => 'Delete event?';
+
+  @override
+  String calendar_delete_event_body(String title) {
+    return '\"$title\" will be removed from your calendar. This can’t be undone.';
+  }
+
+  @override
+  String get calendar_delete_repeating_title => 'Delete repeating event?';
+
+  @override
+  String calendar_delete_repeating_body(String title, String repeat) {
+    return 'Every date of \"$title\" ($repeat) will be removed from your calendar. This can’t be undone.';
+  }
+
+  @override
+  String get calendar_event_deleted => 'Event deleted';
 
   @override
   String get calendar_upcoming_events => 'Upcoming events';
@@ -1770,15 +1918,17 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get group_remove_member_title => 'Remove from space?';
-
-  @override
-  String group_remove_member_message(String name) {
-    return '$name will be removed from this space and unable to rejoin it until the ban is lifted';
+  String group_remove_member_title(String name) {
+    return 'Remove $name';
   }
 
   @override
-  String get group_remove_member_blocked_for => 'Blocked for:';
+  String group_remove_member_message(String duration) {
+    return 'They\'ll be removed from this space and can\'t rejoin for $duration.';
+  }
+
+  @override
+  String get group_remove_member_blocked_for => 'Can\'t rejoin for';
 
   @override
   String get group_remove_member_duration_day => '1 day';
@@ -1795,10 +1945,11 @@ class AppLocalizationsEn extends AppLocalizations {
   String get group_remove_member_reason_label => 'Reason (optional)';
 
   @override
-  String get group_remove_member_reason_hint => 'Something else...';
+  String get group_remove_member_reason_hint =>
+      'Why are you removing this member?';
 
   @override
-  String get group_remove_member_action => 'Remove';
+  String get group_remove_member_action => 'Remove member';
 
   @override
   String group_remove_member_success(String name) {
@@ -1897,6 +2048,10 @@ class AppLocalizationsEn extends AppLocalizations {
       'Unable to join accumulation. Please try again';
 
   @override
+  String get group_accumulator_practice_unavailable =>
+      'This practice can\'t be opened right now.';
+
+  @override
   String get group_accumulator_join_before_practice =>
       'Join this accumulation before adding it to your practices';
 
@@ -1941,6 +2096,39 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get group_accumulator_finish_session => 'Finish session';
+
+  @override
+  String get group_accumulator_completed_recitations =>
+      'You completed recitations';
+
+  @override
+  String get group_accumulator_recite_again => 'Recite again';
+
+  @override
+  String get group_accumulator_finish_and_count => 'Finish and count';
+
+  @override
+  String get group_accumulator_finish_without_counting =>
+      'Finish without counting';
+
+  @override
+  String group_accumulator_recitations_counted(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count recitations counted',
+      one: '1 recitation counted',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String group_accumulator_recitation_count_badge(int count) {
+    return '×$count';
+  }
+
+  @override
+  String get undo => 'Undo';
 
   @override
   String get group_accumulator_offline_recitation => 'Offline recitation';
@@ -2005,7 +2193,7 @@ class AppLocalizationsEn extends AppLocalizations {
       'By this merit, may all beings\nbe free from suffering';
 
   @override
-  String get share_this_quote => 'Share this quote';
+  String get share_this_verse => 'Share this verse';
 
   @override
   String get shared_from => 'Shared from';
@@ -2615,8 +2803,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get group_post_updated => 'Your changes are saved';
 
   @override
-  String get practice_collection_already_added =>
-      'This collection is already in your practices';
+  String get chant_book_already_in_practices =>
+      'This chant book is already in your practices';
 
   @override
   String get practice_group_accumulator_already_added =>
@@ -3889,6 +4077,10 @@ class AppLocalizationsEn extends AppLocalizations {
       'Duration must be greater than 0';
 
   @override
+  String get timer_duplicate_setup =>
+      'A timer with this duration, sound, and title already exists.';
+
+  @override
   String get splash_tagline_1 => 'We Buddhists practice together';
 
   @override
@@ -3902,6 +4094,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get timer_duration_hours => 'hours';
+
+  @override
+  String get timer_duration_hr => 'hr';
 
   @override
   String get timer_duration_sec => 'sec';
@@ -4007,4 +4202,130 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get reader_tab_versions => 'Versions';
+
+  @override
+  String get chants_filter_all => 'All';
+
+  @override
+  String get chants_chant_books => 'Chant books';
+
+  @override
+  String get chants_filter_single_chants => 'Single chants';
+
+  @override
+  String get chants_my_chant_books_title => 'My chant books';
+
+  @override
+  String get chants_text_only => 'Text-only chants';
+
+  @override
+  String get chants_from_your_spaces => 'From your spaces';
+
+  @override
+  String get chants_explore_more => 'Explore more';
+
+  @override
+  String get chants_create_chant_book => 'Chant book';
+
+  @override
+  String get chants_open_chant => 'Open chant';
+
+  @override
+  String get chants_your_spaces => 'Your spaces';
+
+  @override
+  String get chants_other_spaces => 'Other spaces';
+
+  @override
+  String get chants_search_hint_chant_books => 'Search chants and chant books';
+
+  @override
+  String get chants_cant_find => 'Can\'t find the text you\'re looking for?';
+
+  @override
+  String get chants_request_text => 'Request text';
+
+  @override
+  String get chants_request_done => 'Requested';
+
+  @override
+  String get chants_request_sent => 'Thanks. We\'ve received your request.';
+
+  @override
+  String get chants_request_limit =>
+      'You\'ve sent a lot of requests today. Please try again later.';
+
+  @override
+  String get chants_with_audio => 'Chants with audio';
+
+  @override
+  String get chants_audio_chants => 'Audio chants';
+
+  @override
+  String get reader_no_resources_title =>
+      'No commentaries or versions available for this segment';
+
+  @override
+  String get reader_no_resources_subtitle =>
+      'We add new texts regularly; check back soon';
+
+  @override
+  String get mala_section_practice => 'Practice';
+
+  @override
+  String get mala_section_appearance => 'Appearance';
+
+  @override
+  String get mala_section_save_share => 'Save & share';
+
+  @override
+  String get mala_mantra_animation => 'Mantra animation';
+
+  @override
+  String get mala_play_animation => 'Play animation';
+
+  @override
+  String get mala_speed => 'Speed';
+
+  @override
+  String get mala_animation_off => 'Off';
+
+  @override
+  String get mala_bead_style => 'Bead style';
+
+  @override
+  String get mala_bead_default => 'Default';
+
+  @override
+  String get mala_use_this_style => 'Use this style';
+
+  @override
+  String get mala_bead_style_updated => 'Bead style updated';
+
+  @override
+  String get mala_change_image => 'Change image';
+
+  @override
+  String get mala_use_image => 'Use';
+
+  @override
+  String get mala_restore_default_image => 'Restore default';
+
+  @override
+  String get mala_image_updated => 'Image updated';
+
+  @override
+  String get mala_images_empty => 'No images available';
+
+  @override
+  String get mala_images_load_error => 'Could not load images';
+
+  @override
+  String get mala_bookmarked => 'Bookmarked';
+
+  @override
+  String get mala_beads_load_error => 'Could not load bead styles';
+
+  @override
+  String get mala_appearance_save_failed => 'Couldn\'t save. Please try again';
 }

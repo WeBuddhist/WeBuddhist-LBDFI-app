@@ -164,12 +164,6 @@ class AppLocalizationsBo extends AppLocalizations {
   String get mala_settings_section => 'Mala settings';
 
   @override
-  String get mala_others_section => 'Others';
-
-  @override
-  String get mala_mantra_speed => 'Mantra speed';
-
-  @override
   String get mala_speed_normal => 'Normal';
 
   @override
@@ -378,16 +372,13 @@ class AppLocalizationsBo extends AppLocalizations {
   String get recitations_no_content => 'ཞལ་འདོན་མི་འདུག';
 
   @override
-  String get my_recitation_collection_new_title => 'ཕྱོགས་བསྡུས་གསར་པ།';
+  String get chant_book_new_title => 'ཞལ་འདོན་དེབ་གསར་པ།';
 
   @override
   String get my_recitation_collection_next => 'རྗེས་མ།';
 
   @override
   String get my_recitation_collection_create => 'གསར་བཟོ།';
-
-  @override
-  String get my_recitation_collection_create_button => 'ཕྱོགས་བསྡུས་གསར་བཟོ།';
 
   @override
   String get my_recitation_collection_change_title => 'ཁ་བྱང་བསྒྱུར།';
@@ -402,24 +393,22 @@ class AppLocalizationsBo extends AppLocalizations {
   String get my_recitation_collection_search_chants => 'ཞལ་འདོན་འཚོལ།';
 
   @override
-  String get my_recitation_collection_add_to_collection =>
-      'ཕྱོགས་བསྡུས་ནང་སྣོན།';
+  String get chant_book_add_to => 'ཞལ་འདོན་དེབ་ནང་སྣོན།';
 
   @override
-  String get my_recitation_collection_edit => 'ཕྱོགས་བསྡུས་བཟོ་བཅོས།';
+  String get chant_book_edit => 'ཞལ་འདོན་དེབ་བཟོ་བཅོས།';
 
   @override
-  String get my_recitation_collection_delete => 'ཕྱོགས་བསྡུས་སུབས།';
+  String get chant_book_delete => 'ཞལ་འདོན་དེབ་སུབས།';
 
   @override
-  String get my_recitation_collection_delete_title => 'ཕྱོགས་བསྡུས་སུབ་བམ།';
+  String get chant_book_delete_title => 'ཞལ་འདོན་དེབ་སུབ་བམ།';
 
   @override
-  String get my_recitation_collection_delete_message =>
-      'ཕྱོགས་བསྡུས་འདི་གཏན་དུ་བསུབ་འགྲོ།';
+  String get chant_book_delete_message => 'ཞལ་འདོན་དེབ་འདི་གཏན་དུ་བསུབ་འགྲོ།';
 
   @override
-  String get my_recitation_collection_fallback_title => 'ཞལ་འདོན་ཕྱོགས་བསྡུས།';
+  String get chant_book_fallback_title => 'ཞལ་འདོན་དེབ།';
 
   @override
   String get my_recitation_collection_unavailable => 'ད་ལྟ་མི་འདུག';
@@ -449,12 +438,12 @@ class AppLocalizationsBo extends AppLocalizations {
   }
 
   @override
-  String get bookmarks_empty_chant_collections_title =>
-      'ད་དུང་དཔེ་རྟགས་བཀོད་པའི་ཞལ་འདོན་ཕྱོགས་བསྡུས་མི་འདུག';
+  String get chant_book_bookmarks_empty_title =>
+      'ད་དུང་དཔེ་རྟགས་བཀོད་པའི་ཞལ་འདོན་དེབ་མི་འདུག';
 
   @override
-  String get bookmarks_empty_chant_collections_subtitle =>
-      'ཕྱོགས་བསྡུས་ཞིག་འདིར་ཉར་བར་དེ་ལ་དཔེ་རྟགས་འགོད་རོགས།';
+  String get chant_book_bookmarks_empty_subtitle =>
+      'ཞལ་འདོན་དེབ་ཞིག་འདིར་ཉར་བར་དེ་ལ་དཔེ་རྟགས་འགོད་རོགས།';
 
   @override
   String get notification_allow_title => 'གསར་བརྡ་གཏོང་ཆོག';
@@ -628,13 +617,30 @@ class AppLocalizationsBo extends AppLocalizations {
   String get connect_landing_title => 'Connect with your Buddhist community';
 
   @override
-  String get connect_popular_spaces => 'Popular spaces';
+  String get connect_looking_for => 'འཚོལ་བཞིན་པ།';
 
   @override
-  String get connect_your_spaces => 'Your spaces';
+  String get connect_sort_spaces => 'ཚོགས་པ་གོ་རིམ་སྒྲིག';
 
   @override
-  String get connect_find_a_space => 'Find a space';
+  String get connect_sort_popular => 'དར་ཆེ་ཤོས།';
+
+  @override
+  String get connect_sort_newly_added => 'གསར་དུ་བསྣན་པ།';
+
+  @override
+  String get connect_sort_most_active => 'འགུལ་སྐྱོད་མང་ཤོས།';
+
+  @override
+  String get connect_find_your_space => 'ཁྱེད་ཀྱི་ཚོགས་པ་འཚོལ།';
+
+  @override
+  String connect_no_spaces_match(String query) {
+    return '\"$query\" དང་མཐུན་པའི་ཚོགས་པ་མ་རྙེད།';
+  }
+
+  @override
+  String get connect_your_spaces => 'ཁྱེད་ཀྱི་ཚོགས་པ།';
 
   @override
   String get connect_segment_my => 'ཁྱེད་ཀྱི་ཚོགས་པ།';
@@ -736,7 +742,7 @@ class AppLocalizationsBo extends AppLocalizations {
   }
 
   @override
-  String get home_group_events => 'ཁྱད་གསལ་བྱེད་སྒོ།';
+  String get home_group_events => 'གདམ་བསྒྲིགས་བྱེད་སྒོ།';
 
   @override
   String get home_community_feed => 'From the community';
@@ -1165,6 +1171,23 @@ class AppLocalizationsBo extends AppLocalizations {
       'སྟོན་ཐུབ་མ་སོང་། ཁྱེད་ཀྱིས་རང་གི་དྲ་རྒྱར་བསྐྱར་ཞིབ་བྱས་ཏེ་བསྐྱར་དུ་ཚོད་ལྟ་བྱོས།';
 
   @override
+  String get reader_not_translated => 'ཡིག་སྒྱུར་མ་བྱས།';
+
+  @override
+  String get error_offline_title => 'དྲ་རྒྱ་མཐུད་མེད།';
+
+  @override
+  String get error_server_title => 'ད་ལྟ་སྟོན་ཐུབ་མ་སོང་།';
+
+  @override
+  String get reader_error_server_message =>
+      'དཔེ་ཆ་འདི་ད་ལྟ་སྟོན་ཐུབ་མ་སོང་། རྗེས་སུ་བསྐྱར་དུ་ཚོད་ལྟ་བྱོས།';
+
+  @override
+  String get chants_error_server_message =>
+      'ཞལ་འདོན་ད་ལྟ་སྟོན་ཐུབ་མ་སོང་། རྗེས་སུ་བསྐྱར་དུ་ཚོད་ལྟ་བྱོས།';
+
+  @override
   String get somethingWrong =>
       'ཅིག་འགྲིག་མ་སོང་། རང་གི་དྲ་རྒྱར་བསྐྱར་ཞིབ་བྱས་ཏེ་བསྐྱར་དུ་ཚོད་ལྟ་བྱོས།';
 
@@ -1307,6 +1330,18 @@ class AppLocalizationsBo extends AppLocalizations {
 
   @override
   String get settings_edit_profile => 'ངོ་སྤྲོད་བཟོ་བཅོས།';
+
+  @override
+  String get settings_signed_in_with_google => 'Signed in with Google';
+
+  @override
+  String get settings_signed_in_with_apple => 'Signed in with Apple';
+
+  @override
+  String get settings_signed_in_with_phone => 'Signed in with phone number';
+
+  @override
+  String get settings_signed_in_as => 'Signed in as';
 
   @override
   String get settings_theme => 'རྣམ་པ།';
@@ -1539,6 +1574,117 @@ class AppLocalizationsBo extends AppLocalizations {
 
   @override
   String get calendar_title => 'ལོ་ཐོ།';
+
+  @override
+  String get calendar_choose_calendar => 'ལོ་ཐོ་འདེམས།';
+
+  @override
+  String get settings_calendar_row => 'Calendar';
+
+  @override
+  String get calendar_tradition_vajrayana => 'རྡོ་རྗེ་ཐེག་པ།';
+
+  @override
+  String get calendar_tradition_theravada => 'གནས་བརྟན་པ།';
+
+  @override
+  String get calendar_tradition_mahayana => 'ཐེག་པ་ཆེན་པོ།';
+
+  @override
+  String get calendar_type_phugpa => 'བོད། (ཕུག་ལུགས།)';
+
+  @override
+  String get calendar_type_tsurphu => 'བོད། (མཚུར་ལུགས།)';
+
+  @override
+  String get calendar_type_nyingmapa => 'རྙིང་མ།';
+
+  @override
+  String get calendar_type_sinhalese => 'སིང་ག་ལ།';
+
+  @override
+  String get calendar_type_thai => 'ཐའི།';
+
+  @override
+  String get calendar_type_burmese => 'འབར་མ།';
+
+  @override
+  String get calendar_type_lao => 'ལའོ།';
+
+  @override
+  String get calendar_type_chinese => 'རྒྱ་ནག';
+
+  @override
+  String get calendar_type_vietnamese => 'ཝེད་ནམ།';
+
+  @override
+  String get calendar_type_korean => 'ཀོ་རི་ཡ།';
+
+  @override
+  String get calendar_type_japanese => 'ཉི་ཧོང་།';
+
+  @override
+  String get calendar_today => 'དེ་རིང་།';
+
+  @override
+  String get calendar_no_events => 'བྱེད་སྒོ་མེད།';
+
+  @override
+  String get calendar_source_lunar => 'ཟླ་ཐོ།';
+
+  @override
+  String get calendar_add_event => 'བྱེད་སྒོ་སྣོན།';
+
+  @override
+  String get calendar_event_name => 'བྱེད་སྒོའི་མིང་།';
+
+  @override
+  String get calendar_event_name_hint => 'ཁྱེད་ཀྱི་ལོ་ཐོར་བྱེད་སྒོ་ཞིག་སྣོན།';
+
+  @override
+  String get calendar_repeat => 'བསྐྱར་ཟློས།';
+
+  @override
+  String get calendar_does_not_repeat => 'བསྐྱར་ཟློས་མི་བྱེད།';
+
+  @override
+  String get calendar_repeat_weekly => 'བདུན་ཕྲག་རེ་བཞིན།';
+
+  @override
+  String get calendar_repeat_monthly => 'ཟླ་བ་རེ་བཞིན།';
+
+  @override
+  String get calendar_repeat_yearly => 'ལོ་རེ་བཞིན།';
+
+  @override
+  String calendar_repeat_monthly_lunar(String day) {
+    return 'ཟླ་བ་རེ་བཞིན། (ཚེས་$day)';
+  }
+
+  @override
+  String get calendar_repeat_yearly_lunar => 'ལོ་རེ་བཞིན། (ཟླ་ཚེས།)';
+
+  @override
+  String get calendar_delete_event => 'བྱེད་སྒོ་སུབས།';
+
+  @override
+  String get calendar_delete_event_title => 'བྱེད་སྒོ་སུབས་སམ།';
+
+  @override
+  String calendar_delete_event_body(String title) {
+    return '\"$title\" ཁྱེད་ཀྱི་ལོ་ཐོ་ནས་སུབས་ངེས། འདི་ཕྱིར་ལོག་བྱེད་ཐབས་མེད།';
+  }
+
+  @override
+  String get calendar_delete_repeating_title => 'བསྐྱར་ཟློས་བྱེད་སྒོ་སུབས་སམ།';
+
+  @override
+  String calendar_delete_repeating_body(String title, String repeat) {
+    return '\"$title\" ($repeat) ཡི་ཚེས་གྲངས་ཚང་མ་ཁྱེད་ཀྱི་ལོ་ཐོ་ནས་སུབས་ངེས། འདི་ཕྱིར་ལོག་བྱེད་ཐབས་མེད།';
+  }
+
+  @override
+  String get calendar_event_deleted => 'བྱེད་སྒོ་སུབས་ཟིན།';
 
   @override
   String get calendar_upcoming_events => 'འབྱུང་འགྱུར་བྱེད་སྒོ།';
@@ -1793,15 +1939,18 @@ class AppLocalizationsBo extends AppLocalizations {
   }
 
   @override
-  String get group_remove_member_title => 'ཚོགས་པ་ནས་ཕུད་དམ།';
-
-  @override
-  String group_remove_member_message(String name) {
-    return '$name ཚོགས་པ་འདི་ནས་ཕུད་འགྲོ་བ་དང་། བཀག་སྡོམ་མ་བཏང་བར་ཡང་བསྐྱར་ཞུགས་མི་ཐུབ།';
+  String group_remove_member_title(String name) {
+    return '$name ཕུད།';
   }
 
   @override
-  String get group_remove_member_blocked_for => 'བཀག་སྡོམ་དུས་ཡུན།';
+  String group_remove_member_message(String duration) {
+    return 'ཁོང་ཚོགས་པ་འདི་ནས་ཕུད་འགྲོ་བ་དང་། དུས་ཡུན་$duration རིང་ཡང་བསྐྱར་ཞུགས་མི་ཐུབ།';
+  }
+
+  @override
+  String get group_remove_member_blocked_for =>
+      'ཡང་བསྐྱར་ཞུགས་མི་ཐུབ་པའི་དུས་ཡུན';
 
   @override
   String get group_remove_member_duration_day => 'ཉིན་ 1';
@@ -1818,10 +1967,11 @@ class AppLocalizationsBo extends AppLocalizations {
   String get group_remove_member_reason_label => 'རྒྱུ་མཚན། (གདམ་ཀ)';
 
   @override
-  String get group_remove_member_reason_hint => 'གཞན།...';
+  String get group_remove_member_reason_hint =>
+      'ཚོགས་མི་འདི་ཅིའི་ཕྱིར་ཕུད་གི་ཡོད་དམ།';
 
   @override
-  String get group_remove_member_action => 'ཕུད།';
+  String get group_remove_member_action => 'ཚོགས་མི་ཕུད།';
 
   @override
   String group_remove_member_success(String name) {
@@ -1920,6 +2070,10 @@ class AppLocalizationsBo extends AppLocalizations {
       'གྲངས་གསོག་ལ་ཞུགས་མ་ཐུབ། ཡང་བསྐྱར་ཚོད་ལྟ་གནང་རོགས།';
 
   @override
+  String get group_accumulator_practice_unavailable =>
+      'This practice can\'t be opened right now.';
+
+  @override
   String get group_accumulator_join_before_practice =>
       'ཁྱེད་ཀྱི་ཉམས་ལེན་ནང་མ་བསྣན་གོང་གྲངས་གསོག་འདི་ལ་ཞུགས་རོགས།';
 
@@ -1964,6 +2118,39 @@ class AppLocalizationsBo extends AppLocalizations {
 
   @override
   String get group_accumulator_finish_session => 'ཐུན་མཇུག་སྒྲིལ།';
+
+  @override
+  String get group_accumulator_completed_recitations =>
+      'You completed recitations';
+
+  @override
+  String get group_accumulator_recite_again => 'Recite again';
+
+  @override
+  String get group_accumulator_finish_and_count => 'Finish and count';
+
+  @override
+  String get group_accumulator_finish_without_counting =>
+      'Finish without counting';
+
+  @override
+  String group_accumulator_recitations_counted(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count recitations counted',
+      one: '1 recitation counted',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String group_accumulator_recitation_count_badge(int count) {
+    return '×$count';
+  }
+
+  @override
+  String get undo => 'Undo';
 
   @override
   String get group_accumulator_offline_recitation =>
@@ -2029,7 +2216,7 @@ class AppLocalizationsBo extends AppLocalizations {
       'By this merit, may all beings\nbe free from suffering';
 
   @override
-  String get share_this_quote => 'ལེགས་བཤད་འདི་སྤེལ།';
+  String get share_this_verse => 'ཚིགས་བཅད་འདི་སྤེལ།';
 
   @override
   String get shared_from => 'སྤེལ་ཁུངས།';
@@ -2374,8 +2561,7 @@ class AppLocalizationsBo extends AppLocalizations {
   String get group_chat_empty_title => 'ད་དུང་འཕྲིན་ཡིག་མི་འདུག';
 
   @override
-  String get group_chat_empty_body =>
-      'ཁྱེད་ཀྱི་ཚོགས་པ་དང་གླེང་མོལ་འགོ་འཛུགས་རོགས།';
+  String get group_chat_empty_body => 'ཁྱེད་ཀྱི་ཚོགས་པའི་ནང་གླེང་མོལ་འགོ་ཚུགས།';
 
   @override
   String get group_chat_load_failed => 'འཕྲིན་ཡིག་ལེན་ཐུབ་མ་སོང་།';
@@ -2653,8 +2839,8 @@ class AppLocalizationsBo extends AppLocalizations {
   String get group_post_updated => 'ཁྱེད་ཀྱི་བཟོ་བཅོས་ཉར་ཟིན།';
 
   @override
-  String get practice_collection_already_added =>
-      'ཕྱོགས་བསྡུས་འདི་ཁྱེད་ཀྱི་ཉམས་ལེན་ནང་སྔོན་ནས་ཡོད།';
+  String get chant_book_already_in_practices =>
+      'ཞལ་འདོན་དེབ་འདི་ཁྱེད་ཀྱི་ཉམས་ལེན་ནང་སྔོན་ནས་ཡོད།';
 
   @override
   String get practice_group_accumulator_already_added =>
@@ -3270,13 +3456,13 @@ class AppLocalizationsBo extends AppLocalizations {
   String get group_event_choose_repeats => 'Choose how it repeats';
 
   @override
-  String get group_event_duration => 'Duration';
+  String get group_event_duration => 'དུས་ཡུན།';
 
   @override
-  String get group_event_duration_decrease => 'Decrease duration';
+  String get group_event_duration_decrease => 'དུས་ཡུན་ཐུང་དུ་ཐོངས།';
 
   @override
-  String get group_event_duration_increase => 'Increase duration';
+  String get group_event_duration_increase => 'དུས་ཡུན་རིང་དུ་ཐོངས།';
 
   @override
   String group_event_duration_days(int count) {
@@ -3931,6 +4117,10 @@ class AppLocalizationsBo extends AppLocalizations {
       'Duration must be greater than 0';
 
   @override
+  String get timer_duplicate_setup =>
+      'A timer with this duration, sound, and title already exists.';
+
+  @override
   String get splash_tagline_1 => 'We Buddhists practice together';
 
   @override
@@ -3943,7 +4133,10 @@ class AppLocalizationsBo extends AppLocalizations {
   String get timer_starting => 'Starting...';
 
   @override
-  String get timer_duration_hours => 'hours';
+  String get timer_duration_hours => 'ཆུ་ཚོད།';
+
+  @override
+  String get timer_duration_hr => 'hr';
 
   @override
   String get timer_duration_sec => 'sec';
@@ -4049,4 +4242,132 @@ class AppLocalizationsBo extends AppLocalizations {
 
   @override
   String get reader_tab_versions => 'པར་གཞི།';
+
+  @override
+  String get chants_filter_all => 'ཆ་ཚང་།';
+
+  @override
+  String get chants_chant_books => 'ཞལ་འདོན་དེབ།';
+
+  @override
+  String get chants_filter_single_chants => 'ཞལ་འདོན་རེ་རེ།';
+
+  @override
+  String get chants_my_chant_books_title => 'ངའི་ཞལ་འདོན་དེབ།';
+
+  @override
+  String get chants_text_only => 'ཡི་གེ་ཁོ་ནའི་ཞལ་འདོན།';
+
+  @override
+  String get chants_from_your_spaces => 'ཁྱེད་ཀྱི་ཚོགས་པ་ནས།';
+
+  @override
+  String get chants_explore_more => 'དེ་ལས་མང་བ་འཚོལ།';
+
+  @override
+  String get chants_create_chant_book => 'ཞལ་འདོན་དེབ།';
+
+  @override
+  String get chants_open_chant => 'ཞལ་འདོན་ཁ་ཕྱེ།';
+
+  @override
+  String get chants_your_spaces => 'ཁྱེད་ཀྱི་ཚོགས་པ།';
+
+  @override
+  String get chants_other_spaces => 'ཚོགས་པ་གཞན།';
+
+  @override
+  String get chants_search_hint_chant_books => 'ཞལ་འདོན་དང་ཞལ་འདོན་དེབ་འཚོལ།';
+
+  @override
+  String get chants_cant_find => 'ཁྱེད་ཀྱིས་འཚོལ་བཞིན་པའི་ཡིག་ཆ་མ་རྙེད་དམ།';
+
+  @override
+  String get chants_request_text => 'ཡིག་ཆ་རེ་ཞུ།';
+
+  @override
+  String get chants_request_done => 'རེ་ཞུ་ཕུལ་ཟིན།';
+
+  @override
+  String get chants_request_sent => 'ཐུགས་རྗེ་ཆེ། ཁྱེད་ཀྱི་རེ་ཞུ་འབྱོར་སོང་།';
+
+  @override
+  String get chants_request_limit =>
+      'དེ་རིང་ཁྱེད་ཀྱིས་རེ་ཞུ་མང་པོ་ཕུལ་ཟིན། རྗེས་སུ་ཡང་བསྐྱར་ཚོད་ལྟ་གནང་རོགས།';
+
+  @override
+  String get chants_with_audio => 'སྒྲ་ཡོད་པའི་ཞལ་འདོན།';
+
+  @override
+  String get chants_audio_chants => 'སྒྲའི་ཞལ་འདོན།';
+
+  @override
+  String get reader_no_resources_title =>
+      'ཚིགས་བཅད་འདིའི་འགྲེལ་བ་དང་པར་གཞི་མི་འདུག';
+
+  @override
+  String get reader_no_resources_subtitle =>
+      'ང་ཚོས་དཔེ་ཆ་གསར་པ་རྒྱུན་དུ་ཁ་སྣོན་བྱེད་བཞིན་ཡོད། རྗེས་སུ་ཡང་བསྐྱར་གཟིགས་རོགས།';
+
+  @override
+  String get mala_section_practice => 'ཉམས་ལེན།';
+
+  @override
+  String get mala_section_appearance => 'མཐོང་སྣང་།';
+
+  @override
+  String get mala_section_save_share => 'ཉར་ཚགས་དང་མཉམ་སྤྱོད།';
+
+  @override
+  String get mala_mantra_animation => 'སྔགས་ཀྱི་འགུལ་རིས།';
+
+  @override
+  String get mala_play_animation => 'འགུལ་རིས་གཏོང་།';
+
+  @override
+  String get mala_speed => 'མྱུར་ཚད།';
+
+  @override
+  String get mala_animation_off => 'བཀག';
+
+  @override
+  String get mala_bead_style => 'ཕྲེང་རྡོག་གི་རྣམ་པ།';
+
+  @override
+  String get mala_bead_default => 'སྔོན་སྒྲིག';
+
+  @override
+  String get mala_use_this_style => 'རྣམ་པ་འདི་བེད་སྤྱོད་བྱེད།';
+
+  @override
+  String get mala_bead_style_updated =>
+      'ཕྲེང་རྡོག་གི་རྣམ་པ་གསར་བསྒྱུར་བྱས་ཟིན།';
+
+  @override
+  String get mala_change_image => 'པར་རིས་བརྗེ་བ།';
+
+  @override
+  String get mala_use_image => 'བེད་སྤྱོད།';
+
+  @override
+  String get mala_restore_default_image => 'སྔོན་སྒྲིག་ལ་སླར་གསོ།';
+
+  @override
+  String get mala_image_updated => 'པར་རིས་གསར་བསྒྱུར་བྱས་ཟིན།';
+
+  @override
+  String get mala_images_empty => 'པར་རིས་མི་འདུག';
+
+  @override
+  String get mala_images_load_error => 'པར་རིས་ཕབ་ལེན་བྱེད་མ་ཐུབ།';
+
+  @override
+  String get mala_bookmarked => 'དཔེ་རྟགས་བཀོད་ཟིན།';
+
+  @override
+  String get mala_beads_load_error => 'ཕྲེང་རྡོག་གི་རྣམ་པ་ཕབ་ལེན་བྱེད་མ་ཐུབ།';
+
+  @override
+  String get mala_appearance_save_failed =>
+      'ཉར་ཚགས་བྱེད་མ་ཐུབ། བསྐྱར་དུ་ཚོད་ལྟ་བྱོས།';
 }

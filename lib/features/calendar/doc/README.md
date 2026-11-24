@@ -11,9 +11,11 @@ Tibetan lunar calendar: Gregorian grid with lunar day info and moon phases (scre
 - Full calendar screen with month grid (`TibetanCalendarScreen`, route `AppRoutes.calendar` = `/home/calendar`)
 - Header card for the selected day: "Day {lunarDay}", lunar-month label, moon-phase icon
 - Month navigation (chevrons + horizontal swipe) with a lunar-month subtitle; padded leading/trailing days
-- "Upcoming events" list: moon-phase events (lunar days 1/8/15/30) in the focused month from today on, collapsed to 2 with Show more/less
+- "Upcoming events" list: moon-phase, personal and joined-space events in the focused month from today on, collapsed to 2 with Show more/less. A space or repeating personal event appears once, on its next date
+- Tapping a day replaces that list with the day's events; Today goes back
+- **+** adds a personal event on the selected day. Tapping a personal card edits it; tapping a space card opens its event page; lunar cards don't open
 - "Today" sync on open and when the app resumes on a new calendar day
-- Day tapping is currently disabled (`onDaySelected` commented out in `tibetan_calendar_grid.dart`), so the selected day is always today
+- **Multiple calendars:** Settings → Calendar opens "Choose calendar" (`ChooseCalendarSheet`), calendars grouped by tradition with the current one checked; the calendar screen shows the chosen calendar under its title. Signed-in viewers see only their own traditions (plus the one holding the current pick); guests see all
 
 ## Architecture
 
@@ -37,10 +39,12 @@ calendar/
 | Remote API | `data/datasource/calendar_remote_datasource.dart` |
 | Events list | `presentation/widgets/upcoming_events_list.dart` |
 | `GET /calendar/today` | `todayCalendarDayProvider` — defined but **not consumed anywhere** today |
+| Calendar types | `domain/models/calendar_type.dart`, `presentation/providers/calendar_type_providers.dart`, `presentation/calendar_type_l10n.dart`, `widgets/choose_calendar_sheet.dart`, `widgets/calendar_type_settings_row.dart` |
 
 ## State management
 
 - `StateProvider`: `selectedCalendarDayProvider`, `focusedCalendarMonthProvider`
+- `selectedCalendarTypeProvider` (`StateNotifier<String>`, default `phugpa`, kept on device under `StorageKeys.calendarType`). `calendarRepositoryProvider` and `personalCalendarRepositoryProvider` watch it, so a pick refetches months, today and the feed in that calendar. `calendarTraditionsProvider` reads `GET /calendar/types` (falls back to the Tibetan calendars); `calendarTypeChoicesProvider` (autoDispose) is what the sheet lists
 - `Provider`: `tibetanCalendarServiceProvider` (engine), `engineMonthDaysProvider` (family), `resolvedMonthDaysProvider` (family — merges engine + backend overlay), `resolvedDayProvider` (family), `monthEventsProvider` (family)
 - `FutureProvider.family`: `calendarMonthProvider` (keyed by Gregorian `(year, month)`; returns `[]` on failure), `backendMonthOverlayProvider`
 - `FutureProvider`: `todayCalendarDayProvider` (unused)
@@ -48,14 +52,16 @@ calendar/
 
 ## Data sources
 
-- **Remote:** `GET /calendar/{year}/{month}`, `GET /calendar/today`
-- **Offline engine:** `KharagTibetanCalendarService` — always available fallback
+- **Remote:** `GET /calendar/{year}/{month}`, `GET /calendar/today`, `GET /calendar/types`. Month, today, `/users/me/calendar` and `/repeat-options` all send `calendar_type`, and the month/today cache keys include it
+- **Supported calendars:** only `supportedCalendarTypes` (`phugpa`, `tsurphu`, `nyingmapa`, the backend `CalendarType` enum) are offered. `/calendar/types` also lists Theravada and Mahayana calendars, but the month API rejects them; add their codes (and l10n labels in `calendar_type_l10n.dart`) when the backend serves them
+- **Offline engine:** `KharagTibetanCalendarService` — always available fallback. It computes Phugpa only, so for another calendar the grid shows Phugpa values until (or, offline, unless) that calendar's month arrives
 - No persistent cache; engine computes synchronously
 
 ## Cross-feature dependencies
 
 - **home** — `home_header.dart` pushes `AppRoutes.calendar`. (`CalendarBannerCard` in home is a stateless widget that is not currently rendered and does not read calendar providers.)
-- **group_profile** — `group_event_repeats_sheet.dart` / `group_event_schedule_utils.dart` use `TibetanCalendarService` (Phugpa) for lunar recurrence
+- **group_profile** — `group_event_repeats_sheet.dart` / `group_event_schedule_utils.dart` use `TibetanCalendarService` (Phugpa) for lunar recurrence. Calendar space cards open `/home/events/:id`
+- **Personal Calendar API** — `calendarFeedProvider` reads `GET /users/me/calendar` (personal and joined-space events) a month at a time; `PersonalCalendarController` creates, edits and deletes through `/users/me/calendar-events`, and the Repeats sheet reads `/repeat-options`. Moon-phase events stay computed locally so guests and offline users keep them. The API has no single-date exceptions, so deleting a repeating personal event removes every date
 - **core** — `dioProvider`, l10n, router
 
 ## Hybrid resolution pattern
@@ -76,7 +82,7 @@ calendar/
 ### Do
 
 - Extend moon-phase logic in `domain/models/moon_phase.dart`
-- Add festival events in `monthEventsProvider` when backend supports them
+- Add new event sources in `monthEventsProvider`
 - Update l10n via `calendar_l10n_utils.dart`
 - Keep `TibetanCalendarService` stable — group events depend on it
 

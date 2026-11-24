@@ -332,13 +332,13 @@ abstract class AppLocalizations {
   /// No description provided for @mala_reset_title.
   ///
   /// In en, this message translates to:
-  /// **'Reset this mala?'**
+  /// **'Reset count?'**
   String get mala_reset_title;
 
   /// No description provided for @mala_reset_count_confirm.
   ///
   /// In en, this message translates to:
-  /// **'Your current count will go back to zero, but your accumulations will stay in your lifetime total'**
+  /// **'This mala\'s count goes back to 0. Your lifetime total stays the same'**
   String get mala_reset_count_confirm;
 
   /// No description provided for @mala_reset_confirm.
@@ -371,18 +371,6 @@ abstract class AppLocalizations {
   /// **'Mala settings'**
   String get mala_settings_section;
 
-  /// No description provided for @mala_others_section.
-  ///
-  /// In en, this message translates to:
-  /// **'Others'**
-  String get mala_others_section;
-
-  /// No description provided for @mala_mantra_speed.
-  ///
-  /// In en, this message translates to:
-  /// **'Mantra speed'**
-  String get mala_mantra_speed;
-
   /// No description provided for @mala_speed_normal.
   ///
   /// In en, this message translates to:
@@ -410,7 +398,7 @@ abstract class AppLocalizations {
   /// No description provided for @mala_groups_section.
   ///
   /// In en, this message translates to:
-  /// **'Events'**
+  /// **'Groups'**
   String get mala_groups_section;
 
   /// No description provided for @mala_group_untitled.
@@ -773,11 +761,11 @@ abstract class AppLocalizations {
   /// **'No recitations available'**
   String get recitations_no_content;
 
-  /// No description provided for @my_recitation_collection_new_title.
+  /// No description provided for @chant_book_new_title.
   ///
   /// In en, this message translates to:
-  /// **'New Collection'**
-  String get my_recitation_collection_new_title;
+  /// **'New chant book'**
+  String get chant_book_new_title;
 
   /// No description provided for @my_recitation_collection_next.
   ///
@@ -790,12 +778,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Create'**
   String get my_recitation_collection_create;
-
-  /// No description provided for @my_recitation_collection_create_button.
-  ///
-  /// In en, this message translates to:
-  /// **'Create collection'**
-  String get my_recitation_collection_create_button;
 
   /// No description provided for @my_recitation_collection_change_title.
   ///
@@ -821,41 +803,41 @@ abstract class AppLocalizations {
   /// **'Search chants'**
   String get my_recitation_collection_search_chants;
 
-  /// No description provided for @my_recitation_collection_add_to_collection.
+  /// No description provided for @chant_book_add_to.
   ///
   /// In en, this message translates to:
-  /// **'Add to collection'**
-  String get my_recitation_collection_add_to_collection;
+  /// **'Add to chant book'**
+  String get chant_book_add_to;
 
-  /// No description provided for @my_recitation_collection_edit.
+  /// No description provided for @chant_book_edit.
   ///
   /// In en, this message translates to:
-  /// **'Edit collection'**
-  String get my_recitation_collection_edit;
+  /// **'Edit chant book'**
+  String get chant_book_edit;
 
-  /// No description provided for @my_recitation_collection_delete.
+  /// No description provided for @chant_book_delete.
   ///
   /// In en, this message translates to:
-  /// **'Delete collection'**
-  String get my_recitation_collection_delete;
+  /// **'Delete chant book'**
+  String get chant_book_delete;
 
-  /// No description provided for @my_recitation_collection_delete_title.
+  /// No description provided for @chant_book_delete_title.
   ///
   /// In en, this message translates to:
-  /// **'Delete collection?'**
-  String get my_recitation_collection_delete_title;
+  /// **'Delete chant book?'**
+  String get chant_book_delete_title;
 
-  /// No description provided for @my_recitation_collection_delete_message.
+  /// No description provided for @chant_book_delete_message.
   ///
   /// In en, this message translates to:
-  /// **'This collection will be permanently removed'**
-  String get my_recitation_collection_delete_message;
+  /// **'This chant book will be permanently removed'**
+  String get chant_book_delete_message;
 
-  /// No description provided for @my_recitation_collection_fallback_title.
+  /// No description provided for @chant_book_fallback_title.
   ///
   /// In en, this message translates to:
-  /// **'Chant collection'**
-  String get my_recitation_collection_fallback_title;
+  /// **'Chant book'**
+  String get chant_book_fallback_title;
 
   /// No description provided for @my_recitation_collection_unavailable.
   ///
@@ -875,17 +857,17 @@ abstract class AppLocalizations {
   /// **'{count, plural,\n=0 {0 chants • me}\n=1 {1 chant • me}\nother {{count} chants • me}\n}'**
   String my_recitation_collection_chant_count_owner(int count);
 
-  /// No description provided for @bookmarks_empty_chant_collections_title.
+  /// No description provided for @chant_book_bookmarks_empty_title.
   ///
   /// In en, this message translates to:
-  /// **'No chant collections bookmarked yet'**
-  String get bookmarks_empty_chant_collections_title;
+  /// **'No chant books bookmarked yet'**
+  String get chant_book_bookmarks_empty_title;
 
-  /// No description provided for @bookmarks_empty_chant_collections_subtitle.
+  /// No description provided for @chant_book_bookmarks_empty_subtitle.
   ///
   /// In en, this message translates to:
   /// **'Bookmark one to save it here'**
-  String get bookmarks_empty_chant_collections_subtitle;
+  String get chant_book_bookmarks_empty_subtitle;
 
   /// No description provided for @notification_allow_title.
   ///
@@ -962,13 +944,13 @@ abstract class AppLocalizations {
   /// No description provided for @notification_row_group_posts.
   ///
   /// In en, this message translates to:
-  /// **'Space posts'**
+  /// **'Group posts'**
   String get notification_row_group_posts;
 
   /// No description provided for @notification_row_group_chats.
   ///
   /// In en, this message translates to:
-  /// **'Space chats'**
+  /// **'Group chats'**
   String get notification_row_group_chats;
 
   /// No description provided for @notification_row_my_prayer_requests.
@@ -1193,23 +1175,53 @@ abstract class AppLocalizations {
   /// **'Connect with your Buddhist community'**
   String get connect_landing_title;
 
-  /// No description provided for @connect_popular_spaces.
+  /// No description provided for @connect_looking_for.
   ///
   /// In en, this message translates to:
-  /// **'Popular spaces'**
-  String get connect_popular_spaces;
+  /// **'Looking for'**
+  String get connect_looking_for;
+
+  /// No description provided for @connect_sort_spaces.
+  ///
+  /// In en, this message translates to:
+  /// **'Sort spaces'**
+  String get connect_sort_spaces;
+
+  /// No description provided for @connect_sort_popular.
+  ///
+  /// In en, this message translates to:
+  /// **'Popular'**
+  String get connect_sort_popular;
+
+  /// No description provided for @connect_sort_newly_added.
+  ///
+  /// In en, this message translates to:
+  /// **'Newly added'**
+  String get connect_sort_newly_added;
+
+  /// No description provided for @connect_sort_most_active.
+  ///
+  /// In en, this message translates to:
+  /// **'Most active'**
+  String get connect_sort_most_active;
+
+  /// No description provided for @connect_find_your_space.
+  ///
+  /// In en, this message translates to:
+  /// **'Find your space'**
+  String get connect_find_your_space;
+
+  /// Shown above the spaces list when a space search finds nothing
+  ///
+  /// In en, this message translates to:
+  /// **'No spaces match \"{query}\"'**
+  String connect_no_spaces_match(String query);
 
   /// No description provided for @connect_your_spaces.
   ///
   /// In en, this message translates to:
   /// **'Your spaces'**
   String get connect_your_spaces;
-
-  /// No description provided for @connect_find_a_space.
-  ///
-  /// In en, this message translates to:
-  /// **'Find a space'**
-  String get connect_find_a_space;
 
   /// No description provided for @connect_segment_my.
   ///
@@ -2147,6 +2159,36 @@ abstract class AppLocalizations {
   /// **'Unable to load. Check your connection and try again'**
   String get unableToLoad;
 
+  /// No description provided for @reader_not_translated.
+  ///
+  /// In en, this message translates to:
+  /// **'Not translated'**
+  String get reader_not_translated;
+
+  /// No description provided for @error_offline_title.
+  ///
+  /// In en, this message translates to:
+  /// **'No connection'**
+  String get error_offline_title;
+
+  /// No description provided for @error_server_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Can\'t load right now'**
+  String get error_server_title;
+
+  /// No description provided for @reader_error_server_message.
+  ///
+  /// In en, this message translates to:
+  /// **'This text can\'t be loaded right now. Please try again later.'**
+  String get reader_error_server_message;
+
+  /// No description provided for @chants_error_server_message.
+  ///
+  /// In en, this message translates to:
+  /// **'Chants can\'t be loaded right now. Please try again later.'**
+  String get chants_error_server_message;
+
   /// No description provided for @somethingWrong.
   ///
   /// In en, this message translates to:
@@ -2374,6 +2416,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Edit profile'**
   String get settings_edit_profile;
+
+  /// No description provided for @settings_signed_in_with_google.
+  ///
+  /// In en, this message translates to:
+  /// **'Signed in with Google'**
+  String get settings_signed_in_with_google;
+
+  /// No description provided for @settings_signed_in_with_apple.
+  ///
+  /// In en, this message translates to:
+  /// **'Signed in with Apple'**
+  String get settings_signed_in_with_apple;
+
+  /// No description provided for @settings_signed_in_with_phone.
+  ///
+  /// In en, this message translates to:
+  /// **'Signed in with phone number'**
+  String get settings_signed_in_with_phone;
+
+  /// No description provided for @settings_signed_in_as.
+  ///
+  /// In en, this message translates to:
+  /// **'Signed in as'**
+  String get settings_signed_in_as;
 
   /// No description provided for @settings_theme.
   ///
@@ -2788,6 +2854,216 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Calendar'**
   String get calendar_title;
+
+  /// No description provided for @calendar_choose_calendar.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose calendar'**
+  String get calendar_choose_calendar;
+
+  /// No description provided for @settings_calendar_row.
+  ///
+  /// In en, this message translates to:
+  /// **'Calendar'**
+  String get settings_calendar_row;
+
+  /// No description provided for @calendar_tradition_vajrayana.
+  ///
+  /// In en, this message translates to:
+  /// **'Vajrayana'**
+  String get calendar_tradition_vajrayana;
+
+  /// No description provided for @calendar_tradition_theravada.
+  ///
+  /// In en, this message translates to:
+  /// **'Theravada'**
+  String get calendar_tradition_theravada;
+
+  /// No description provided for @calendar_tradition_mahayana.
+  ///
+  /// In en, this message translates to:
+  /// **'Mahayana'**
+  String get calendar_tradition_mahayana;
+
+  /// No description provided for @calendar_type_phugpa.
+  ///
+  /// In en, this message translates to:
+  /// **'Tibetan (Phugpa)'**
+  String get calendar_type_phugpa;
+
+  /// No description provided for @calendar_type_tsurphu.
+  ///
+  /// In en, this message translates to:
+  /// **'Tibetan (Tsurphu)'**
+  String get calendar_type_tsurphu;
+
+  /// No description provided for @calendar_type_nyingmapa.
+  ///
+  /// In en, this message translates to:
+  /// **'Nyingma'**
+  String get calendar_type_nyingmapa;
+
+  /// No description provided for @calendar_type_sinhalese.
+  ///
+  /// In en, this message translates to:
+  /// **'Sinhalese'**
+  String get calendar_type_sinhalese;
+
+  /// No description provided for @calendar_type_thai.
+  ///
+  /// In en, this message translates to:
+  /// **'Thai'**
+  String get calendar_type_thai;
+
+  /// No description provided for @calendar_type_burmese.
+  ///
+  /// In en, this message translates to:
+  /// **'Burmese'**
+  String get calendar_type_burmese;
+
+  /// No description provided for @calendar_type_lao.
+  ///
+  /// In en, this message translates to:
+  /// **'Lao'**
+  String get calendar_type_lao;
+
+  /// No description provided for @calendar_type_chinese.
+  ///
+  /// In en, this message translates to:
+  /// **'Chinese'**
+  String get calendar_type_chinese;
+
+  /// No description provided for @calendar_type_vietnamese.
+  ///
+  /// In en, this message translates to:
+  /// **'Vietnamese'**
+  String get calendar_type_vietnamese;
+
+  /// No description provided for @calendar_type_korean.
+  ///
+  /// In en, this message translates to:
+  /// **'Korean'**
+  String get calendar_type_korean;
+
+  /// No description provided for @calendar_type_japanese.
+  ///
+  /// In en, this message translates to:
+  /// **'Japanese'**
+  String get calendar_type_japanese;
+
+  /// No description provided for @calendar_today.
+  ///
+  /// In en, this message translates to:
+  /// **'Today'**
+  String get calendar_today;
+
+  /// No description provided for @calendar_no_events.
+  ///
+  /// In en, this message translates to:
+  /// **'No events'**
+  String get calendar_no_events;
+
+  /// No description provided for @calendar_source_lunar.
+  ///
+  /// In en, this message translates to:
+  /// **'Lunar calendar'**
+  String get calendar_source_lunar;
+
+  /// No description provided for @calendar_add_event.
+  ///
+  /// In en, this message translates to:
+  /// **'Add event'**
+  String get calendar_add_event;
+
+  /// No description provided for @calendar_event_name.
+  ///
+  /// In en, this message translates to:
+  /// **'Event name'**
+  String get calendar_event_name;
+
+  /// No description provided for @calendar_event_name_hint.
+  ///
+  /// In en, this message translates to:
+  /// **'Add an event to your calendar'**
+  String get calendar_event_name_hint;
+
+  /// No description provided for @calendar_repeat.
+  ///
+  /// In en, this message translates to:
+  /// **'Repeat'**
+  String get calendar_repeat;
+
+  /// No description provided for @calendar_does_not_repeat.
+  ///
+  /// In en, this message translates to:
+  /// **'Does not repeat'**
+  String get calendar_does_not_repeat;
+
+  /// No description provided for @calendar_repeat_weekly.
+  ///
+  /// In en, this message translates to:
+  /// **'Weekly'**
+  String get calendar_repeat_weekly;
+
+  /// No description provided for @calendar_repeat_monthly.
+  ///
+  /// In en, this message translates to:
+  /// **'Monthly'**
+  String get calendar_repeat_monthly;
+
+  /// No description provided for @calendar_repeat_yearly.
+  ///
+  /// In en, this message translates to:
+  /// **'Yearly'**
+  String get calendar_repeat_yearly;
+
+  /// No description provided for @calendar_repeat_monthly_lunar.
+  ///
+  /// In en, this message translates to:
+  /// **'Monthly ({day} lunar)'**
+  String calendar_repeat_monthly_lunar(String day);
+
+  /// No description provided for @calendar_repeat_yearly_lunar.
+  ///
+  /// In en, this message translates to:
+  /// **'Yearly (lunar date)'**
+  String get calendar_repeat_yearly_lunar;
+
+  /// No description provided for @calendar_delete_event.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete event'**
+  String get calendar_delete_event;
+
+  /// No description provided for @calendar_delete_event_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete event?'**
+  String get calendar_delete_event_title;
+
+  /// No description provided for @calendar_delete_event_body.
+  ///
+  /// In en, this message translates to:
+  /// **'\"{title}\" will be removed from your calendar. This can’t be undone.'**
+  String calendar_delete_event_body(String title);
+
+  /// No description provided for @calendar_delete_repeating_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete repeating event?'**
+  String get calendar_delete_repeating_title;
+
+  /// No description provided for @calendar_delete_repeating_body.
+  ///
+  /// In en, this message translates to:
+  /// **'Every date of \"{title}\" ({repeat}) will be removed from your calendar. This can’t be undone.'**
+  String calendar_delete_repeating_body(String title, String repeat);
+
+  /// No description provided for @calendar_event_deleted.
+  ///
+  /// In en, this message translates to:
+  /// **'Event deleted'**
+  String get calendar_event_deleted;
 
   /// No description provided for @calendar_upcoming_events.
   ///
@@ -3224,19 +3500,19 @@ abstract class AppLocalizations {
   /// No description provided for @group_remove_member_title.
   ///
   /// In en, this message translates to:
-  /// **'Remove from space?'**
-  String get group_remove_member_title;
+  /// **'Remove {name}'**
+  String group_remove_member_title(String name);
 
   /// No description provided for @group_remove_member_message.
   ///
   /// In en, this message translates to:
-  /// **'{name} will be removed from this space and unable to rejoin it until the ban is lifted'**
-  String group_remove_member_message(String name);
+  /// **'They\'ll be removed from this space and can\'t rejoin for {duration}.'**
+  String group_remove_member_message(String duration);
 
   /// No description provided for @group_remove_member_blocked_for.
   ///
   /// In en, this message translates to:
-  /// **'Blocked for:'**
+  /// **'Can\'t rejoin for'**
   String get group_remove_member_blocked_for;
 
   /// No description provided for @group_remove_member_duration_day.
@@ -3266,13 +3542,13 @@ abstract class AppLocalizations {
   /// No description provided for @group_remove_member_reason_hint.
   ///
   /// In en, this message translates to:
-  /// **'Something else...'**
+  /// **'Why are you removing this member?'**
   String get group_remove_member_reason_hint;
 
   /// No description provided for @group_remove_member_action.
   ///
   /// In en, this message translates to:
-  /// **'Remove'**
+  /// **'Remove member'**
   String get group_remove_member_action;
 
   /// No description provided for @group_remove_member_success.
@@ -3425,6 +3701,12 @@ abstract class AppLocalizations {
   /// **'Unable to join accumulation. Please try again'**
   String get group_accumulator_join_error;
 
+  /// No description provided for @group_accumulator_practice_unavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'This practice can\'t be opened right now.'**
+  String get group_accumulator_practice_unavailable;
+
   /// No description provided for @group_accumulator_join_before_practice.
   ///
   /// In en, this message translates to:
@@ -3509,6 +3791,48 @@ abstract class AppLocalizations {
   /// **'Finish session'**
   String get group_accumulator_finish_session;
 
+  /// Label above the big number of recitations at the end of a group chant
+  ///
+  /// In en, this message translates to:
+  /// **'You completed recitations'**
+  String get group_accumulator_completed_recitations;
+
+  /// Counts the recitation just finished and jumps back to the start of the chant
+  ///
+  /// In en, this message translates to:
+  /// **'Recite again'**
+  String get group_accumulator_recite_again;
+
+  /// Counts the recitation just finished and ends the chant session
+  ///
+  /// In en, this message translates to:
+  /// **'Finish and count'**
+  String get group_accumulator_finish_and_count;
+
+  /// Ends the chant session without counting the recitation just finished
+  ///
+  /// In en, this message translates to:
+  /// **'Finish without counting'**
+  String get group_accumulator_finish_without_counting;
+
+  /// Toast after Recite again; count is the recitations counted so far in this visit
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural,\n=1 {1 recitation counted}\nother {{count} recitations counted}\n}'**
+  String group_accumulator_recitations_counted(int count);
+
+  /// Running recitation count on the reader's section chip
+  ///
+  /// In en, this message translates to:
+  /// **'×{count}'**
+  String group_accumulator_recitation_count_badge(int count);
+
+  /// No description provided for @undo.
+  ///
+  /// In en, this message translates to:
+  /// **'Undo'**
+  String get undo;
+
   /// No description provided for @group_accumulator_offline_recitation.
   ///
   /// In en, this message translates to:
@@ -3591,11 +3915,11 @@ abstract class AppLocalizations {
   /// **'By this merit, may all beings\nbe free from suffering'**
   String get group_recitation_collection_dedication;
 
-  /// No description provided for @share_this_quote.
+  /// No description provided for @share_this_verse.
   ///
   /// In en, this message translates to:
-  /// **'Share this quote'**
-  String get share_this_quote;
+  /// **'Share this verse'**
+  String get share_this_verse;
 
   /// No description provided for @shared_from.
   ///
@@ -4629,11 +4953,11 @@ abstract class AppLocalizations {
   /// **'Your changes are saved'**
   String get group_post_updated;
 
-  /// No description provided for @practice_collection_already_added.
+  /// No description provided for @chant_book_already_in_practices.
   ///
   /// In en, this message translates to:
-  /// **'This collection is already in your practices'**
-  String get practice_collection_already_added;
+  /// **'This chant book is already in your practices'**
+  String get chant_book_already_in_practices;
 
   /// No description provided for @practice_group_accumulator_already_added.
   ///
@@ -6805,6 +7129,12 @@ abstract class AppLocalizations {
   /// **'Duration must be greater than 0'**
   String get timer_duration_must_be_greater_than_error;
 
+  /// No description provided for @timer_duplicate_setup.
+  ///
+  /// In en, this message translates to:
+  /// **'A timer with this duration, sound, and title already exists.'**
+  String get timer_duplicate_setup;
+
   /// No description provided for @splash_tagline_1.
   ///
   /// In en, this message translates to:
@@ -6834,6 +7164,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'hours'**
   String get timer_duration_hours;
+
+  /// No description provided for @timer_duration_hr.
+  ///
+  /// In en, this message translates to:
+  /// **'hr'**
+  String get timer_duration_hr;
 
   /// No description provided for @timer_duration_sec.
   ///
@@ -7020,6 +7356,252 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Versions'**
   String get reader_tab_versions;
+
+  /// No description provided for @chants_filter_all.
+  ///
+  /// In en, this message translates to:
+  /// **'All'**
+  String get chants_filter_all;
+
+  /// No description provided for @chants_chant_books.
+  ///
+  /// In en, this message translates to:
+  /// **'Chant books'**
+  String get chants_chant_books;
+
+  /// No description provided for @chants_filter_single_chants.
+  ///
+  /// In en, this message translates to:
+  /// **'Single chants'**
+  String get chants_filter_single_chants;
+
+  /// No description provided for @chants_my_chant_books_title.
+  ///
+  /// In en, this message translates to:
+  /// **'My chant books'**
+  String get chants_my_chant_books_title;
+
+  /// No description provided for @chants_text_only.
+  ///
+  /// In en, this message translates to:
+  /// **'Text-only chants'**
+  String get chants_text_only;
+
+  /// No description provided for @chants_from_your_spaces.
+  ///
+  /// In en, this message translates to:
+  /// **'From your spaces'**
+  String get chants_from_your_spaces;
+
+  /// No description provided for @chants_explore_more.
+  ///
+  /// In en, this message translates to:
+  /// **'Explore more'**
+  String get chants_explore_more;
+
+  /// No description provided for @chants_create_chant_book.
+  ///
+  /// In en, this message translates to:
+  /// **'Chant book'**
+  String get chants_create_chant_book;
+
+  /// No description provided for @chants_open_chant.
+  ///
+  /// In en, this message translates to:
+  /// **'Open chant'**
+  String get chants_open_chant;
+
+  /// No description provided for @chants_your_spaces.
+  ///
+  /// In en, this message translates to:
+  /// **'Your spaces'**
+  String get chants_your_spaces;
+
+  /// No description provided for @chants_other_spaces.
+  ///
+  /// In en, this message translates to:
+  /// **'Other spaces'**
+  String get chants_other_spaces;
+
+  /// No description provided for @chants_search_hint_chant_books.
+  ///
+  /// In en, this message translates to:
+  /// **'Search chants and chant books'**
+  String get chants_search_hint_chant_books;
+
+  /// No description provided for @chants_cant_find.
+  ///
+  /// In en, this message translates to:
+  /// **'Can\'t find the text you\'re looking for?'**
+  String get chants_cant_find;
+
+  /// No description provided for @chants_request_text.
+  ///
+  /// In en, this message translates to:
+  /// **'Request text'**
+  String get chants_request_text;
+
+  /// No description provided for @chants_request_done.
+  ///
+  /// In en, this message translates to:
+  /// **'Requested'**
+  String get chants_request_done;
+
+  /// No description provided for @chants_request_sent.
+  ///
+  /// In en, this message translates to:
+  /// **'Thanks. We\'ve received your request.'**
+  String get chants_request_sent;
+
+  /// No description provided for @chants_request_limit.
+  ///
+  /// In en, this message translates to:
+  /// **'You\'ve sent a lot of requests today. Please try again later.'**
+  String get chants_request_limit;
+
+  /// No description provided for @chants_with_audio.
+  ///
+  /// In en, this message translates to:
+  /// **'Chants with audio'**
+  String get chants_with_audio;
+
+  /// No description provided for @chants_audio_chants.
+  ///
+  /// In en, this message translates to:
+  /// **'Audio chants'**
+  String get chants_audio_chants;
+
+  /// No description provided for @reader_no_resources_title.
+  ///
+  /// In en, this message translates to:
+  /// **'No commentaries or versions available for this segment'**
+  String get reader_no_resources_title;
+
+  /// No description provided for @reader_no_resources_subtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'We add new texts regularly; check back soon'**
+  String get reader_no_resources_subtitle;
+
+  /// No description provided for @mala_section_practice.
+  ///
+  /// In en, this message translates to:
+  /// **'Practice'**
+  String get mala_section_practice;
+
+  /// No description provided for @mala_section_appearance.
+  ///
+  /// In en, this message translates to:
+  /// **'Appearance'**
+  String get mala_section_appearance;
+
+  /// No description provided for @mala_section_save_share.
+  ///
+  /// In en, this message translates to:
+  /// **'Save & share'**
+  String get mala_section_save_share;
+
+  /// No description provided for @mala_mantra_animation.
+  ///
+  /// In en, this message translates to:
+  /// **'Mantra animation'**
+  String get mala_mantra_animation;
+
+  /// No description provided for @mala_play_animation.
+  ///
+  /// In en, this message translates to:
+  /// **'Play animation'**
+  String get mala_play_animation;
+
+  /// No description provided for @mala_speed.
+  ///
+  /// In en, this message translates to:
+  /// **'Speed'**
+  String get mala_speed;
+
+  /// No description provided for @mala_animation_off.
+  ///
+  /// In en, this message translates to:
+  /// **'Off'**
+  String get mala_animation_off;
+
+  /// No description provided for @mala_bead_style.
+  ///
+  /// In en, this message translates to:
+  /// **'Bead style'**
+  String get mala_bead_style;
+
+  /// No description provided for @mala_bead_default.
+  ///
+  /// In en, this message translates to:
+  /// **'Default'**
+  String get mala_bead_default;
+
+  /// No description provided for @mala_use_this_style.
+  ///
+  /// In en, this message translates to:
+  /// **'Use this style'**
+  String get mala_use_this_style;
+
+  /// No description provided for @mala_bead_style_updated.
+  ///
+  /// In en, this message translates to:
+  /// **'Bead style updated'**
+  String get mala_bead_style_updated;
+
+  /// No description provided for @mala_change_image.
+  ///
+  /// In en, this message translates to:
+  /// **'Change image'**
+  String get mala_change_image;
+
+  /// No description provided for @mala_use_image.
+  ///
+  /// In en, this message translates to:
+  /// **'Use'**
+  String get mala_use_image;
+
+  /// No description provided for @mala_restore_default_image.
+  ///
+  /// In en, this message translates to:
+  /// **'Restore default'**
+  String get mala_restore_default_image;
+
+  /// No description provided for @mala_image_updated.
+  ///
+  /// In en, this message translates to:
+  /// **'Image updated'**
+  String get mala_image_updated;
+
+  /// No description provided for @mala_images_empty.
+  ///
+  /// In en, this message translates to:
+  /// **'No images available'**
+  String get mala_images_empty;
+
+  /// No description provided for @mala_images_load_error.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not load images'**
+  String get mala_images_load_error;
+
+  /// No description provided for @mala_bookmarked.
+  ///
+  /// In en, this message translates to:
+  /// **'Bookmarked'**
+  String get mala_bookmarked;
+
+  /// No description provided for @mala_beads_load_error.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not load bead styles'**
+  String get mala_beads_load_error;
+
+  /// No description provided for @mala_appearance_save_failed.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t save. Please try again'**
+  String get mala_appearance_save_failed;
 }
 
 class _AppLocalizationsDelegate

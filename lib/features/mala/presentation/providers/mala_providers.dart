@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:typed_data';
 
 import 'package:flutter_pecha/core/cache/screen_cache/screen_cache_providers.dart';
 import 'package:flutter_pecha/core/config/locale/locale_notifier.dart';
@@ -11,8 +12,10 @@ import 'package:flutter_pecha/core/utils/local_storage_service.dart';
 import 'package:flutter_pecha/features/auth/presentation/providers/state_providers.dart';
 import 'package:flutter_pecha/features/mala/data/datasources/mala_local_datasource.dart';
 import 'package:flutter_pecha/features/mala/data/datasources/mala_remote_datasource.dart';
+import 'package:flutter_pecha/features/mala/data/datasources/mala_appearance_remote_datasource.dart';
 import 'package:flutter_pecha/features/mala/data/repositories/mala_repository_impl.dart';
 import 'package:flutter_pecha/features/mala/domain/entities/mantra.dart';
+import 'package:flutter_pecha/features/mala/domain/repositories/mala_appearance_repository.dart';
 import 'package:flutter_pecha/features/mala/domain/repositories/mala_repository.dart';
 import 'package:flutter_pecha/features/mala/domain/usecases/mala_usecases.dart';
 import 'package:flutter_pecha/features/mala/presentation/providers/accumulation_search_provider.dart';
@@ -143,11 +146,17 @@ Stream<Either<Failure, List<Mantra>>> _catalogueUpdates(
   GetCatalogueUseCase getCatalogue,
   MalaLocalDataSource local,
   String language,
+  Future<String?> Function() resolveUserId,
+  String? storedUserId,
 ) async* {
-  yield await getCatalogue(language);
+  final userId = storedUserId ?? await resolveUserId();
+  yield await getCatalogue(
+    GetCatalogueParams(language: language, userId: userId),
+  );
+  if (userId == null || userId.isEmpty) return;
 
-  await for (final _ in local.watchCatalogue(language)) {
-    final cached = local.readCatalogue(language);
+  await for (final _ in local.watchCatalogue(userId, language)) {
+    final cached = local.readCatalogue(userId, language);
     if (cached != null) {
       yield Right(cached.map((preset) => preset.toEntity()).toList());
     }
@@ -155,27 +164,73 @@ Stream<Either<Failure, List<Mantra>>> _catalogueUpdates(
 }
 
 /// Stored catalogue (from Hive) is the first state, then each refresh.
-/// Re-fetches when the content language changes.
+/// Re-fetches when the content language or the signed-in account changes;
+/// the cache is per account, since rows carry the user's `last_used_at`.
 final malaCatalogueProvider = AsyncNotifierProvider<
   ScreenCacheNotifier<List<Mantra>, Either<Failure, List<Mantra>>>,
   Either<Failure, List<Mantra>>
 >(() {
   return ScreenCacheNotifier((ref, bind) {
-    if (!_isAuthenticated(ref)) {
+    // Logout and login rebuild this, so one account never sees another's.
+    final signedIn = ref.watch(
+      authProvider.select((auth) => auth.isLoggedIn && !auth.isGuest),
+    );
+    if (!signedIn) {
       return const Left(AuthenticationFailure('Not authenticated'));
     }
     final language = ref.watch(contentLanguageProvider);
     final getCatalogue = ref.watch(getCatalogueUseCaseProvider);
     final local = ref.watch(malaLocalDataSourceProvider);
-    final stored = local
-        .readCatalogue(language)
-        ?.map((preset) => preset.toEntity())
-        .toList();
+    final userId = malaUserIdSync();
+    final stored =
+        userId == null || userId.isEmpty
+            ? null
+            : local
+                .readCatalogue(userId, language)
+                ?.map((preset) => preset.toEntity())
+                .toList();
     return bind.stream(
       stored == null ? null : Right(stored),
-      _catalogueUpdates(getCatalogue, local, language),
+      _catalogueUpdates(
+        getCatalogue,
+        local,
+        language,
+        () => resolveMalaUserId(ref),
+        userId,
+      ),
     );
   });
+});
+
+/// Fetches the catalogue in the background so [malaCatalogueProvider] has
+/// fresh usage times (e.g. counts made on another device). The mala screen
+/// calls it on entry: its own order is already pinned, so the result orders
+/// the next visit. Never throws.
+final malaCatalogueRefreshProvider = Provider<Future<void> Function()>((ref) {
+  return () async {
+    try {
+      if (!_isAuthenticated(ref)) return;
+      final userId = await resolveMalaUserId(ref);
+      if (userId == null || userId.isEmpty) return;
+      await ref
+          .read(malaRepositoryProvider)
+          .refreshCatalogue(
+            userId: userId,
+            language: ref.read(contentLanguageProvider),
+          );
+    } catch (_) {
+      // Background refresh: the cached catalogue stays.
+    }
+  };
+});
+
+// ============ Appearance (deity image and bead skin) ============
+
+/// The user's per-mantra deity image and bead skin, on the v2 API.
+final malaAppearanceRepositoryProvider = Provider<MalaAppearanceRepository>((
+  ref,
+) {
+  return MalaAppearanceRemoteDataSource(dio: ref.watch(dioProvider));
 });
 
 // ============ Catalogue search (debounced, server-side) ============
@@ -221,6 +276,7 @@ final malaCounterProvider = StateNotifierProvider.autoDispose
       void onPersonalCountSynced(String presetId) {
         notifier.handlePersonalCountSynced(presetId);
       }
+
       sync.onPersonalCountSynced = onPersonalCountSynced;
       ref.onDispose(() {
         if (sync.onPersonalCountSynced == onPersonalCountSynced) {
@@ -228,4 +284,19 @@ final malaCounterProvider = StateNotifierProvider.autoDispose
         }
       });
       return notifier;
+    });
+
+/// Bead artwork bytes for a skin URL the server already resolved, such as a
+/// group accumulation's `mala_image.url`. Null when the download fails, so
+/// the beads fall back to the drawn bead.
+final malaBeadImageBytesProvider = FutureProvider.autoDispose
+    .family<Uint8List?, String>((ref, url) async {
+      try {
+        final bytes = await ref
+            .read(malaRemoteDataSourceProvider)
+            .fetchImageBytes(url);
+        return bytes.isEmpty ? null : Uint8List.fromList(bytes);
+      } catch (_) {
+        return null;
+      }
     });

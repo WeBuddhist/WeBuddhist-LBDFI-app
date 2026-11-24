@@ -1,4 +1,6 @@
 import 'package:equatable/equatable.dart';
+import 'package:flutter_pecha/features/group_profile/domain/entities/visible_name.dart';
+import 'package:flutter_pecha/features/mala/domain/entities/mantra.dart';
 import 'package:flutter_pecha/shared/domain/value_objects/responsive_image.dart';
 
 class GroupAccumulator extends Equatable {
@@ -6,6 +8,13 @@ class GroupAccumulator extends Equatable {
   final String presetAccumulatorId;
   final String? textId;
   final String? mantraId;
+
+  /// The mantra in use: the accumulation's own, else its preset's. Null when
+  /// it has neither (a text accumulation, or a preset without a mantra).
+  final MantraText? mantra;
+
+  /// The bead skin to show (`mala_image.url`), already resolved by the server.
+  final String? malaImageUrl;
   final String groupId;
   final String title;
   final ResponsiveImage? image;
@@ -21,6 +30,8 @@ class GroupAccumulator extends Equatable {
     required this.presetAccumulatorId,
     this.textId,
     this.mantraId,
+    this.mantra,
+    this.malaImageUrl,
     required this.groupId,
     required this.title,
     this.image,
@@ -34,7 +45,8 @@ class GroupAccumulator extends Equatable {
 
   bool get hasTextContent => textId != null && textId!.isNotEmpty;
 
-  bool get hasMantraContent => mantraId != null && mantraId!.isNotEmpty;
+  bool get hasMantraContent =>
+      mantra != null || (mantraId != null && mantraId!.isNotEmpty);
 
   bool get hasJoined => isJoined == true;
 
@@ -51,6 +63,8 @@ class GroupAccumulator extends Equatable {
     presetAccumulatorId,
     textId,
     mantraId,
+    mantra,
+    malaImageUrl,
     groupId,
     title,
     image,
@@ -97,6 +111,8 @@ class GroupAccumulatorDetail extends GroupAccumulator {
     required super.presetAccumulatorId,
     super.textId,
     super.mantraId,
+    super.mantra,
+    super.malaImageUrl,
     required super.groupId,
     required super.title,
     super.image,
@@ -137,16 +153,25 @@ class GroupAccumulatorUserContribution extends Equatable {
   final String? imageUrl;
   final String fullname;
 
+  /// The name the user picked in Edit profile (`display_name`).
+  final String? userDisplayName;
+
   const GroupAccumulatorUserContribution({
     this.totalCount = 0,
     this.todayCount = 0,
     this.username = '',
     this.imageUrl,
     this.fullname = '',
+    this.userDisplayName,
   });
 
-  String get displayName =>
-      fullname.trim().isNotEmpty ? fullname.trim() : username;
+  /// Name shown in the UI: the display name, then the full name, then the
+  /// username.
+  String get displayName => visibleUserName(
+    displayName: userDisplayName,
+    fullname: fullname,
+    username: username,
+  );
 
   @override
   List<Object?> get props => [
@@ -155,6 +180,7 @@ class GroupAccumulatorUserContribution extends Equatable {
     username,
     imageUrl,
     fullname,
+    userDisplayName,
   ];
 }
 
@@ -167,6 +193,9 @@ class GroupAccumulatorMember extends Equatable {
   final int totalCount;
   final int todayCount;
 
+  /// The name the user picked in Edit profile (`display_name`).
+  final String? userDisplayName;
+
   const GroupAccumulatorMember({
     required this.userId,
     required this.username,
@@ -175,10 +204,16 @@ class GroupAccumulatorMember extends Equatable {
     this.joinedAt,
     this.totalCount = 0,
     this.todayCount = 0,
+    this.userDisplayName,
   });
 
-  String get displayName =>
-      fullname.trim().isNotEmpty ? fullname.trim() : username;
+  /// Name shown in the UI: the display name, then the full name, then the
+  /// username.
+  String get displayName => visibleUserName(
+    displayName: userDisplayName,
+    fullname: fullname,
+    username: username,
+  );
 
   @override
   List<Object?> get props => [
@@ -189,6 +224,7 @@ class GroupAccumulatorMember extends Equatable {
     joinedAt,
     totalCount,
     todayCount,
+    userDisplayName,
   ];
 }
 

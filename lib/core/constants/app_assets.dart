@@ -106,6 +106,8 @@ class AppAssets {
   static const IconData dotsThree = PhosphorIconsRegular.dotsThree;
   static const IconData dotsThreeVertical =
       PhosphorIconsRegular.dotsThreeVertical;
+  static const IconData dotsThreeVerticalBold =
+      PhosphorIconsBold.dotsThreeVertical;
   static const IconData paperPlaneRight = PhosphorIconsRegular.paperPlaneRight;
   static const IconData arrowCircleUp = PhosphorIconsFill.arrowCircleUp;
   static const IconData handsPraying = PhosphorIconsRegular.handsPraying;
@@ -129,6 +131,8 @@ class AppAssets {
   static const IconData squaresFour = PhosphorIconsRegular.squaresFour;
   static const IconData trash = PhosphorIconsRegular.trash;
   static const IconData pencilSimple = PhosphorIconsRegular.pencilSimple;
+  static const IconData userCircle = PhosphorIconsRegular.userCircle;
+  static const IconData deviceMobile = PhosphorIconsRegular.deviceMobile;
   static const IconData prohibit = PhosphorIconsRegular.prohibit;
   static const IconData fileText = PhosphorIconsRegular.fileText;
   static const IconData bookmarkSimple = PhosphorIconsRegular.bookmarkSimple;
@@ -141,6 +145,12 @@ class AppAssets {
   static const IconData textHeading = PhosphorIconsRegular.textH;
   static const IconData listBullets = PhosphorIconsRegular.listBullets;
   static const IconData listNumbers = PhosphorIconsRegular.listNumbers;
+
+  // ========== CHANTS PAGE ICONS ==========
+  /// Marks a chant or chant book that has recordings.
+  static const IconData chantAudio = PhosphorIconsBold.waveform;
+  static const IconData search = PhosphorIconsRegular.magnifyingGlass;
+  static const IconData requestText = PhosphorIconsRegular.filePlus;
 
   // ========== TIMER ICONS ==========
   static const IconData timerAmbientSound = PhosphorIconsRegular.waveform;

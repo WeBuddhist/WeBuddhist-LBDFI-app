@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_pecha/core/analytics/share_analytics.dart';
-import 'package:flutter_pecha/core/config/router/app_routes.dart';
 import 'package:flutter_pecha/core/constants/app_assets.dart';
 import 'package:flutter_pecha/core/deep_linking/deep_link_url_builder.dart';
 import 'package:flutter_pecha/core/extensions/context_ext.dart';
@@ -17,10 +16,9 @@ import 'package:flutter_pecha/core/widgets/destructive_confirmation_dialog.dart'
 import 'package:flutter_pecha/features/auth/presentation/providers/state_providers.dart';
 import 'package:flutter_pecha/features/auth/presentation/widgets/login_drawer.dart';
 import 'package:flutter_pecha/features/connect/domain/entities/connect_post.dart';
+import 'package:flutter_pecha/features/connect/presentation/utils/connect_analytics.dart';
 import 'package:flutter_pecha/features/connect/presentation/widgets/connect_feed_card_layout.dart';
 import 'package:flutter_pecha/features/connect/presentation/widgets/connect_practice_card.dart';
-import 'package:flutter_pecha/features/group_chat/domain/prayer_room_scope.dart';
-import 'package:flutter_pecha/features/group_chat/presentation/widgets/prayer_requests_sheet.dart';
 import 'package:flutter_pecha/features/group_profile/domain/entities/group_accumulator.dart';
 import 'package:flutter_pecha/features/group_profile/domain/entities/group_event_cms_item.dart';
 import 'package:flutter_pecha/features/group_profile/domain/entities/group_practice.dart';
@@ -34,7 +32,10 @@ import 'package:flutter_pecha/features/group_profile/presentation/providers/grou
 import 'package:flutter_pecha/features/group_profile/presentation/screens/group_about_screen.dart';
 import 'package:flutter_pecha/features/group_profile/presentation/screens/group_event_composer_screen.dart';
 import 'package:flutter_pecha/features/group_profile/presentation/screens/group_post_composer_screen.dart';
+import 'package:flutter_pecha/features/group_profile/presentation/utils/group_analytics.dart';
+import 'package:flutter_pecha/features/group_profile/presentation/utils/group_member_menu.dart';
 import 'package:flutter_pecha/features/group_profile/presentation/widgets/group_join_request_drawer.dart';
+import 'package:flutter_pecha/features/group_profile/presentation/widgets/group_notification_settings_drawer.dart';
 import 'package:flutter_pecha/features/group_profile/presentation/widgets/group_join_requests_row.dart';
 import 'package:flutter_pecha/features/group_profile/presentation/widgets/group_reports_row.dart';
 import 'package:flutter_pecha/features/group_profile/presentation/widgets/group_profile_events_tab.dart';
@@ -44,6 +45,7 @@ import 'package:flutter_pecha/features/group_profile/presentation/widgets/group_
 import 'package:flutter_pecha/features/group_profile/presentation/widgets/group_profile_members_tab.dart';
 import 'package:flutter_pecha/features/group_profile/presentation/widgets/group_profile_nested_tab_scroll_view.dart';
 import 'package:flutter_pecha/features/group_profile/presentation/widgets/group_profile_posts_tab.dart';
+import 'package:flutter_pecha/features/group_profile/presentation/widgets/group_profile_tab_skeleton.dart';
 import 'package:flutter_pecha/features/group_profile/presentation/widgets/group_removed_notice_card.dart';
 import 'package:flutter_pecha/features/home/presentation/providers/series_enrollment_provider.dart';
 import 'package:flutter_pecha/features/plans/presentation/widgets/plan_inline_markdown_view.dart';
@@ -59,11 +61,18 @@ class GroupProfileBody extends ConsumerStatefulWidget {
   final bool isDark;
   final VoidCallback? onSeriesTap;
 
+  /// Opens a community scrolled past its header, with only the app bar and
+  /// the pinned tabs above the feed; scrolling up reveals the header. Set by
+  /// the Connect tab for a space it has opened before (its landing rule).
+  /// Read once, when the tabs are first laid out.
+  final bool startCollapsed;
+
   const GroupProfileBody({
     super.key,
     required this.profile,
     required this.isDark,
     this.onSeriesTap,
+    this.startCollapsed = false,
   });
 
   @override
@@ -79,6 +88,30 @@ class _GroupProfileBodyState extends ConsumerState<GroupProfileBody>
     with TickerProviderStateMixin {
   TabController? _tabController;
   List<_GroupProfileTab> _visibleTabs = const [];
+
+  /// The community page's outer scroll, the one that moves the header.
+  final ScrollController _outerScrollController = ScrollController();
+
+  /// The outer offset [GroupProfileBody.startCollapsed] left the page at,
+  /// null until the first jump. The header can still grow after it (an
+  /// admin's reports row arriving, a cached profile replaced by a fresh
+  /// one), so the end is re-pinned on later builds while the member has
+  /// not scrolled away from it.
+  double? _collapsedOffset;
+
+  /// Set once the member scrolls the collapsed page (or scrolled before it
+  /// could collapse), so [startCollapsed] never fights their own scrolling.
+  bool _collapseSettled = false;
+
+  /// Last tab reported, so settling twice or rebuilding the controller when
+  /// the tab set changes does not report the same tab again.
+  _GroupProfileTab? _trackedTab;
+
+  static int _nextVisit = 0;
+
+  /// This page's own posts-viewed list, so the same group open twice (the
+  /// Connect tab's space and a page pushed on top) counts each separately.
+  final String _postViewVisitId = 'group-${_nextVisit++}';
   final GlobalKey _profileTitleKey = GlobalKey();
   String? _enrollingSeriesId;
   String? _joiningAccumulatorId;
@@ -204,6 +237,8 @@ class _GroupProfileBodyState extends ConsumerState<GroupProfileBody>
     if (controller == null || controller.indexIsChanging) return;
     if (!mounted) return;
 
+    _trackTabViewed(controller.index);
+
     final groupId = widget.profile.id;
     final isMembersTab =
         controller.index < _visibleTabs.length &&
@@ -218,6 +253,16 @@ class _GroupProfileBodyState extends ConsumerState<GroupProfileBody>
         ref.read(groupMembersProvider(groupId).notifier).loadInitial();
       }
     }
+  }
+
+  void _trackTabViewed(int index) {
+    if (index >= _visibleTabs.length) return;
+    final tab = _visibleTabs[index];
+    if (tab == _trackedTab) return;
+    _trackedTab = tab;
+    ref
+        .read(groupAnalyticsProvider)
+        .groupTabViewed(groupId: widget.profile.id, tab: tab.name);
   }
 
   bool _onTabScrollLoadMore(
@@ -286,7 +331,38 @@ class _GroupProfileBodyState extends ConsumerState<GroupProfileBody>
     _membersNeedsRefreshSub?.close();
     _tabController?.removeListener(_onTabChanged);
     _tabController?.dispose();
+    _outerScrollController.dispose();
     super.dispose();
+  }
+
+  /// Scrolls the header away, from the first frame the tabs are laid out.
+  /// The outer scroll's end is exactly the header's scrollable height (the
+  /// pinned tab bar stays), so nothing needs measuring. Called from every
+  /// build so a header that grows after the first jump is scrolled away
+  /// too; it stops as soon as the member scrolls the page themselves.
+  void _maybeStartCollapsed() {
+    if (!widget.startCollapsed || _collapseSettled) return;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted || _collapseSettled || !_outerScrollController.hasClients) {
+        return;
+      }
+      final position = _outerScrollController.position;
+      final pinned = _collapsedOffset;
+      final memberScrolled =
+          pinned == null ? position.pixels > 0 : position.pixels != pinned;
+      if (memberScrolled) {
+        _collapseSettled = true;
+        return;
+      }
+      final end = position.maxScrollExtent;
+      if (end == pinned) return;
+      _outerScrollController.jumpTo(end);
+      _collapsedOffset = end;
+      // The title's position is only current after the next layout.
+      WidgetsBinding.instance.addPostFrameCallback(
+        (_) => _syncAppBarTitleVisibility(),
+      );
+    });
   }
 
   void _syncAppBarTitleVisibility() {
@@ -314,6 +390,13 @@ class _GroupProfileBodyState extends ConsumerState<GroupProfileBody>
 
   @override
   Widget build(BuildContext context) {
+    // A visit spans the whole page, not each return to its Posts tab.
+    ref.watch(
+      connectPostViewTrackerProvider((
+        surface: ConnectPostSurface.space,
+        visitId: _postViewVisitId,
+      )),
+    );
     final followKey = GroupFollowKey(
       groupId: widget.profile.id,
       groupType: widget.profile.groupType,
@@ -422,12 +505,9 @@ class _GroupProfileBodyState extends ConsumerState<GroupProfileBody>
     }
 
     final (hasPractices, isPracticesLoading) = ref.watch(
-      groupPracticesProvider(profile.id).select(
-        (state) => (
-          state.practices.isNotEmpty,
-          !state.hasLoaded,
-        ),
-      ),
+      groupPracticesProvider(
+        profile.id,
+      ).select((state) => (state.practices.isNotEmpty, !state.hasLoaded)),
     );
     // Posts and events refetch when the group's signal moves.
     ref.watch(groupSignalsProvider(profile.id));
@@ -479,6 +559,7 @@ class _GroupProfileBodyState extends ConsumerState<GroupProfileBody>
     ];
     if (!isTabDataLoading) _syncTabController(tabs);
     final controller = _tabController;
+    if (controller != null) _maybeStartCollapsed();
 
     return RefreshIndicator(
       onRefresh: () => _onRefresh(profile),
@@ -491,6 +572,7 @@ class _GroupProfileBodyState extends ConsumerState<GroupProfileBody>
           return false;
         },
         child: NestedScrollView(
+          controller: _outerScrollController,
           physics: const AlwaysScrollableScrollPhysics(),
           headerSliverBuilder: (context, _) {
             final slivers = <Widget>[
@@ -526,8 +608,13 @@ class _GroupProfileBodyState extends ConsumerState<GroupProfileBody>
             return slivers;
           },
           body:
+              // No controller means no SliverOverlapAbsorber in the header,
+              // so the nested-tab skeleton (which injects) would throw.
               controller == null
-                  ? const Center(child: CircularProgressIndicator())
+                  ? const GroupProfileTabSkeleton.box(
+                    variant: GroupProfileTabSkeletonVariant.feed,
+                    itemCount: 2,
+                  )
                   : TabBarView(
                     controller: controller,
                     children: [
@@ -642,7 +729,13 @@ class _GroupProfileBodyState extends ConsumerState<GroupProfileBody>
             ),
             const SliverFillRemaining(
               hasScrollBody: false,
-              child: Center(child: CircularProgressIndicator()),
+              child: Align(
+                alignment: Alignment.topCenter,
+                child: GroupProfileTabSkeleton.box(
+                  variant: GroupProfileTabSkeletonVariant.member,
+                  itemCount: 2,
+                ),
+              ),
             ),
           ],
         ),
@@ -766,6 +859,7 @@ class _GroupProfileBodyState extends ConsumerState<GroupProfileBody>
         lineHeight: lineHeight,
         pageStorageKey: pageStorageKey,
         canPost: canPost,
+        postViewVisitId: _postViewVisitId,
         onCreatePost: () => _onCreatePost(profile),
         onEditPost: (post) => _onEditPost(profile, post),
       ),
@@ -836,7 +930,10 @@ class _GroupProfileBodyState extends ConsumerState<GroupProfileBody>
     await _openEventComposer(profile);
   }
 
-  Future<void> _onEditDraft(GroupProfile profile, GroupEventCmsItem item) async {
+  Future<void> _onEditDraft(
+    GroupProfile profile,
+    GroupEventCmsItem item,
+  ) async {
     if (!_canPublishPosts(profile)) return;
     await _openEventComposer(
       profile,
@@ -1256,9 +1353,9 @@ class _GroupProfileBodyState extends ConsumerState<GroupProfileBody>
     final practicesState = ref.watch(groupPracticesProvider(profile.id));
 
     if (practicesState.isLoading && practicesState.practices.isEmpty) {
-      return GroupProfileNestedTabScrollView.centered(
+      return GroupProfileTabSkeleton(
         pageStorageKey: pageStorageKey,
-        child: const Center(child: CircularProgressIndicator()),
+        variant: GroupProfileTabSkeletonVariant.feed,
       );
     }
 
@@ -1336,13 +1433,13 @@ class _GroupProfileBodyState extends ConsumerState<GroupProfileBody>
       isEnrollingSeries:
           series != null ? _enrollingSeriesId == series.id : null,
       onSeriesTap:
-          series != null ? () => _navigateToSeriesDetail(profile, series) : null,
+          series != null
+              ? () => _navigateToSeriesDetail(profile, series)
+              : null,
       onSeriesJoinTap:
           series != null ? () => _onPracticeWithUsTap(profile, series) : null,
       isJoiningAccumulator:
-          accumulator != null
-              ? _joiningAccumulatorId == accumulator.id
-              : null,
+          accumulator != null ? _joiningAccumulatorId == accumulator.id : null,
       onAccumulatorTap:
           accumulator != null
               ? () => _navigateToAccumulatorDetail(accumulator.id)
@@ -1611,7 +1708,7 @@ class _GroupFollowButton extends ConsumerWidget {
       return _buildPrivateMembershipLoadingButton(context);
     }
 
-    // Same rule as the ⋮ on the app bar: a leave in flight or a failed leave
+    // Same rule as the ⋮ member menu: a leave in flight or a failed leave
     // keeps the member row instead of offering to join again.
     if (lastConfirmedGroupMembership(followState)) {
       final isAdmin =
@@ -1636,8 +1733,7 @@ class _GroupFollowButton extends ConsumerWidget {
       return _buildRequestSentButton(context);
     }
 
-    final isRemoved =
-        watchActiveGroupRemovalNotice(ref, profile.id) != null;
+    final isRemoved = watchActiveGroupRemovalNotice(ref, profile.id) != null;
 
     return _buildRequestToJoinButton(context, ref, isLoading, isRemoved);
   }
@@ -1658,7 +1754,7 @@ class _GroupFollowButton extends ConsumerWidget {
         false;
 
     // Communities and Pages share the joined row; leaving or unfollowing is
-    // in the ⋮ member menu on the app bar, and membership follows the same
+    // in the ⋮ member menu beside Invite, and membership follows the same
     // rule as that ⋮, so the two never disagree mid-leave.
     final actions =
         lastConfirmedGroupMembership(followState)
@@ -1678,7 +1774,9 @@ class _GroupFollowButton extends ConsumerWidget {
     );
   }
 
-  /// Chat + Invite for a member or Page follower.
+  /// Invite + ⋮ for a member. Chat and prayer requests sit on the app bar
+  /// ([GroupProfileScreen]) so they stay reachable once the header scrolls
+  /// away; ⋮ opens the member sheet (notifications, leave space).
   Widget _buildJoinedActions(BuildContext context, WidgetRef ref) {
     const fontSize = 16.0;
     final locale = Localizations.localeOf(context);
@@ -1694,39 +1792,21 @@ class _GroupFollowButton extends ConsumerWidget {
       elevation: 0,
     );
 
+    final followKey = GroupFollowKey(
+      groupId: profile.id,
+      groupType: profile.groupType,
+    );
+    final followState = ref.watch(groupFollowProvider(followKey));
     final authState = ref.watch(authProvider);
-    final showChat = authState.isLoggedIn && !authState.isGuest;
+    final showMenu = showsGroupMemberMenu(
+      followState: followState,
+      signedIn: authState.isLoggedIn && !authState.isGuest,
+    );
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16.0),
       child: Row(
         children: [
-          // Chat and prayer requests share the space's room; both need an
-          // account, like the ⋮ member menu.
-          if (showChat) ...[
-            _RoundActionButton(
-              icon: AppAssets.chatCircleDots,
-              tooltip: context.l10n.group_chat_open,
-              size: buttonHeight,
-              isDark: isDark,
-              onTap: () => context.push(AppRoutes.groupChatPath(profile.id)),
-            ),
-            const SizedBox(width: 12),
-            _RoundActionButton(
-              icon: AppAssets.handsPraying,
-              tooltip: context.l10n.event_prayer_requests,
-              size: buttonHeight,
-              isDark: isDark,
-              onTap:
-                  () => unawaited(
-                    PrayerRequestsSheet.show(
-                      context,
-                      scope: PrayerRoomScope.group(profile.id),
-                    ),
-                  ),
-            ),
-            const SizedBox(width: 12),
-          ],
           Expanded(
             child: ElevatedButton(
               onPressed: () => _onInvitePressed(context, ref),
@@ -1750,6 +1830,24 @@ class _GroupFollowButton extends ConsumerWidget {
               ),
             ),
           ),
+          if (showMenu) ...[
+            const SizedBox(width: 12),
+            _RoundActionButton(
+              icon: AppAssets.dotsThreeVerticalBold,
+              tooltip: MaterialLocalizations.of(context).showMenuTooltip,
+              size: buttonHeight,
+              isDark: isDark,
+              // Not while a join or leave is still in flight.
+              onTap:
+                  followState is GroupFollowLoading
+                      ? null
+                      : () => openGroupMemberMenu(
+                        context,
+                        profile,
+                        followKey: followKey,
+                      ),
+            ),
+          ],
         ],
       ),
     );
@@ -2002,7 +2100,8 @@ class _GroupProfileTabBarDelegate extends SliverPersistentHeaderDelegate {
   }
 }
 
-/// Round icon button beside Invite, the same height as it.
+/// Round icon button beside Invite, the same height as it. A null [onTap]
+/// disables it.
 class _RoundActionButton extends StatelessWidget {
   const _RoundActionButton({
     required this.icon,
@@ -2016,7 +2115,7 @@ class _RoundActionButton extends StatelessWidget {
   final String tooltip;
   final double size;
   final bool isDark;
-  final VoidCallback onTap;
+  final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) {

@@ -16,14 +16,17 @@ import 'package:flutter_pecha/features/group_chat/data/datasource/group_chat_fir
 import 'package:flutter_pecha/features/group_chat/data/datasource/group_chat_remote_datasource.dart';
 import 'package:flutter_pecha/features/group_chat/data/models/chat_message_dto.dart';
 import 'package:flutter_pecha/features/group_chat/data/models/chat_prayer_intention_dto.dart';
+import 'package:flutter_pecha/features/group_chat/data/models/chat_prayer_summary_dto.dart';
 import 'package:flutter_pecha/features/group_chat/data/models/chat_prayer_user_dto.dart';
 import 'package:flutter_pecha/features/group_chat/domain/prayer_requests_filter.dart';
 import 'package:flutter_pecha/features/group_chat/domain/prayer_room_scope.dart';
 import 'package:flutter_pecha/features/group_chat/domain/prayer_translation_language.dart';
 import 'package:flutter_pecha/features/group_chat/domain/repositories/group_chat_repository.dart';
 import 'package:flutter_pecha/features/group_chat/presentation/providers/chat_room_live_providers.dart';
+import 'package:flutter_pecha/features/group_chat/presentation/providers/chat_rooms_providers.dart';
 import 'package:flutter_pecha/features/group_chat/presentation/providers/group_chat_providers.dart';
 import 'package:flutter_pecha/features/group_chat/presentation/providers/pending_prayer_sends.dart';
+import 'package:flutter_pecha/features/group_chat/presentation/utils/chat_analytics.dart';
 import 'package:flutter_pecha/features/group_chat/presentation/utils/chat_sender.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fpdart/fpdart.dart';
@@ -123,11 +126,35 @@ class _Leftover {
   DateTime? notBefore;
 }
 
+/// Counts one answered pray call for both senders, the sheet's own and the
+/// drain after it closes. A request the answer no longer lists is not live any
+/// more, so it took none of these prayers.
+void _trackPrayed(
+  GroupChatAnalytics analytics,
+  Either<Failure, List<ChatPrayerSummaryDTO>> result, {
+  required PrayerRoomScope scope,
+  required String roomId,
+  required String messageId,
+  required int count,
+}) {
+  result.fold((_) {}, (summaries) {
+    if (!summaries.any((summary) => summary.messageId == messageId)) return;
+    analytics.prayerRequestPrayed(
+      scope: scope,
+      roomId: roomId,
+      messageId: messageId,
+      prayerCount: count,
+    );
+  });
+}
+
 /// Sends the leftovers paced like the live flush: every ready request goes
 /// out in the same window, and a 429 holds back only its own request.
 class _Drain {
   _Drain({
     required this.repository,
+    required this.analytics,
+    required this.scope,
     required this.roomId,
     required this.pacing,
     required this.sends,
@@ -137,6 +164,8 @@ class _Drain {
   });
 
   final GroupChatRepository repository;
+  final GroupChatAnalytics analytics;
+  final PrayerRoomScope scope;
   final String roomId;
   final PrayerPacing pacing;
   final PendingPrayerSends sends;
@@ -216,6 +245,14 @@ class _Drain {
       messageIds: [messageId],
       count: count,
     );
+    _trackPrayed(
+      analytics,
+      result,
+      scope: scope,
+      roomId: roomId,
+      messageId: messageId,
+      count: count,
+    );
     result.fold(
       (failure) {
         if (failure is RateLimitFailure &&
@@ -246,6 +283,12 @@ class PrayerRequestsState extends Equatable {
   final PrayerRoomStatus roomStatus;
   final String? roomId;
 
+  /// The room whose requests last came from the server, set only once a
+  /// first page of them has landed. A stored page or a room known before its
+  /// requests load leaves it null, so the board is never marked read on
+  /// requests the viewer has not been shown.
+  final String? fetchedRoomId;
+
   /// The room's own mantra to float on a prayer; null uses the built-in one.
   final String? mantra;
 
@@ -269,6 +312,7 @@ class PrayerRequestsState extends Equatable {
   const PrayerRequestsState({
     this.roomStatus = PrayerRoomStatus.resolving,
     this.roomId,
+    this.fetchedRoomId,
     this.mantra,
     this.requests = const [],
     this.filter = PrayerRequestsFilter.initial,
@@ -285,6 +329,7 @@ class PrayerRequestsState extends Equatable {
   PrayerRequestsState copyWith({
     PrayerRoomStatus? roomStatus,
     String? roomId,
+    String? fetchedRoomId,
     String? mantra,
     bool clearMantra = false,
     List<ChatMessageDTO>? requests,
@@ -303,6 +348,7 @@ class PrayerRequestsState extends Equatable {
     return PrayerRequestsState(
       roomStatus: roomStatus ?? this.roomStatus,
       roomId: roomId ?? this.roomId,
+      fetchedRoomId: fetchedRoomId ?? this.fetchedRoomId,
       mantra: clearMantra ? null : mantra ?? this.mantra,
       requests: requests ?? this.requests,
       filter: filter ?? this.filter,
@@ -337,6 +383,7 @@ class PrayerRequestsState extends Equatable {
   List<Object?> get props => [
     roomStatus,
     roomId,
+    fetchedRoomId,
     mantra,
     requests,
     filter,
@@ -357,6 +404,7 @@ class PrayerRequestsNotifier extends StateNotifier<PrayerRequestsState> {
     : _repository = ref.read(groupChatRepositoryProvider),
       _pacing = ref.read(prayerPacingProvider),
       _sends = ref.read(pendingPrayerSendsProvider),
+      _analytics = ref.read(groupChatAnalyticsProvider),
       super(_seed(ref, scope)) {
     // A seeded list keeps quiet about a failed re-read, like a stored one.
     _seededFromStore = state.requests.isNotEmpty;
@@ -409,6 +457,10 @@ class PrayerRequestsNotifier extends StateNotifier<PrayerRequestsState> {
   final GroupChatRepository _repository;
   final PrayerPacing _pacing;
   final PendingPrayerSends _sends;
+
+  /// Held here because `ref` is unusable once the sheet has closed, and a
+  /// confirmed action still has to be counted then.
+  final GroupChatAnalytics _analytics;
 
   /// Requests with taps queued or a pray call in flight.
   final Map<String, _PendingPrayers> _pending = {};
@@ -477,6 +529,8 @@ class PrayerRequestsNotifier extends StateNotifier<PrayerRequestsState> {
     if (roomId == null) return;
     _drain = _Drain(
       repository: _repository,
+      analytics: _analytics,
+      scope: scope,
       roomId: roomId,
       pacing: _pacing,
       sends: _sends,
@@ -631,6 +685,9 @@ class PrayerRequestsNotifier extends StateNotifier<PrayerRequestsState> {
         final page = _withLocalChanges(fetched, changes);
         _applyFirstPage(page);
         _reapplyLocal(page, changes);
+        if (state.fetchedRoomId != roomId) {
+          state = state.copyWith(fetchedRoomId: roomId);
+        }
         unawaited(
           ref
               .read(screenCacheStoreProvider)
@@ -984,6 +1041,14 @@ class PrayerRequestsNotifier extends StateNotifier<PrayerRequestsState> {
               messageType: ChatMessageDTO.typePrayer,
               intention: intention,
             );
+    result.fold(
+      (_) {},
+      (message) => _analytics.prayerRequestCreated(
+        scope: scope,
+        roomId: message.roomId,
+        messageId: message.id,
+      ),
+    );
     if (!mounted) return result;
     result.fold(
       (_) {},
@@ -1145,6 +1210,13 @@ class PrayerRequestsNotifier extends StateNotifier<PrayerRequestsState> {
       isCompleted: isCompleted,
     );
     return result.map((updated) {
+      if (isCompleted) {
+        _analytics.prayerRequestCompleted(
+          scope: scope,
+          roomId: roomId,
+          messageId: messageId,
+        );
+      }
       if (!mounted) return unit;
       final completed = updated?.isCompleted ?? isCompleted;
       _update(
@@ -1357,6 +1429,14 @@ class PrayerRequestsNotifier extends StateNotifier<PrayerRequestsState> {
     final result = await _repository.prayFor(
       roomId,
       messageIds: [messageId],
+      count: count,
+    );
+    _trackPrayed(
+      _analytics,
+      result,
+      scope: scope,
+      roomId: roomId,
+      messageId: messageId,
       count: count,
     );
     if (!mounted) {
@@ -1753,24 +1833,33 @@ final prayerRoomLiveProvider = Provider.autoDispose
       PrayerRequestsNotifier notifier() =>
           ref.read(prayerRequestsProvider(key.scope).notifier);
 
-      // The sheet is open, so new requests are seen. Events only: a space's
-      // room also holds its chat.
+      // The sheet is open, so new requests are seen. Only prayer requests
+      // are marked read: a space's room also holds its chat.
+      var disposed = false;
+      ref.onDispose(() => disposed = true);
+
       // Signals that joined one refresh share its future; read once for it.
       Future<bool>? marked;
       Future<void> markReadIfArrived(Future<bool> refresh) async {
         if (identical(refresh, marked)) return;
         marked = refresh;
         final arrived = await refresh;
-        if (!arrived || !key.scope.isEvent) return;
+        if (!arrived) return;
         final lifecycle = WidgetsBinding.instance.lifecycleState;
         if (lifecycle != null && lifecycle != AppLifecycleState.resumed) {
           return;
         }
-        await repository.markRoomRead(key.roomId);
+        final result = await repository.markRoomRead(
+          key.roomId,
+          messageType: ChatMessageDTO.typePrayer,
+        );
+        if (disposed || !result.isRight() || !ref.exists(chatRoomsProvider)) {
+          return;
+        }
+        ref
+            .read(chatRoomsProvider.notifier)
+            .markReadLocally(key.roomId, messageType: ChatMessageDTO.typePrayer);
       }
-
-      var disposed = false;
-      ref.onDispose(() => disposed = true);
 
       // `closed_at` is never cleared, so a reopened room still has it; only
       // the room endpoint's 404 means it is closed now.

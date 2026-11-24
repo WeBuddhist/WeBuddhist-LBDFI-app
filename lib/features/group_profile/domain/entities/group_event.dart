@@ -1,4 +1,5 @@
 import 'package:flutter_pecha/shared/domain/value_objects/responsive_image.dart';
+import 'package:flutter_pecha/features/group_profile/domain/entities/visible_name.dart';
 
 class GroupEventLink {
   final String id;
@@ -39,6 +40,9 @@ class GroupEventParticipant {
   final String? avatarUrl;
   final GroupEventParticipationType? participationType;
 
+  /// The name the user picked in Edit profile (`display_name`).
+  final String? userDisplayName;
+
   const GroupEventParticipant({
     required this.userId,
     this.createdAt,
@@ -46,15 +50,17 @@ class GroupEventParticipant {
     this.fullname,
     this.avatarUrl,
     this.participationType,
+    this.userDisplayName,
   });
 
-  String get displayName {
-    final name = fullname?.trim();
-    if (name != null && name.isNotEmpty) return name;
-    final handle = username?.trim();
-    if (handle != null && handle.isNotEmpty) return handle;
-    return 'Participant';
-  }
+  /// Name shown in the UI: the display name, then the full name, then the
+  /// username.
+  String get displayName => visibleUserName(
+    displayName: userDisplayName,
+    fullname: fullname,
+    username: username,
+    fallback: 'Participant',
+  );
 }
 
 class GroupEventLocation {
@@ -252,8 +258,21 @@ class GroupEvent {
     this.prayerRequestCount = 0,
   });
 
-  /// A plan or a series (never both) marks the event as a puja to enter.
-  bool get hasPuja => plan != null || series != null;
+  /// A plan, a series or a recitation collection marks the event as a puja
+  /// to enter.
+  bool get hasPuja =>
+      plan != null || series != null || practiceCollectionId != null;
+
+  /// The recitation collection the event's practice opens in the reader.
+  /// Null when a plan or series is attached: those win, so an event that
+  /// has both keeps opening its plan.
+  String? get practiceCollectionId {
+    if (plan != null || series != null) return null;
+    if (planId != null || seriesId != null) return null;
+    final id =
+        (groupRecitationCollection?.id ?? groupRecitationCollectionId)?.trim();
+    return id == null || id.isEmpty ? null : id;
+  }
 
   List<GroupEventAccumulation> get allAccumulations {
     if (accumulations.isNotEmpty) return accumulations;

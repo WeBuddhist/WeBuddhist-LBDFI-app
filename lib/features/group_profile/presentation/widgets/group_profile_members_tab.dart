@@ -10,6 +10,7 @@ import 'package:flutter_pecha/features/auth/presentation/providers/state_provide
 import 'package:flutter_pecha/features/group_profile/presentation/providers/group_post_providers.dart';
 import 'package:flutter_pecha/features/group_profile/presentation/providers/group_profile_providers.dart';
 import 'package:flutter_pecha/features/group_profile/presentation/widgets/group_profile_nested_tab_scroll_view.dart';
+import 'package:flutter_pecha/features/group_profile/presentation/widgets/group_profile_tab_skeleton.dart';
 import 'package:flutter_pecha/features/group_profile/presentation/widgets/group_remove_member_sheet.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_pecha/core/utils/network_image_utils.dart';
@@ -84,10 +85,7 @@ class _GroupProfileMembersTabState
       member: member,
     );
     if (removed != true || !mounted) return;
-    final name =
-        member.fullname.trim().isNotEmpty
-            ? member.fullname.trim()
-            : member.username;
+    final name = member.displayName;
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text(context.l10n.group_remove_member_success(name))),
     );
@@ -100,9 +98,9 @@ class _GroupProfileMembersTabState
     final currentUserId = ref.watch(userProvider).user?.id?.trim() ?? '';
 
     if (membersState.isLoading && membersState.members.isEmpty) {
-      return GroupProfileNestedTabScrollView.centered(
+      return GroupProfileTabSkeleton(
         pageStorageKey: widget.pageStorageKey,
-        child: const Center(child: CircularProgressIndicator()),
+        variant: GroupProfileTabSkeletonVariant.member,
       );
     }
 
@@ -264,10 +262,7 @@ class _GroupMemberRow extends StatelessWidget {
   Widget build(BuildContext context) {
     final secondaryColor =
         isDark ? AppColors.textTertiaryDark : AppColors.textSecondary;
-    final displayName =
-        member.fullname.trim().isNotEmpty
-            ? member.fullname.trim()
-            : member.username;
+    final displayName = member.displayName;
 
     return Column(
       children: [

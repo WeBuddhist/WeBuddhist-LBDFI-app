@@ -163,12 +163,6 @@ class AppLocalizationsHi extends AppLocalizations {
   String get mala_settings_section => 'Mala settings';
 
   @override
-  String get mala_others_section => 'Others';
-
-  @override
-  String get mala_mantra_speed => 'Mantra speed';
-
-  @override
   String get mala_speed_normal => 'Normal';
 
   @override
@@ -378,16 +372,13 @@ class AppLocalizationsHi extends AppLocalizations {
   String get recitations_no_content => 'कोई पाठ उपलब्ध नहीं';
 
   @override
-  String get my_recitation_collection_new_title => 'नया संग्रह';
+  String get chant_book_new_title => 'नई जप पुस्तक';
 
   @override
   String get my_recitation_collection_next => 'आगे';
 
   @override
   String get my_recitation_collection_create => 'बनाएँ';
-
-  @override
-  String get my_recitation_collection_create_button => 'संग्रह बनाएँ';
 
   @override
   String get my_recitation_collection_change_title => 'शीर्षक बदलें';
@@ -402,23 +393,23 @@ class AppLocalizationsHi extends AppLocalizations {
   String get my_recitation_collection_search_chants => 'पाठ खोजें';
 
   @override
-  String get my_recitation_collection_add_to_collection => 'संग्रह में जोड़ें';
+  String get chant_book_add_to => 'जप पुस्तक में जोड़ें';
 
   @override
-  String get my_recitation_collection_edit => 'संग्रह एडिट करें';
+  String get chant_book_edit => 'जप पुस्तक एडिट करें';
 
   @override
-  String get my_recitation_collection_delete => 'संग्रह हटाएँ';
+  String get chant_book_delete => 'जप पुस्तक हटाएँ';
 
   @override
-  String get my_recitation_collection_delete_title => 'संग्रह हटाएँ?';
+  String get chant_book_delete_title => 'जप पुस्तक हटाएँ?';
 
   @override
-  String get my_recitation_collection_delete_message =>
-      'यह संग्रह स्थायी रूप से हटा दिया जाएगा';
+  String get chant_book_delete_message =>
+      'यह जप पुस्तक स्थायी रूप से हटा दी जाएगी';
 
   @override
-  String get my_recitation_collection_fallback_title => 'पाठ संग्रह';
+  String get chant_book_fallback_title => 'जप पुस्तक';
 
   @override
   String get my_recitation_collection_unavailable => 'अब उपलब्ध नहीं';
@@ -448,12 +439,12 @@ class AppLocalizationsHi extends AppLocalizations {
   }
 
   @override
-  String get bookmarks_empty_chant_collections_title =>
-      'अभी तक कोई पाठ संग्रह बुकमार्क नहीं किया गया';
+  String get chant_book_bookmarks_empty_title =>
+      'अभी तक कोई जप पुस्तक बुकमार्क नहीं की गई';
 
   @override
-  String get bookmarks_empty_chant_collections_subtitle =>
-      'इसे यहाँ सहेजने के लिए किसी संग्रह को बुकमार्क करें';
+  String get chant_book_bookmarks_empty_subtitle =>
+      'इसे यहाँ सहेजने के लिए किसी जप पुस्तक को बुकमार्क करें';
 
   @override
   String get notification_allow_title => 'नोटिफिकेशन की अनुमति दें';
@@ -622,13 +613,30 @@ class AppLocalizationsHi extends AppLocalizations {
   String get connect_landing_title => 'Connect with your Buddhist community';
 
   @override
-  String get connect_popular_spaces => 'Popular spaces';
+  String get connect_looking_for => 'खोज रहे हैं';
 
   @override
-  String get connect_your_spaces => 'Your spaces';
+  String get connect_sort_spaces => 'स्पेस क्रमबद्ध करें';
 
   @override
-  String get connect_find_a_space => 'Find a space';
+  String get connect_sort_popular => 'लोकप्रिय';
+
+  @override
+  String get connect_sort_newly_added => 'नए जोड़े गए';
+
+  @override
+  String get connect_sort_most_active => 'सबसे सक्रिय';
+
+  @override
+  String get connect_find_your_space => 'अपना स्पेस खोजें';
+
+  @override
+  String connect_no_spaces_match(String query) {
+    return '\"$query\" से मेल खाता कोई स्पेस नहीं मिला';
+  }
+
+  @override
+  String get connect_your_spaces => 'आपके स्पेस';
 
   @override
   String get connect_segment_my => 'आपके स्पेस';
@@ -1158,6 +1166,23 @@ class AppLocalizationsHi extends AppLocalizations {
       'लोड नहीं हो सका। अपना कनेक्शन जाँचें और फिर से प्रयास करें';
 
   @override
+  String get reader_not_translated => 'अनुवादित नहीं';
+
+  @override
+  String get error_offline_title => 'कनेक्शन नहीं है';
+
+  @override
+  String get error_server_title => 'अभी लोड नहीं हो सका';
+
+  @override
+  String get reader_error_server_message =>
+      'यह पाठ अभी लोड नहीं हो सकता। कृपया बाद में फिर से प्रयास करें।';
+
+  @override
+  String get chants_error_server_message =>
+      'जप अभी लोड नहीं हो सकते। कृपया बाद में फिर से प्रयास करें।';
+
+  @override
   String get somethingWrong =>
       'कुछ गलत हो गया। अपना कनेक्शन जाँचें और फिर से प्रयास करें';
 
@@ -1299,6 +1324,18 @@ class AppLocalizationsHi extends AppLocalizations {
 
   @override
   String get settings_edit_profile => 'प्रोफ़ाइल एडिट करें';
+
+  @override
+  String get settings_signed_in_with_google => 'Signed in with Google';
+
+  @override
+  String get settings_signed_in_with_apple => 'Signed in with Apple';
+
+  @override
+  String get settings_signed_in_with_phone => 'Signed in with phone number';
+
+  @override
+  String get settings_signed_in_as => 'Signed in as';
 
   @override
   String get settings_theme => 'थीम';
@@ -1532,6 +1569,118 @@ class AppLocalizationsHi extends AppLocalizations {
 
   @override
   String get calendar_title => 'कैलेंडर';
+
+  @override
+  String get calendar_choose_calendar => 'कैलेंडर चुनें';
+
+  @override
+  String get settings_calendar_row => 'Calendar';
+
+  @override
+  String get calendar_tradition_vajrayana => 'वज्रयान';
+
+  @override
+  String get calendar_tradition_theravada => 'थेरवाद';
+
+  @override
+  String get calendar_tradition_mahayana => 'महायान';
+
+  @override
+  String get calendar_type_phugpa => 'तिब्बती (फुगपा)';
+
+  @override
+  String get calendar_type_tsurphu => 'तिब्बती (त्सुरफू)';
+
+  @override
+  String get calendar_type_nyingmapa => 'ञिङमा';
+
+  @override
+  String get calendar_type_sinhalese => 'सिंहली';
+
+  @override
+  String get calendar_type_thai => 'थाई';
+
+  @override
+  String get calendar_type_burmese => 'बर्मी';
+
+  @override
+  String get calendar_type_lao => 'लाओ';
+
+  @override
+  String get calendar_type_chinese => 'चीनी';
+
+  @override
+  String get calendar_type_vietnamese => 'वियतनामी';
+
+  @override
+  String get calendar_type_korean => 'कोरियाई';
+
+  @override
+  String get calendar_type_japanese => 'जापानी';
+
+  @override
+  String get calendar_today => 'आज';
+
+  @override
+  String get calendar_no_events => 'कोई कार्यक्रम नहीं';
+
+  @override
+  String get calendar_source_lunar => 'चंद्र कैलेंडर';
+
+  @override
+  String get calendar_add_event => 'कार्यक्रम जोड़ें';
+
+  @override
+  String get calendar_event_name => 'कार्यक्रम का नाम';
+
+  @override
+  String get calendar_event_name_hint => 'अपने कैलेंडर में कार्यक्रम जोड़ें';
+
+  @override
+  String get calendar_repeat => 'दोहराएँ';
+
+  @override
+  String get calendar_does_not_repeat => 'दोहराया नहीं जाता';
+
+  @override
+  String get calendar_repeat_weekly => 'साप्ताहिक';
+
+  @override
+  String get calendar_repeat_monthly => 'मासिक';
+
+  @override
+  String get calendar_repeat_yearly => 'वार्षिक';
+
+  @override
+  String calendar_repeat_monthly_lunar(String day) {
+    return 'मासिक (चंद्र तिथि $day)';
+  }
+
+  @override
+  String get calendar_repeat_yearly_lunar => 'वार्षिक (चंद्र तिथि)';
+
+  @override
+  String get calendar_delete_event => 'कार्यक्रम हटाएँ';
+
+  @override
+  String get calendar_delete_event_title => 'कार्यक्रम हटाएँ?';
+
+  @override
+  String calendar_delete_event_body(String title) {
+    return '\"$title\" आपके कैलेंडर से हटा दिया जाएगा। इसे पूर्ववत नहीं किया जा सकता।';
+  }
+
+  @override
+  String get calendar_delete_repeating_title =>
+      'दोहराया जाने वाला कार्यक्रम हटाएँ?';
+
+  @override
+  String calendar_delete_repeating_body(String title, String repeat) {
+    return '\"$title\" ($repeat) की सभी तिथियाँ आपके कैलेंडर से हटा दी जाएँगी। इसे पूर्ववत नहीं किया जा सकता।';
+  }
+
+  @override
+  String get calendar_event_deleted => 'कार्यक्रम हटा दिया गया';
 
   @override
   String get calendar_upcoming_events => 'आगामी इवेंट';
@@ -1783,15 +1932,18 @@ class AppLocalizationsHi extends AppLocalizations {
   }
 
   @override
-  String get group_remove_member_title => 'स्पेस से हटाएँ?';
-
-  @override
-  String group_remove_member_message(String name) {
-    return '$name को इस स्पेस से हटा दिया जाएगा और प्रतिबंध हटने तक वे फिर से शामिल नहीं हो पाएँगे';
+  String group_remove_member_title(String name) {
+    return '$name को हटाएँ';
   }
 
   @override
-  String get group_remove_member_blocked_for => 'प्रतिबंध अवधि:';
+  String group_remove_member_message(String duration) {
+    return 'उन्हें इस स्पेस से हटा दिया जाएगा और वे $duration तक फिर से शामिल नहीं हो पाएँगे।';
+  }
+
+  @override
+  String get group_remove_member_blocked_for =>
+      'फिर से शामिल न हो सकने की अवधि';
 
   @override
   String get group_remove_member_duration_day => '1 दिन';
@@ -1808,10 +1960,11 @@ class AppLocalizationsHi extends AppLocalizations {
   String get group_remove_member_reason_label => 'कारण (वैकल्पिक)';
 
   @override
-  String get group_remove_member_reason_hint => 'कुछ और...';
+  String get group_remove_member_reason_hint =>
+      'आप इस सदस्य को क्यों हटा रहे हैं?';
 
   @override
-  String get group_remove_member_action => 'हटाएँ';
+  String get group_remove_member_action => 'सदस्य को हटाएँ';
 
   @override
   String group_remove_member_success(String name) {
@@ -1910,6 +2063,10 @@ class AppLocalizationsHi extends AppLocalizations {
       'संचय में शामिल होने में असमर्थ। कृपया पुनः प्रयास करें';
 
   @override
+  String get group_accumulator_practice_unavailable =>
+      'This practice can\'t be opened right now.';
+
+  @override
   String get group_accumulator_join_before_practice =>
       'इसे अपने अभ्यास में जोड़ने से पहले इस संचय में शामिल हों';
 
@@ -1954,6 +2111,39 @@ class AppLocalizationsHi extends AppLocalizations {
 
   @override
   String get group_accumulator_finish_session => 'सत्र समाप्त करें';
+
+  @override
+  String get group_accumulator_completed_recitations =>
+      'You completed recitations';
+
+  @override
+  String get group_accumulator_recite_again => 'Recite again';
+
+  @override
+  String get group_accumulator_finish_and_count => 'Finish and count';
+
+  @override
+  String get group_accumulator_finish_without_counting =>
+      'Finish without counting';
+
+  @override
+  String group_accumulator_recitations_counted(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count recitations counted',
+      one: '1 recitation counted',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String group_accumulator_recitation_count_badge(int count) {
+    return '×$count';
+  }
+
+  @override
+  String get undo => 'Undo';
 
   @override
   String get group_accumulator_offline_recitation => 'ऑफ़लाइन जाप';
@@ -2018,7 +2208,7 @@ class AppLocalizationsHi extends AppLocalizations {
       'By this merit, may all beings\nbe free from suffering';
 
   @override
-  String get share_this_quote => 'यह उद्धरण शेयर करें';
+  String get share_this_verse => 'यह श्लोक शेयर करें';
 
   @override
   String get shared_from => 'यहाँ से शेयर किया गया';
@@ -2640,8 +2830,8 @@ class AppLocalizationsHi extends AppLocalizations {
   String get group_post_updated => 'आपके बदलाव सहेज लिए गए';
 
   @override
-  String get practice_collection_already_added =>
-      'यह संग्रह पहले से आपके अभ्यास में है';
+  String get chant_book_already_in_practices =>
+      'यह जप पुस्तक पहले से आपके अभ्यास में है';
 
   @override
   String get practice_group_accumulator_already_added =>
@@ -3917,6 +4107,10 @@ class AppLocalizationsHi extends AppLocalizations {
       'Duration must be greater than 0';
 
   @override
+  String get timer_duplicate_setup =>
+      'A timer with this duration, sound, and title already exists.';
+
+  @override
   String get splash_tagline_1 => 'We Buddhists practice together';
 
   @override
@@ -3930,6 +4124,9 @@ class AppLocalizationsHi extends AppLocalizations {
 
   @override
   String get timer_duration_hours => 'hours';
+
+  @override
+  String get timer_duration_hr => 'hr';
 
   @override
   String get timer_duration_sec => 'sec';
@@ -4035,4 +4232,131 @@ class AppLocalizationsHi extends AppLocalizations {
 
   @override
   String get reader_tab_versions => 'संस्करण';
+
+  @override
+  String get chants_filter_all => 'सभी';
+
+  @override
+  String get chants_chant_books => 'जप पुस्तकें';
+
+  @override
+  String get chants_filter_single_chants => 'एकल जप';
+
+  @override
+  String get chants_my_chant_books_title => 'मेरी जप पुस्तकें';
+
+  @override
+  String get chants_text_only => 'केवल पाठ वाले जप';
+
+  @override
+  String get chants_from_your_spaces => 'आपके स्पेस से';
+
+  @override
+  String get chants_explore_more => 'और देखें';
+
+  @override
+  String get chants_create_chant_book => 'जप पुस्तक';
+
+  @override
+  String get chants_open_chant => 'जप खोलें';
+
+  @override
+  String get chants_your_spaces => 'आपके स्पेस';
+
+  @override
+  String get chants_other_spaces => 'अन्य स्पेस';
+
+  @override
+  String get chants_search_hint_chant_books => 'जप और जप पुस्तकें खोजें';
+
+  @override
+  String get chants_cant_find => 'जो पाठ आप ढूँढ रहे हैं वह नहीं मिला?';
+
+  @override
+  String get chants_request_text => 'पाठ का अनुरोध करें';
+
+  @override
+  String get chants_request_done => 'अनुरोध भेजा गया';
+
+  @override
+  String get chants_request_sent => 'धन्यवाद। हमें आपका अनुरोध मिल गया है।';
+
+  @override
+  String get chants_request_limit =>
+      'आज आप कई अनुरोध भेज चुके हैं। कृपया बाद में फिर कोशिश करें।';
+
+  @override
+  String get chants_with_audio => 'ऑडियो वाले जप';
+
+  @override
+  String get chants_audio_chants => 'ऑडियो जप';
+
+  @override
+  String get reader_no_resources_title =>
+      'इस खंड के लिए कोई टीका या संस्करण उपलब्ध नहीं है';
+
+  @override
+  String get reader_no_resources_subtitle =>
+      'हम नियमित रूप से नए ग्रंथ जोड़ते हैं; जल्द ही फिर देखें';
+
+  @override
+  String get mala_section_practice => 'अभ्यास';
+
+  @override
+  String get mala_section_appearance => 'रूप-रंग';
+
+  @override
+  String get mala_section_save_share => 'सहेजें और साझा करें';
+
+  @override
+  String get mala_mantra_animation => 'मंत्र एनिमेशन';
+
+  @override
+  String get mala_play_animation => 'एनिमेशन चलाएँ';
+
+  @override
+  String get mala_speed => 'गति';
+
+  @override
+  String get mala_animation_off => 'बंद';
+
+  @override
+  String get mala_bead_style => 'मनके की शैली';
+
+  @override
+  String get mala_bead_default => 'डिफ़ॉल्ट';
+
+  @override
+  String get mala_use_this_style => 'यह शैली इस्तेमाल करें';
+
+  @override
+  String get mala_bead_style_updated => 'मनके की शैली अपडेट हो गई';
+
+  @override
+  String get mala_change_image => 'छवि बदलें';
+
+  @override
+  String get mala_use_image => 'इस्तेमाल करें';
+
+  @override
+  String get mala_restore_default_image => 'डिफ़ॉल्ट पर लौटाएँ';
+
+  @override
+  String get mala_image_updated => 'छवि अपडेट हो गई';
+
+  @override
+  String get mala_images_empty => 'कोई छवि उपलब्ध नहीं';
+
+  @override
+  String get mala_images_load_error => 'छवियाँ लोड नहीं हो सकीं';
+
+  @override
+  String get mala_bookmarked => 'बुकमार्क किया गया';
+
+  @override
+  String get mala_beads_load_error => 'मनके की शैलियाँ लोड नहीं हो सकीं';
+
+  @override
+  String get mala_appearance_save_failed =>
+      'सहेजा नहीं जा सका। कृपया फिर से प्रयास करें';
 }

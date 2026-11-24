@@ -6,7 +6,10 @@ import 'package:flutter_pecha/features/connect/presentation/providers/connect_sp
 import 'package:flutter_pecha/features/connect/presentation/screens/your_spaces_screen.dart';
 import 'package:flutter_pecha/features/connect/presentation/utils/connect_analytics.dart';
 import 'package:flutter_pecha/features/connect/presentation/widgets/connect_landing_view.dart';
+import 'package:flutter_pecha/features/connect/presentation/widgets/connect_unread_dot.dart';
 import 'package:flutter_pecha/features/group_profile/presentation/screens/group_profile_screen.dart';
+import 'package:flutter_pecha/features/group_profile/presentation/widgets/group_profile_skeleton.dart';
+import 'package:flutter_pecha/features/group_profile/presentation/utils/group_analytics.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 /// The Connect tab: the landing page for guests and members with no spaces,
@@ -45,8 +48,10 @@ class _ConnectTabScreenState extends ConsumerState<ConnectTabScreen> {
 
     final joined = ref.watch(joinedSpacesProvider);
     final lastSpace = ref.watch(connectLastSpaceProvider);
-    if (joined.isLoading || (joined.spaces.isNotEmpty && !lastSpace.loaded)) {
-      return const Center(child: CircularProgressIndicator());
+    final opened = ref.watch(connectOpenedSpacesProvider);
+    if (joined.isLoading ||
+        (joined.spaces.isNotEmpty && (!lastSpace.loaded || !opened.loaded))) {
+      return const GroupProfileSkeleton();
     }
 
     final space = resolveConnectSpace(
@@ -63,11 +68,34 @@ class _ConnectTabScreenState extends ConsumerState<ConnectTabScreen> {
       key: ValueKey(space.id),
       groupId: space.id,
       leading: _SpacesMenuButton(currentSpaceId: space.id),
+      analyticsSource: GroupViewSource.connectTab,
+      startCollapsed: _landsOnFeed(space.id, opened),
     );
+  }
+
+  /// The space the landing decision below was made for.
+  String? _landingSpaceId;
+  bool _landingOnFeed = false;
+
+  /// Landing rule: the first visit to a space opens on its info, every later
+  /// visit on its feed. Decided once per visit, then the space is recorded
+  /// as opened, so recording it does not flip the visit already on screen.
+  bool _landsOnFeed(String spaceId, ConnectOpenedSpaces opened) {
+    if (spaceId == _landingSpaceId) return _landingOnFeed;
+    _landingSpaceId = spaceId;
+    _landingOnFeed = opened.ids.contains(spaceId);
+    if (!_landingOnFeed) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (!mounted) return;
+        ref.read(connectOpenedSpacesProvider.notifier).markOpened(spaceId);
+      });
+    }
+    return _landingOnFeed;
   }
 }
 
-/// ☰ that opens "Your spaces", dotted when another space has unread chat.
+/// ☰ that opens "Your spaces", dotted when another space has unread
+/// messages. The space on screen dots its own chat or prayer button instead.
 class _SpacesMenuButton extends ConsumerWidget {
   const _SpacesMenuButton({required this.currentSpaceId});
 
@@ -76,8 +104,8 @@ class _SpacesMenuButton extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final otherUnread = ref.watch(
-      unreadSpaceIdsProvider.select(
-        (ids) => ids.any((id) => id != currentSpaceId),
+      unreadSpacesProvider.select(
+        (spaces) => spaces.keys.any((id) => id != currentSpaceId),
       ),
     );
 

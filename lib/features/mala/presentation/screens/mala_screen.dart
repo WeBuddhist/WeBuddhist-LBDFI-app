@@ -1,24 +1,33 @@
 import 'dart:async';
+import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_pecha/core/core.dart';
 import 'package:flutter_pecha/core/extensions/context_ext.dart';
 import 'package:flutter_pecha/core/utils/tibetan_numerals.dart';
 import 'package:flutter_pecha/core/widgets/screen_cache_builder.dart';
+import 'package:flutter_pecha/features/group_profile/domain/entities/group_accumulator.dart';
+import 'package:flutter_pecha/features/group_profile/presentation/utils/group_accumulator_practice_launcher.dart';
 import 'package:flutter_pecha/features/mala/domain/entities/accumulator_group.dart';
 import 'package:flutter_pecha/features/mala/domain/entities/mantra.dart';
 import 'package:flutter_pecha/features/mala/presentation/providers/accumulator_groups_provider.dart';
 import 'package:flutter_pecha/features/mala/presentation/providers/group_accumulation_counts_provider.dart';
 import 'package:flutter_pecha/features/mala/presentation/providers/mala_accumulation_selection_provider.dart';
+import 'package:flutter_pecha/features/mala/presentation/providers/mala_appearance_provider.dart';
+import 'package:flutter_pecha/features/mala/presentation/providers/mala_last_used_provider.dart';
 import 'package:flutter_pecha/features/mala/presentation/providers/mala_providers.dart';
 import 'package:flutter_pecha/features/mala/presentation/providers/mala_settings_provider.dart';
+import 'package:flutter_pecha/features/mala/presentation/providers/mala_sync_manager.dart';
+import 'package:flutter_pecha/features/mala/presentation/providers/space_mantra_providers.dart';
+import 'package:flutter_pecha/features/mala/presentation/screens/mala_settings_screen.dart';
 import 'package:flutter_pecha/features/mala/presentation/utils/mala_analytics.dart';
+import 'package:flutter_pecha/features/mala/presentation/utils/mala_carousel_order.dart';
 import 'package:flutter_pecha/features/mala/presentation/widgets/add_mala_rounds_button.dart';
 import 'package:flutter_pecha/features/mala/presentation/widgets/group_accumulations_bar.dart';
 import 'package:flutter_pecha/features/mala/presentation/widgets/mala_beads.dart';
+import 'package:flutter_pecha/features/mala/presentation/widgets/mala_sheet_frame.dart';
 import 'package:flutter_pecha/features/mala/presentation/widgets/mala_skeleton.dart';
 import 'package:flutter_pecha/features/mala/presentation/widgets/mantra_switcher.dart';
-import 'package:flutter_pecha/features/mala/presentation/widgets/mala_settings_sheet.dart';
 import 'package:flutter_pecha/features/practice/data/datasource/bookmark_remote_datasource.dart';
 import 'package:flutter_pecha/features/practice/presentation/providers/bookmark_providers.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -30,6 +39,7 @@ class MalaScreen extends ConsumerStatefulWidget {
     this.initialPresetId,
     this.initialGroupAccumulatorId,
     this.openedFromEndedAccumulator = false,
+    this.singleAccumulation,
     this.source,
   });
 
@@ -44,6 +54,10 @@ class MalaScreen extends ConsumerStatefulWidget {
   /// The switcher and add-rounds controls stay hidden.
   final bool openedFromEndedAccumulator;
 
+  /// Single-accumulation mode: only this group accumulation's own mantra,
+  /// counted only into it, with no preset carousel. Its mantra must be set.
+  final GroupAccumulator? singleAccumulation;
+
   /// Where the screen was opened from, carried on `mala_screen_opened`.
   final String? source;
 
@@ -51,22 +65,77 @@ class MalaScreen extends ConsumerStatefulWidget {
   ConsumerState<MalaScreen> createState() => _MalaScreenState();
 }
 
+/// What the counter, beads and controls show for the current carousel item:
+/// a public preset, or a group accumulation's own mantra.
+class _MalaPractice {
+  const _MalaPractice({
+    required this.title,
+    required this.onMorePressed,
+    required this.showCountSkeleton,
+    required this.displayTotal,
+    required this.beadsPerRound,
+    required this.countingEnabled,
+    required this.beadImageBytes,
+    required this.beadsKey,
+    required this.onBead,
+    this.onSeedRetry,
+    this.addRounds,
+    this.footer,
+  });
+
+  final String title;
+  final VoidCallback onMorePressed;
+  final bool showCountSkeleton;
+  final int displayTotal;
+  final int beadsPerRound;
+  final bool countingEnabled;
+  final Uint8List? beadImageBytes;
+  final String beadsKey;
+  final void Function(MalaInput input) onBead;
+
+  /// Set when the count failed to load; the beads show a retry instead.
+  final VoidCallback? onSeedRetry;
+  final Widget? addRounds;
+  final Widget? footer;
+}
+
 class _MalaScreenState extends ConsumerState<MalaScreen> {
   int _index = 0;
+
+  /// The item on screen, by `presetId` (a space mantra's is its counts key).
+  /// A refreshed catalogue or space list can add or drop items before it, so
+  /// [_index] is found again from this rather than kept as a number.
+  String? _selectedId;
   bool _initialisedIndex = false;
+
+  /// Preset ids in carousel order, fixed on the first non-empty catalogue so
+  /// a refresh never moves the page under the user's thumb. A new order
+  /// shows the next time the screen opens.
+  List<String>? _pinnedOrder;
   bool _appliedInitialGroupSelection = false;
   bool _trackedOpened = false;
   late final MalaSessionTracker _session;
+  late final MalaSyncManager _sync;
 
   @override
   void initState() {
     super.initState();
     _session = MalaSessionTracker(ref.read(malaAnalyticsProvider))..start();
+    _sync = ref.read(malaSyncManagerProvider);
+    // The catalogue provider is kept alive, so without this a reopen would
+    // order by usage times from whenever it first loaded. This screen's order
+    // is pinned from what's loaded now; the fresh times order the next visit.
+    if (widget.singleAccumulation == null) {
+      unawaited(ref.read(malaCatalogueRefreshProvider)());
+    }
   }
 
   @override
   void dispose() {
     _session.dispose();
+    // Best-effort flush of any group tail as the screen leaves. A preset's
+    // personal tail is flushed by its counter.
+    unawaited(_sync.flush(SyncReason.screenLeave));
     super.dispose();
   }
 
@@ -99,24 +168,61 @@ class _MalaScreenState extends ConsumerState<MalaScreen> {
     );
   }
 
-  void _switch(List<Mantra> mantras, int next) {
-    if (next < 0 || next >= mantras.length || next == _index) return;
+  void _trackSpaceOpened(SpaceMantraItem item) {
+    if (_trackedOpened) return;
+    _trackedOpened = true;
     ref
         .read(malaAnalyticsProvider)
-        .mantraSwitched(
-          fromPresetId: mantras[_index].presetId,
-          toPresetId: mantras[next].presetId,
-          via: MalaSwitchVia.carousel,
+        .screenOpened(
+          presetId: null,
+          groupAccumulatorId: item.accumulation.id,
+          mantraId: item.mantra.id,
+          mantraName: item.title,
+          mode: MalaMode.group,
+          groupId: item.accumulation.groupId,
+          source: widget.source,
         );
-    setState(() => _index = next);
+  }
+
+  void _switch(List<Mantra> items, int presetCount, int next) {
+    if (next < 0 || next >= items.length || next == _index) return;
+    // Only preset-to-preset switches are a preset's analytics.
+    if (_index < presetCount && next < presetCount) {
+      ref
+          .read(malaAnalyticsProvider)
+          .mantraSwitched(
+            fromPresetId: items[_index].presetId,
+            toPresetId: items[next].presetId,
+            via: MalaSwitchVia.carousel,
+          );
+    }
+    setState(() {
+      _index = next;
+      _selectedId = items[next].presetId;
+    });
   }
 
   @override
   Widget build(BuildContext context) {
+    final single = widget.singleAccumulation;
+    final singleItem = single == null ? null : SpaceMantraItem.from(single);
+    if (singleItem != null) {
+      return Scaffold(
+        body: ClipRect(
+          child: SafeArea(child: _buildLoaded(context, const [], [singleItem])),
+        ),
+      );
+    }
+
     final catalogue = ref.watch(malaCatalogueProvider);
     // _buildLoaded calls ref.listen, so it must run in this build method.
-    final mantras = ScreenCacheBuilder.loadedOf(catalogue);
-    final loaded = mantras == null ? null : _buildLoaded(context, mantras);
+    final loadedPresets = ScreenCacheBuilder.loadedOf(catalogue);
+    final presets =
+        loadedPresets == null ? null : _carouselOrder(loadedPresets);
+    final loaded =
+        presets == null
+            ? null
+            : _buildLoaded(context, presets, _spaceItems(presets));
 
     return Scaffold(
       // Clip the page content to its bounds. The bead strand is drawn with an
@@ -148,12 +254,44 @@ class _MalaScreenState extends ConsumerState<MalaScreen> {
     );
   }
 
-  void _openMalaSettings(BuildContext context, Mantra mantra) {
-    MalaSettingsSheet.show(context, mantra: mantra);
+  /// Latest-used first, worked out once and then pinned. Only this screen
+  /// reorders: the catalogue's other readers keep the server's order.
+  List<Mantra> _carouselOrder(List<Mantra> presets) {
+    final pinned = _pinnedOrder;
+    if (pinned != null) return inPinnedOrder(presets, pinned);
+    final local = ref.read(malaLastUsedStoreProvider).read(malaUserIdSync());
+    final ordered = latestUsedFirst(presets, local: local);
+    if (ordered.isNotEmpty) {
+      _pinnedOrder = [for (final m in ordered) m.presetId];
+    }
+    return ordered;
   }
 
-  Widget _buildLoaded(BuildContext context, List<Mantra> mantras) {
-    if (mantras.isEmpty) {
+  /// Joined space accumulations whose mantra is not shown through a preset,
+  /// listed after the presets. One whose mantra is its linked preset's is
+  /// already reachable from that preset's group switch.
+  List<SpaceMantraItem> _spaceItems(List<Mantra> presets) {
+    final candidates =
+        ref.watch(joinedSpaceMantrasProvider).valueOrNull ??
+        const <SpaceMantraItem>[];
+    return [
+      for (final item in candidates)
+        if (resolveGroupAccumulatorPracticeMode(
+              item.accumulation,
+              catalogue: presets,
+            ) ==
+            GroupAccumulatorPracticeMode.groupMantra)
+          item,
+    ];
+  }
+
+  Widget _buildLoaded(
+    BuildContext context,
+    List<Mantra> presets,
+    List<SpaceMantraItem> spaces,
+  ) {
+    final items = [...presets, for (final space in spaces) space.displayMantra];
+    if (items.isEmpty) {
       return _MalaAppBarScaffold(
         child: Center(child: Text(context.l10n.mala_no_mantras)),
       );
@@ -162,29 +300,165 @@ class _MalaScreenState extends ConsumerState<MalaScreen> {
     if (!_initialisedIndex) {
       _initialisedIndex = true;
       if (widget.initialPresetId != null) {
-        final i = mantras.indexWhere(
+        final i = presets.indexWhere(
           (m) => m.presetId == widget.initialPresetId,
         );
         if (i >= 0) _index = i;
       }
+    } else if (_selectedId case final selected?) {
+      // Stay on the same mantra when items before it come or go. If it was
+      // removed, the clamp below keeps the nearest position.
+      final i = items.indexWhere((m) => m.presetId == selected);
+      if (i >= 0) _index = i;
     }
-    _index = _index.clamp(0, mantras.length - 1);
-    final mantra = mantras[_index];
+    _index = _index.clamp(0, items.length - 1);
+    _selectedId = items[_index].presetId;
+    final isSpace = _index >= presets.length;
+    // Each mantra's artwork. The user's own pick is looked up only for the
+    // mantra on screen and its neighbours (one request each), which are all
+    // a swipe can show. The carousel wraps, so the first and last mantras
+    // are neighbours too.
+    bool isNeighbour(int i) {
+      final distance = (i - _index).abs();
+      return distance <= 1 || distance == items.length - 1;
+    }
+
+    final images = {
+      for (final (i, mantra) in items.indexed)
+        mantra.presetId:
+            isNeighbour(i)
+                ? watchMalaMantraImage(ref, mantra)
+                : mantra.deityImage,
+    };
     // Sized for artwork when any mantra has some, so swiping between mantras
     // with and without an image never resizes the layout mid-carousel.
-    final hasDeityImage = mantras.any((m) => m.deityImage != null);
+    final hasDeityImage = images.values.any((image) => image != null);
 
+    final language = Localizations.localeOf(context).languageCode;
+    final settings = ref.watch(malaSettingsProvider);
+    final leftHanded = settings.leftHanded;
+    final practice =
+        isSpace
+            ? _spacePractice(context, spaces[_index - presets.length], settings)
+            : _presetPractice(context, presets[_index], settings, language);
+    // The user's bead skin for this mantra, else the accumulation's own.
+    final beadBytes = watchMalaBeadBytes(
+      ref,
+      items[_index].mantraId,
+      practice.beadImageBytes,
+    );
+
+    return Column(
+      children: [
+        _MalaAppBar(
+          title: practice.title,
+          leftHanded: leftHanded,
+          onHandLayoutPressed:
+              () => ref
+                  .read(malaSettingsProvider.notifier)
+                  .setLeftHanded(!leftHanded),
+          onMorePressed: practice.onMorePressed,
+        ),
+        Expanded(
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(24, 0, 24, 16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                // When no mantra has artwork the switcher is just the band,
+                // centred in a shorter slot so the counter and beads move up.
+                Expanded(
+                  flex: hasDeityImage ? 48 : 26,
+                  child: MantraSwitcher(
+                    mantras: items,
+                    language: language,
+                    tibetanFontFamily: AppConfig.tibetanContentFont,
+                    index: _index,
+                    speedFactor: settings.mantraSpeed,
+                    animate: settings.playAnimation,
+                    imageFor: (mantra) => images[mantra.presetId],
+                    onIndexChanged:
+                        (next) => _switch(items, presets.length, next),
+                  ),
+                ),
+                const SizedBox(height: 16),
+                if (practice.showCountSkeleton)
+                  MalaCountSkeleton(alignEnd: leftHanded)
+                else
+                  _CounterBlock(
+                    beadInRound: practice.displayTotal % practice.beadsPerRound,
+                    beadsPerRound: practice.beadsPerRound,
+                    rounds: practice.displayTotal ~/ practice.beadsPerRound,
+                    leftHanded: leftHanded,
+                    addRounds: practice.addRounds,
+                  ),
+                const SizedBox(height: 8),
+                Expanded(
+                  flex: hasDeityImage ? 30 : 42,
+                  child: LayoutBuilder(
+                    builder: (context, constraints) {
+                      final retry = practice.onSeedRetry;
+                      return Align(
+                        alignment: Alignment.topCenter,
+                        child: SizedBox(
+                          height: constraints.maxHeight * 0.85,
+                          width: double.infinity,
+                          child:
+                              retry != null
+                                  ? _ErrorView(
+                                    message: context.l10n.mala_count_load_error,
+                                    onRetry: retry,
+                                  )
+                                  : MalaBeads(
+                                    key: ValueKey(practice.beadsKey),
+                                    total: practice.displayTotal,
+                                    beadInRound:
+                                        practice.displayTotal %
+                                        practice.beadsPerRound,
+                                    beadsPerRound: practice.beadsPerRound,
+                                    enabled: practice.countingEnabled,
+                                    mirrored: leftHanded,
+                                    beadImageBytes: beadBytes,
+                                    beadColor: kMalaDefaultBeadColor,
+                                    threadColor: const Color(0xFFC62828),
+                                    onTap: () => practice.onBead(MalaInput.tap),
+                                    onSwipe:
+                                        () => practice.onBead(MalaInput.swipe),
+                                  ),
+                        ),
+                      );
+                    },
+                  ),
+                ),
+                if (practice.footer != null) ...[
+                  const SizedBox(height: 12),
+                  practice.footer!,
+                ],
+              ],
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  _MalaPractice _presetPractice(
+    BuildContext context,
+    Mantra mantra,
+    MalaSettingsState settings,
+    String language,
+  ) {
     ref.watch(
       prefetchBookmarkExistsProvider(
-        BookmarkTarget(type: BookmarkType.accumulator, sourceId: mantra.presetId),
+        BookmarkTarget(
+          type: BookmarkType.accumulator,
+          sourceId: mantra.presetId,
+        ),
       ),
     );
 
-    final language = Localizations.localeOf(context).languageCode;
     final counter = ref.watch(malaCounterProvider(mantra));
     final notifier = ref.read(malaCounterProvider(mantra).notifier);
-    final settings = ref.watch(malaSettingsProvider);
-    final leftHanded = settings.leftHanded;
     final selection = ref.watch(
       malaAccumulationSelectionProvider(mantra.presetId),
     );
@@ -230,8 +504,6 @@ class _MalaScreenState extends ConsumerState<MalaScreen> {
             ? counter.total
             : groupCountsNotifier.countFor(groupId);
     final beadsPerRound = counter.beadsPerRound;
-    final displayBeadInRound = displayTotal % beadsPerRound;
-    final displayRounds = displayTotal ~/ beadsPerRound;
     final countingEnabled =
         !counter.isSeeding &&
         (selection.isPersonal || selection.groupAccumulatorId != null);
@@ -257,6 +529,8 @@ class _MalaScreenState extends ConsumerState<MalaScreen> {
       }
       // Null means the tap was ignored, so no bead was counted.
       if (total == null) return;
+      // Personal and group counts both move the preset to the front.
+      recordMalaPresetUsed(ref, mantra.presetId);
       _session.onBead(
         presetId: mantra.presetId,
         mantraName: mantra.localizedName('en'),
@@ -268,99 +542,116 @@ class _MalaScreenState extends ConsumerState<MalaScreen> {
       );
     }
 
-    return Column(
-      children: [
-        _MalaAppBar(
-          title: mantra.displayTitle(language),
-          leftHanded: leftHanded,
-          onHandLayoutPressed:
-              () => ref
-                  .read(malaSettingsProvider.notifier)
-                  .setLeftHanded(!leftHanded),
-          onMorePressed: () => _openMalaSettings(context, mantra),
-        ),
-        Expanded(
-          child: Padding(
-            padding: const EdgeInsets.fromLTRB(24, 0, 24, 16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                // When no mantra has artwork the switcher is just the band,
-                // centred in a shorter slot so the counter and beads move up.
-                Expanded(
-                  flex: hasDeityImage ? 48 : 26,
-                  child: MantraSwitcher(
-                    mantras: mantras,
-                    language: language,
-                    tibetanFontFamily: AppConfig.tibetanContentFont,
-                    index: _index,
-                    speedFactor: settings.mantraSpeed,
-                    onIndexChanged: (next) => _switch(mantras, next),
-                  ),
-                ),
-                const SizedBox(height: 16),
-                if (showCountSkeleton)
-                  MalaCountSkeleton(alignEnd: leftHanded)
-                else
-                  _CounterBlock(
-                    beadInRound: displayBeadInRound,
-                    beadsPerRound: beadsPerRound,
-                    rounds: displayRounds,
-                    leftHanded: leftHanded,
-                    addRounds:
-                        widget.openedFromEndedAccumulator
-                            ? null
-                            : AddMalaRoundsButton(mantra: mantra, size: 32),
-                  ),
-                const SizedBox(height: 8),
-                Expanded(
-                  flex: hasDeityImage ? 30 : 42,
-                  child: LayoutBuilder(
-                    builder: (context, constraints) {
-                      return Align(
-                        alignment: Alignment.topCenter,
-                        child: SizedBox(
-                          height: constraints.maxHeight * 0.85,
-                          width: double.infinity,
-                          child:
-                              counter.seedFailed
-                                  ? _ErrorView(
-                                    message:
-                                        context.l10n.mala_count_load_error,
-                                    onRetry: notifier.seed,
-                                  )
-                                  : MalaBeads(
-                                    key: ValueKey(
-                                      '${mantra.presetId}_${selection.groupAccumulatorId ?? 'personal'}',
-                                    ),
-                                    total: displayTotal,
-                                    beadInRound: displayBeadInRound,
-                                    beadsPerRound: beadsPerRound,
-                                    enabled: countingEnabled,
-                                    mirrored: leftHanded,
-                                    beadImageBytes: counter.beadImageBytes,
-                                    beadColor: const Color(0xFF8D6E63),
-                                    threadColor: const Color(0xFFC62828),
-                                    onTap: () => onBead(MalaInput.tap),
-                                    onSwipe: () => onBead(MalaInput.swipe),
-                                  ),
-                        ),
-                      );
-                    },
-                  ),
-                ),
-                const SizedBox(height: 12),
-                if (!widget.openedFromEndedAccumulator)
-                  GroupAccumulationsBar(
-                    mantra: mantra,
-                    presetTitle: mantra.displayTitle(language),
-                  ),
-              ],
-            ),
-          ),
-        ),
-      ],
+    return _MalaPractice(
+      title: mantra.displayTitle(language),
+      onMorePressed: () => _openSettings(context, mantra: mantra),
+      showCountSkeleton: showCountSkeleton,
+      displayTotal: displayTotal,
+      beadsPerRound: beadsPerRound,
+      countingEnabled: countingEnabled,
+      beadImageBytes: counter.beadImageBytes,
+      beadsKey:
+          '${mantra.presetId}_${selection.groupAccumulatorId ?? 'personal'}',
+      onBead: onBead,
+      onSeedRetry: counter.seedFailed ? notifier.seed : null,
+      addRounds:
+          widget.openedFromEndedAccumulator
+              ? null
+              : AddMalaRoundsButton(mantra: mantra, size: 32),
+      footer:
+          widget.openedFromEndedAccumulator
+              ? null
+              : GroupAccumulationsBar(
+                mantra: mantra,
+                presetTitle: mantra.displayTitle(language),
+              ),
     );
+  }
+
+  /// A group accumulation's own mantra: counted only into it, with no
+  /// personal-or-group switch, bookmark, share or add-to-practice.
+  _MalaPractice _spacePractice(
+    BuildContext context,
+    SpaceMantraItem item,
+    MalaSettingsState settings,
+  ) {
+    final accumulatorId = item.accumulation.id;
+    ref.watch(groupAccumulationCountsProvider(item.countsKey));
+    final counts = ref.read(
+      groupAccumulationCountsProvider(item.countsKey).notifier,
+    );
+    final status = groupMantraCountStatus(
+      ref.watch(groupMantraCountSeedProvider(accumulatorId)),
+      hasServerCount: counts.hasServerCount(accumulatorId),
+    );
+    final ready = status == GroupMantraCountStatus.ready;
+    _trackSpaceOpened(item);
+
+    const beadsPerRound = kBeadsPerRound;
+    // Until the server count is in, the local count may be stale (0 on a new
+    // device), so it is neither shown nor counted on.
+    final displayTotal = ready ? counts.countFor(accumulatorId) : 0;
+
+    void onBead(MalaInput input) {
+      if (!ready) return;
+      final total = counts.increment(
+        groupAccumulatorId: accumulatorId,
+        groups: const [],
+        soundEnabled: settings.soundEnabled,
+        vibrationEnabled: settings.vibrationEnabled,
+        beadsPerRound: beadsPerRound,
+      );
+      // Null means the tap was ignored, so no bead was counted.
+      if (total == null) return;
+      _session.onBead(
+        presetId: null,
+        groupAccumulatorId: accumulatorId,
+        mantraId: item.mantra.id,
+        mantraName: item.title,
+        mode: MalaMode.group,
+        groupId: item.accumulation.groupId,
+        total: total,
+        roundComplete: total % beadsPerRound == 0,
+        input: input,
+      );
+    }
+
+    return _MalaPractice(
+      title: item.title,
+      onMorePressed:
+          () => _openSettings(context, mantra: item.displayMantra, space: item),
+      showCountSkeleton: !ready,
+      displayTotal: displayTotal,
+      beadsPerRound: beadsPerRound,
+      countingEnabled: ready,
+      beadImageBytes: watchSpaceMantraBeadBytes(ref, item),
+      beadsKey: item.countsKey,
+      onBead: onBead,
+      onSeedRetry:
+          status == GroupMantraCountStatus.failed
+              ? () =>
+                  ref.invalidate(groupMantraCountSeedProvider(accumulatorId))
+              : null,
+    );
+  }
+
+  /// Opens Mala settings and confirms a bead or image change on return.
+  Future<void> _openSettings(
+    BuildContext context, {
+    required Mantra mantra,
+    SpaceMantraItem? space,
+  }) async {
+    final outcome = await MalaSettingsScreen.show(
+      context,
+      mantra: mantra,
+      space: space,
+    );
+    if (!context.mounted || outcome == null) return;
+    final l10n = context.l10n;
+    showMalaToast(context, switch (outcome) {
+      MalaSettingsOutcome.beadStyleUpdated => l10n.mala_bead_style_updated,
+      MalaSettingsOutcome.imageUpdated => l10n.mala_image_updated,
+    });
   }
 
   void _applyInitialGroupSelectionIfNeeded(String presetId) {
@@ -373,7 +664,6 @@ class _MalaScreenState extends ConsumerState<MalaScreen> {
         .read(malaAccumulationSelectionProvider(presetId).notifier)
         .applyNavigationIntent(groupId);
   }
-
 }
 
 /// Bead count over a rounds row (`n` + mala icon + optional add button).
@@ -398,8 +688,7 @@ class _CounterBlock extends StatelessWidget {
     final theme = Theme.of(context);
     final l10n = context.l10n;
     final useTibetan = context.isTibetanLocale;
-    final beadText =
-        useTibetan ? toTibetanDigits(beadInRound) : '$beadInRound';
+    final beadText = useTibetan ? toTibetanDigits(beadInRound) : '$beadInRound';
     final perRoundText =
         useTibetan ? toTibetanDigits(beadsPerRound) : '$beadsPerRound';
     final roundsText = useTibetan ? toTibetanDigits(rounds) : '$rounds';
@@ -417,9 +706,7 @@ class _CounterBlock extends StatelessWidget {
       fontWeight: FontWeight.w500,
       color: color,
     );
-    final roundsStyle = theme.textTheme.titleLarge?.copyWith(
-      color: mutedColor,
-    );
+    final roundsStyle = theme.textTheme.titleLarge?.copyWith(color: mutedColor);
 
     return Semantics(
       label: l10n.mala_counter_semantics(
@@ -436,7 +723,9 @@ class _CounterBlock extends StatelessWidget {
             TextSpan(
               text: beadText,
               style: beadStyle,
-              children: [TextSpan(text: '/$perRoundText', style: perRoundStyle)],
+              children: [
+                TextSpan(text: '/$perRoundText', style: perRoundStyle),
+              ],
             ),
           ),
           const SizedBox(height: 4),
@@ -454,10 +743,7 @@ class _CounterBlock extends StatelessWidget {
                   colorBlendMode: BlendMode.srcIn,
                 ),
               ),
-              if (addRounds != null) ...[
-                const SizedBox(width: 10),
-                addRounds!,
-              ],
+              if (addRounds != null) ...[const SizedBox(width: 10), addRounds!],
             ],
           ),
         ],
@@ -526,7 +812,9 @@ class _HandLayoutIcon extends StatelessWidget {
       size: const Size.square(24),
       painter: _HandLayoutIconPainter(
         fillLeft: leftHanded,
-        color: IconTheme.of(context).color ?? Theme.of(context).colorScheme.onSurface,
+        color:
+            IconTheme.of(context).color ??
+            Theme.of(context).colorScheme.onSurface,
       ),
     );
   }
