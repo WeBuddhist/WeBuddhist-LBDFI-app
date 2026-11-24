@@ -1,3 +1,4 @@
+import 'package:flutter_pecha/core/analytics/search_analytics.dart';
 import 'package:flutter_pecha/core/cache/screen_cache/screen_cache_key.dart';
 import 'package:flutter_pecha/core/cache/screen_cache/screen_cache_providers.dart';
 import 'package:flutter_pecha/core/cache/screen_cache/screen_cache_source.dart';
@@ -452,5 +453,6 @@ final practiceRecitationSearchProvider = StateNotifierProvider.autoDispose
       return RecitationSearchNotifier(
         repository: ref.watch(recitationsRepositoryProvider),
         languageCode: languageCode,
+        analytics: ref.watch(searchAnalyticsProvider),
       );
     });

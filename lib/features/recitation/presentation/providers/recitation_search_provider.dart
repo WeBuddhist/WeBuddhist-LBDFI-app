@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:flutter_pecha/core/analytics/search_analytics.dart';
 import 'package:flutter_pecha/features/recitation/data/models/recitation_model.dart';
 import 'package:flutter_pecha/features/recitation/data/repositories/recitations_repository.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -42,9 +43,12 @@ class RecitationSearchNotifier extends StateNotifier<RecitationSearchState> {
   /// Shortest query that triggers a network request.
   static const int minQueryLength = 3;
 
+  final SearchAnalytics? analytics;
+
   RecitationSearchNotifier({
     required this.repository,
     required this.languageCode,
+    this.analytics,
   }) : super(const RecitationSearchState());
 
   /// Search with debounce
@@ -95,6 +99,11 @@ class RecitationSearchNotifier extends StateNotifier<RecitationSearchState> {
             results: results,
             isLoading: false,
             error: null,
+          );
+          analytics?.searched(
+            surface: SearchSurface.recitations,
+            query: query,
+            resultCount: results.length,
           );
         }
       },

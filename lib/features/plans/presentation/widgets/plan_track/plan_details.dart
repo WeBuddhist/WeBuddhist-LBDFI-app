@@ -751,7 +751,7 @@ class _PlanDetailsState extends ConsumerState<PlanDetails> {
   void _openPrayerRequests(String eventId) {
     final authState = ref.read(authProvider);
     if (authState.isGuest || !authState.isLoggedIn) {
-      LoginDrawer.show(context, ref);
+      LoginDrawer.show(context, ref, feature: 'prayer_requests');
       return;
     }
     unawaited(

@@ -124,6 +124,21 @@ class PlanAnalytics {
     });
   }
 
+  /// [count] subtasks were marked done because the user read through them
+  /// in the plan reader.
+  void subtasksCompletedByReading({
+    required String planId,
+    required int dayNumber,
+    required int count,
+  }) {
+    _analytics.trackInBackground(AnalyticsEvents.planSubtaskCompleted, {
+      AnalyticsProperties.planId: planId,
+      AnalyticsProperties.dayNumber: dayNumber,
+      AnalyticsProperties.via: 'reading',
+      AnalyticsProperties.itemCount: count,
+    });
+  }
+
   /// A day's last task was completed; [isOnTime] on its scheduled date.
   void planDayCompleted({
     required String planId,

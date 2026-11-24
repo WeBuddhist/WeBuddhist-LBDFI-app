@@ -5,6 +5,9 @@ import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:flutter_pecha/core/analytics/install_attribution_analytics.dart';
+import 'package:flutter_pecha/core/analytics/app_open_analytics.dart';
+import 'package:flutter_pecha/core/analytics/analytics_providers.dart';
 import 'package:flutter_pecha/core/analytics/clarity_analytics_service.dart';
 import 'package:flutter_pecha/core/analytics/entry_analytics.dart';
 import 'package:flutter_pecha/core/analytics/posthog_analytics_service.dart';
@@ -219,6 +222,14 @@ void main() async {
     Airbridge.setOnDeeplinkReceived((url) {
       _logger.info('Airbridge deep link received: $url');
       AirbridgeDeepLinkService.storePendingDeepLink(url);
+    });
+    // Which campaign or link brought this install; sent to PostHog once.
+    final installAttribution = InstallAttributionAnalytics(
+      container.read(analyticsServiceProvider),
+      SharedPreferencesAppOpenStore(),
+    );
+    Airbridge.setOnAttributionReceived((attribution) {
+      unawaited(installAttribution.attributionReceived(attribution));
     });
     _logger.info('Airbridge deep link handler initialized');
   } catch (e) {

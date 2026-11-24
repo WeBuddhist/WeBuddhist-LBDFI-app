@@ -97,7 +97,7 @@ class BookmarkController {
   }) async {
     final authState = ref.read(authProvider);
     if (authState.isGuest) {
-      LoginDrawer.show(context, ref);
+      LoginDrawer.show(context, ref, feature: 'bookmark');
       return BookmarkToggleOutcome.blocked;
     }
 

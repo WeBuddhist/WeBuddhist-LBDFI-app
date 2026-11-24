@@ -432,7 +432,7 @@ class _ConnectPostMediaViewerActionsState
 
     final authState = ref.read(authProvider);
     if (authState.isGuest || !authState.isLoggedIn) {
-      LoginDrawer.show(context, ref, useRootNavigator: true);
+      LoginDrawer.show(context, ref, useRootNavigator: true, feature: 'post_like');
       return;
     }
 
@@ -448,6 +448,7 @@ class _ConnectPostMediaViewerActionsState
           optimisticLikeCount: _likeCount,
           includeUnfollowed: widget.includeUnfollowed,
           groupId: widget.groupId,
+          surface: 'media_viewer',
         );
 
     if (result.isSuccess) onLikeChanged?.call(result.updatedPost!);

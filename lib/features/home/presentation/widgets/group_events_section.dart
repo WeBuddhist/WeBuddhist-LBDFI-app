@@ -8,6 +8,7 @@ import 'package:flutter_pecha/features/home/presentation/providers/home_group_ev
 import 'package:flutter_pecha/features/connect/presentation/providers/connect_signal_providers.dart';
 import 'package:flutter_pecha/features/home/presentation/widgets/group_events_section_skeleton.dart';
 import 'package:flutter_pecha/shared/utils/helper_functions.dart';
+import 'package:flutter_pecha/features/home/presentation/utils/home_analytics.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
@@ -84,7 +85,15 @@ class _GroupEventsContent extends StatelessWidget {
                 ),
               ),
               TextButton(
-                onPressed: () => context.pushNamed('home-group-events'),
+                onPressed: () {
+                  ProviderScope.containerOf(context, listen: false)
+                      .read(homeAnalyticsProvider)
+                      .cardTapped(
+                        section: HomeSection.groupEvents,
+                        targetId: 'see_all',
+                      );
+                  context.pushNamed('home-group-events');
+                },
                 style: TextButton.styleFrom(
                   foregroundColor: subtitleColor,
                   padding: const EdgeInsets.symmetric(horizontal: 8),
@@ -104,7 +113,7 @@ class _GroupEventsContent extends StatelessWidget {
         ),
         SizedBox(height: sectionContentGap),
         for (var i = 0; i < events.length; i++) ...[
-          ConnectEventCard(event: events[i]),
+          ConnectEventCard(event: events[i], source: 'home'),
           if (i < events.length - 1)
             Divider(height: 1, thickness: 1, color: dividerColor),
         ],

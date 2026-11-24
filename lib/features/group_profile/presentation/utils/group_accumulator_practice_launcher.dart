@@ -128,7 +128,7 @@ Future<bool> openGroupAccumulatorPractice(
 }) async {
   final authState = ref.read(authProvider);
   if (authState.isGuest || !authState.isLoggedIn) {
-    LoginDrawer.show(context, ref);
+    LoginDrawer.show(context, ref, feature: 'group_accumulator_practice');
     return false;
   }
   // Work after the practice screen closes runs through the app container,
@@ -146,6 +146,7 @@ Future<bool> openGroupAccumulatorPractice(
       container: container,
       accumulatorId: detail.id,
       groupId: detail.groupId,
+      source: 'practice_launcher',
     );
     if (!context.mounted) return false;
     if (!joined) {

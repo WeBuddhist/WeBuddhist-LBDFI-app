@@ -4,6 +4,7 @@ import 'package:flutter_pecha/core/analytics/analytics_service.dart';
 import 'package:flutter_pecha/core/analytics/analytics_tracking.dart';
 import 'package:flutter_pecha/features/group_profile/domain/entities/group_event.dart';
 import 'package:flutter_pecha/features/group_profile/presentation/utils/group_event_link_utils.dart';
+import 'package:flutter_pecha/features/connect/presentation/utils/connect_event_attendance_utils.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 /// What "enter the live event" opened, carried on `group_event_live_entered`.
@@ -12,18 +13,43 @@ enum GroupEventLiveTarget { series, plan, collection }
 /// Product analytics for group events: one method per tracked action, so the
 /// event names and their property keys live in one place. Every call fires
 /// and forgets; callers fire after the server confirms, never optimistically.
+/// Whether an event has started, is on or is over, carried as `status`.
+enum GroupEventStatus {
+  upcoming,
+  live,
+  ended;
+
+  /// Null when the event has no start date.
+  static GroupEventStatus? of(GroupEvent event, {DateTime? now}) {
+    final current = now ?? DateTime.now();
+    if (isGroupEventPast(event, now: current)) return GroupEventStatus.ended;
+    final start = event.startDate;
+    if (start == null) return null;
+    return start.toLocal().isAfter(current)
+        ? GroupEventStatus.upcoming
+        : GroupEventStatus.live;
+  }
+
+  String get key => name;
+}
+
 class GroupEventAnalytics {
   const GroupEventAnalytics(this._analytics);
 
   final AnalyticsService _analytics;
 
   /// The event detail screen showed an event; fired once per visit.
+  /// [source] is where it was opened from when the opener said so: `home`,
+  /// `connect`, `group_page`, `home_banner`, `calendar`, `push`, `deep_link`
+  /// or `created`.
   void eventViewed({
     required String eventId,
     required String groupId,
     required String eventTitle,
     required String? eventFormat,
     required bool isRecurring,
+    String? source,
+    GroupEventStatus? status,
   }) {
     _analytics.trackInBackground(AnalyticsEvents.groupEventViewed, {
       AnalyticsProperties.eventId: eventId,
@@ -31,6 +57,8 @@ class GroupEventAnalytics {
       AnalyticsProperties.eventTitle: eventTitle,
       AnalyticsProperties.eventFormat: eventFormat,
       AnalyticsProperties.isRecurring: isRecurring,
+      if (source != null) AnalyticsProperties.source: source,
+      if (status != null) AnalyticsProperties.status: status.key,
     });
   }
 

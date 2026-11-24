@@ -15,6 +15,57 @@ void main() {
     analytics = GroupEventAnalytics(service);
   });
 
+  test('a view carries where it was opened from and the event status', () {
+    analytics.eventViewed(
+      eventId: 'e1',
+      groupId: 'g1',
+      eventTitle: 'Tara',
+      eventFormat: null,
+      isRecurring: false,
+      source: 'home',
+      status: GroupEventStatus.live,
+    );
+
+    expect(service.events.single.properties, {
+      'event_id': 'e1',
+      'group_id': 'g1',
+      'event_title': 'Tara',
+      'event_format': null,
+      'is_recurring': false,
+      'source': 'home',
+      'status': 'live',
+    });
+  });
+
+  test('the status follows the event times', () {
+    final now = DateTime(2026, 11, 24, 12);
+    GroupEvent event({DateTime? start, DateTime? end}) =>
+        GroupEvent(id: 'e1', groupId: 'g1', startDate: start, endDate: end);
+
+    expect(
+      GroupEventStatus.of(
+        event(start: DateTime(2026, 11, 25), end: DateTime(2026, 11, 25, 2)),
+        now: now,
+      ),
+      GroupEventStatus.upcoming,
+    );
+    expect(
+      GroupEventStatus.of(
+        event(start: DateTime(2026, 11, 24, 11), end: DateTime(2026, 11, 24, 13)),
+        now: now,
+      ),
+      GroupEventStatus.live,
+    );
+    expect(
+      GroupEventStatus.of(
+        event(start: DateTime(2026, 11, 23), end: DateTime(2026, 11, 23, 2)),
+        now: now,
+      ),
+      GroupEventStatus.ended,
+    );
+    expect(GroupEventStatus.of(event(), now: now), isNull);
+  });
+
   test('eventViewed carries the event, its group and format', () {
     analytics.eventViewed(
       eventId: 'e1',

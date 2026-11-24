@@ -106,12 +106,24 @@ class AuthAnalytics {
   }
 
   /// [source] is null when login started somewhere other than the login page
-  /// or drawer.
-  void loginSucceeded({String? method, AuthSource? source}) {
+  /// or drawer. [isNewUser] is true when the account has not finished
+  /// onboarding, null when that could not be checked.
+  void loginSucceeded({String? method, AuthSource? source, bool? isNewUser}) {
     _analytics.trackInBackground(AnalyticsEvents.authLoginSucceeded, {
       AnalyticsProperties.method: method ?? 'default',
       AnalyticsProperties.source: source?.key,
+      if (isNewUser != null) AnalyticsProperties.isNewUser: isNewUser,
     });
+  }
+
+  /// The user logged out from the Me page. Sent before the identity reset.
+  void loggedOut() {
+    _analytics.trackInBackground(AnalyticsEvents.authLogout, const {});
+  }
+
+  /// The server deleted the account. Sent before the identity reset.
+  void accountDeleted() {
+    _analytics.trackInBackground(AnalyticsEvents.accountDeleted, const {});
   }
 
   /// [failureMessage] is mapped to a code and cleaned; it is never sent as is.

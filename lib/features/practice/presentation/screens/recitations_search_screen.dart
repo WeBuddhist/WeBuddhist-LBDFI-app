@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_pecha/core/analytics/search_analytics.dart';
 import 'package:flutter_pecha/core/constants/app_assets.dart';
 import 'package:flutter_pecha/core/error/failures.dart';
 import 'package:flutter_pecha/core/extensions/context_ext.dart';
@@ -314,7 +315,14 @@ class _RecitationsSearchScreenState
           ChantSectionHeader(title: l10n.chants_chant_books),
           _BookRail(
             books: books,
-            onTap: (book) => openChantBook(context, ref, book),
+            onTap: (book) {
+              _trackResultOpened(
+                books.indexOf(book),
+                itemType: 'chant_book',
+                itemId: book.id,
+              );
+              openChantBook(context, ref, book);
+            },
           ),
         ],
         if (showText) ...[
@@ -324,7 +332,8 @@ class _RecitationsSearchScreenState
               padding: const EdgeInsets.fromLTRB(20, 0, 20, 8),
               child: SpaceTextChantRow(chant: chant),
             ),
-          for (final chant in chants) _chantRow(context, chant),
+          for (final (index, chant) in chants.indexed)
+            _chantRow(context, chant, index),
         ],
         if (showAudio) ...[
           ChantSectionHeader(title: l10n.chants_audio_chants),
@@ -365,7 +374,7 @@ class _RecitationsSearchScreenState
     if (query.isEmpty || _requestStatus != _RequestStatus.idle) return;
     final auth = ref.read(authProvider);
     if (auth.isGuest || !auth.isLoggedIn) {
-      LoginDrawer.show(context, ref);
+      LoginDrawer.show(context, ref, feature: 'text_request');
       return;
     }
 
@@ -390,7 +399,22 @@ class _RecitationsSearchScreenState
     );
   }
 
-  Widget _chantRow(BuildContext context, RecitationModel chant) {
+  void _trackResultOpened(
+    int position, {
+    required String itemType,
+    required String itemId,
+  }) {
+    ref
+        .read(searchAnalyticsProvider)
+        .resultOpened(
+          surface: SearchSurface.recitations,
+          position: position,
+          itemType: itemType,
+          itemId: itemId,
+        );
+  }
+
+  Widget _chantRow(BuildContext context, RecitationModel chant, int position) {
     return Padding(
       padding: const EdgeInsets.fromLTRB(20, 0, 20, 8),
       child: TextChantRow(
@@ -398,12 +422,14 @@ class _RecitationsSearchScreenState
         openLabel: context.l10n.chants_open_chant,
         language: chant.language,
         firstVerse: chant.firstSegment?.content,
-        onTap:
-            () => openRecitationReader(
-              context,
-              chant,
-              listLanguage: widget.languageCode,
-            ),
+        onTap: () {
+          _trackResultOpened(position, itemType: 'chant', itemId: chant.textId);
+          openRecitationReader(
+            context,
+            chant,
+            listLanguage: widget.languageCode,
+          );
+        },
       ),
     );
   }
