@@ -10,6 +10,7 @@ class TimerProgressRing extends StatelessWidget {
     required this.child,
     this.size = 280,
     this.strokeWidth = 3,
+    this.trackColor,
     this.progressColor,
   });
 
@@ -18,13 +19,15 @@ class TimerProgressRing extends StatelessWidget {
   final Widget child;
   final double size;
   final double strokeWidth;
+  final Color? trackColor;
   final Color? progressColor;
 
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final trackColor =
-        isDark ? AppColors.cardBorderDark : const Color(0xFFDADADA);
+    final defaultTrack =
+        isDark ? AppColors.cardBorderDark : AppColors.grey300;
+    final activeTrackColor = trackColor ?? defaultTrack;
     final activeProgressColor =
         progressColor ?? Theme.of(context).colorScheme.onSurface;
 
@@ -34,7 +37,7 @@ class TimerProgressRing extends StatelessWidget {
       child: CustomPaint(
         painter: _TimerRingPainter(
           progress: progress.clamp(0.0, 1.0),
-          trackColor: trackColor,
+          trackColor: activeTrackColor,
           progressColor: activeProgressColor,
           strokeWidth: strokeWidth,
         ),

@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:ui' show FontFeature;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_pecha/core/constants/app_assets.dart';
@@ -16,6 +17,7 @@ import 'package:flutter_pecha/features/timer/presentation/services/timer_keep_al
 import 'package:flutter_pecha/features/timer/presentation/services/timer_sound_player.dart';
 import 'package:flutter_pecha/features/timer/presentation/utils/timer_analytics.dart';
 import 'package:flutter_pecha/features/timer/presentation/widgets/timer_progress_ring.dart';
+import 'package:flutter_pecha/features/timer/presentation/widgets/timer_session_discard_dialog.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
@@ -53,10 +55,15 @@ class _ActiveTimerScreenState extends ConsumerState<ActiveTimerScreen>
     with WidgetsBindingObserver {
   static const _countdownStart = 3;
   static const _ringSize = 310.0;
-  static const _controlsSpacing = 48.0;
-  static const _controlsHeight = 56.0;
-  static const _centerTextHeight = 48.0;
-  static const _durationFontSize = 40.0;
+  static const _ringStroke = 3.0;
+  static const _timeFontSize = 48.0;
+  static const _metaFontSize = 16.0;
+  static const _controlBottomPadding = 32.0;
+  static const _horizontalInset = 24.0;
+  static const _controlGap = 12.0;
+  static const _controlHeight = 52.0;
+  static const _completionRingColor = AppColors.malaMantraAccentDark;
+  static const _finishStopSize = 14.0;
 
   final _logger = AppLogger('ActiveTimerScreen');
 
@@ -139,14 +146,6 @@ class _ActiveTimerScreenState extends ConsumerState<ActiveTimerScreen>
     if (_phase == _TimerPhase.countdown) return 0;
     return ((_totalMs - _remainingMs) / _totalMs).clamp(0.0, 1.0);
   }
-
-  bool get _showFinish =>
-      _phase == _TimerPhase.finished ||
-      (_phase == _TimerPhase.running && _isPaused);
-
-  bool get _showDiscard =>
-      _phase == _TimerPhase.finished ||
-      (_phase == _TimerPhase.running && _isPaused);
 
   @override
   void initState() {
@@ -777,108 +776,73 @@ class _ActiveTimerScreenState extends ConsumerState<ActiveTimerScreen>
   }
 
   void _showDiscardDialog() {
-    final elapsedMs = _elapsedMs;
-    final elapsedPhrase = _formatElapsedPhrase(elapsedMs);
-    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final l10n = context.l10n;
+    final elapsedPhrase = _formatElapsedPhrase(_elapsedMs);
 
-    showDialog<void>(
-      context: context,
-      barrierColor: Colors.black.withOpacity(0.5),
-      builder: (dialogContext) {
-        final textTheme = Theme.of(dialogContext).textTheme;
-        final textColor = Theme.of(dialogContext).colorScheme.onSurface;
-        return Dialog(
-          backgroundColor: isDark ? AppColors.surfaceDark : AppColors.surfaceWhite,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16),
-            side: BorderSide(
-              color: isDark ? AppColors.cardBorderDark : const Color(0xFFDADADA),
-            ),
-          ),
-          child: Padding(
-            padding: const EdgeInsets.all(24),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(
-                  context.l10n.timer_discard_title,
-                  textAlign: TextAlign.center,
-                  style: textTheme.titleLarge?.copyWith(
-                    fontWeight: FontWeight.w600,
-                    color: textColor,
-                  ),
-                ),
-                const SizedBox(height: 12),
-                Text(
-                  context.l10n.timer_discard_message(elapsedPhrase),
-                  textAlign: TextAlign.center,
-                  style: textTheme.bodyMedium?.copyWith(
-                    color: isDark ? AppColors.textTertiaryDark : AppColors.textSecondary,
-                  ),
-                ),
-                const SizedBox(height: 24),
-                SizedBox(
-                  width: double.infinity,
-                  child: OutlinedButton(
-                    onPressed: () {
-                      Navigator.of(dialogContext).pop();
-                      _discardSession();
-                    },
-                    style: OutlinedButton.styleFrom(
-                      foregroundColor: AppColors.danger,
-                      side: const BorderSide(color: AppColors.danger),
-                      padding: const EdgeInsets.symmetric(vertical: 14),
-                      shape: const StadiumBorder(),
-                    ),
-                    child: Text(
-                      context.l10n.timer_discard_session,
-                      style: const TextStyle(fontWeight: FontWeight.w500),
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 12),
-                SizedBox(
-                  width: double.infinity,
-                  child: OutlinedButton(
-                    onPressed: () {
-                      Navigator.of(dialogContext).pop();
-                      _finish();
-                    },
-                    style: OutlinedButton.styleFrom(
-                      foregroundColor: textColor,
-                      side: BorderSide(
-                        color: isDark ? AppColors.cardBorderDark : const Color(0xFFDADADA),
-                      ),
-                      padding: const EdgeInsets.symmetric(vertical: 14),
-                      shape: const StadiumBorder(),
-                    ),
-                    child: Text(
-                      context.l10n.timer_save_session,
-                      style: const TextStyle(fontWeight: FontWeight.w500),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        );
-      },
+    unawaited(
+      showTimerSessionDiscardDialog(
+        context,
+        title: l10n.timer_discard_title,
+        message: l10n.timer_discard_message(elapsedPhrase),
+        discardLabel: l10n.timer_discard_session,
+        saveLabel: l10n.timer_save_session,
+        onDiscard: _discardSession,
+        onSave: _finish,
+        onDismissed: () {
+          if (!mounted) return;
+          if (_phase == _TimerPhase.running && _isPaused) {
+            _togglePause();
+          }
+        },
+      ),
     );
+  }
+
+  ({Color track, Color progress}) _ringColors(bool isDark) {
+    switch (_phase) {
+      case _TimerPhase.finished:
+        return (
+          track: _completionRingColor,
+          progress: _completionRingColor,
+        );
+      case _TimerPhase.running:
+        if (_isPaused) {
+          return (
+            track: isDark ? AppColors.cardBorderDark : AppColors.grey300,
+            progress:
+                isDark ? AppColors.textSubtleDark : AppColors.grey600,
+          );
+        }
+        return (
+          track: isDark ? AppColors.cardBorderDark : AppColors.grey300,
+          progress: Theme.of(context).colorScheme.onSurface,
+        );
+      case _TimerPhase.countdown:
+        return (
+          track: isDark ? AppColors.cardBorderDark : AppColors.grey300,
+          progress: Theme.of(context).colorScheme.onSurface,
+        );
+    }
+  }
+
+  String? _ambientLabel(Map<String, AmbientSound> soundsById) {
+    final id = _ambientSoundId;
+    if (id == null) return null;
+    return soundsById[id]?.name;
   }
 
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
-    final textTheme = Theme.of(context).textTheme;
     final textColor = Theme.of(context).colorScheme.onSurface;
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     ref.watch(ambientSoundsFutureProvider);
     final ambientSoundsById = ref.watch(ambientSoundByIdProvider);
-    final ambientSoundName = widget.presetTimer.ambientSoundId != null
-        ? ambientSoundsById[widget.presetTimer.ambientSoundId]?.name
-        : null;
+    final ambientSoundName = _ambientLabel(ambientSoundsById);
     final durationStr = _formatElapsedPhrase(widget.presetTimer.durationMs);
+    final ringColors = _ringColors(isDark);
+    final showSessionHeader = _phase == _TimerPhase.running;
 
     return PopScope(
       canPop: _phase == _TimerPhase.finished,
@@ -893,31 +857,39 @@ class _ActiveTimerScreenState extends ConsumerState<ActiveTimerScreen>
         body: SafeArea(
           child: Column(
             children: [
-              if (_phase == _TimerPhase.running)
+              if (showSessionHeader)
                 Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        ambientSoundName != null ? '$durationStr · $ambientSoundName' : durationStr,
-                        style: textTheme.titleMedium?.copyWith(
-                          color: isDark ? AppColors.textSecondaryDark : AppColors.textSecondary,
-                          fontWeight: FontWeight.w500,
+                  padding: const EdgeInsets.fromLTRB(
+                    _horizontalInset,
+                    8,
+                    _horizontalInset,
+                    0,
+                  ),
+                  child: SizedBox(
+                    height: 44,
+                    width: double.infinity,
+                    child: Align(
+                      alignment: Alignment.centerLeft,
+                      child: Text(
+                        ambientSoundName != null
+                            ? '$durationStr · $ambientSoundName'
+                            : durationStr,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          fontSize: _metaFontSize,
+                          fontWeight: FontWeight.w400,
+                          height: 1.25,
+                          color: isDark
+                              ? AppColors.textSecondaryDark
+                              : AppColors.textSecondary,
                         ),
                       ),
-                      IconButton(
-                        constraints: const BoxConstraints(minWidth: 44, minHeight: 44),
-                        padding: EdgeInsets.zero,
-                        icon: const Icon(AppAssets.dotsThree),
-                        onPressed: _showDiscardDialog,
-                        color: textColor,
-                      ),
-                    ],
+                    ),
                   ),
                 )
               else
-                const SizedBox(height: 60),
+                const SizedBox(height: 52),
 
               Expanded(
                 child: Center(
@@ -925,12 +897,20 @@ class _ActiveTimerScreenState extends ConsumerState<ActiveTimerScreen>
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       GestureDetector(
-                        onTap: (_phase == _TimerPhase.running && _isPaused) ? _togglePause : null,
+                        onTap:
+                            (_phase == _TimerPhase.running && _isPaused)
+                                ? _togglePause
+                                : null,
                         behavior: HitTestBehavior.opaque,
                         child: TimerProgressRing(
-                          size: 310,
-                          progress: _phase == _TimerPhase.finished ? 1.0 : _elapsedProgress,
-                          progressColor: _phase == _TimerPhase.finished ? const Color(0xFFFDAE33) : null,
+                          size: _ringSize,
+                          strokeWidth: _ringStroke,
+                          progress:
+                              _phase == _TimerPhase.finished
+                                  ? 1.0
+                                  : _elapsedProgress,
+                          trackColor: ringColors.track,
+                          progressColor: ringColors.progress,
                           child: _buildCenterContent(textColor),
                         ),
                       ),
@@ -939,32 +919,48 @@ class _ActiveTimerScreenState extends ConsumerState<ActiveTimerScreen>
                         Text(
                           l10n.timer_starting,
                           style: TextStyle(
-                            fontSize: 16,
+                            fontSize: _metaFontSize,
                             fontWeight: FontWeight.w400,
-                            color: isDark ? AppColors.textTertiaryDark : AppColors.textSecondary,
+                            height: 1.25,
+                            color: isDark
+                                ? AppColors.textTertiaryDark
+                                : AppColors.textSecondary,
                           ),
                         ),
                       ] else if (_phase == _TimerPhase.finished) ...[
                         const SizedBox(height: 28),
                         Text(
-                          _isSavedEarly ? l10n.timer_session_saved : l10n.timer_session_complete,
-                          style: textTheme.headlineMedium?.copyWith(
+                          _isSavedEarly
+                              ? l10n.timer_session_saved
+                              : l10n.timer_session_complete,
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            fontSize: 22,
                             fontWeight: FontWeight.w600,
+                            letterSpacing: -0.3,
+                            height: 1.2,
                             color: textColor,
                           ),
                         ),
                         const SizedBox(height: 8),
                         Text(
                           l10n.timer_saved_to_practice(
-                            _formatElapsedPhrase(_isSavedEarly ? _savedEarlyMs : _totalMs),
+                            _formatElapsedPhrase(
+                              _isSavedEarly ? _savedEarlyMs : _totalMs,
+                            ),
                           ),
-                          style: textTheme.bodyLarge?.copyWith(
-                            color: isDark ? AppColors.textTertiaryDark : AppColors.textSecondary,
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            fontSize: _metaFontSize,
+                            fontWeight: FontWeight.w400,
+                            height: 1.25,
+                            color: isDark
+                                ? AppColors.textTertiaryDark
+                                : AppColors.textSecondary,
                           ),
                         ),
-                      ] else ...[
+                      ] else
                         const SizedBox(height: 48),
-                      ],
                     ],
                   ),
                 ),
@@ -972,14 +968,23 @@ class _ActiveTimerScreenState extends ConsumerState<ActiveTimerScreen>
 
               if (_phase == _TimerPhase.countdown)
                 Padding(
-                  padding: const EdgeInsets.fromLTRB(24, 0, 24, 32),
+                  padding: const EdgeInsets.fromLTRB(
+                    _horizontalInset,
+                    0,
+                    _horizontalInset,
+                    _controlBottomPadding,
+                  ),
                   child: Center(
                     child: OutlinedButton(
                       onPressed: _discardSession,
                       style: OutlinedButton.styleFrom(
                         foregroundColor: textColor,
+                        minimumSize: const Size(0, _controlHeight),
                         side: BorderSide(
-                          color: isDark ? AppColors.cardBorderDark : const Color(0xFFDADADA),
+                          color:
+                              isDark
+                                  ? AppColors.cardBorderDark
+                                  : AppColors.grey300,
                         ),
                         padding: const EdgeInsets.symmetric(
                           horizontal: 36,
@@ -990,7 +995,7 @@ class _ActiveTimerScreenState extends ConsumerState<ActiveTimerScreen>
                       child: Text(
                         l10n.cancel,
                         style: const TextStyle(
-                          fontSize: 16,
+                          fontSize: _metaFontSize,
                           fontWeight: FontWeight.w500,
                         ),
                       ),
@@ -999,23 +1004,27 @@ class _ActiveTimerScreenState extends ConsumerState<ActiveTimerScreen>
                 )
               else if (_phase == _TimerPhase.finished)
                 Padding(
-                  padding: const EdgeInsets.fromLTRB(24, 0, 24, 32),
+                  padding: const EdgeInsets.fromLTRB(
+                    _horizontalInset,
+                    0,
+                    _horizontalInset,
+                    _controlBottomPadding,
+                  ),
                   child: SizedBox(
                     width: double.infinity,
+                    height: _controlHeight,
                     child: FilledButton(
-                      onPressed: () {
-                        context.pop();
-                      },
+                      onPressed: () => context.pop(),
                       style: FilledButton.styleFrom(
                         backgroundColor: textColor,
                         foregroundColor: Theme.of(context).colorScheme.surface,
-                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        padding: EdgeInsets.zero,
                         shape: const StadiumBorder(),
                       ),
                       child: Text(
                         l10n.done,
                         style: const TextStyle(
-                          fontSize: 16,
+                          fontSize: _metaFontSize,
                           fontWeight: FontWeight.w500,
                         ),
                       ),
@@ -1024,63 +1033,83 @@ class _ActiveTimerScreenState extends ConsumerState<ActiveTimerScreen>
                 )
               else
                 Padding(
-                  padding: const EdgeInsets.fromLTRB(24, 0, 24, 32),
+                  padding: const EdgeInsets.fromLTRB(
+                    _horizontalInset,
+                    0,
+                    _horizontalInset,
+                    _controlBottomPadding,
+                  ),
                   child: Row(
                     children: [
                       Expanded(
-                        child: OutlinedButton(
-                          onPressed: _finish,
-                          style: OutlinedButton.styleFrom(
-                            foregroundColor: textColor,
-                            side: BorderSide(
-                              color: isDark ? AppColors.cardBorderDark : const Color(0xFFDADADA),
+                        child: SizedBox(
+                          height: _controlHeight,
+                          child: OutlinedButton(
+                            onPressed: _showDiscardDialog,
+                            style: OutlinedButton.styleFrom(
+                              foregroundColor: textColor,
+                              side: BorderSide(
+                                color:
+                                    isDark
+                                        ? AppColors.cardBorderDark
+                                        : AppColors.grey300,
+                              ),
+                              padding: EdgeInsets.zero,
+                              shape: const StadiumBorder(),
+                              backgroundColor:
+                                  isDark
+                                      ? AppColors.surfaceDark
+                                      : AppColors.surfaceWhite,
                             ),
-                            padding: const EdgeInsets.symmetric(vertical: 16),
-                            shape: const StadiumBorder(),
-                            backgroundColor: isDark ? AppColors.surfaceDark : AppColors.surfaceWhite,
-                          ),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Container(
-                                width: 14,
-                                height: 14,
-                                decoration: BoxDecoration(
-                                  color: textColor,
-                                  borderRadius: BorderRadius.circular(2),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Container(
+                                  width: _finishStopSize,
+                                  height: _finishStopSize,
+                                  decoration: BoxDecoration(
+                                    color: textColor,
+                                    borderRadius: BorderRadius.circular(2),
+                                  ),
                                 ),
-                              ),
-                              const SizedBox(width: 8),
-                              Text(
-                                l10n.timer_finish,
-                                style: const TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w500,
+                                const SizedBox(width: 8),
+                                Text(
+                                  l10n.timer_finish,
+                                  style: const TextStyle(
+                                    fontSize: _metaFontSize,
+                                    fontWeight: FontWeight.w500,
+                                  ),
                                 ),
-                              ),
-                            ],
+                              ],
+                            ),
                           ),
                         ),
                       ),
-                      const SizedBox(width: 12),
+                      const SizedBox(width: _controlGap),
                       Expanded(
-                        child: FilledButton.icon(
-                          onPressed: _togglePause,
-                          style: FilledButton.styleFrom(
-                            backgroundColor: textColor,
-                            foregroundColor: Theme.of(context).colorScheme.surface,
-                            padding: const EdgeInsets.symmetric(vertical: 16),
-                            shape: const StadiumBorder(),
-                          ),
-                          icon: Icon(
-                            _isPaused ? AppAssets.play : AppAssets.pause,
-                            size: 18,
-                          ),
-                          label: Text(
-                            _isPaused ? l10n.timer_resume : l10n.player_pause,
-                            style: const TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w500,
+                        child: SizedBox(
+                          height: _controlHeight,
+                          child: FilledButton.icon(
+                            onPressed: _togglePause,
+                            style: FilledButton.styleFrom(
+                              backgroundColor: textColor,
+                              foregroundColor:
+                                  Theme.of(context).colorScheme.surface,
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 12,
+                              ),
+                              shape: const StadiumBorder(),
+                            ),
+                            icon: Icon(
+                              _isPaused ? AppAssets.play : AppAssets.pause,
+                              size: 20,
+                            ),
+                            label: Text(
+                              _isPaused ? l10n.timer_resume : l10n.player_pause,
+                              style: const TextStyle(
+                                fontSize: _metaFontSize,
+                                fontWeight: FontWeight.w500,
+                              ),
                             ),
                           ),
                         ),
@@ -1118,11 +1147,12 @@ class _ActiveTimerScreenState extends ConsumerState<ActiveTimerScreen>
     } else if (isFinished) {
       return const Icon(
         AppAssets.check,
-        size: 64,
-        color: Color(0xFFFDAE33),
+        size: 56,
+        color: _completionRingColor,
       );
     } else {
       final timeText = _formatDuration(_remainingMs, separator: ':');
+      final isDark = Theme.of(context).brightness == Brightness.dark;
       return Column(
         mainAxisSize: MainAxisSize.min,
         mainAxisAlignment: MainAxisAlignment.center,
@@ -1130,9 +1160,11 @@ class _ActiveTimerScreenState extends ConsumerState<ActiveTimerScreen>
           Text(
             timeText,
             style: TextStyle(
-              fontSize: 48,
+              fontSize: _timeFontSize,
               fontWeight: FontWeight.w600,
               height: 1,
+              letterSpacing: 0,
+              fontFeatures: const [FontFeature.tabularFigures()],
               color: textColor,
             ),
           ),
@@ -1140,10 +1172,12 @@ class _ActiveTimerScreenState extends ConsumerState<ActiveTimerScreen>
             const SizedBox(height: 8),
             Text(
               context.l10n.timer_paused_caption,
+              textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: 14,
                 fontWeight: FontWeight.w400,
-                color: Theme.of(context).brightness == Brightness.dark
+                height: 20 / 14,
+                color: isDark
                     ? AppColors.textTertiaryDark
                     : AppColors.textSecondary,
               ),
