@@ -7,24 +7,17 @@ import 'package:flutter_pecha/core/services/service_providers.dart';
 import 'package:flutter_pecha/core/l10n/generated/app_localizations.dart';
 import 'package:flutter_pecha/features/auth/presentation/providers/state_providers.dart';
 import 'package:flutter_pecha/features/auth/presentation/widgets/login_drawer.dart';
-import 'package:flutter_pecha/features/connect/presentation/providers/connect_unified_feed_providers.dart';
-import 'package:flutter_pecha/features/home/domain/entities/series.dart';
-import 'package:flutter_pecha/features/home/presentation/providers/featured_series_provider.dart';
-import 'package:flutter_pecha/features/home/presentation/providers/home_group_events_preview_provider.dart';
 import 'package:flutter_pecha/features/home/presentation/providers/routine_info_provider.dart';
 import 'package:flutter_pecha/features/home/presentation/providers/streak_provider.dart';
 import 'package:flutter_pecha/features/home/presentation/providers/verse_of_day_engagement_providers.dart';
 import 'package:flutter_pecha/features/home/presentation/providers/verse_of_day_provider.dart';
 import 'package:flutter_pecha/features/home/presentation/home_screen_constants.dart';
 import 'package:flutter_pecha/features/home/presentation/utils/home_analytics.dart';
-import 'package:flutter_pecha/features/home/presentation/widgets/community_feed_section.dart';
-import 'package:flutter_pecha/features/home/presentation/widgets/featured_plan_section.dart';
-import 'package:flutter_pecha/features/home/presentation/widgets/group_events_section.dart';
 import 'package:flutter_pecha/features/home/presentation/widgets/home_header.dart';
-import 'package:flutter_pecha/features/home/presentation/widgets/home_share_prompt.dart';
+import 'package:flutter_pecha/features/home/presentation/widgets/home_feed_sliver.dart';
 import 'package:flutter_pecha/features/home/presentation/widgets/home_shortcuts_row.dart';
+import 'package:flutter_pecha/features/home/presentation/providers/home_feed_provider.dart';
 import 'package:flutter_pecha/features/home/presentation/providers/home_poems_preview_provider.dart';
-import 'package:flutter_pecha/features/home/presentation/widgets/poems_section.dart';
 import 'package:flutter_pecha/features/home/presentation/widgets/my_practices_stats_card.dart';
 import 'package:flutter_pecha/features/home/presentation/widgets/my_practices_stats_card_skeleton.dart';
 import 'package:flutter_pecha/features/home/presentation/widgets/verse_of_day_carousel.dart';
@@ -232,15 +225,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   Future<void> _onRefresh() async {
     _refreshVerseOfDayEngagement();
     final language = ref.read(contentLanguageProvider);
-    final series = ref.read(seriesDomainRepositoryProvider);
-    final events = ref.read(homeGroupEventsPreviewSourceProvider);
     await Future.wait<Object?>([
-      series.refreshSeriesList(language: language),
-      series.refreshFeaturedSeries(
-        language: language,
-        limit: homeFeaturedSeriesLimit,
-      ),
-      if (events != null) events.refresh(),
+      // A fresh mix: the feed drops its cursor.
+      ref.read(homeFeedProvider.notifier).refresh(),
       ref.read(homePoemsPreviewSourceProvider).refresh(),
       // The verse-of-the-day week; also stores today's verse on its own.
       ref.read(verseOfDayDomainRepositoryProvider).refreshRecentVerses(
@@ -251,12 +238,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       ),
       ref.read(routineInfoDomainRepositoryProvider).refreshRoutineInfo(),
       ref.read(streakDomainRepositoryProvider).refreshStreak(),
-      // A member whose feed was empty may have joined groups since, so the
-      // own feed is re-read even while Home shows Discover.
-      if (ref.exists(myUnifiedConnectFeedProvider))
-        ref.read(myUnifiedConnectFeedProvider.notifier).refresh(),
-      if (ref.exists(discoverUnifiedConnectFeedProvider))
-        ref.read(discoverUnifiedConnectFeedProvider.notifier).refresh(),
     ]);
   }
 
@@ -278,14 +259,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       return;
     }
     context.push(route, extra: extra);
-  }
-
-  void _navigateToSeries(Series series) {
-    context.pushNamed(
-      'home-series-detail',
-      pathParameters: {'id': series.id},
-      extra: {'series': series},
-    );
   }
 
   @override
@@ -378,54 +351,44 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     return Expanded(
       child: RefreshIndicator(
         onRefresh: _onRefresh,
-        child: CustomScrollView(
-          physics: const AlwaysScrollableScrollPhysics(),
-          slivers: [
-            SliverToBoxAdapter(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  _buildVerseOfDaySection(),
-                  const SizedBox(height: HomeScreenConstants.cardSpacing),
-                  HomeShortcutsRow(
-                    onTimerTap:
-                        () => _openGatedFeature(
-                          '/home/timers',
-                          feature: 'timer',
-                        ),
-                    onMalaTap:
-                        () => _openGatedFeature(
-                          '/mala',
-                          feature: 'mala',
-                          extra: {'source': MalaOpenSource.home},
-                        ),
-                  ),
-                  const SizedBox(height: HomeScreenConstants.cardSpacing),
-                  _buildMyPracticesSection(),
-                  const SizedBox(height: HomeScreenConstants.cardSpacing),
-                  FeaturedPlanSection(
-                    onSeriesTap: (series) {
-                      _log.info('Featured series tapped: ${series.id}');
-                      ref
-                          .read(homeAnalyticsProvider)
-                          .cardTapped(
-                            section: HomeSection.featuredPlan,
-                            targetId: series.id,
-                          );
-                      _navigateToSeries(series);
-                    },
-                  ),
-                  const SizedBox(height: HomeScreenConstants.cardSpacing),
-                  const GroupEventsSection(),
-                  const SizedBox(height: HomeScreenConstants.cardSpacing),
-                  const PoemsSection(),
-                  const SizedBox(height: HomeScreenConstants.cardSpacing),
-                  const CommunityFeedSection(),
-                ],
+        child: NotificationListener<ScrollNotification>(
+          onNotification:
+              (notification) => HomeFeedSliver.onScroll(ref, notification),
+          child: CustomScrollView(
+            physics: const AlwaysScrollableScrollPhysics(),
+            slivers: [
+              SliverToBoxAdapter(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    _buildVerseOfDaySection(),
+                    const SizedBox(height: HomeScreenConstants.cardSpacing),
+                    HomeShortcutsRow(
+                      onTimerTap:
+                          () => _openGatedFeature(
+                            '/home/timers',
+                            feature: 'timer',
+                          ),
+                      onMalaTap:
+                          () => _openGatedFeature(
+                            '/mala',
+                            feature: 'mala',
+                            extra: {'source': MalaOpenSource.home},
+                          ),
+                    ),
+                    const SizedBox(height: HomeScreenConstants.cardSpacing),
+                    _buildMyPracticesSection(),
+                    const SizedBox(height: HomeScreenConstants.cardSpacing),
+                  ],
+                ),
               ),
-            ),
-            const SliverToBoxAdapter(child: HomeSharePrompt()),
-          ],
+              const HomeFeedSliver(),
+              // Room below the last row, clear of the bottom navigation.
+              const SliverToBoxAdapter(
+                child: SizedBox(height: HomeScreenConstants.cardSpacing),
+              ),
+            ],
+          ),
         ),
       ),
     );
