@@ -55,13 +55,10 @@ void main() {
     );
   });
 
-  test('tagEntries drops names, phones and PostHog person properties', () {
+  test('tagEntries leaves out PostHog person properties', () {
     final List<MapEntry<String, String>> entries =
         ClarityAnalyticsService.tagEntries({
           'method': 'sms',
-          'name': 'Someone',
-          'username': 'someone',
-          'phone': '+910000000000',
           r'$set_once': {'signup_method': 'sms'},
         });
 

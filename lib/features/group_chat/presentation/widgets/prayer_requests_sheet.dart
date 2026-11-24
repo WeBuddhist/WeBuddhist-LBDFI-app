@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:clarity_flutter/clarity_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_pecha/core/constants/app_assets.dart';
 import 'package:flutter_pecha/core/extensions/context_ext.dart';
@@ -52,11 +51,7 @@ class PrayerRequestsSheet extends ConsumerStatefulWidget {
       isDismissible: true,
       enableDrag: true,
       barrierColor: Colors.black.withValues(alpha: 0.5),
-      // Prayer text is private: hidden in Clarity recordings.
-      builder:
-          (_) => ClarityMask(
-            child: PrayerRequestsSheet(scope: scope, source: source),
-          ),
+      builder: (_) => PrayerRequestsSheet(scope: scope, source: source),
     );
   }
 

@@ -14,14 +14,7 @@ final _logger = AppLogger('ClarityAnalytics');
 const int _customEventMaxLength = 254;
 
 /// Property keys that never reach Clarity; mirrors the PostHog redaction.
-const Set<String> _redactedKeys = {
-  'email',
-  'id_token',
-  'access_token',
-  'phone',
-  'name',
-  'username',
-};
+const Set<String> _redactedKeys = {'email', 'id_token', 'access_token'};
 
 /// Microsoft Clarity session recordings and heatmaps. [wrap] starts the SDK
 /// with the first frame; the route observers keep its screen name current.

@@ -1,4 +1,3 @@
-import 'package:clarity_flutter/clarity_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_pecha/core/constants/app_assets.dart';
 import 'package:flutter_pecha/core/constants/app_config.dart';
@@ -316,15 +315,13 @@ class _ConnectPostDetailPanelState
             child: _buildBody(context, isDark, commentsState, commentCount),
           ),
         ),
-        ClarityMask(
-          child: ConnectCommentComposer(
-            controller: _commentController,
-            focusNode: _commentFocusNode,
-            isSubmitting: isSubmittingComment,
-            onSubmit: _submitComment,
-            replyHandle: _replyTarget?.user.mentionHandle,
-            onClearReply: _clearReply,
-          ),
+        ConnectCommentComposer(
+          controller: _commentController,
+          focusNode: _commentFocusNode,
+          isSubmitting: isSubmittingComment,
+          onSubmit: _submitComment,
+          replyHandle: _replyTarget?.user.mentionHandle,
+          onClearReply: _clearReply,
         ),
       ],
     );
@@ -405,14 +402,11 @@ class _ConnectPostDetailPanelState
             ),
           )
         else
-          // Comments are people's own words: hidden in Clarity recordings.
           ...orderedComments.map(
-            (comment) => ClarityMask(
-              child: ConnectPostCommentTile(
-                comment: comment,
-                postId: widget.postId,
-                onReply: _startReply,
-              ),
+            (comment) => ConnectPostCommentTile(
+              comment: comment,
+              postId: widget.postId,
+              onReply: _startReply,
             ),
           ),
         if (commentsState.isLoadingMore)
