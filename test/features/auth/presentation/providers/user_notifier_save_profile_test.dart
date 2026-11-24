@@ -63,4 +63,49 @@ void main() {
     expect(params.firstName, '');
     expect(params.lastName, '');
   });
+
+  group('avatar url after save', () {
+    const sentUrl = 'https://bucket.s3.amazonaws.com/avatars/u1.jpg?sig=old';
+    const user = User(id: 'u1', firstName: 'Tenzin', avatarUrl: sentUrl);
+
+    Future<String?> savedAvatarUrl(User response) async {
+      when(getUser(any)).thenAnswer((_) async => const Right(user));
+      when(updateUserInfo(any)).thenAnswer((_) async => Right(response));
+      await notifier.initializeUser();
+
+      final error = await notifier.saveProfile(
+        displayName: 'Tenzin',
+        avatarUrl: sentUrl,
+      );
+
+      expect(error, isNull);
+      return notifier.state.user?.avatarUrl;
+    }
+
+    test('a missing response avatar keeps the submitted url', () async {
+      const response = User(id: 'u1', firstName: 'Tenzin');
+
+      expect(await savedAvatarUrl(response), sentUrl);
+    });
+
+    test(
+      'a bare storage key in the response keeps the submitted url',
+      () async {
+        const response = User(
+          id: 'u1',
+          firstName: 'Tenzin',
+          avatarUrl: 'avatars/u1.jpg',
+        );
+
+        expect(await savedAvatarUrl(response), sentUrl);
+      },
+    );
+
+    test('a valid response url takes precedence', () async {
+      const freshUrl = 'https://bucket.s3.amazonaws.com/avatars/u1.jpg?sig=new';
+      const response = User(id: 'u1', firstName: 'Tenzin', avatarUrl: freshUrl);
+
+      expect(await savedAvatarUrl(response), freshUrl);
+    });
+  });
 }

@@ -43,8 +43,9 @@ Future<void> refreshJoinedSpaces(
 ) async {
   final auth = read(authProvider);
   if (!auth.isLoggedIn || auth.isGuest) return;
-  await read(connectRepositoryProvider)
-      .refreshMyGroups(language: read(contentLanguageProvider));
+  await read(
+    connectRepositoryProvider,
+  ).refreshMyGroups(language: read(contentLanguageProvider));
 }
 
 /// The remembered space if it is still joined, otherwise the first joined
@@ -96,6 +97,59 @@ class ConnectLastSpaceNotifier extends StateNotifier<ConnectLastSpace> {
 final connectLastSpaceProvider =
     StateNotifierProvider<ConnectLastSpaceNotifier, ConnectLastSpace>(
       (ref) => ConnectLastSpaceNotifier(),
+    );
+
+/// The spaces the Connect tab has already opened, kept across launches.
+///
+/// Drives the landing rule: the first visit to a space opens on its info
+/// (header expanded), every later visit opens on its feed with the header
+/// scrolled away.
+class ConnectOpenedSpaces {
+  const ConnectOpenedSpaces({this.ids = const {}, this.loaded = false});
+
+  final Set<String> ids;
+
+  /// False until the stored ids have been read, so a returning visit is not
+  /// mistaken for a first one.
+  final bool loaded;
+}
+
+class ConnectOpenedSpacesNotifier extends StateNotifier<ConnectOpenedSpaces> {
+  ConnectOpenedSpacesNotifier() : super(const ConnectOpenedSpaces()) {
+    _load();
+  }
+
+  Future<void> _load() async {
+    final prefs = await SharedPreferences.getInstance();
+    if (!mounted || state.loaded) return;
+    state = ConnectOpenedSpaces(
+      ids: {
+        ...?prefs.getStringList(StorageKeys.connectOpenedSpaceIds),
+        // A space marked before the read finished.
+        ...state.ids,
+      },
+      loaded: true,
+    );
+  }
+
+  Future<void> markOpened(String spaceId) async {
+    if (spaceId.isEmpty || state.ids.contains(spaceId)) return;
+    final ids = {...state.ids, spaceId};
+    state = ConnectOpenedSpaces(ids: ids, loaded: state.loaded);
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setStringList(
+      StorageKeys.connectOpenedSpaceIds,
+      {
+        ...?prefs.getStringList(StorageKeys.connectOpenedSpaceIds),
+        ...ids,
+      }.toList(),
+    );
+  }
+}
+
+final connectOpenedSpacesProvider =
+    StateNotifierProvider<ConnectOpenedSpacesNotifier, ConnectOpenedSpaces>(
+      (ref) => ConnectOpenedSpacesNotifier(),
     );
 
 /// Spaces with unread messages in their room, by group id, and whether the

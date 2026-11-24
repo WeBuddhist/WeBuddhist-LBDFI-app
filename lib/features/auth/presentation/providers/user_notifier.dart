@@ -145,8 +145,16 @@ class UserNotifier extends StateNotifier<UserState> {
         _logger.error('Failed to update user info: ${failure.message}');
         return failure.message;
       },
-      (updatedUser) {
-        _logger.info('Profile saved: ${updatedUser.fullName}');
+      (savedUser) {
+        _logger.info('Profile saved: ${savedUser.fullName}');
+        // The POST response's avatar_url is not a loadable URL (it can be the
+        // bare storage key, or missing). Keep the presigned URL we just sent
+        // so the avatar stays on screen; the follow-up refreshUser() brings a
+        // freshly signed one under the same image cache key.
+        final updatedUser =
+            _isNetworkUrl(savedUser.avatarUrl) || avatarUrl == null
+                ? savedUser
+                : savedUser.copyWith(avatarUrl: avatarUrl);
         state = UserState.loaded(updatedUser);
         _cacheUserLocally(updatedUser);
         return null;
@@ -247,5 +255,10 @@ class UserNotifier extends StateNotifier<UserState> {
     } catch (e) {
       _logger.error('Error caching user data', e);
     }
+  }
+
+  static bool _isNetworkUrl(String? url) {
+    final uri = url == null ? null : Uri.tryParse(url.trim());
+    return uri != null && (uri.scheme == 'http' || uri.scheme == 'https');
   }
 }
