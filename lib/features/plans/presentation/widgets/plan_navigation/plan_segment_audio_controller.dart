@@ -83,7 +83,8 @@ class PlanSegmentAudioController extends ChangeNotifier {
   /// Fired once from [dispose] with how long audio played, for analytics.
   final void Function(PlanAudioListen listen)? onListened;
 
-  /// Runs while the button shows pause, i.e. while audio is playing.
+  /// Runs only while sound is really coming out: playing and ready, not
+  /// loading or buffering, and never after [cancel]. See [_onPlayerState].
   final Stopwatch _listening = Stopwatch();
   bool _completedOnce = false;
 
@@ -143,11 +144,9 @@ class PlanSegmentAudioController extends ChangeNotifier {
   void _setButtonState(PlanAudioButtonState state) {
     if (_isDisposed || _buttonState == state) return;
     _buttonState = state;
-    if (state == PlanAudioButtonState.pause) {
-      _listening.start();
-    } else {
-      _listening.stop();
-    }
+    // Started by the player itself once audio is audible; any other button
+    // state means it isn't.
+    if (state != PlanAudioButtonState.pause) _listening.stop();
     notifyListeners();
   }
 
@@ -306,6 +305,14 @@ class PlanSegmentAudioController extends ChangeNotifier {
   /// The skip(1) on the subscription means the first BehaviorSubject emit
   /// (which is stale) never reaches this handler.
   void _onPlayerState(PlayerState state) {
+    // Count listening time only while sound is actually playing.
+    if (!_isDisposed &&
+        state.playing &&
+        state.processingState == ProcessingState.ready) {
+      _listening.start();
+    } else {
+      _listening.stop();
+    }
     if (_isDisposed || _buttonState != PlanAudioButtonState.pause) return;
     final ps = state.processingState;
     if (ps == ProcessingState.loading || ps == ProcessingState.buffering) {
@@ -438,6 +445,7 @@ class PlanSegmentAudioController extends ChangeNotifier {
   /// Increments [_audioSessionId] so any in-flight [_startAudio] aborts before
   /// it can call play() on a session that has been cancelled.
   void cancel() {
+    _listening.stop(); // nothing plays after this, whatever the screen does
     _audioSessionId++; // invalidate any in-flight _startAudio
     _hasCompleted = true; // prevent late-firing position callbacks
     _pauseRequested = false;

@@ -124,11 +124,6 @@ class RecitationLiveState {
   );
 }
 
-/// Holds the event's recitation socket for as long as a reader is on screen.
-///
-/// Reconnects with backoff after a drop, pings every 30s so a sleeping phone
-/// is noticed, and drops the socket while the app is in the background. The
-/// follow mode is the user's choice and never touches the connection.
 /// How one live-recitation visit's following went, for analytics.
 class RecitationFollowSummary {
   const RecitationFollowSummary({
@@ -142,6 +137,11 @@ class RecitationFollowSummary {
   final int resumedCount;
 }
 
+/// Holds the event's recitation socket for as long as a reader is on screen.
+///
+/// Reconnects with backoff after a drop, pings every 30s so a sleeping phone
+/// is noticed, and drops the socket while the app is in the background. The
+/// follow mode is the user's choice and never touches the connection.
 class RecitationLiveNotifier extends StateNotifier<RecitationLiveState>
     with WidgetsBindingObserver {
   RecitationLiveNotifier({
@@ -161,15 +161,36 @@ class RecitationLiveNotifier extends StateNotifier<RecitationLiveState>
        _backoff = backoff,
        super(const RecitationLiveState()) {
     if (_observeLifecycle) WidgetsBinding.instance.addObserver(this);
-    _following.start(); // A reader starts out following.
     unawaited(connect());
   }
 
   /// Told once, from [dispose], how this visit's following went.
   final void Function(RecitationFollowSummary summary)? onFollowEnded;
 
-  /// Runs while the reader follows the operator.
+  /// Runs only while the reader really follows the operator: following is on,
+  /// the socket is connected and the app is on screen. See [_syncFollowClock].
   final Stopwatch _following = Stopwatch();
+
+  @override
+  set state(RecitationLiveState value) {
+    super.state = value;
+    _syncFollowClock();
+  }
+
+  /// Starts or stops [_following] to match what the reader can do now, so a
+  /// locked phone, a dropped connection or an ended session adds nothing.
+  void _syncFollowClock() {
+    final active =
+        !_disposed &&
+        !_suspended &&
+        state.isFollowing &&
+        state.connection == RecitationLiveConnection.connected;
+    if (active) {
+      _following.start();
+    } else {
+      _following.stop();
+    }
+  }
   int _pausedCount = 0;
   int _resumedCount = 0;
 
@@ -382,13 +403,13 @@ class RecitationLiveNotifier extends StateNotifier<RecitationLiveState>
       case AppLifecycleState.inactive:
         break;
     }
+    _syncFollowClock();
   }
 
   /// Scroll to wherever the operator is now and keep following.
   void resumeFollowing() {
     if (_disposed) return;
     if (!state.isFollowing) _resumedCount++;
-    _following.start();
     state = state.copyWith(
       followMode: RecitationLiveFollowMode.following,
       outOfSync: false,
@@ -400,14 +421,12 @@ class RecitationLiveNotifier extends StateNotifier<RecitationLiveState>
   void pauseFollowing() {
     if (_disposed || !state.isFollowing) return;
     _pausedCount++;
-    _following.stop();
     state = state.copyWith(followMode: RecitationLiveFollowMode.paused);
   }
 
   /// Opt out. The socket stays up so opting back in lands on the live line.
   void stopFollowing() {
     if (_disposed) return;
-    _following.stop();
     state = state.copyWith(followMode: RecitationLiveFollowMode.off);
   }
 
