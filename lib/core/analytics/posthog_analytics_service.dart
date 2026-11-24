@@ -200,10 +200,21 @@ class PostHogAnalyticsService implements AnalyticsService {
     await setSuperProperties({
       'environment': Env.environment,
       'app_flavor': Env.appFlavor,
+      'build_mode': buildMode,
       'platform': Platform.operatingSystem,
       if (packageInfo != null) 'app_version': packageInfo.version,
       if (packageInfo != null) 'build_number': packageInfo.buildNumber,
     });
+  }
+
+  /// `debug` or `profile` when the app runs from a developer's machine
+  /// (`flutter run`); store and TestFlight builds are always `release`. Sent
+  /// as `build_mode` so local runs can be filtered out of real-user data.
+  @visibleForTesting
+  static String get buildMode {
+    if (kReleaseMode) return 'release';
+    if (kProfileMode) return 'profile';
+    return 'debug';
   }
 
   /// An event with a `group_id` belongs to that sangha. PostHog reads

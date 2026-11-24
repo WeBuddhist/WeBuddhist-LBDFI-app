@@ -13,6 +13,10 @@ void main() {
     );
   });
 
+  test('build_mode is debug outside release and profile builds', () {
+    expect(PostHogAnalyticsService.buildMode, 'debug');
+  });
+
   test('events without a group id are untouched', () {
     expect(PostHogAnalyticsService.withSanghaGroup({'x': 1}), {'x': 1});
     expect(PostHogAnalyticsService.withSanghaGroup({'group_id': ''}), {
