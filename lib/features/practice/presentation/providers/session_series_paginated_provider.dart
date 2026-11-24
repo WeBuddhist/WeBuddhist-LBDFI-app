@@ -56,6 +56,7 @@ class SessionSeriesNotifier extends StateNotifier<SessionSeriesState> {
   // Blocks paging while page one is being read again; stale pages are dropped.
   bool _firstPageInFlight = false;
   int _pageEpoch = 0;
+  int _nextSkip = 0;
 
   SeriesQueryParams _params({required int skip}) {
     return SeriesQueryParams(
@@ -68,11 +69,12 @@ class SessionSeriesNotifier extends StateNotifier<SessionSeriesState> {
 
   void _applyFirstPage(SeriesListPage page) {
     _pageEpoch++;
+    _nextSkip = page.nextSkip;
     state = SessionSeriesState(
       items: [
         for (final model in page.series) model.toEntity(language: languageCode),
       ],
-      hasMore: page.series.isNotEmpty && page.hasMore,
+      hasMore: page.hasMore,
     );
   }
 
@@ -112,14 +114,14 @@ class SessionSeriesNotifier extends StateNotifier<SessionSeriesState> {
     final epoch = _pageEpoch;
     try {
       final page = await datasource.fetchSeriesPage(
-        params: _params(skip: state.items.length),
+        params: _params(skip: _nextSkip),
       );
       if (!mounted) return;
       // Page one was replaced meanwhile; this page belongs to the old list.
       if (epoch != _pageEpoch) {
-        state = state.copyWith(isLoadingMore: false);
         return;
       }
+      _nextSkip = page.nextSkip;
       state = state.copyWith(
         items: [
           ...state.items,
@@ -127,12 +129,11 @@ class SessionSeriesNotifier extends StateNotifier<SessionSeriesState> {
             model.toEntity(language: languageCode),
         ],
         isLoadingMore: false,
-        hasMore: page.series.isNotEmpty && page.hasMore,
+        hasMore: page.hasMore,
       );
     } catch (e) {
       if (!mounted) return;
       if (epoch != _pageEpoch) {
-        state = state.copyWith(isLoadingMore: false);
         return;
       }
       state = state.copyWith(isLoadingMore: false, error: e.toString());

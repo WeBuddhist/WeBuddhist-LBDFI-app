@@ -40,14 +40,18 @@ class SeriesListPage {
     required this.skip,
     required this.limit,
     required this.total,
+    required this.rawCount,
   });
 
   final List<SeriesModel> series;
   final int skip;
   final int limit;
   final int total;
+  final int rawCount;
 
-  bool get hasMore => skip + series.length < total;
+  int get nextSkip => skip + rawCount;
+
+  bool get hasMore => rawCount > 0 && nextSkip < total;
 }
 
 class SeriesRemoteDatasource {
@@ -127,6 +131,7 @@ class SeriesRemoteDatasource {
           skip: skip,
           limit: limit,
           total: total,
+          rawCount: seriesJson.length,
         );
       } else {
         _logger.error('Failed to load series: ${response.statusCode}');

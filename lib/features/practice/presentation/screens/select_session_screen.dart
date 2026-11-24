@@ -20,6 +20,7 @@ import 'package:flutter_pecha/features/practice/presentation/widgets/practice_my
 import 'package:flutter_pecha/features/recitation/data/models/my_recitation_list_collection_model.dart';
 import 'package:flutter_pecha/features/recitation/data/models/recitation_model.dart';
 import 'package:flutter_pecha/features/recitation/presentation/widgets/recitation_list_skeleton.dart';
+import 'package:flutter_pecha/core/theme/font_config.dart';
 import 'package:flutter_pecha/features/timer/domain/entities/preset_timer.dart';
 import 'package:flutter_pecha/features/timer/presentation/providers/timers_providers.dart';
 import 'package:flutter_pecha/features/timer/presentation/widgets/timer_picker_card.dart';
@@ -112,16 +113,18 @@ class _SelectSessionScreenState extends ConsumerState<SelectSessionScreen>
   void _onPlansScroll() {
     if (!_plansScrollController.hasClients) return;
     final position = _plansScrollController.position;
-    if (position.maxScrollExtent <= 0) return;
-    if (position.pixels < position.maxScrollExtent - 200) return;
+    final isAtEnd = position.maxScrollExtent <= 0 ||
+        position.pixels >= position.maxScrollExtent - 200;
+    if (!isAtEnd) return;
     ref.read(sessionSeriesPaginatedProvider.notifier).loadMore();
   }
 
   void _onChantsScroll() {
     if (!_chantsScrollController.hasClients) return;
     final position = _chantsScrollController.position;
-    if (position.maxScrollExtent <= 0) return;
-    if (position.pixels < position.maxScrollExtent - 200) return;
+    final isAtEnd = position.maxScrollExtent <= 0 ||
+        position.pixels >= position.maxScrollExtent - 200;
+    if (!isAtEnd) return;
     final languageCode = ref.read(contentLanguageProvider);
     ref
         .read(practiceRecitationsPaginatedProvider(languageCode).notifier)
@@ -495,6 +498,18 @@ class _PlansTab extends ConsumerWidget {
 
     final items = itemsState.items;
 
+    if (itemsState.hasMore &&
+        !itemsState.isLoadingMore &&
+        itemsState.error == null) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (!context.mounted) return;
+        if (!scrollController.hasClients) return;
+        if (scrollController.position.maxScrollExtent <= 0) {
+          ref.read(sessionSeriesPaginatedProvider.notifier).loadMore();
+        }
+      });
+    }
+
     if (items.isEmpty && !itemsState.isLoading) {
       return _RefreshableScrollBody(
         onRefresh: onRefresh,
@@ -658,7 +673,6 @@ class _ChantsTab extends ConsumerWidget {
               .retry();
         },
         child: ListView.builder(
-          controller: scrollController,
           physics: const AlwaysScrollableScrollPhysics(),
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
           itemCount: recitations.length,
@@ -708,6 +722,20 @@ class _ChantsTab extends ConsumerWidget {
 
     final collections = recitationsState.collections;
     final recitations = recitationsState.recitations;
+
+    if (recitationsState.hasMore &&
+        !recitationsState.isLoadingMore &&
+        recitationsState.error == null) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (!context.mounted) return;
+        if (!scrollController.hasClients) return;
+        if (scrollController.position.maxScrollExtent <= 0) {
+          ref
+              .read(practiceRecitationsPaginatedProvider(languageCode).notifier)
+              .loadMore();
+        }
+      });
+    }
 
     if (recitationsState.isEmpty && !recitationsState.isLoading) {
       return _RefreshableScrollBody(
@@ -1004,11 +1032,35 @@ class _TimersTab extends ConsumerWidget {
               final visibleTimers =
                   query.isEmpty
                       ? timers
-                      : timers
-                          .where(
-                            (timer) => timer.name.toLowerCase().contains(query),
-                          )
-                          .toList();
+                      : timers.where((timer) {
+                          if (timer.name.toLowerCase().contains(query)) {
+                            return true;
+                          }
+                          final isTibetan = AppFontConfig.isTibetanLanguage(
+                            Localizations.localeOf(context).languageCode,
+                          );
+                          final parts = PresetTimer.durationPartsFromMs(timer.durationMs);
+                          final compound = parts.length > 1;
+                          final buffer = StringBuffer();
+                          for (var i = 0; i < parts.length; i++) {
+                            if (i > 0) buffer.write(' ');
+                            final part = parts[i];
+                            final unit = switch (part.unit) {
+                              TimerDurationUnit.hours => l10n.timer_duration_hr,
+                              TimerDurationUnit.minutes => l10n.timer_min,
+                              TimerDurationUnit.seconds => l10n.timer_duration_sec,
+                            };
+                            final valueStr = '${part.value}';
+                            final gap = compound ? '' : ' ';
+                            if (isTibetan) {
+                              buffer.write('$unit$gap$valueStr');
+                            } else {
+                              buffer.write('$valueStr$gap$unit');
+                            }
+                          }
+                          final durationLabel = buffer.toString().toLowerCase();
+                          return durationLabel.contains(query);
+                        }).toList();
 
               // Same split and order as the timers screen: the user's own
               // timers as created, then presets shortest first.
