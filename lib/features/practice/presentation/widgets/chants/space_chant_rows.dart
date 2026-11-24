@@ -8,9 +8,12 @@ import 'package:flutter_pecha/features/practice/presentation/widgets/chants/chan
 /// A space chant with recordings as an [AudioChantRow]: the row opens the
 /// chant, the button opens it playing the first recording.
 class SpaceAudioChantRow extends StatelessWidget {
-  const SpaceAudioChantRow({super.key, required this.chant});
+  const SpaceAudioChantRow({super.key, required this.chant, this.onOpened});
 
   final SpaceChant chant;
+
+  /// Called before the chant opens, from the row or its play button.
+  final VoidCallback? onOpened;
 
   @override
   Widget build(BuildContext context) {
@@ -29,8 +32,14 @@ class SpaceAudioChantRow extends StatelessWidget {
         collectionImageUrl: chant.collection.imageUrl,
         groupAvatarUrl: chant.groupAvatarUrl,
       ),
-      onTap: () => openSpaceChant(context, chant),
-      onPlay: () => openSpaceChant(context, chant, play: true),
+      onTap: () {
+        onOpened?.call();
+        openSpaceChant(context, chant);
+      },
+      onPlay: () {
+        onOpened?.call();
+        openSpaceChant(context, chant, play: true);
+      },
     );
   }
 }
@@ -38,9 +47,12 @@ class SpaceAudioChantRow extends StatelessWidget {
 /// A space chant without recordings as a [TextChantRow]. Chant book items
 /// carry no verse, so there is no preview line.
 class SpaceTextChantRow extends StatelessWidget {
-  const SpaceTextChantRow({super.key, required this.chant});
+  const SpaceTextChantRow({super.key, required this.chant, this.onOpened});
 
   final SpaceChant chant;
+
+  /// Called before the chant opens.
+  final VoidCallback? onOpened;
 
   @override
   Widget build(BuildContext context) {
@@ -48,7 +60,10 @@ class SpaceTextChantRow extends StatelessWidget {
       title: chant.item.title,
       language: chant.item.language,
       openLabel: context.l10n.chants_open_chant,
-      onTap: () => openSpaceChant(context, chant),
+      onTap: () {
+        onOpened?.call();
+        openSpaceChant(context, chant);
+      },
     );
   }
 }

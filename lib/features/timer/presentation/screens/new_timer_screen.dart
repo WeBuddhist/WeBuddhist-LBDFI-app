@@ -169,7 +169,8 @@ class _NewTimerScreenState extends ConsumerState<NewTimerScreen> {
       (_) {},
       (timer) => analytics.timerCreated(
         presetId: timer.id,
-        durationSeconds: _durationMs ~/ 1000,
+        // The saved value: the field stays editable while the request runs.
+        durationSeconds: timer.durationMs ~/ 1000,
         ambientSoundId: ambientSoundId,
       ),
     );

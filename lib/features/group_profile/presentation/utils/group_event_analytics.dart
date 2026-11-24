@@ -4,35 +4,47 @@ import 'package:flutter_pecha/core/analytics/analytics_service.dart';
 import 'package:flutter_pecha/core/analytics/analytics_tracking.dart';
 import 'package:flutter_pecha/features/group_profile/domain/entities/group_event.dart';
 import 'package:flutter_pecha/features/group_profile/presentation/utils/group_event_link_utils.dart';
-import 'package:flutter_pecha/features/connect/presentation/utils/connect_event_attendance_utils.dart';
+import 'package:flutter_pecha/features/group_profile/presentation/utils/group_event_live_utils.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 /// What "enter the live event" opened, carried on `group_event_live_entered`.
 enum GroupEventLiveTarget { series, plan, collection }
 
-/// Product analytics for group events: one method per tracked action, so the
-/// event names and their property keys live in one place. Every call fires
-/// and forgets; callers fire after the server confirms, never optimistically.
 /// Whether an event has started, is on or is over, carried as `status`.
+/// Decided the same way as the live player ([GroupEventLiveUtils]), so
+/// analytics agrees with what the screen shows.
 enum GroupEventStatus {
   upcoming,
   live,
   ended;
 
-  /// Null when the event has no start date.
+  /// Null when it can't be told: no start date, or a recurring event whose
+  /// current occurrence is unknown or already over (the series goes on).
   static GroupEventStatus? of(GroupEvent event, {DateTime? now}) {
     final current = now ?? DateTime.now();
-    if (isGroupEventPast(event, now: current)) return GroupEventStatus.ended;
+    if (event.isRecurring) {
+      final occurrence = event.occurrenceDate;
+      if (occurrence == null) return null;
+      if (current.isBefore(occurrence)) return GroupEventStatus.upcoming;
+      return current.isBefore(occurrence.add(GroupEventLiveUtils.liveGrace))
+          ? GroupEventStatus.live
+          : null;
+    }
     final start = event.startDate;
     if (start == null) return null;
-    return start.toLocal().isAfter(current)
-        ? GroupEventStatus.upcoming
+    if (current.isBefore(start)) return GroupEventStatus.upcoming;
+    // No usable end date means live for [GroupEventLiveUtils.liveGrace].
+    return GroupEventLiveUtils.hasEnded(event, current)
+        ? GroupEventStatus.ended
         : GroupEventStatus.live;
   }
 
   String get key => name;
 }
 
+/// Product analytics for group events: one method per tracked action, so the
+/// event names and their property keys live in one place. Every call fires
+/// and forgets; callers fire after the server confirms, never optimistically.
 class GroupEventAnalytics {
   const GroupEventAnalytics(this._analytics);
 

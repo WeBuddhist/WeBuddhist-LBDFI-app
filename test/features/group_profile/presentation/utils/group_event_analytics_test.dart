@@ -2,6 +2,7 @@ import 'package:flutter_pecha/core/analytics/analytics_events.dart';
 import 'package:flutter_pecha/features/group_profile/domain/entities/group_event.dart';
 import 'package:flutter_pecha/features/group_profile/presentation/utils/group_event_analytics.dart';
 import 'package:flutter_pecha/features/group_profile/presentation/utils/group_event_link_utils.dart';
+import 'package:flutter_pecha/features/group_profile/presentation/utils/group_event_live_utils.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../../../../core/analytics/recording_analytics_service.dart';
@@ -64,6 +65,59 @@ void main() {
       GroupEventStatus.ended,
     );
     expect(GroupEventStatus.of(event(), now: now), isNull);
+  });
+
+  test('an event without an end date is live for the grace period', () {
+    final start = DateTime(2026, 11, 24, 10);
+    final event = GroupEvent(id: 'e1', groupId: 'g1', startDate: start);
+
+    expect(
+      GroupEventStatus.of(event, now: start.add(const Duration(hours: 1))),
+      GroupEventStatus.live,
+    );
+    expect(
+      GroupEventStatus.of(
+        event,
+        now: start.add(GroupEventLiveUtils.liveGrace),
+      ),
+      GroupEventStatus.ended,
+    );
+  });
+
+  test('a recurring event follows its current occurrence', () {
+    final occurrence = DateTime(2026, 11, 24, 10);
+    GroupEvent event({DateTime? occurrenceDate}) => GroupEvent(
+      id: 'e1',
+      groupId: 'g1',
+      startDate: DateTime(2026, 1, 1, 10),
+      endDate: DateTime(2026, 12, 31, 11),
+      isRecurring: true,
+      occurrenceDate: occurrenceDate,
+    );
+
+    expect(
+      GroupEventStatus.of(
+        event(occurrenceDate: occurrence),
+        now: occurrence.subtract(const Duration(hours: 1)),
+      ),
+      GroupEventStatus.upcoming,
+    );
+    expect(
+      GroupEventStatus.of(
+        event(occurrenceDate: occurrence),
+        now: occurrence.add(const Duration(minutes: 30)),
+      ),
+      GroupEventStatus.live,
+    );
+    // Past the occurrence, or with none known: no status rather than a guess.
+    expect(
+      GroupEventStatus.of(
+        event(occurrenceDate: occurrence),
+        now: occurrence.add(const Duration(days: 1)),
+      ),
+      isNull,
+    );
+    expect(GroupEventStatus.of(event(), now: occurrence), isNull);
   });
 
   test('eventViewed carries the event, its group and format', () {

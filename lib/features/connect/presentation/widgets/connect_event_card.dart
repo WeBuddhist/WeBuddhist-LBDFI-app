@@ -10,12 +10,16 @@ class ConnectEventCard extends StatelessWidget {
     super.key,
     required this.event,
     this.source = 'connect',
+    this.onOpened,
   });
 
   final GroupEvent event;
 
   /// Where the card is, carried on `group_event_viewed`.
   final String source;
+
+  /// Called on tap, before the event opens, so the list can track the tap.
+  final VoidCallback? onOpened;
 
   @override
   Widget build(BuildContext context) {
@@ -27,10 +31,10 @@ class ConnectEventCard extends StatelessWidget {
       showGroup: true,
       isDark: isDark,
       lineHeight: getLineHeight(locale.languageCode),
-      onTap:
-          () => context.push(
-            AppRoutes.groupEventPath(event.id, source: source),
-          ),
+      onTap: () {
+        onOpened?.call();
+        context.push(AppRoutes.groupEventPath(event.id, source: source));
+      },
     );
   }
 }

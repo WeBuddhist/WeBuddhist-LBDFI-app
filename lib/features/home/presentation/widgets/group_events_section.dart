@@ -113,7 +113,18 @@ class _GroupEventsContent extends StatelessWidget {
         ),
         SizedBox(height: sectionContentGap),
         for (var i = 0; i < events.length; i++) ...[
-          ConnectEventCard(event: events[i], source: 'home'),
+          ConnectEventCard(
+            event: events[i],
+            source: 'home',
+            onOpened:
+                () => ProviderScope.containerOf(context, listen: false)
+                    .read(homeAnalyticsProvider)
+                    .cardTapped(
+                      section: HomeSection.groupEvents,
+                      targetId: events[i].id,
+                      position: i,
+                    ),
+          ),
           if (i < events.length - 1)
             Divider(height: 1, thickness: 1, color: dividerColor),
         ],

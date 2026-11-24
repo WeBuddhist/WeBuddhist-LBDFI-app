@@ -58,6 +58,10 @@ class _RecitationsSearchScreenState
   bool _sendingRequest = false;
   String? _requestedQuery;
 
+  /// The last query sent as `search_performed`, so each settled query is
+  /// counted once.
+  String? _trackedQuery;
+
   RecitationSearchNotifier get _searchNotifier =>
       ref.read(practiceRecitationSearchProvider(widget.languageCode).notifier);
 
@@ -98,6 +102,7 @@ class _RecitationsSearchScreenState
     _searchController.clear();
     _searchNotifier.clear();
     _bookDebounce?.cancel();
+    _trackedQuery = null;
     setState(() => _bookQuery = '');
     _focusNode.requestFocus();
   }
@@ -272,6 +277,20 @@ class _RecitationsSearchScreenState
     final booksPending = wantsBooks && (bookAsync.isLoading || queryPending);
     final chantsPending = wantsText && chantState.isLoading;
 
+    _trackSearchOnceSettled(
+      settled:
+          !queryPending &&
+          !bookAsync.isLoading &&
+          !ref.watch(spaceChantsProvider).isLoading &&
+          !chantState.isLoading &&
+          chantState.query.trim() == _bookQuery,
+      resultCount:
+          books.length +
+          chants.length +
+          spaceMatches.text.length +
+          spaceMatches.audio.length,
+    );
+
     if (!showBooks && !showText && !showAudio) {
       if (booksPending || chantsPending || spacesPending) {
         return const RecitationListSkeleton(
@@ -327,20 +346,37 @@ class _RecitationsSearchScreenState
         ],
         if (showText) ...[
           ChantSectionHeader(title: l10n.chants_text_only),
-          for (final chant in spaceMatches.text)
+          for (final (index, chant) in spaceMatches.text.indexed)
             Padding(
               padding: const EdgeInsets.fromLTRB(20, 0, 20, 8),
-              child: SpaceTextChantRow(chant: chant),
+              child: SpaceTextChantRow(
+                chant: chant,
+                onOpened:
+                    () => _trackResultOpened(
+                      index,
+                      itemType: 'space_chant',
+                      itemId: chant.item.textId,
+                    ),
+              ),
             ),
+          // Numbered after the space chants listed above them.
           for (final (index, chant) in chants.indexed)
-            _chantRow(context, chant, index),
+            _chantRow(context, chant, spaceMatches.text.length + index),
         ],
         if (showAudio) ...[
           ChantSectionHeader(title: l10n.chants_audio_chants),
-          for (final chant in spaceMatches.audio)
+          for (final (index, chant) in spaceMatches.audio.indexed)
             Padding(
               padding: const EdgeInsets.fromLTRB(20, 0, 20, 8),
-              child: SpaceAudioChantRow(chant: chant),
+              child: SpaceAudioChantRow(
+                chant: chant,
+                onOpened:
+                    () => _trackResultOpened(
+                      index,
+                      itemType: 'space_audio_chant',
+                      itemId: chant.item.textId,
+                    ),
+              ),
             ),
         ],
         const SizedBox(height: 16),
@@ -397,6 +433,32 @@ class _RecitationsSearchScreenState
         (_) => l10n.chants_request_sent,
       ),
     );
+  }
+
+  /// Sends `search_performed` once per settled query, counting every result
+  /// the screen can show: chant books, library chants and space chants. Run
+  /// after the frame, since it is called from build.
+  void _trackSearchOnceSettled({
+    required bool settled,
+    required int resultCount,
+  }) {
+    final query = _bookQuery;
+    if (!settled ||
+        query.length < chantsSearchMinQueryLength ||
+        query == _trackedQuery) {
+      return;
+    }
+    _trackedQuery = query;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      ref
+          .read(searchAnalyticsProvider)
+          .searched(
+            surface: SearchSurface.recitations,
+            query: query,
+            resultCount: resultCount,
+          );
+    });
   }
 
   void _trackResultOpened(

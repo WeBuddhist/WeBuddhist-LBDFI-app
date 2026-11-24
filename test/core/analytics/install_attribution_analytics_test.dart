@@ -62,6 +62,19 @@ void main() {
     expect(service.eventNames, [AnalyticsEvents.installAttributed]);
   });
 
+  test('two callbacks arriving together send one event', () async {
+    await Future.wait([
+      analytics.attributionReceived({'attributedChannel': 'instagram'}),
+      analytics.attributionReceived({'attributedChannel': 'facebook'}),
+    ]);
+
+    expect(service.eventNames, [AnalyticsEvents.installAttributed]);
+    expect(
+      service.events.single.properties['acquisition_channel'],
+      'instagram',
+    );
+  });
+
   test('an attribution without channel or campaign sends nothing', () async {
     await analytics.attributionReceived({'attributedAdCreative': 'banner'});
 

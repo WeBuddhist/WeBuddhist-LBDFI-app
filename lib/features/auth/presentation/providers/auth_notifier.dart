@@ -491,13 +491,14 @@ class AuthNotifier extends StateNotifier<AuthState> {
     //    can decide instantly.
     ref.read(cacheInterceptorProvider).clearUserScoped();
     final onboardingStatus = await _fetchOnboardingStatusSafe();
+    // A logout or cancel during the fetch ends this login: send nothing.
+    if (!_isAuthEpochCurrent(epoch)) return;
     // After the onboarding check, so it can say whether the account is new.
     _authAnalytics.loginSucceeded(
       method: connection,
       source: source,
       isNewUser: onboardingStatus == null ? null : !onboardingStatus,
     );
-    if (!_isAuthEpochCurrent(epoch)) return;
     await ref.read(userProvider.notifier).initializeUser();
 
     // 4. Update auth state — triggers the router refresh.
