@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_pecha/core/config/router/app_routes.dart';
 import 'package:flutter_pecha/core/constants/app_assets.dart';
 import 'package:flutter_pecha/core/extensions/context_ext.dart';
 import 'package:flutter_pecha/core/theme/app_colors.dart';
@@ -14,6 +15,7 @@ import 'package:flutter_pecha/features/group_chat/presentation/widgets/prayer_re
 import 'package:flutter_pecha/features/group_chat/presentation/widgets/prayer_supporters_sheet.dart';
 import 'package:flutter_pecha/features/group_chat/presentation/widgets/prayer_requests_skeleton.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 /// Every prayer request the viewer has posted, in any space or event,
 /// active ones first and accomplished ones under their own heading.
@@ -63,6 +65,12 @@ class _MyPrayerRequestsScreenState
           (body, intention) =>
               _notifier.edit(request.id, body: body, intention: intention),
     );
+  }
+
+  /// Opens the event or space [request] was posted in, on its prayer list.
+  void _openSource(ChatMessageDTO request) {
+    final path = myPrayerRequestSourcePath(request);
+    if (path != null) unawaited(context.push(path));
   }
 
   Future<void> _toggleCompleted(ChatMessageDTO request) async {
@@ -205,11 +213,30 @@ class _MyPrayerRequestsScreenState
             onEdit: () => unawaited(_edit(request)),
             onDelete: () => unawaited(_delete(request)),
             onToggleCompleted: () => unawaited(_toggleCompleted(request)),
+            onOpenSource:
+                myPrayerRequestSourcePath(request) == null
+                    ? null
+                    : () => _openSource(request),
           );
         },
       ),
     );
   }
+}
+
+/// Where tapping a request's "posted in" row goes: the event's page when it
+/// was made in an event, else the space's, each opened on its prayer list.
+/// Null when the server named neither.
+String? myPrayerRequestSourcePath(ChatMessageDTO request) {
+  final eventId = request.event?.id ?? '';
+  if (eventId.isNotEmpty) {
+    return AppRoutes.groupEventPath(eventId, openPrayerRequests: true);
+  }
+  final groupId = request.group?.id ?? '';
+  if (groupId.isNotEmpty) {
+    return AppRoutes.groupProfilePath(groupId, openPrayerRequests: true);
+  }
+  return null;
 }
 
 /// Space under the last card: the usual 24px gap, plus whatever is actually
