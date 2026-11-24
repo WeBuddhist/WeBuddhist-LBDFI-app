@@ -1,4 +1,4 @@
-import 'package:flutter_pecha/features/group_profile/domain/entities/visible_name.dart';
+import 'package:flutter_pecha/shared/domain/visible_name.dart';
 
 enum GroupReportKind {
   chatMessage('CHAT_MESSAGE'),

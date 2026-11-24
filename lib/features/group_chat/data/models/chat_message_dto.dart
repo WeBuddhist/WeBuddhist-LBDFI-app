@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'package:flutter_pecha/features/group_chat/data/models/chat_visible_name.dart';
 import 'package:flutter_pecha/features/group_chat/data/models/chat_message_parent_dto.dart';
 import 'package:flutter_pecha/features/group_chat/data/models/chat_message_reaction_dto.dart';
 import 'package:flutter_pecha/features/group_chat/data/models/chat_message_translation_dto.dart';
@@ -296,8 +297,5 @@ class ChatMessageDTO extends Equatable {
 
 /// The sender's display name from Edit profile, then `sender_name` for
 /// messages without one.
-String? _senderNameFromJson(Map<String, dynamic> json) {
-  final display = (json['sender_display_name'] as String?)?.trim();
-  if (display != null && display.isNotEmpty) return display;
-  return json['sender_name'] as String?;
-}
+String? _senderNameFromJson(Map<String, dynamic> json) =>
+    chatVisibleName(json['sender_display_name'], json['sender_name']);
