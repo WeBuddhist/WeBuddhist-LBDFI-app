@@ -77,7 +77,7 @@ class PracticeAccumulationsSection extends ConsumerWidget {
   void _navigateToMala(BuildContext context, WidgetRef ref, Mantra mantra) {
     final isGuest = ref.read(authProvider).isGuest;
     if (isGuest) {
-      LoginDrawer.show(context, ref);
+      LoginDrawer.show(context, ref, feature: 'mala');
       return;
     }
     context.push(

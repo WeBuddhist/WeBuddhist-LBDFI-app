@@ -32,15 +32,23 @@ class EntryAnalytics {
 
   /// A deep link was routed to a screen. [source] is the handler that got it
   /// (`app_links` or `airbridge`).
+  /// [utmSource], [utmMedium] and [utmCampaign] are the link's own `utm_*`
+  /// query values, sent only when the link had them.
   void deepLinkOpened({
     required String source,
     required String routeKind,
     String? targetId,
+    String? utmSource,
+    String? utmMedium,
+    String? utmCampaign,
   }) {
     _analytics.trackInBackground(AnalyticsEvents.deepLinkOpened, {
       AnalyticsProperties.source: source,
       AnalyticsProperties.routeKind: routeKind,
       AnalyticsProperties.targetId: targetId,
+      if (utmSource != null) AnalyticsProperties.utmSource: utmSource,
+      if (utmMedium != null) AnalyticsProperties.utmMedium: utmMedium,
+      if (utmCampaign != null) AnalyticsProperties.utmCampaign: utmCampaign,
     });
   }
 

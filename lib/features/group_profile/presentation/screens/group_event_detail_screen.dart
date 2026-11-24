@@ -78,11 +78,15 @@ class GroupEventDetailScreen extends ConsumerStatefulWidget {
   /// text once this page is showing, so Back returns here.
   final HomeLiveEventEntry? initialEntry;
 
+  /// Where the event was opened from, carried on `group_event_viewed`.
+  final String? source;
+
   const GroupEventDetailScreen({
     super.key,
     required this.eventId,
     this.openPrayerRequests = false,
     this.initialEntry,
+    this.source,
   });
 
   @override
@@ -290,6 +294,8 @@ class _GroupEventDetailScreenState
             eventTitle: event.title,
             eventFormat: event.eventFormat,
             isRecurring: event.isRecurring,
+            source: widget.source,
+            status: GroupEventStatus.of(event),
           );
     }
 
@@ -458,7 +464,7 @@ class _GroupEventDetailScreenState
   void _openPrayerRequests(String eventId) {
     final authState = ref.read(authProvider);
     if (authState.isGuest || !authState.isLoggedIn) {
-      LoginDrawer.show(context, ref);
+      LoginDrawer.show(context, ref, feature: 'prayer_requests');
       return;
     }
     unawaited(
@@ -612,7 +618,7 @@ class _GroupEventDetailScreenState
 
     final authState = ref.read(authProvider);
     if (authState.isGuest || !authState.isLoggedIn) {
-      LoginDrawer.show(context, ref);
+      LoginDrawer.show(context, ref, feature: 'event_puja_enter');
       return;
     }
 
@@ -689,7 +695,7 @@ class _GroupEventDetailScreenState
 
     final authState = ref.read(authProvider);
     if (authState.isGuest || !authState.isLoggedIn) {
-      LoginDrawer.show(context, ref);
+      LoginDrawer.show(context, ref, feature: 'event_puja_explore');
       return;
     }
 
@@ -937,7 +943,7 @@ class _GroupEventDetailScreenState
 
     final authState = ref.read(authProvider);
     if (authState.isGuest || !authState.isLoggedIn) {
-      LoginDrawer.show(context, ref);
+      LoginDrawer.show(context, ref, feature: 'event_attend');
       return;
     }
 
@@ -2048,23 +2054,25 @@ class _EventAccumulatorPanelState
     };
   }
 
-  bool _requireLogin() {
+  /// [feature] names the action that needed login, for `login_prompt_shown`.
+  bool _requireLogin({required String feature}) {
     final authState = ref.read(authProvider);
     if (authState.isGuest || !authState.isLoggedIn) {
-      LoginDrawer.show(context, ref);
+      LoginDrawer.show(context, ref, feature: feature);
       return false;
     }
     return true;
   }
 
   Future<void> _join(GroupAccumulatorDetail detail) async {
-    if (!_requireLogin()) return;
+    if (!_requireLogin(feature: 'group_accumulator_join')) return;
 
     setState(() => _isJoining = true);
     final ok = await joinGroupAccumulator(
       container: ProviderScope.containerOf(context, listen: false),
       accumulatorId: detail.id,
       groupId: detail.groupId,
+      source: 'event_page',
     );
     if (!mounted) return;
     setState(() => _isJoining = false);
@@ -2082,7 +2090,7 @@ class _EventAccumulatorPanelState
   /// local total is seeded from a fresh server count first, since the sync
   /// posts an absolute total and the screen snapshot may be stale.
   Future<void> _addRecitations(GroupAccumulatorDetail detail) async {
-    if (!_requireLogin()) return;
+    if (!_requireLogin(feature: 'group_accumulator_add_recitations')) return;
     final presetId = detail.presetAccumulatorId;
     if (presetId.isEmpty) return;
 

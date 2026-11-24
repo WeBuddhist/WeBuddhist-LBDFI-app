@@ -617,8 +617,6 @@ class AuthNotifier extends StateNotifier<AuthState> {
       if (!_isAuthEpochCurrent(epoch)) return;
     }
 
-    _authAnalytics.loginSucceeded(method: connection, source: source);
-
     // 3. Prefetch onboarding status and full user profile so the route guard
     //    can decide instantly. Best effort: the tokens are stored, so a
     //    failure here must not leave the sign-in spinner up for good.
@@ -626,7 +624,14 @@ class AuthNotifier extends StateNotifier<AuthState> {
     try {
       ref.read(cacheInterceptorProvider).clearUserScoped();
       onboardingStatus = await _fetchOnboardingStatusSafe();
+      // A logout or cancel during the fetch ends this login: send nothing.
       if (!_isAuthEpochCurrent(epoch)) return;
+      // After the onboarding check, so it can say whether the account is new.
+      _authAnalytics.loginSucceeded(
+        method: connection,
+        source: source,
+        isNewUser: onboardingStatus == null ? null : !onboardingStatus,
+      );
       await ref.read(userProvider.notifier).initializeUser();
     } catch (e, st) {
       _logger.error('Post-login step failed — finishing the sign-in', e, st);
@@ -721,7 +726,11 @@ class AuthNotifier extends StateNotifier<AuthState> {
     );
   }
 
-  Future<void> logout() async {
+  /// [afterAccountDeletion] skips `auth_logout`: `account_deleted` already
+  /// says why the session ended.
+  Future<void> logout({bool afterAccountDeletion = false}) async {
+    // While the user is still identified; the reset at the end ends that.
+    if (!afterAccountDeletion) _authAnalytics.loggedOut();
     // Started before the state flips: the flip makes the push service delete
     // the FCM token, and it must first let this unregister use the stored id
     // while the JWT is still valid. Awaited below, before credentials go.
@@ -807,8 +816,10 @@ class AuthNotifier extends StateNotifier<AuthState> {
       },
       (_) async {
         _logger.info('Account deleted — clearing local data and logging out');
+        // Before clearAllUserData resets the analytics identity.
+        _authAnalytics.accountDeleted();
         await clearAllUserData();
-        await logout();
+        await logout(afterAccountDeletion: true);
         return null;
       },
     );

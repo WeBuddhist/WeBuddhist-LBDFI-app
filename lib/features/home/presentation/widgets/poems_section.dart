@@ -8,6 +8,7 @@ import 'package:flutter_pecha/features/poems/domain/entities/poem.dart';
 import 'package:flutter_pecha/features/poems/presentation/widgets/poem_dots_indicator.dart';
 import 'package:flutter_pecha/features/poems/presentation/widgets/poem_preview_card.dart';
 import 'package:flutter_pecha/shared/utils/helper_functions.dart';
+import 'package:flutter_pecha/features/home/presentation/utils/home_analytics.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
@@ -58,7 +59,18 @@ class _PoemsContentState extends State<_PoemsContent> {
     super.dispose();
   }
 
-  void _openViewer(BuildContext context, {String? initialPoemId}) {
+  void _openViewer(
+    BuildContext context, {
+    String? initialPoemId,
+    int? position,
+  }) {
+    ProviderScope.containerOf(context, listen: false)
+        .read(homeAnalyticsProvider)
+        .cardTapped(
+          section: HomeSection.poems,
+          targetId: initialPoemId ?? 'see_all',
+          position: position,
+        );
     context.pushNamed(
       'home-poems',
       extra: initialPoemId != null ? {'initialPoemId': initialPoemId} : null,
@@ -160,6 +172,7 @@ class _PoemsContentState extends State<_PoemsContent> {
                                 () => _openViewer(
                                   context,
                                   initialPoemId: widget.poems[index].id,
+                                  position: index,
                                 ),
                           );
                         },

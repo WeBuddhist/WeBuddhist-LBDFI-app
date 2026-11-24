@@ -32,6 +32,18 @@ void main() {
     analytics = PlanAnalytics(service);
   });
 
+  test('subtasks finished by reading are counted with via reading', () {
+    analytics.subtasksCompletedByReading(planId: 'p1', dayNumber: 3, count: 2);
+
+    expect(service.eventNames, [AnalyticsEvents.planSubtaskCompleted]);
+    expect(service.events.single.properties, {
+      'plan_id': 'p1',
+      'day_number': 3,
+      'via': 'reading',
+      'item_count': 2,
+    });
+  });
+
   test('planPreviewed carries the plan and where it was opened from', () {
     analytics.planPreviewed(
       planId: 'p1',

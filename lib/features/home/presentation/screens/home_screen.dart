@@ -263,9 +263,18 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   /// Opens a login-only feature shortcut (Mala, Timer). Guests are prompted to
   /// sign in via the login drawer instead of navigating, since these features
   /// need an authenticated account to persist progress.
-  void _openGatedFeature(String route, {Object? extra}) {
+  /// [feature] names the shortcut, for `home_card_tapped` and, for guests,
+  /// `login_prompt_shown`.
+  void _openGatedFeature(
+    String route, {
+    required String feature,
+    Object? extra,
+  }) {
+    ref
+        .read(homeAnalyticsProvider)
+        .cardTapped(section: HomeSection.shortcuts, targetId: feature);
     if (ref.read(authProvider).isGuest) {
-      LoginDrawer.show(context, ref);
+      LoginDrawer.show(context, ref, feature: feature);
       return;
     }
     context.push(route, extra: extra);
@@ -312,7 +321,12 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           }
           return MyPracticesStatsCard(
             routineInfo: info,
-            onTap: () => context.pushNamed('my-practices'),
+            onTap: () {
+              ref
+                  .read(homeAnalyticsProvider)
+                  .cardTapped(section: HomeSection.stats);
+              context.pushNamed('my-practices');
+            },
           );
         });
       },
@@ -374,10 +388,15 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   _buildVerseOfDaySection(),
                   const SizedBox(height: HomeScreenConstants.cardSpacing),
                   HomeShortcutsRow(
-                    onTimerTap: () => _openGatedFeature('/home/timers'),
+                    onTimerTap:
+                        () => _openGatedFeature(
+                          '/home/timers',
+                          feature: 'timer',
+                        ),
                     onMalaTap:
                         () => _openGatedFeature(
                           '/mala',
+                          feature: 'mala',
                           extra: {'source': MalaOpenSource.home},
                         ),
                   ),
@@ -387,6 +406,12 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   FeaturedPlanSection(
                     onSeriesTap: (series) {
                       _log.info('Featured series tapped: ${series.id}');
+                      ref
+                          .read(homeAnalyticsProvider)
+                          .cardTapped(
+                            section: HomeSection.featuredPlan,
+                            targetId: series.id,
+                          );
                       _navigateToSeries(series);
                     },
                   ),

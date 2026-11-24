@@ -78,7 +78,7 @@ class _TibetanCalendarScreenState extends ConsumerState<TibetanCalendarScreen>
   void _addEvent() {
     final auth = ref.read(authProvider);
     if (auth.isGuest || !auth.isLoggedIn) {
-      LoginDrawer.show(context, ref);
+      LoginDrawer.show(context, ref, feature: 'calendar_add_event');
       return;
     }
     PersonalEventSheet.show(

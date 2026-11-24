@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_pecha/core/analytics/search_analytics.dart';
 import 'package:flutter_pecha/core/config/locale/locale_notifier.dart';
 import 'package:flutter_pecha/core/extensions/context_ext.dart';
 import 'package:flutter_pecha/core/widgets/error_state_widget.dart';
@@ -165,6 +166,16 @@ class ReaderSearchDelegate extends SearchDelegate<Map<String, String>?> {
                         segments: segments,
                         searchQuery: _submittedQuery,
                         onSegmentTap: (segmentId) {
+                          ref
+                              .read(searchAnalyticsProvider)
+                              .resultOpened(
+                                surface: SearchSurface.reader,
+                                position: segments.indexWhere(
+                                  (segment) =>
+                                      segment['segmentId'] == segmentId,
+                                ),
+                                itemType: 'segment',
+                              );
                           close(context, {
                             'textId': textId,
                             'segmentId': segmentId,

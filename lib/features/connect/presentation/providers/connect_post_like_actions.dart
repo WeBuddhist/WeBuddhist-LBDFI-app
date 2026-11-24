@@ -2,6 +2,7 @@ import 'package:flutter_pecha/features/connect/domain/entities/connect_post.dart
 import 'package:flutter_pecha/features/connect/presentation/providers/connect_providers.dart';
 import 'package:flutter_pecha/features/connect/presentation/providers/connect_unified_feed_providers.dart';
 import 'package:flutter_pecha/features/group_profile/presentation/providers/group_post_providers.dart';
+import 'package:flutter_pecha/features/connect/presentation/utils/connect_analytics.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class ConnectPostLikeResult {
@@ -49,6 +50,7 @@ class ConnectPostLikeActions {
     required int optimisticLikeCount,
     required bool includeUnfollowed,
     String? groupId,
+    required String surface,
   }) {
     final result = _sendLike(
       post: post,
@@ -56,6 +58,7 @@ class ConnectPostLikeActions {
       optimisticLikeCount: optimisticLikeCount,
       includeUnfollowed: includeUnfollowed,
       groupId: groupId,
+      surface: surface,
     );
     final pending = ConnectPendingPostLike(
       wasLiked: wasLiked,
@@ -79,8 +82,10 @@ class ConnectPostLikeActions {
     required int optimisticLikeCount,
     required bool includeUnfollowed,
     String? groupId,
+    required String surface,
   }) async {
     final repository = ref.read(connectRepositoryProvider);
+    final analytics = ref.read(connectAnalyticsProvider);
     final result =
         wasLiked
             ? await repository.unlikePost(post.id)
@@ -89,6 +94,12 @@ class ConnectPostLikeActions {
     return result.fold(
       (failure) => ConnectPostLikeResult.failure(failure.message),
       (_) {
+        analytics.postLikeChanged(
+          postId: post.id,
+          groupId: post.groupId,
+          liked: !wasLiked,
+          surface: surface,
+        );
         final updatedPost = post.copyWith(
           likedByMe: !wasLiked,
           likeCount: optimisticLikeCount,

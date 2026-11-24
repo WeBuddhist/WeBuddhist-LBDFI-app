@@ -469,6 +469,8 @@ final appRouterProvider = Provider<GoRouter>((ref) {
                     eventId: eventId,
                     openPrayerRequests: openPrayerRequests,
                     initialEntry: entry,
+                    source:
+                        state.uri.queryParameters[AppRoutes.eventSourceQuery],
                   );
                 },
               ),

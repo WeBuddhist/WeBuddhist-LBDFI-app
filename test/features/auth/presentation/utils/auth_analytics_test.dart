@@ -216,4 +216,24 @@ void main() {
       'login_attempted': true,
     });
   });
+
+  test('a login says whether the account is new when that is known', () {
+    analytics.loginSucceeded(method: 'google-oauth2', isNewUser: true);
+
+    expect(service.events.single.properties, {
+      'method': 'google-oauth2',
+      'source': null,
+      'is_new_user': true,
+    });
+  });
+
+  test('logout and account deletion have their own events', () {
+    analytics.loggedOut();
+    analytics.accountDeleted();
+
+    expect(service.eventNames, [
+      AnalyticsEvents.authLogout,
+      AnalyticsEvents.accountDeleted,
+    ]);
+  });
 }

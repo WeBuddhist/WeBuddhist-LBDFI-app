@@ -353,6 +353,7 @@ void main() {
       expect(succeededLogin().properties, {
         AnalyticsProperties.method: 'sms',
         AnalyticsProperties.source: 'login_page',
+        AnalyticsProperties.isNewUser: false,
       });
     });
 
@@ -430,6 +431,7 @@ void main() {
       expect(succeededLogin().properties, {
         AnalyticsProperties.method: 'sms',
         AnalyticsProperties.source: 'login_drawer',
+        AnalyticsProperties.isNewUser: false,
       });
     });
 
