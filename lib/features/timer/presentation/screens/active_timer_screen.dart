@@ -71,6 +71,13 @@ class _ActiveTimerScreenState extends ConsumerState<ActiveTimerScreen>
   int _countdownValue = _countdownStart;
   int _remainingMs = 0;
   bool _isPaused = false;
+
+  /// Finish is open over a session that was still running. The clock is frozen
+  /// so the deadline cannot complete and save the session behind the dialog.
+  /// This is not a user pause: it does not report a stop, and dismissing the
+  /// dialog starts the clock again. A session that was already paused stays
+  /// paused.
+  bool _heldForFinishDialog = false;
   int _savedEarlyMs = 0;
   bool _isSavedEarly = false;
 
@@ -80,8 +87,8 @@ class _ActiveTimerScreenState extends ConsumerState<ActiveTimerScreen>
   /// stays correct across a suspended isolate (screen locked, app backgrounded).
   ///
   /// Null whenever there is no end time to count towards: before the session
-  /// starts, while paused (where [_remainingMs] holds the frozen value), and
-  /// once finished.
+  /// starts, while paused or held behind the Finish dialog (where
+  /// [_remainingMs] holds the frozen value), and once finished.
   DateTime? _endsAt;
 
   /// Same idea for the 3-second pre-roll.
@@ -215,7 +222,7 @@ class _ActiveTimerScreenState extends ConsumerState<ActiveTimerScreen>
         break;
       case _TimerPhase.running:
         final endsAt = _endsAt;
-        if (_isPaused || endsAt == null) return;
+        if (_isPaused || _heldForFinishDialog || endsAt == null) return;
         _scheduleCompletionBell(endsAt);
         break;
       case _TimerPhase.finished:
@@ -265,7 +272,7 @@ class _ActiveTimerScreenState extends ConsumerState<ActiveTimerScreen>
     _cancelStartBell();
 
     final endsAt = _endsAt;
-    if (_isPaused || endsAt == null) {
+    if (_isPaused || _heldForFinishDialog || endsAt == null) {
       _cancelCompletionBell();
       return;
     }
@@ -428,11 +435,12 @@ class _ActiveTimerScreenState extends ConsumerState<ActiveTimerScreen>
       for (final sound in sounds) {
         if (sound.id == soundId) {
           await _ambientPlayer.play(sound.url);
-          // The session can end (or pause) while the track is loading, after
-          // the stop/pause it issued has already run against nothing.
+          // The session can end, pause, or sit behind Finish while the track
+          // is loading, after the stop/pause it issued has already run
+          // against nothing. Finish only pauses: dismissing it calls resume.
           if (!mounted || _phase != _TimerPhase.running) {
             await _ambientPlayer.stop();
-          } else if (_isPaused) {
+          } else if (_isPaused || _heldForFinishDialog) {
             await _ambientPlayer.pause();
           }
           return;
@@ -445,7 +453,12 @@ class _ActiveTimerScreenState extends ConsumerState<ActiveTimerScreen>
   }
 
   void _onMainTimerTick() {
-    if (!mounted || _isPaused || _phase != _TimerPhase.running) return;
+    if (!mounted ||
+        _isPaused ||
+        _heldForFinishDialog ||
+        _phase != _TimerPhase.running) {
+      return;
+    }
     if (_endsAt == null) return;
 
     final remainingMs = _remainingFromClock();
@@ -465,6 +478,8 @@ class _ActiveTimerScreenState extends ConsumerState<ActiveTimerScreen>
   /// should hear the completion bell (foreground tick or resume after a
   /// background finish).
   void _completeSession({required bool playBell}) {
+    if (_heldForFinishDialog) return;
+
     _timer?.cancel();
     _timer = null;
 
@@ -554,6 +569,7 @@ class _ActiveTimerScreenState extends ConsumerState<ActiveTimerScreen>
   }
 
   void _finish() {
+    _heldForFinishDialog = false;
     _timer?.cancel();
     _timer = null;
     unawaited(_keepAlive.stop());
@@ -577,6 +593,7 @@ class _ActiveTimerScreenState extends ConsumerState<ActiveTimerScreen>
   void _discardSession() {
     if (_hasLeft) return;
     _hasLeft = true;
+    _heldForFinishDialog = false;
     _timer?.cancel();
     _timer = null;
     unawaited(_keepAlive.stop());
@@ -775,7 +792,62 @@ class _ActiveTimerScreenState extends ConsumerState<ActiveTimerScreen>
     );
   }
 
+  /// Freezes a running session for as long as Finish is open.
+  ///
+  /// Pausing would report a stop and count as a pause. Neither belongs to a
+  /// dialog the user can still dismiss. A session that is already paused is
+  /// already frozen, and stays that way.
+  void _holdForFinishDialog() {
+    if (_phase != _TimerPhase.running || _isPaused || _heldForFinishDialog) {
+      return;
+    }
+    _heldForFinishDialog = true;
+
+    setState(() {
+      _remainingMs = _remainingFromClock();
+      _endsAt = null;
+    });
+
+    unawaited(_ambientPlayer.pause());
+    unawaited(_keepAlive.stop());
+    _cancelCompletionBell();
+    _showPausedNotification();
+    unawaited(
+      _liveActivity.update(
+        endsAt: _endsAt,
+        isPaused: true,
+        remainingSeconds: (_remainingMs / 1000).ceil(),
+      ),
+    );
+  }
+
+  /// Starts the clock again after Finish is dismissed without a choice.
+  ///
+  /// No-op when the session was paused before the dialog opened, so closing
+  /// it is not a Resume action.
+  void _releaseFinishDialogHold() {
+    if (!_heldForFinishDialog) return;
+    _heldForFinishDialog = false;
+    if (!mounted || _phase != _TimerPhase.running || _isPaused) return;
+
+    final endsAt = _now.add(Duration(milliseconds: _remainingMs));
+    setState(() => _endsAt = endsAt);
+
+    unawaited(_ambientPlayer.resume());
+    unawaited(_keepAlive.start());
+    _showRunningNotification(endsAt);
+    _armCompletionBellIfBackgrounded(endsAt);
+    unawaited(
+      _liveActivity.update(
+        endsAt: endsAt,
+        isPaused: false,
+        remainingSeconds: (_remainingMs / 1000).ceil(),
+      ),
+    );
+  }
+
   void _showDiscardDialog() {
+    _holdForFinishDialog();
     final l10n = context.l10n;
     final elapsedPhrase = _formatElapsedPhrase(_elapsedMs);
 
@@ -790,9 +862,7 @@ class _ActiveTimerScreenState extends ConsumerState<ActiveTimerScreen>
         onSave: _finish,
         onDismissed: () {
           if (!mounted) return;
-          if (_phase == _TimerPhase.running && _isPaused) {
-            _togglePause();
-          }
+          _releaseFinishDialogHold();
         },
       ),
     );
@@ -843,6 +913,12 @@ class _ActiveTimerScreenState extends ConsumerState<ActiveTimerScreen>
     final durationStr = _formatElapsedPhrase(widget.presetTimer.durationMs);
     final ringColors = _ringColors(isDark);
     final showSessionHeader = _phase == _TimerPhase.running;
+    final practicedMs = _isSavedEarly ? _savedEarlyMs : _totalMs;
+    final practicedLabel = _formatElapsedPhrase(practicedMs);
+    // A bare-duration routine timer has an empty id, and [_reportTimerStop]
+    // returns without storing it. The saved copy is only for a session that
+    // was actually reported.
+    final sessionWasStored = _presetId.isNotEmpty;
 
     return PopScope(
       canPop: _phase == _TimerPhase.finished,
@@ -930,7 +1006,7 @@ class _ActiveTimerScreenState extends ConsumerState<ActiveTimerScreen>
                       ] else if (_phase == _TimerPhase.finished) ...[
                         const SizedBox(height: 28),
                         Text(
-                          _isSavedEarly
+                          sessionWasStored && _isSavedEarly
                               ? l10n.timer_session_saved
                               : l10n.timer_session_complete,
                           textAlign: TextAlign.center,
@@ -944,11 +1020,9 @@ class _ActiveTimerScreenState extends ConsumerState<ActiveTimerScreen>
                         ),
                         const SizedBox(height: 8),
                         Text(
-                          l10n.timer_saved_to_practice(
-                            _formatElapsedPhrase(
-                              _isSavedEarly ? _savedEarlyMs : _totalMs,
-                            ),
-                          ),
+                          sessionWasStored
+                              ? l10n.timer_saved_to_practice(practicedLabel)
+                              : practicedLabel,
                           textAlign: TextAlign.center,
                           style: TextStyle(
                             fontSize: _metaFontSize,
