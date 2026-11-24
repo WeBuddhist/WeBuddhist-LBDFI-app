@@ -48,7 +48,9 @@ class _ConnectTabScreenState extends ConsumerState<ConnectTabScreen> {
 
     final joined = ref.watch(joinedSpacesProvider);
     final lastSpace = ref.watch(connectLastSpaceProvider);
-    if (joined.isLoading || (joined.spaces.isNotEmpty && !lastSpace.loaded)) {
+    final opened = ref.watch(connectOpenedSpacesProvider);
+    if (joined.isLoading ||
+        (joined.spaces.isNotEmpty && (!lastSpace.loaded || !opened.loaded))) {
       return const GroupProfileSkeleton();
     }
 
@@ -67,7 +69,28 @@ class _ConnectTabScreenState extends ConsumerState<ConnectTabScreen> {
       groupId: space.id,
       leading: _SpacesMenuButton(currentSpaceId: space.id),
       analyticsSource: GroupViewSource.connectTab,
+      startCollapsed: _landsOnFeed(space.id, opened),
     );
+  }
+
+  /// The space the landing decision below was made for.
+  String? _landingSpaceId;
+  bool _landingOnFeed = false;
+
+  /// Landing rule: the first visit to a space opens on its info, every later
+  /// visit on its feed. Decided once per visit, then the space is recorded
+  /// as opened, so recording it does not flip the visit already on screen.
+  bool _landsOnFeed(String spaceId, ConnectOpenedSpaces opened) {
+    if (spaceId == _landingSpaceId) return _landingOnFeed;
+    _landingSpaceId = spaceId;
+    _landingOnFeed = opened.ids.contains(spaceId);
+    if (!_landingOnFeed) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (!mounted) return;
+        ref.read(connectOpenedSpacesProvider.notifier).markOpened(spaceId);
+      });
+    }
+    return _landingOnFeed;
   }
 }
 

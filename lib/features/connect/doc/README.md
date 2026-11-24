@@ -48,7 +48,7 @@ connect/
 - `StateNotifierProvider.autoDispose` with explicit state classes per tab (`myUnifiedConnectFeedProvider` / `discoverUnifiedConnectFeedProvider`, events, practices, `discoverGroupsProvider`, `groupSearchProvider`, `connectPostCommentsProvider` family)
 - `FutureProvider`: `myGroupsProvider`
 - `StateProvider`: pending join/unjoin optimistic state
-- `joinedSpacesProvider` — joined spaces merged with pending joins/leaves; `connectLastSpaceProvider` — space the tab last showed (SharedPreferences)
+- `joinedSpacesProvider` — joined spaces merged with pending joins/leaves; `connectLastSpaceProvider` — space the tab last showed (SharedPreferences); `connectOpenedSpacesProvider` — spaces the tab has opened, for the landing rule (first visit opens on the space info, later visits on the feed with the header scrolled away)
 - `homeCommunityFeedProvider` — Home shows the member's own feed, falling back to Discover once it loads empty
 
 ## Data sources
