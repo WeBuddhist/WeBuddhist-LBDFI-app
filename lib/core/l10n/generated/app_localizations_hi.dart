@@ -1120,6 +1120,77 @@ class AppLocalizationsHi extends AppLocalizations {
   String get continueWithPhone => 'फ़ोन के साथ जारी रखें';
 
   @override
+  String get login_last_used => 'पिछली बार इस्तेमाल किया';
+
+  @override
+  String get phone_login_title => 'अपना फ़ोन नंबर दर्ज करें';
+
+  @override
+  String get phone_login_subtitle =>
+      'आपकी पहचान की पुष्टि के लिए हम आपको एक कोड भेजेंगे।';
+
+  @override
+  String get phone_login_number_hint => 'फ़ोन नंबर';
+
+  @override
+  String get phone_login_country_search => 'देश खोजें';
+
+  @override
+  String get phone_login_send_code => 'कोड भेजें';
+
+  @override
+  String get phone_login_code_title => 'कोड दर्ज करें';
+
+  @override
+  String phone_login_code_subtitle(String phoneNumber) {
+    return 'हमने $phoneNumber पर 6 अंकों का कोड भेजा है।';
+  }
+
+  @override
+  String get phone_login_code_hint => '6 अंकों का कोड';
+
+  @override
+  String get phone_login_verify => 'सत्यापित करें';
+
+  @override
+  String get phone_login_resend => 'कोड दोबारा भेजें';
+
+  @override
+  String phone_login_resend_in(int seconds) {
+    return '$seconds सेकंड में कोड दोबारा भेजें';
+  }
+
+  @override
+  String get phone_login_change_number => 'नंबर बदलें';
+
+  @override
+  String get login_error_invalid_phone => 'कृपया मान्य फ़ोन नंबर दर्ज करें।';
+
+  @override
+  String get login_error_invalid_code =>
+      'यह कोड सही नहीं है। जाँचकर फिर से कोशिश करें।';
+
+  @override
+  String get login_error_code_expired =>
+      'इस कोड की समय-सीमा समाप्त हो गई है। नया कोड मँगाएँ।';
+
+  @override
+  String get login_error_too_many_requests =>
+      'बहुत अधिक प्रयास हो गए हैं। कृपया बाद में फिर कोशिश करें।';
+
+  @override
+  String get login_error_network =>
+      'अपना इंटरनेट कनेक्शन जाँचें और फिर से कोशिश करें।';
+
+  @override
+  String get login_error_email_not_verified =>
+      'इस खाते का ईमेल पता अभी सत्यापित नहीं है। अपने प्रदाता के पास इसे सत्यापित करके फिर से कोशिश करें।';
+
+  @override
+  String get login_error_generic =>
+      'हम आपको साइन इन नहीं कर सके। कृपया फिर से कोशिश करें।';
+
+  @override
   String get exploreAsGuest => 'अतिथि के रूप में एक्सप्लोर करें';
 
   @override

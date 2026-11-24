@@ -1077,6 +1077,71 @@ class AppLocalizationsZh extends AppLocalizations {
   String get continueWithPhone => '使用電話繼續';
 
   @override
+  String get login_last_used => '上次使用';
+
+  @override
+  String get phone_login_title => '輸入您的電話號碼';
+
+  @override
+  String get phone_login_subtitle => '我們會以簡訊傳送驗證碼給您，以確認您的身分。';
+
+  @override
+  String get phone_login_number_hint => '電話號碼';
+
+  @override
+  String get phone_login_country_search => '搜尋國家或地區';
+
+  @override
+  String get phone_login_send_code => '傳送驗證碼';
+
+  @override
+  String get phone_login_code_title => '輸入驗證碼';
+
+  @override
+  String phone_login_code_subtitle(String phoneNumber) {
+    return '我們已將 6 位數驗證碼傳送至 $phoneNumber。';
+  }
+
+  @override
+  String get phone_login_code_hint => '6 位數驗證碼';
+
+  @override
+  String get phone_login_verify => '驗證';
+
+  @override
+  String get phone_login_resend => '重新傳送驗證碼';
+
+  @override
+  String phone_login_resend_in(int seconds) {
+    return '$seconds 秒後可重新傳送驗證碼';
+  }
+
+  @override
+  String get phone_login_change_number => '更改號碼';
+
+  @override
+  String get login_error_invalid_phone => '請輸入有效的電話號碼。';
+
+  @override
+  String get login_error_invalid_code => '驗證碼不正確，請檢查後再試一次。';
+
+  @override
+  String get login_error_code_expired => '驗證碼已過期，請重新取得驗證碼。';
+
+  @override
+  String get login_error_too_many_requests => '嘗試次數過多，請稍後再試。';
+
+  @override
+  String get login_error_network => '請檢查您的網路連線後再試一次。';
+
+  @override
+  String get login_error_email_not_verified =>
+      '此帳號的電子郵件地址尚未驗證。請先向您的服務提供者完成驗證，然後再試一次。';
+
+  @override
+  String get login_error_generic => '無法登入，請再試一次。';
+
+  @override
   String get exploreAsGuest => '以訪客身份探索';
 
   @override
@@ -5259,6 +5324,71 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String get continueWithPhone => '使用电话继续';
+
+  @override
+  String get login_last_used => '上次使用';
+
+  @override
+  String get phone_login_title => '输入您的电话号码';
+
+  @override
+  String get phone_login_subtitle => '我们会通过短信向您发送验证码，以确认您的身份。';
+
+  @override
+  String get phone_login_number_hint => '电话号码';
+
+  @override
+  String get phone_login_country_search => '搜索国家或地区';
+
+  @override
+  String get phone_login_send_code => '发送验证码';
+
+  @override
+  String get phone_login_code_title => '输入验证码';
+
+  @override
+  String phone_login_code_subtitle(String phoneNumber) {
+    return '我们已将 6 位验证码发送至 $phoneNumber。';
+  }
+
+  @override
+  String get phone_login_code_hint => '6 位验证码';
+
+  @override
+  String get phone_login_verify => '验证';
+
+  @override
+  String get phone_login_resend => '重新发送验证码';
+
+  @override
+  String phone_login_resend_in(int seconds) {
+    return '$seconds 秒后可重新发送验证码';
+  }
+
+  @override
+  String get phone_login_change_number => '更换号码';
+
+  @override
+  String get login_error_invalid_phone => '请输入有效的电话号码。';
+
+  @override
+  String get login_error_invalid_code => '验证码不正确，请检查后重试。';
+
+  @override
+  String get login_error_code_expired => '验证码已过期，请重新获取验证码。';
+
+  @override
+  String get login_error_too_many_requests => '尝试次数过多，请稍后再试。';
+
+  @override
+  String get login_error_network => '请检查网络连接后重试。';
+
+  @override
+  String get login_error_email_not_verified =>
+      '此账号的电子邮件地址尚未验证。请先在您的服务提供商处完成验证，然后重试。';
+
+  @override
+  String get login_error_generic => '无法登录，请重试。';
 
   @override
   String get exploreAsGuest => '以访客身份探索';

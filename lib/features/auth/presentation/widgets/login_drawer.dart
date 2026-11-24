@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_pecha/features/auth/presentation/providers/state_providers.dart';
 import 'package:flutter_pecha/features/auth/presentation/utils/auth_analytics.dart';
 import 'package:go_router/go_router.dart';
+import 'login_form_widgets.dart';
 import 'social_login_button.dart';
 
 /// Modern bottom sheet drawer for guest user login
@@ -162,7 +163,7 @@ class _LoginDrawerState extends ConsumerState<LoginDrawer>
                     ),
                     const SizedBox(height: 32),
                     // Sign-in buttons
-                    if (authState.isLoading)
+                    if (authState.isLoading || authState.isSigningIn)
                       const Padding(
                         padding: EdgeInsets.symmetric(vertical: 24),
                         child: CircularProgressIndicator(),
@@ -170,6 +171,7 @@ class _LoginDrawerState extends ConsumerState<LoginDrawer>
                     else
                       Column(
                         children: [
+                          LoginErrorText(reason: authState.loginError),
                           SizedBox(
                             width: double.infinity,
                             child: SocialLoginButton(
