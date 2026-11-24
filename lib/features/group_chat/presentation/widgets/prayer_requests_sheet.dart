@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:clarity_flutter/clarity_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_pecha/core/constants/app_assets.dart';
 import 'package:flutter_pecha/core/extensions/context_ext.dart';
@@ -25,18 +26,23 @@ import 'package:flutter_pecha/features/group_chat/presentation/widgets/prayer_so
 import 'package:flutter_pecha/features/group_chat/presentation/widgets/prayer_supporters_sheet.dart';
 import 'package:flutter_pecha/features/group_chat/presentation/widgets/random_prayer_overlay.dart';
 import 'package:flutter_pecha/features/group_profile/presentation/providers/group_profile_providers.dart';
+import 'package:flutter_pecha/features/group_chat/presentation/utils/chat_analytics.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 /// Bottom sheet listing an event's or a space's prayer requests, with a
 /// prompt on top that opens the composer.
 class PrayerRequestsSheet extends ConsumerStatefulWidget {
-  const PrayerRequestsSheet({super.key, required this.scope});
+  const PrayerRequestsSheet({super.key, required this.scope, this.source});
 
   final PrayerRoomScope scope;
+
+  /// What opened the sheet, for `prayer_requests_opened`.
+  final String? source;
 
   static Future<void> show(
     BuildContext context, {
     required PrayerRoomScope scope,
+    String? source,
   }) {
     return showModalBottomSheet<void>(
       context: context,
@@ -46,7 +52,11 @@ class PrayerRequestsSheet extends ConsumerStatefulWidget {
       isDismissible: true,
       enableDrag: true,
       barrierColor: Colors.black.withValues(alpha: 0.5),
-      builder: (_) => PrayerRequestsSheet(scope: scope),
+      // Prayer text is private: hidden in Clarity recordings.
+      builder:
+          (_) => ClarityMask(
+            child: PrayerRequestsSheet(scope: scope, source: source),
+          ),
     );
   }
 
@@ -88,6 +98,14 @@ class _PrayerRequestsSheetState extends ConsumerState<PrayerRequestsSheet> {
   @override
   void initState() {
     super.initState();
+    ref
+        .read(groupChatAnalyticsProvider)
+        .prayerRequestsOpened(
+          scope: widget.scope.isEvent ? 'event' : 'group',
+          eventId: widget.scope.eventId,
+          groupId: widget.scope.groupId,
+          source: widget.source,
+        );
     _providers = ProviderScope.containerOf(context, listen: false);
   }
 

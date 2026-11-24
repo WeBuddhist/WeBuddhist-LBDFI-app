@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_pecha/core/analytics/media_analytics.dart';
 import 'package:flutter_pecha/core/analytics/share_analytics.dart';
 import 'package:flutter_pecha/core/constants/app_assets.dart';
 import 'package:flutter_pecha/core/deep_linking/deep_link_url_builder.dart';
@@ -669,6 +670,9 @@ class ReaderVideosTab extends ConsumerWidget {
     if (video.url.isEmpty) return;
     HapticFeedback.lightImpact();
     onOpened();
+    MediaAnalytics.of(
+      context,
+    ).videoOpened(surface: VideoSurface.reader, videoUrl: video.url);
     await Navigator.of(context, rootNavigator: true).push<void>(
       MaterialPageRoute<void>(
         settings: const RouteSettings(name: 'video-player'),

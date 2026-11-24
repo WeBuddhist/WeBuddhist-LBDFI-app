@@ -13,6 +13,7 @@ import 'package:flutter_pecha/features/group_chat/presentation/widgets/new_praye
 import 'package:flutter_pecha/features/group_chat/presentation/widgets/prayer_request_tile.dart';
 import 'package:flutter_pecha/features/group_chat/presentation/widgets/prayer_supporters_sheet.dart';
 import 'package:flutter_pecha/features/group_chat/presentation/widgets/prayer_requests_skeleton.dart';
+import 'package:flutter_pecha/features/group_chat/presentation/utils/chat_analytics.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 /// Every prayer request the viewer has posted, in any space or event,
@@ -37,6 +38,7 @@ class _MyPrayerRequestsScreenState
   void initState() {
     super.initState();
     _scrollController.addListener(_onScroll);
+    ref.read(groupChatAnalyticsProvider).prayerRequestsOpened(scope: 'mine');
   }
 
   @override

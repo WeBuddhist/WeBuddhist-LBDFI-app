@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:math' as math;
 
+import 'package:clarity_flutter/clarity_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_pecha/core/constants/app_assets.dart';
 import 'package:flutter_pecha/core/error/failures.dart';
@@ -59,11 +60,14 @@ class NewPrayerRequestSheet extends ConsumerStatefulWidget {
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
       barrierColor: Colors.black.withValues(alpha: 0.5),
+      // Prayer text is private: hidden in Clarity recordings.
       builder:
-          (_) => NewPrayerRequestSheet(
-            scope: scope,
-            editing: editing,
-            submit: submit,
+          (_) => ClarityMask(
+            child: NewPrayerRequestSheet(
+              scope: scope,
+              editing: editing,
+              submit: submit,
+            ),
           ),
     );
   }

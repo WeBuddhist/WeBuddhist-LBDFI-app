@@ -47,6 +47,7 @@ class PrayerRequestsIconButton extends ConsumerWidget {
           PrayerRequestsSheet.show(
             context,
             scope: PrayerRoomScope.event(eventId),
+            source: 'prayer_button',
           ),
         );
       },

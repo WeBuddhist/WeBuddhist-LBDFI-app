@@ -3,6 +3,7 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
+import 'package:flutter_pecha/core/config/locale/locale_notifier.dart';
 import 'package:flutter_pecha/core/error/failures.dart';
 import 'package:flutter_pecha/core/network/connectivity_service.dart';
 import 'package:flutter_pecha/core/storage/storage_keys.dart';
@@ -836,7 +837,17 @@ class AuthNotifier extends StateNotifier<AuthState> {
       // has them, and re-sending makes the Android SDK emit `$set` every start.
       _analytics.identify(
         userId: userId,
-        properties: isLogin ? guestFlag : null,
+        properties:
+            isLogin
+                ? {
+                  ...guestFlag,
+                  AnalyticsProperties.uiLanguage:
+                      ref.read(localeProvider).languageCode,
+                  AnalyticsProperties.contentLanguage: ref.read(
+                    contentLanguageProvider,
+                  ),
+                }
+                : null,
       ),
       // No `$set` here. Replaces the flag a guest session left on every event,
       // and keeps Clarity's per-session tag on restored sessions.

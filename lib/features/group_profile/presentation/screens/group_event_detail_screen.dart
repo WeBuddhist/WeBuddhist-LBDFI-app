@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
+import 'package:flutter_pecha/core/analytics/media_analytics.dart';
 import 'package:flutter_pecha/core/analytics/share_analytics.dart';
 import 'package:flutter_pecha/core/config/locale/locale_notifier.dart';
 import 'package:flutter_pecha/core/config/router/app_routes.dart';
@@ -468,7 +469,11 @@ class _GroupEventDetailScreenState
       return;
     }
     unawaited(
-      PrayerRequestsSheet.show(context, scope: PrayerRoomScope.event(eventId)),
+      PrayerRequestsSheet.show(
+        context,
+        scope: PrayerRoomScope.event(eventId),
+        source: 'event_page',
+      ),
     );
   }
 
@@ -2583,6 +2588,13 @@ class _VideoLinkCard extends ConsumerWidget {
       _openLink(link.url);
       return;
     }
+    ref
+        .read(mediaAnalyticsProvider)
+        .videoOpened(
+          surface: VideoSurface.event,
+          videoUrl: link.url,
+          eventId: event.id,
+        );
     Navigator.of(context).push(
       MaterialPageRoute(
         settings: const RouteSettings(name: 'video-player'),

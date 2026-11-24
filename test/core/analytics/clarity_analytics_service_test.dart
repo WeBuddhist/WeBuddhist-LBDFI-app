@@ -54,4 +54,20 @@ void main() {
       {'is_guest': 'true', 'count': '3'},
     );
   });
+
+  test('tagEntries drops names, phones and PostHog person properties', () {
+    final List<MapEntry<String, String>> entries =
+        ClarityAnalyticsService.tagEntries({
+          'method': 'sms',
+          'name': 'Someone',
+          'username': 'someone',
+          'phone': '+910000000000',
+          r'$set_once': {'signup_method': 'sms'},
+        });
+
+    expect(
+      {for (final entry in entries) entry.key: entry.value},
+      {'method': 'sms'},
+    );
+  });
 }

@@ -246,6 +246,12 @@ final localeProvider = StateNotifierProvider<LocaleNotifier, Locale>((ref) {
   // Ensure locale is initialized when provider is first created
   // This happens asynchronously but starts immediately
   notifier.ensureInitialized();
+  final analytics = ref.read(contentLanguageAnalyticsProvider);
+  ref.onDispose(
+    notifier.addListener(
+      (locale) => analytics.languagesInUse(uiLanguage: locale.languageCode),
+    ),
+  );
   return notifier;
 });
 
@@ -256,11 +262,17 @@ final localeProvider = StateNotifierProvider<LocaleNotifier, Locale>((ref) {
 /// when nothing has been selected/persisted.
 final contentLanguageProvider =
     StateNotifierProvider<ContentLanguageNotifier, String>((ref) {
+      final analytics = ref.read(contentLanguageAnalyticsProvider);
       final notifier = ContentLanguageNotifier(
         localStorageService: ref.read(localStorageServiceProvider),
-        analytics: ref.read(contentLanguageAnalyticsProvider),
+        analytics: analytics,
       );
       notifier.ensureInitialized();
+      ref.onDispose(
+        notifier.addListener(
+          (code) => analytics.languagesInUse(contentLanguage: code),
+        ),
+      );
       return notifier;
     });
 

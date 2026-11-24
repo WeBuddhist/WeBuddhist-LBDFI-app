@@ -6,6 +6,7 @@ import 'package:flutter_pecha/core/network/reconnect_backoff.dart';
 import 'package:flutter_pecha/core/utils/app_logger.dart';
 import 'package:flutter_pecha/features/recitation/data/datasource/recitation_live_client.dart';
 import 'package:flutter_pecha/features/recitation/data/models/recitation_live_position.dart';
+import 'package:flutter_pecha/features/reader/presentation/utils/reader_analytics.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 enum RecitationLiveConnection {
@@ -128,6 +129,19 @@ class RecitationLiveState {
 /// Reconnects with backoff after a drop, pings every 30s so a sleeping phone
 /// is noticed, and drops the socket while the app is in the background. The
 /// follow mode is the user's choice and never touches the connection.
+/// How one live-recitation visit's following went, for analytics.
+class RecitationFollowSummary {
+  const RecitationFollowSummary({
+    required this.following,
+    required this.pausedCount,
+    required this.resumedCount,
+  });
+
+  final Duration following;
+  final int pausedCount;
+  final int resumedCount;
+}
+
 class RecitationLiveNotifier extends StateNotifier<RecitationLiveState>
     with WidgetsBindingObserver {
   RecitationLiveNotifier({
@@ -139,6 +153,7 @@ class RecitationLiveNotifier extends StateNotifier<RecitationLiveState>
     Duration Function(int attempt) backoff = reconnectDelay,
     this.snapshotGrace = const Duration(seconds: 2),
     this.endedNoticeDuration = const Duration(seconds: 4),
+    this.onFollowEnded,
   }) : _getToken = getToken,
        _restBaseUrl = restBaseUrl,
        _clientFactory = clientFactory ?? RecitationLiveClient.new,
@@ -146,8 +161,17 @@ class RecitationLiveNotifier extends StateNotifier<RecitationLiveState>
        _backoff = backoff,
        super(const RecitationLiveState()) {
     if (_observeLifecycle) WidgetsBinding.instance.addObserver(this);
+    _following.start(); // A reader starts out following.
     unawaited(connect());
   }
+
+  /// Told once, from [dispose], how this visit's following went.
+  final void Function(RecitationFollowSummary summary)? onFollowEnded;
+
+  /// Runs while the reader follows the operator.
+  final Stopwatch _following = Stopwatch();
+  int _pausedCount = 0;
+  int _resumedCount = 0;
 
   static const Duration pingInterval = Duration(seconds: 30);
 
@@ -363,6 +387,8 @@ class RecitationLiveNotifier extends StateNotifier<RecitationLiveState>
   /// Scroll to wherever the operator is now and keep following.
   void resumeFollowing() {
     if (_disposed) return;
+    if (!state.isFollowing) _resumedCount++;
+    _following.start();
     state = state.copyWith(
       followMode: RecitationLiveFollowMode.following,
       outOfSync: false,
@@ -373,12 +399,15 @@ class RecitationLiveNotifier extends StateNotifier<RecitationLiveState>
   /// The reader scrolled away on its own: keep the highlight, stop scrolling.
   void pauseFollowing() {
     if (_disposed || !state.isFollowing) return;
+    _pausedCount++;
+    _following.stop();
     state = state.copyWith(followMode: RecitationLiveFollowMode.paused);
   }
 
   /// Opt out. The socket stays up so opting back in lands on the live line.
   void stopFollowing() {
     if (_disposed) return;
+    _following.stop();
     state = state.copyWith(followMode: RecitationLiveFollowMode.off);
   }
 
@@ -389,6 +418,14 @@ class RecitationLiveNotifier extends StateNotifier<RecitationLiveState>
 
   @override
   void dispose() {
+    _following.stop();
+    onFollowEnded?.call(
+      RecitationFollowSummary(
+        following: _following.elapsed,
+        pausedCount: _pausedCount,
+        resumedCount: _resumedCount,
+      ),
+    );
     _disposed = true;
     if (_observeLifecycle) WidgetsBinding.instance.removeObserver(this);
     _reconnectTimer?.cancel();
@@ -423,9 +460,17 @@ final recitationLiveProvider = StateNotifierProvider.autoDispose
       });
       ref.onDispose(() => graceTimer?.cancel());
 
+      final analytics = ref.read(readerAnalyticsProvider);
       return RecitationLiveNotifier(
         eventId: eventId,
         getToken: () => ref.read(authServiceProvider).getValidAccessToken(),
         restBaseUrl: ref.read(apiConfigProvider).baseUrl,
+        onFollowEnded:
+            (summary) => analytics.recitationLiveFollowed(
+              eventId: eventId,
+              following: summary.following,
+              pausedCount: summary.pausedCount,
+              resumedCount: summary.resumedCount,
+            ),
       );
     });

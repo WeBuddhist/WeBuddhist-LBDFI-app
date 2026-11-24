@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter_pecha/core/analytics/analytics_events.dart';
 import 'package:flutter_pecha/core/analytics/analytics_providers.dart';
 import 'package:flutter_pecha/core/analytics/analytics_service.dart';
@@ -24,7 +26,22 @@ class ContentLanguageAnalytics {
       AnalyticsProperties.from: from,
       AnalyticsProperties.to: to,
       AnalyticsProperties.source: source?.name,
+      AnalyticsProperties.personSet: {AnalyticsProperties.contentLanguage: to},
     });
+  }
+
+  /// Adds the current languages to every later event. Called when each is
+  /// first known and whenever it changes.
+  void languagesInUse({String? uiLanguage, String? contentLanguage}) {
+    unawaited(
+      _analytics
+          .setSuperProperties({
+            if (uiLanguage != null) AnalyticsProperties.uiLanguage: uiLanguage,
+            if (contentLanguage != null)
+              AnalyticsProperties.contentLanguage: contentLanguage,
+          })
+          .catchError((Object _) {}),
+    );
   }
 }
 

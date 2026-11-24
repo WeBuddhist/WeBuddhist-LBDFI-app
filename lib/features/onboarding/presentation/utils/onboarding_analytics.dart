@@ -65,12 +65,15 @@ class OnboardingAnalytics {
   /// this instance never saw the flow start.
   void onboardingCompleted() {
     final startedAt = _startedAt;
+    final now = _now();
     _analytics.trackInBackground(AnalyticsEvents.onboardingCompleted, {
       AnalyticsProperties.durationMs:
-          startedAt == null
-              ? null
-              : _now().difference(startedAt).inMilliseconds,
+          startedAt == null ? null : now.difference(startedAt).inMilliseconds,
       AnalyticsProperties.traditionsCount: _traditionsCount,
+      AnalyticsProperties.personSetOnce: {
+        AnalyticsProperties.onboardingCompletedAt:
+            now.toUtc().toIso8601String(),
+      },
     });
   }
 }

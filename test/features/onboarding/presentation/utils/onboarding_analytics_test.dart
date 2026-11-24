@@ -64,6 +64,9 @@ void main() {
     expect(service.events.last.properties, {
       'duration_ms': 42000,
       'traditions_count': 1,
+      r'$set_once': {
+        'onboarding_completed_at': now.toUtc().toIso8601String(),
+      },
     });
   });
 
@@ -73,6 +76,9 @@ void main() {
     expect(service.events.single.properties, {
       'duration_ms': null,
       'traditions_count': 0,
+      r'$set_once': {
+        'onboarding_completed_at': now.toUtc().toIso8601String(),
+      },
     });
   });
 

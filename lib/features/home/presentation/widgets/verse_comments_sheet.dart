@@ -1,3 +1,4 @@
+import 'package:clarity_flutter/clarity_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_pecha/core/constants/app_assets.dart';
 import 'package:flutter_pecha/core/extensions/context_ext.dart';
@@ -31,7 +32,8 @@ class VerseCommentsSheet extends ConsumerStatefulWidget {
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
       barrierColor: Colors.black.withValues(alpha: 0.42),
-      builder: (_) => VerseCommentsSheet(verseId: verseId),
+      // Comments are people's own words: hidden in Clarity recordings.
+      builder: (_) => ClarityMask(child: VerseCommentsSheet(verseId: verseId)),
     );
   }
 

@@ -108,10 +108,17 @@ class PostHogAnalyticsService implements AnalyticsService {
   }) async {
     if (!_isInitialized) return;
 
+    final String? version = _appVersion;
     await _foregroundGate.run(
       () => Posthog().identify(
         userId: userId,
         userProperties: _sanitizeProperties(properties),
+        // Kept from the first login only, so it says which version a person
+        // started on.
+        userPropertiesSetOnce:
+            version == null
+                ? null
+                : {AnalyticsProperties.firstAppVersion: version},
       ),
     );
   }
@@ -124,6 +131,8 @@ class PostHogAnalyticsService implements AnalyticsService {
     _foregroundGate.discardPending();
     await Posthog().reset();
     await _registerDefaultSuperProperties();
+    // The device's languages don't change with the account.
+    await setSuperProperties(Map.of(_languageProperties));
   }
 
   @override
@@ -138,9 +147,23 @@ class PostHogAnalyticsService implements AnalyticsService {
     );
   }
 
+  /// The app version, once read at start-up; null in tests.
+  String? _appVersion;
+
+  /// The last UI and content language registered, put back after [reset].
+  final Map<String, Object> _languageProperties = {};
+
   @override
   Future<void> setSuperProperties(Map<String, Object?> properties) async {
     if (!_isInitialized) return;
+
+    for (final String key in const [
+      AnalyticsProperties.uiLanguage,
+      AnalyticsProperties.contentLanguage,
+    ]) {
+      final Object? value = properties[key];
+      if (value != null) _languageProperties[key] = value;
+    }
 
     for (final MapEntry<String, Object?> entry in properties.entries) {
       final Object? value = entry.value;
@@ -215,6 +238,7 @@ class PostHogAnalyticsService implements AnalyticsService {
       if (packageInfo != null) 'app_version': packageInfo.version,
       if (packageInfo != null) 'build_number': packageInfo.buildNumber,
     });
+    _appVersion = packageInfo?.version;
   }
 
   /// An event with a `group_id` belongs to that sangha. PostHog reads

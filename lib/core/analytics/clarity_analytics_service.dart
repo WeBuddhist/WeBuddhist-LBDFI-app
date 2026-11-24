@@ -14,7 +14,14 @@ final _logger = AppLogger('ClarityAnalytics');
 const int _customEventMaxLength = 254;
 
 /// Property keys that never reach Clarity; mirrors the PostHog redaction.
-const Set<String> _redactedKeys = {'email', 'id_token', 'access_token'};
+const Set<String> _redactedKeys = {
+  'email',
+  'id_token',
+  'access_token',
+  'phone',
+  'name',
+  'username',
+};
 
 /// Microsoft Clarity session recordings and heatmaps. [wrap] starts the SDK
 /// with the first frame; the route observers keep its screen name current.
@@ -147,7 +154,12 @@ class ClarityAnalyticsService implements AnalyticsService {
     final List<MapEntry<String, String>> entries = [];
     for (final MapEntry<String, Object?> entry in properties.entries) {
       final Object? value = entry.value;
-      if (value == null || _redactedKeys.contains(entry.key)) continue;
+      // `$set` / `$set_once` are PostHog person properties, not tags.
+      if (value == null ||
+          _redactedKeys.contains(entry.key) ||
+          entry.key.startsWith(r'$')) {
+        continue;
+      }
       final String text =
           value.toString().replaceAll(RegExp(r'\s+'), ' ').trim();
       if (text.isEmpty) continue;
