@@ -150,13 +150,16 @@ jobs:
           [ "$chars" -le 500 ] || fail "The tag message is $chars characters; Google Play allows 500."
           [ -n "$subject" ] || fail "The tag message is empty."
 
+          # A random end marker, so no tag message can close the notes early
+          # and add outputs of its own (e.g. a different ref to build).
+          delimiter="RELEASE_NOTES_$(openssl rand -hex 16)"
+          {
+            echo "release_notes<<${delimiter}"
+            printf '%s\n' "$notes"
+            echo "${delimiter}"
+          } >> "$GITHUB_OUTPUT"
           echo "version_name=$version" >> "$GITHUB_OUTPUT"
           echo "ref=$sha"              >> "$GITHUB_OUTPUT"
-          {
-            echo "release_notes<<__RELEASE_NOTES__"
-            printf '%s\n' "$notes"
-            echo "__RELEASE_NOTES__"
-          } >> "$GITHUB_OUTPUT"
 
       - name: 🔢 Build number
         id: build_number
@@ -235,8 +238,10 @@ jobs:
         with:
           ruby-version: '3.3'
 
+      # Pinned, so a re-run of the same tag submits with the same fastlane.
+      # Bump on purpose, after a testing release has gone through.
       - name: 📦 Install fastlane
-        run: gem install fastlane --no-document
+        run: gem install fastlane --version 2.241.2 --no-document
 
       - name: 📨 Submit for review (automatic release)
         working-directory: ci
