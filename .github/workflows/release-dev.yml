@@ -20,6 +20,7 @@ jobs:
   # it. The version is only persisted on the prod release (main), so promoting
   # develop -> main bumps exactly once (no double bump). See CONTRIBUTING.md.
   version:
+    if: github.repository == 'WeBuddhist/WeBuddhist-app'  # white-label fork guard: never publish the WeBuddhist app or push to its Tolgee from a fork
     name: 🔖 Preview version
     runs-on: ubuntu-latest
     outputs:
@@ -35,6 +36,7 @@ jobs:
         run: bash ci/scripts/bump_version.sh
 
   android:
+    if: github.repository == 'WeBuddhist/WeBuddhist-app'  # white-label fork guard: never publish the WeBuddhist app or push to its Tolgee from a fork
     needs: version
     uses: ./.github/workflows/build-android.yml
     with:
@@ -49,6 +51,7 @@ jobs:
     secrets: inherit
 
   ios:
+    if: github.repository == 'WeBuddhist/WeBuddhist-app'  # white-label fork guard: never publish the WeBuddhist app or push to its Tolgee from a fork
     needs: version
     uses: ./.github/workflows/build-ios.yml
     with:

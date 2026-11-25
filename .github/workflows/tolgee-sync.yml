@@ -17,6 +17,7 @@ concurrency:
 
 jobs:
   sync:
+    if: github.repository == 'WeBuddhist/WeBuddhist-app'  # white-label fork guard: never publish the WeBuddhist app or push to its Tolgee from a fork
     name: Sync Tolgee and ARB
     runs-on: ubuntu-latest
     timeout-minutes: 30
