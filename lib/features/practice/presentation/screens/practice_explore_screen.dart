@@ -6,11 +6,13 @@ import 'package:flutter_pecha/features/auth/presentation/providers/state_provide
 import 'package:flutter_pecha/features/auth/presentation/widgets/login_drawer.dart';
 import 'package:flutter_pecha/features/practice/presentation/providers/chants_page_providers.dart';
 import 'package:flutter_pecha/features/practice/presentation/providers/practice_explore_providers.dart';
+import 'package:flutter_pecha/features/practice/presentation/providers/practice_layout_memory.dart';
 import 'package:flutter_pecha/features/practice/presentation/providers/practice_spaces_providers.dart';
 import 'package:flutter_pecha/features/practice/presentation/providers/routine_api_providers.dart';
 import 'package:flutter_pecha/features/practice/presentation/screens/practice_search_screen.dart';
 import 'package:flutter_pecha/features/practice/presentation/widgets/practice_accumulations_section.dart';
 import 'package:flutter_pecha/features/practice/presentation/widgets/practice_chants_section.dart';
+import 'package:flutter_pecha/features/practice/presentation/widgets/practice_explore_skeleton.dart';
 import 'package:flutter_pecha/features/practice/presentation/widgets/practice_next_session_section.dart';
 import 'package:flutter_pecha/features/practice/presentation/widgets/practice_plans_section.dart';
 import 'package:flutter_pecha/features/practice/presentation/widgets/practice_section_container.dart';
@@ -35,6 +37,18 @@ class PracticeExploreScreen extends ConsumerStatefulWidget {
 }
 
 class _PracticeExploreScreenState extends ConsumerState<PracticeExploreScreen> {
+  /// The layout this account had when the tab last settled, read once.
+  late PracticeLayout? _lastLayout =
+      ref.read(practiceLayoutMemoryProvider).read();
+
+  /// Keeps [layout] for the next visit when it differs from the last one.
+  void _remember(PracticeLayout layout) {
+    if (layout == _lastLayout) return;
+    _lastLayout = layout;
+    final memory = ref.read(practiceLayoutMemoryProvider);
+    Future.microtask(() => memory.save(layout));
+  }
+
   Future<void> _refreshAll() async {
     final repo = ref.read(practiceExploreRepositoryProvider);
     final language = ref.read(contentLanguageProvider);
@@ -112,9 +126,51 @@ class _PracticeExploreScreenState extends ConsumerState<PracticeExploreScreen> {
   }
 
   List<Widget> _sections(BuildContext context) {
-    final routine = ref.watch(userRoutineProvider).valueOrNull;
+    final auth = ref.watch(authProvider);
+    final routineAsync = ref.watch(userRoutineProvider);
+    final routine = routineAsync.valueOrNull;
     final hasRoutine = routine != null && routine.hasItems;
     final hasSpaces = ref.watch(practiceHasJoinedSpaceContentProvider);
+
+    // Until sign-in settles the routine and joined spaces answer "none",
+    // then load again once it does: both count as still loading.
+    final routinePending =
+        auth.isLoading || practiceLayoutPending(routineAsync);
+    final spacesPending =
+        auth.isLoading || ref.watch(practiceJoinedSpaceContentLoadingProvider);
+
+    if (!routinePending && !spacesPending) {
+      // A failed read says nothing about what the account has: keep the
+      // last layout for the next visit.
+      final failed =
+          routineAsync.hasError ||
+          ref.watch(practiceJoinedSpaceContentFailedProvider);
+      if (!failed) _remember((routine: hasRoutine, spaces: hasSpaces));
+    } else if (!hasRoutine && !hasSpaces) {
+      // The layout is not known yet. Open on the one this account had
+      // last time, its missing parts held by skeletons; with none kept, a
+      // page-wide skeleton, so the simple layout never flashes before the
+      // grouped one.
+      final last = _lastLayout;
+      if (last == null) {
+        return [
+          PracticeExploreSkeleton(
+            showNextSession:
+                auth.isLoading || (auth.isLoggedIn && !auth.isGuest),
+          ),
+        ];
+      }
+      if (last.routine || last.spaces) {
+        return _grouped(
+          context,
+          nextSession:
+              last.routine && routinePending
+                  ? const PracticeNextSessionSkeleton()
+                  : null,
+          spacesLoading: last.spaces && spacesPending,
+        );
+      }
+    }
 
     if (!hasRoutine && !hasSpaces) {
       return const [
@@ -128,13 +184,32 @@ class _PracticeExploreScreenState extends ConsumerState<PracticeExploreScreen> {
       ];
     }
 
+    return _grouped(
+      context,
+      nextSession:
+          hasRoutine
+              ? PracticeNextSessionSection(routine: routine)
+              : routinePending && _lastLayout?.routine == true
+              ? const PracticeNextSessionSkeleton()
+              : null,
+      spacesLoading: spacesPending && _lastLayout?.spaces == true,
+    );
+  }
+
+  /// The grouped layout: the next session (or its skeleton), Mala and
+  /// Timer, "From your spaces", then "Discover more".
+  List<Widget> _grouped(
+    BuildContext context, {
+    required Widget? nextSession,
+    required bool spacesLoading,
+  }) {
     return [
-      if (hasRoutine) PracticeNextSessionSection(routine: routine),
+      if (nextSession != null) nextSession,
       Padding(
-        padding: EdgeInsets.only(top: hasRoutine ? 16 : 8),
+        padding: EdgeInsets.only(top: nextSession != null ? 16 : 8),
         child: const PracticeShortcutButtons(),
       ),
-      const PracticeSpacesSection(),
+      PracticeSpacesSection(loading: spacesLoading),
       PracticeGroupHeading(title: context.l10n.practice_discover_more),
       const PracticePlansSection(isSubsection: true),
       const PracticeChantsSection(isSubsection: true),

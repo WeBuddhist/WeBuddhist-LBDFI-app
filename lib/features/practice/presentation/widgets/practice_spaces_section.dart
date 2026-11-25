@@ -10,6 +10,7 @@ import 'package:flutter_pecha/features/practice/presentation/screens/chant_books
 import 'package:flutter_pecha/features/practice/presentation/screens/space_accumulations_see_all_screen.dart';
 import 'package:flutter_pecha/features/practice/presentation/utils/chants_page_actions.dart';
 import 'package:flutter_pecha/features/practice/presentation/widgets/chants/chant_book_card.dart';
+import 'package:flutter_pecha/features/practice/presentation/widgets/practice_explore_skeleton.dart';
 import 'package:flutter_pecha/features/practice/presentation/widgets/practice_section_container.dart';
 import 'package:flutter_pecha/features/practice/presentation/widgets/practice_space_cards.dart';
 import 'package:flutter_pecha/features/practice/presentation/widgets/space_filter_pills.dart';
@@ -48,11 +49,72 @@ final practiceHasJoinedSpaceContentProvider = Provider.autoDispose<bool>((ref) {
       ref.watch(practiceSpaceChantBooksProvider(true)).isNotEmpty;
 });
 
+/// Whether the Practice tab is still finding out which layout to use: an
+/// [AsyncValue] on its first read, or read again because sign-in, the
+/// language or the user's spaces changed. Pull-to-refresh does not count:
+/// the layout it shows stays until the new answer.
+bool practiceLayoutPending<T>(AsyncValue<T> value) =>
+    value.isLoading && !value.isRefreshing;
+
+/// Whether a "From your spaces" row could not be read, so its emptiness
+/// says nothing about the user's spaces.
+final practiceJoinedSpaceContentFailedProvider = Provider.autoDispose<bool>((
+  ref,
+) {
+  bool failed<T>(AsyncValue<Either<Failure, T>> value) =>
+      value.hasError || (value.valueOrNull?.isLeft() ?? false);
+  return failed(
+        ref.watch(
+          practiceSpacePracticesProvider((
+            row: PracticeSpaceRow.plans,
+            joined: true,
+          )),
+        ),
+      ) ||
+      failed(
+        ref.watch(
+          practiceSpacePracticesProvider((
+            row: PracticeSpaceRow.accumulations,
+            joined: true,
+          )),
+        ),
+      ) ||
+      failed(ref.watch(spaceChantBooksProvider));
+});
+
+/// Whether a "From your spaces" row is still loading, so the Practice tab
+/// cannot yet tell which layout to use (see [practiceLayoutPending]).
+final practiceJoinedSpaceContentLoadingProvider = Provider.autoDispose<bool>((
+  ref,
+) {
+  return practiceLayoutPending(
+        ref.watch(
+          practiceSpacePracticesProvider((
+            row: PracticeSpaceRow.plans,
+            joined: true,
+          )),
+        ),
+      ) ||
+      practiceLayoutPending(
+        ref.watch(
+          practiceSpacePracticesProvider((
+            row: PracticeSpaceRow.accumulations,
+            joined: true,
+          )),
+        ),
+      ) ||
+      practiceLayoutPending(ref.watch(spaceChantBooksProvider));
+});
+
 /// "From your spaces": plans, chant books and accumulations from the
 /// spaces the user joined. Rows with nothing in them are left out, and so
 /// is the whole group when every row is empty.
 class PracticeSpacesSection extends ConsumerWidget {
-  const PracticeSpacesSection({super.key});
+  const PracticeSpacesSection({super.key, this.loading = false});
+
+  /// The tab expects this group (it showed last time) and the joined spaces
+  /// are still loading: a skeleton holds its place until they answer.
+  final bool loading;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -63,7 +125,7 @@ class PracticeSpacesSection extends ConsumerWidget {
       _joinedRowProvider(PracticeSpaceRow.accumulations),
     );
     if (plans.isEmpty && books.isEmpty && accumulations.isEmpty) {
-      return const SizedBox.shrink();
+      return loading ? const PracticeSpacesSkeleton() : const SizedBox.shrink();
     }
 
     return Column(
