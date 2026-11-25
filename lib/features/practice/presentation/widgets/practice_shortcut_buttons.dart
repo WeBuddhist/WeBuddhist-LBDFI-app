@@ -4,6 +4,7 @@ import 'package:flutter_pecha/core/extensions/context_ext.dart';
 import 'package:flutter_pecha/core/theme/app_colors.dart';
 import 'package:flutter_pecha/features/auth/presentation/providers/state_providers.dart';
 import 'package:flutter_pecha/features/auth/presentation/widgets/login_drawer.dart';
+import 'package:flutter_pecha/features/mala/presentation/utils/mala_analytics.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
@@ -12,12 +13,20 @@ import 'package:go_router/go_router.dart';
 class PracticeShortcutButtons extends ConsumerWidget {
   const PracticeShortcutButtons({super.key});
 
-  void _open(BuildContext context, WidgetRef ref, String route) {
+  void _openMala(BuildContext context, WidgetRef ref) {
     if (ref.read(authProvider).isGuest) {
-      LoginDrawer.show(context, ref);
+      LoginDrawer.show(context, ref, feature: 'mala');
       return;
     }
-    context.push(route);
+    context.push('/mala', extra: {'source': MalaOpenSource.practiceTab});
+  }
+
+  void _openTimers(BuildContext context, WidgetRef ref) {
+    if (ref.read(authProvider).isGuest) {
+      LoginDrawer.show(context, ref, feature: 'timer');
+      return;
+    }
+    context.push('/home/timers');
   }
 
   @override
@@ -31,7 +40,7 @@ class PracticeShortcutButtons extends ConsumerWidget {
             child: _ShortcutButton(
               label: l10n.home_mala,
               imageAsset: AppAssets.homeMalaIcon,
-              onTap: () => _open(context, ref, '/mala'),
+              onTap: () => _openMala(context, ref),
             ),
           ),
           const SizedBox(width: 12),
@@ -39,7 +48,7 @@ class PracticeShortcutButtons extends ConsumerWidget {
             child: _ShortcutButton(
               label: l10n.home_timer,
               icon: AppAssets.homeTimer,
-              onTap: () => _open(context, ref, '/home/timers'),
+              onTap: () => _openTimers(context, ref),
             ),
           ),
         ],

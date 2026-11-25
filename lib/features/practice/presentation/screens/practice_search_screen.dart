@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_pecha/core/analytics/search_analytics.dart';
 import 'package:flutter_pecha/core/config/locale/locale_notifier.dart';
 import 'package:flutter_pecha/core/constants/app_assets.dart';
 import 'package:flutter_pecha/core/error/failures.dart';
@@ -12,6 +13,7 @@ import 'package:flutter_pecha/features/auth/presentation/widgets/login_drawer.da
 import 'package:flutter_pecha/features/group_profile/domain/entities/group_practice.dart';
 import 'package:flutter_pecha/features/home/domain/entities/series.dart';
 import 'package:flutter_pecha/features/mala/domain/entities/mantra.dart';
+import 'package:flutter_pecha/features/mala/presentation/utils/mala_analytics.dart';
 import 'package:flutter_pecha/features/mala/presentation/providers/mala_providers.dart';
 import 'package:flutter_pecha/features/mala/presentation/widgets/mala_beads.dart';
 import 'package:flutter_pecha/features/practice/domain/entities/space_chant.dart';
@@ -67,6 +69,10 @@ class _PracticeSearchScreenState extends ConsumerState<PracticeSearchScreen> {
 
   /// Whether the settled query found anything, for the recent list.
   bool _found = false;
+
+  /// The settled query whose result count was reported, so each query is
+  /// reported once, when every section has answered.
+  String? _trackedQuery;
 
   late final String _language = ref.read(contentLanguageProvider);
 
@@ -139,6 +145,40 @@ class _PracticeSearchScreenState extends ConsumerState<PracticeSearchScreen> {
     _debounce?.cancel();
     setState(() => _query = '');
     _focusNode.requestFocus();
+  }
+
+  /// Reports a settled query once, with how many results every section
+  /// found together. The plan and mala searches also report their own
+  /// surfaces from their providers, as on their own screens.
+  void _trackSearched(int resultCount) {
+    final query = _query;
+    if (query.isEmpty || _trackedQuery == query) return;
+    _trackedQuery = query;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      ref
+          .read(searchAnalyticsProvider)
+          .searched(
+            surface: SearchSurface.practice,
+            query: query,
+            resultCount: resultCount,
+          );
+    });
+  }
+
+  void _trackResultOpened(
+    int position, {
+    required String itemType,
+    required String itemId,
+  }) {
+    ref
+        .read(searchAnalyticsProvider)
+        .resultOpened(
+          surface: SearchSurface.practice,
+          position: position,
+          itemType: itemType,
+          itemId: itemId,
+        );
   }
 
   /// Saves the settled query to the recent list when it found something.
@@ -329,6 +369,19 @@ class _PracticeSearchScreenState extends ConsumerState<PracticeSearchScreen> {
             _failed(spaceChantsAsync) ||
             (spaceChants?.isPartial ?? false));
 
+    if (!anyLoading) {
+      _trackSearched(
+        catalogPlans.length +
+            spacePlans.length +
+            malas.length +
+            spaceAccumulations.length +
+            books.length +
+            spaceMatches.audio.length +
+            spaceMatches.text.length +
+            textChants.length,
+      );
+    }
+
     if (!_found && !anyLoading) {
       if (failed) return _SearchError(onRetry: _retry);
       return _NoResults(query: typed);
@@ -356,7 +409,16 @@ class _PracticeSearchScreenState extends ConsumerState<PracticeSearchScreen> {
         if (hasPlans)
           section(
             l10n.home_shortcut_plans,
-            _PlanRail(catalog: catalogPlans, spaces: spacePlans),
+            _PlanRail(
+              catalog: catalogPlans,
+              spaces: spacePlans,
+              onCatalogOpened:
+                  (position, series) => _trackResultOpened(
+                    position,
+                    itemType: 'series',
+                    itemId: series.id,
+                  ),
+            ),
           )
         else if (plansLoading)
           section(
@@ -366,7 +428,16 @@ class _PracticeSearchScreenState extends ConsumerState<PracticeSearchScreen> {
         if (malas.isNotEmpty)
           section(
             l10n.session_mala,
-            _MalaRail(mantras: malas, language: _language),
+            _MalaRail(
+              mantras: malas,
+              language: _language,
+              onOpened:
+                  (position, mantra) => _trackResultOpened(
+                    position,
+                    itemType: 'mantra',
+                    itemId: mantra.presetId,
+                  ),
+            ),
           )
         else if (malasLoading)
           section(l10n.session_mala, const _BeadRailSkeleton()),
@@ -399,10 +470,18 @@ class _PracticeSearchScreenState extends ConsumerState<PracticeSearchScreen> {
             l10n.chants_audio_chants,
             Column(
               children: [
-                for (final chant in spaceMatches.audio)
+                for (final (i, chant) in spaceMatches.audio.indexed)
                   Padding(
                     padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
-                    child: SpaceAudioChantRow(chant: chant),
+                    child: SpaceAudioChantRow(
+                      chant: chant,
+                      onOpened:
+                          () => _trackResultOpened(
+                            i,
+                            itemType: 'space_audio_chant',
+                            itemId: chant.item.textId,
+                          ),
+                    ),
                   ),
               ],
             ),
@@ -414,12 +493,21 @@ class _PracticeSearchScreenState extends ConsumerState<PracticeSearchScreen> {
             l10n.chants_text_only,
             Column(
               children: [
-                for (final chant in spaceMatches.text)
+                for (final (i, chant) in spaceMatches.text.indexed)
                   Padding(
                     padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
-                    child: SpaceTextChantRow(chant: chant),
+                    child: SpaceTextChantRow(
+                      chant: chant,
+                      onOpened:
+                          () => _trackResultOpened(
+                            i,
+                            itemType: 'space_chant',
+                            itemId: chant.item.textId,
+                          ),
+                    ),
                   ),
-                for (final chant in textChants) _textChantRow(context, chant),
+                for (final (i, chant) in textChants.indexed)
+                  _textChantRow(context, chant, spaceMatches.text.length + i),
               ],
             ),
           )
@@ -429,7 +517,11 @@ class _PracticeSearchScreenState extends ConsumerState<PracticeSearchScreen> {
     );
   }
 
-  Widget _textChantRow(BuildContext context, RecitationModel chant) {
+  Widget _textChantRow(
+    BuildContext context,
+    RecitationModel chant,
+    int position,
+  ) {
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
       child: TextChantRow(
@@ -437,8 +529,10 @@ class _PracticeSearchScreenState extends ConsumerState<PracticeSearchScreen> {
         openLabel: context.l10n.chants_open_chant,
         language: chant.language,
         firstVerse: chant.firstSegment?.content,
-        onTap:
-            () => openRecitationReader(context, chant, listLanguage: _language),
+        onTap: () {
+          _trackResultOpened(position, itemType: 'chant', itemId: chant.textId);
+          openRecitationReader(context, chant, listLanguage: _language);
+        },
       ),
     );
   }
@@ -518,10 +612,17 @@ class _RecentSearches extends ConsumerWidget {
 
 /// Catalog plans, then space plans, in one rail.
 class _PlanRail extends StatelessWidget {
-  const _PlanRail({required this.catalog, required this.spaces});
+  const _PlanRail({
+    required this.catalog,
+    required this.spaces,
+    required this.onCatalogOpened,
+  });
 
   final List<Series> catalog;
   final List<GroupPractice> spaces;
+
+  /// A catalog series was opened, with its place in the rail.
+  final void Function(int position, Series series) onCatalogOpened;
 
   @override
   Widget build(BuildContext context) {
@@ -539,11 +640,13 @@ class _PlanRail extends StatelessWidget {
               alignment: Alignment.topCenter,
               child: PracticePlanCard(
                 series: series,
-                onTap:
-                    () => context.pushNamed(
-                      'home-series-detail',
-                      pathParameters: {'id': series.id},
-                    ),
+                onTap: () {
+                  onCatalogOpened(index, series);
+                  context.pushNamed(
+                    'home-series-detail',
+                    pathParameters: {'id': series.id},
+                  );
+                },
               ),
             );
           }
@@ -561,20 +664,34 @@ class _PlanRail extends StatelessWidget {
 
 /// Mala catalogue matches as beads; a tap opens the counter on that mantra.
 class _MalaRail extends ConsumerWidget {
-  const _MalaRail({required this.mantras, required this.language});
+  const _MalaRail({
+    required this.mantras,
+    required this.language,
+    required this.onOpened,
+  });
 
   final List<Mantra> mantras;
   final String language;
 
+  /// A mantra was opened, with its place in the rail.
+  final void Function(int position, Mantra mantra) onOpened;
+
   static const double _beadSize = 44;
   static const double _itemWidth = 84;
 
-  void _open(BuildContext context, WidgetRef ref, Mantra mantra) {
+  void _open(BuildContext context, WidgetRef ref, int index, Mantra mantra) {
     if (ref.read(authProvider).isGuest) {
-      LoginDrawer.show(context, ref);
+      LoginDrawer.show(context, ref, feature: 'mala');
       return;
     }
-    context.push('/mala', extra: {'presetId': mantra.presetId});
+    onOpened(index, mantra);
+    context.push(
+      '/mala',
+      extra: {
+        'presetId': mantra.presetId,
+        'source': MalaOpenSource.practiceTab,
+      },
+    );
   }
 
   @override
@@ -592,7 +709,7 @@ class _MalaRail extends ConsumerWidget {
           final url = mantra.beadImageUrl?.trim() ?? '';
           return InkWell(
             borderRadius: BorderRadius.circular(12),
-            onTap: () => _open(context, ref, mantra),
+            onTap: () => _open(context, ref, index, mantra),
             child: SizedBox(
               width: _itemWidth,
               child: Column(

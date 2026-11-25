@@ -5,6 +5,7 @@ import 'package:flutter_pecha/core/constants/app_assets.dart';
 import 'package:flutter_pecha/core/extensions/context_ext.dart';
 import 'package:flutter_pecha/core/theme/app_colors.dart';
 import 'package:flutter_pecha/core/utils/app_logger.dart';
+import 'package:flutter_pecha/features/mala/presentation/utils/mala_analytics.dart';
 import 'package:flutter_pecha/features/notifications/data/models/notification_nav.dart';
 import 'package:flutter_pecha/features/plans/data/models/user/user_plans_model.dart';
 import 'package:flutter_pecha/features/plans/data/utils/plan_utils.dart';
@@ -131,7 +132,13 @@ class _RoutineFilledStateState extends ConsumerState<RoutineFilledState> {
 
     if (itemType == RoutineItemType.accumulator) {
       ref.read(pendingNotificationNavProvider.notifier).state = null;
-      context.push('/mala', extra: {'presetId': pendingNav.itemId});
+      context.push(
+        '/mala',
+        extra: {
+          'presetId': pendingNav.itemId,
+          'source': MalaOpenSource.notification,
+        },
+      );
       return;
     }
 
