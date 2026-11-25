@@ -12,7 +12,6 @@ import 'package:flutter_pecha/features/group_profile/presentation/widgets/add_of
 import 'package:flutter_pecha/features/group_profile/presentation/widgets/group_accumulator_chant_bar.dart';
 import 'package:flutter_pecha/features/group_profile/presentation/widgets/group_accumulator_chant_footer.dart';
 import 'package:flutter_pecha/features/group_profile/presentation/widgets/group_recitation_audio_sheet.dart';
-import 'package:flutter_pecha/features/library/data/models/library_recording.dart';
 import 'package:flutter_pecha/features/library/data/repositories/library_repository.dart';
 import 'package:flutter_pecha/features/library/presentation/providers/library_providers.dart';
 import 'package:flutter_pecha/features/mala/domain/entities/mala_accumulation_selection.dart';
@@ -44,6 +43,7 @@ import 'package:flutter_pecha/features/reader/domain/services/live_position_reso
 import 'package:flutter_pecha/features/reader/domain/services/navigation_service.dart';
 import 'package:flutter_pecha/features/reader/presentation/providers/reader_dual_settings_provider.dart';
 import 'package:flutter_pecha/features/reader/presentation/providers/reader_notifier.dart';
+import 'package:flutter_pecha/features/reader/presentation/utils/chant_recordings_loader.dart';
 import 'package:flutter_pecha/features/reader/presentation/utils/deferred_recitation.dart';
 import 'package:flutter_pecha/features/reader/presentation/utils/reader_transliteration.dart';
 import 'package:flutter_pecha/features/reader/presentation/widgets/reader_actions/reader_verse_sheet.dart';
@@ -232,9 +232,26 @@ class _ReaderScreenState extends ConsumerState<ReaderScreen>
   bool _isAdvancing = false;
   static final _logger = AppLogger('ReaderScreen');
 
-  /// Library recordings of the chant on screen; empty until they load, and
-  /// for plans and the library reader.
-  List<ChantAudioTrack> _chantTracks = const [];
+  /// Loads the library recordings of the chant on screen. Null for plans
+  /// and the library reader, which never play them.
+  ChantRecordingsLoader? _chantRecordings;
+
+  /// The last load failed and nothing has loaded since: the play spot offers
+  /// a retry instead of hiding, so a passing error is not read as no audio.
+  bool _chantRecordingsFailed = false;
+
+  /// Recordings of the chant on screen, titled in the UI language; empty
+  /// until they load.
+  List<ChantAudioTrack> get _chantTracks {
+    final recordings = _chantRecordings?.recordings ?? const [];
+    if (recordings.isEmpty) return const [];
+    return ChantAudioTrack.fromRecordings(
+      recordings,
+      Localizations.localeOf(context).languageCode,
+    );
+  }
+
+  bool get _showsChantRetry => _chantRecordingsFailed && _chantTracks.isEmpty;
 
   /// Recording chosen from Audio versions on this screen. Null means the
   /// first recording of the chant on screen.
@@ -243,7 +260,9 @@ class _ReaderScreenState extends ConsumerState<ReaderScreen>
   bool get _hasCollectionAudioChoices => _chantTracks.isNotEmpty;
 
   bool get _hasAudio =>
-      (_audioController?.hasAudio ?? false) || _hasCollectionAudioChoices;
+      (_audioController?.hasAudio ?? false) ||
+      _hasCollectionAudioChoices ||
+      _showsChantRetry;
 
   @override
   void didChangeDependencies() {
@@ -603,29 +622,46 @@ class _ReaderScreenState extends ConsumerState<ReaderScreen>
     }
 
     if (!ctx.playsChantRecordings) return;
-    unawaited(_loadChantRecordings(autoPlay: ctx.autoPlay));
-  }
-
-  /// Fetches the chant's recordings from the library. A failure leaves the
-  /// reader without audio, as a chant with no recordings would be.
-  Future<void> _loadChantRecordings({required bool autoPlay}) async {
     final editionId = widget.textId.trim();
     if (editionId.isEmpty) return;
-    final List<LibraryRecording> recordings;
+    final repository = ref.read(libraryRepositoryProvider);
+    _chantRecordings = ChantRecordingsLoader(
+      () => repository.getChantRecordings(editionId),
+    )..addListener(_onChantRecordingsChanged);
+    unawaited(_fetchChantRecordings(play: ctx.autoPlay));
+  }
+
+  void _onChantRecordingsChanged() {
+    if (mounted) setState(() {});
+  }
+
+  /// Loads the chant's recordings, then plays the first with [play]. A
+  /// failure keeps a retry button where play would be; when the retry was
+  /// the user's tap ([reportFailure]) a failure also says so.
+  Future<void> _fetchChantRecordings({
+    required bool play,
+    bool reportFailure = false,
+  }) async {
+    final loader = _chantRecordings;
+    if (loader == null) return;
     try {
-      recordings = await ref
-          .read(libraryRepositoryProvider)
-          .getChantRecordings(editionId);
+      if (!await loader.fetch()) return;
     } catch (e) {
-      _logger.warning('Chant recordings for $editionId failed', e);
+      _logger.warning('Chant recordings for ${widget.textId} failed', e);
+      if (!mounted) return;
+      setState(() => _chantRecordingsFailed = true);
+      if (reportFailure) {
+        ScaffoldMessenger.maybeOf(context)
+          ?..hideCurrentSnackBar()
+          ..showSnackBar(
+            SnackBar(content: Text(context.l10n.something_went_wrong)),
+          );
+      }
       return;
     }
-    if (!mounted || recordings.isEmpty) return;
-    final language = Localizations.localeOf(context).languageCode;
-    setState(() {
-      _chantTracks = ChantAudioTrack.fromRecordings(recordings, language);
-    });
-    if (autoPlay) _playCurrentCollectionAudio();
+    if (!mounted) return;
+    setState(() => _chantRecordingsFailed = false);
+    if (play) _playCurrentCollectionAudio();
   }
 
   /// The recording play will start: the menu choice, or the first one.
@@ -638,6 +674,9 @@ class _ReaderScreenState extends ConsumerState<ReaderScreen>
     _disposing = true;
     _pendingRecitation.commit();
     _audioController?.dispose();
+    _chantRecordings
+      ?..removeListener(_onChantRecordingsChanged)
+      ..dispose();
     _progress.dispose();
     super.dispose();
   }
@@ -1243,6 +1282,15 @@ class _ReaderScreenState extends ConsumerState<ReaderScreen>
   /// A group collection plays its current recording: the first one, or the
   /// one picked from Audio versions. Pause and a later play stay on that file.
   Widget _buildAudioButton() {
+    if (_showsChantRetry) {
+      return ChantAudioRetryButton(
+        isLoading: _chantRecordings?.isLoading ?? false,
+        onPressed:
+            () => unawaited(
+              _fetchChantRecordings(play: true, reportFailure: true),
+            ),
+      );
+    }
     if (_hasCollectionAudioChoices) {
       final controller = _audioController;
       if (controller != null) {

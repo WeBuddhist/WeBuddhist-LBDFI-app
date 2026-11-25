@@ -319,3 +319,61 @@ class CollectionAudioPlayButton extends StatelessWidget {
     );
   }
 }
+
+/// Where play would be when a chant's recordings failed to load: tapping
+/// asks the library again. A spinner shows while that request runs.
+class ChantAudioRetryButton extends StatelessWidget {
+  const ChantAudioRetryButton({
+    super.key,
+    required this.onPressed,
+    this.isLoading = false,
+  });
+
+  final VoidCallback onPressed;
+  final bool isLoading;
+
+  @override
+  Widget build(BuildContext context) {
+    final color = Theme.of(context).colorScheme.onSurface;
+    final bgColor = Theme.of(context).scaffoldBackgroundColor;
+
+    return Semantics(
+      button: true,
+      label: context.l10n.retry,
+      child: Material(
+        color: bgColor.withAlpha(235),
+        shape: const CircleBorder(),
+        elevation: 4,
+        shadowColor: Colors.black38,
+        child: InkWell(
+          onTap: isLoading ? null : onPressed,
+          customBorder: const CircleBorder(),
+          child: Container(
+            width: 56,
+            height: 56,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              border: Border.all(color: color.withAlpha(100), width: 1.5),
+            ),
+            alignment: Alignment.center,
+            child:
+                isLoading
+                    ? SizedBox(
+                      width: 22,
+                      height: 22,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                        color: color,
+                      ),
+                    )
+                    : Icon(
+                      AppAssets.arrowCounterClockwise,
+                      size: 24,
+                      color: color,
+                    ),
+          ),
+        ),
+      ),
+    );
+  }
+}

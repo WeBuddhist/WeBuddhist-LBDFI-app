@@ -388,6 +388,42 @@ void main() {
     List<String> ids(List<SpaceChant> chants) =>
         chants.map((c) => c.item.textId).toList();
 
+    test('looks up recordings ten at a time, every text once', () async {
+      final spaces = _FakeSpaces(const []);
+      spaces.details['big'] = detail('big', [
+        for (var i = 0; i < 35; i++) item('t$i'),
+        // The same text twice in one book is looked up once.
+        item('t0'),
+      ]);
+      var inFlight = 0;
+      var peak = 0;
+      final looked = <String>[];
+      final repo = ChantsPageRepositoryImpl(
+        collections: _FakeCollections(Exception('unused')),
+        spaces: spaces,
+        textRequests: _FakeTextRequests(),
+        hasRecordings: (textId) async {
+          looked.add(textId);
+          inFlight++;
+          if (inFlight > peak) peak = inFlight;
+          await Future<void>.delayed(Duration.zero);
+          inFlight--;
+          return textId == 't34';
+        },
+      );
+
+      final result = await repo.getSpaceChants(
+        SpaceChantBooks(others: [book('big', chants: 36)]),
+      );
+      final chants = result.getRight().toNullable()!;
+
+      expect(peak, ChantsPageRepositoryImpl.recordingLookupConcurrency);
+      expect(looked, hasLength(35));
+      expect(looked.toSet(), hasLength(35));
+      expect(ids(chants.othersAudio), ['t34']);
+      expect(chants.othersText, hasLength(34));
+    });
+
     test('splits chants by joined space and audio, in book order', () async {
       final spaces = _FakeSpaces(const []);
       spaces.details['y'] = detail('y', [item('t1'), item('t2')]);

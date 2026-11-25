@@ -152,23 +152,39 @@ class ChantsPageRepositoryImpl implements ChantsPageRepository {
     );
   }
 
-  /// Texts in [details] that the library has a recording of, all looked up
-  /// at once. A lookup that fails counts as no recording.
+  /// Library lookups in flight at once while sorting chants by audio. Each
+  /// uncached one reads an edition and then its text.
+  static const int recordingLookupConcurrency = 10;
+
+  /// Texts in [details] that the library has a recording of, looked up by a
+  /// pool of [recordingLookupConcurrency] workers, each taking the next text
+  /// as soon as its last one lands. A lookup that fails counts as no
+  /// recording.
   Future<Set<String>> _recordedTextIds(
     List<GroupRecitationCollection?> details,
   ) async {
-    final textIds = {
-      for (final detail in details)
-        for (final item
-            in detail?.items ?? const <GroupRecitationCollectionItem>[])
-          if (_nonBlank(item.textId) case final id?) id,
-    };
+    final textIds = [
+      ...{
+        for (final detail in details)
+          for (final item
+              in detail?.items ?? const <GroupRecitationCollectionItem>[])
+            if (_nonBlank(item.textId) case final id?) id,
+      },
+    ];
     final recorded = <String>{};
+    var next = 0;
+    Future<void> worker() async {
+      while (next < textIds.length) {
+        final id = textIds[next++];
+        try {
+          if (await _hasRecordings(id)) recorded.add(id);
+        } catch (_) {}
+      }
+    }
+
     await Future.wait([
-      for (final id in textIds)
-        _hasRecordings(id).then((has) {
-          if (has) recorded.add(id);
-        }, onError: (Object _) {}),
+      for (var w = 0; w < min(recordingLookupConcurrency, textIds.length); w++)
+        worker(),
     ]);
     return recorded;
   }
