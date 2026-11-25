@@ -2,6 +2,8 @@ import 'package:flutter/foundation.dart' show mapEquals;
 import 'package:intl/intl.dart' show Intl, NumberFormat;
 import 'package:intl/message_format.dart';
 
+import 'package:flutter_pecha/brand/brand.dart';
+
 import 'tolgee_locale_map.dart';
 
 /// Runtime lookup layer sitting between the generated `AppLocalizations`
@@ -60,7 +62,8 @@ class TolgeeBridge {
 
   /// Resolves a translation with no placeholders.
   static String get(String localeName, String key, String Function() fallback) {
-    return _raw(localeName, key) ?? fallback();
+    // White-label: every string, remote or bundled, passes the brand overlay.
+    return Brand.text(localeName, key, _raw(localeName, key) ?? fallback());
   }
 
   /// Resolves a translation containing ICU placeholders or plurals.
@@ -74,17 +77,20 @@ class TolgeeBridge {
     Map<String, Object> args,
     String Function() fallback,
   ) {
+    // White-label: the remote template is rebranded before its placeholders
+    // are filled, so names people typed (a group, a plan) are never changed.
+    // The bundled fallback arrives already formatted and is rebranded whole.
     final String? raw = _raw(localeName, key);
     if (raw == null || !raw.contains('{')) {
-      return fallback();
+      return Brand.text(localeName, key, fallback());
     }
     try {
       return MessageFormat(
-        _normalizeIcu(raw),
+        _normalizeIcu(Brand.text(localeName, key, raw)),
         locale: _formatLocale(localeName),
       ).format(args);
     } catch (_) {
-      return fallback();
+      return Brand.text(localeName, key, fallback());
     }
   }
 
