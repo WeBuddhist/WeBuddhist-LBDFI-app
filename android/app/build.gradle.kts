@@ -120,12 +120,12 @@ android {
 
         create("prod") {
             dimension = "environment"
-            applicationId = "org.pecha.app"
+            applicationId = "com.webuddhist.lbdfi"
             resValue("string", "app_name", "LBDFI")
             signingConfigs.findByName("prodRelease")?.let { signingConfig = it }
             manifestPlaceholders["airbridgeAppName"] = "webuddhist"
             manifestPlaceholders["auth0Domain"] = "we-buddhist-prod.us.auth0.com"
-            manifestPlaceholders["auth0Scheme"] = "org.pecha.app"
+            manifestPlaceholders["auth0Scheme"] = "com.webuddhist.lbdfi"
         }
     }
 
