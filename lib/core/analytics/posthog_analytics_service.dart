@@ -108,19 +108,29 @@ class PostHogAnalyticsService implements AnalyticsService {
   }) async {
     if (!_isInitialized) return;
 
-    final String? version = _appVersion;
+    final Map<String, Object>? setOnce = setOnceProperties(
+      properties: properties,
+      appVersion: _appVersion,
+    );
     await _foregroundGate.run(
       () => Posthog().identify(
         userId: userId,
         userProperties: _sanitizeProperties(properties),
-        // Kept from the first login only, so it says which version a person
-        // started on.
-        userPropertiesSetOnce:
-            version == null
-                ? null
-                : {AnalyticsProperties.firstAppVersion: version},
+        userPropertiesSetOnce: setOnce,
       ),
     );
+  }
+
+  /// `first_app_version`, sent only with a real login. Only a login passes
+  /// person [properties]; a restored session on a cold start passes none, and
+  /// sending it there would make PostHog record a profile update every launch.
+  @visibleForTesting
+  static Map<String, Object>? setOnceProperties({
+    required Map<String, Object?>? properties,
+    required String? appVersion,
+  }) {
+    if (properties == null || appVersion == null) return null;
+    return {AnalyticsProperties.firstAppVersion: appVersion};
   }
 
   @override

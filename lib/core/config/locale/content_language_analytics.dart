@@ -30,6 +30,16 @@ class ContentLanguageAnalytics {
     });
   }
 
+  /// The app (UI) language changed after start-up. Also updates `ui_language`
+  /// on the user's PostHog profile, which is otherwise only set at login.
+  void uiLanguageChanged({required String from, required String to}) {
+    _analytics.trackInBackground(AnalyticsEvents.uiLanguageChanged, {
+      AnalyticsProperties.from: from,
+      AnalyticsProperties.to: to,
+      AnalyticsProperties.personSet: {AnalyticsProperties.uiLanguage: to},
+    });
+  }
+
   /// Adds the current languages to every later event. Called when each is
   /// first known and whenever it changes.
   void languagesInUse({String? uiLanguage, String? contentLanguage}) {

@@ -19,6 +19,12 @@ class ReaderSearchDelegate extends SearchDelegate<Map<String, String>?> {
   String _submittedQuery = '';
   bool _hasSubmitted = false;
 
+  /// Counts searches the user submits; [_trackedSubmission] is the last one
+  /// sent as `search_performed`, so each submission is counted once, even
+  /// when its results come from cache.
+  int _submission = 0;
+  int _trackedSubmission = 0;
+
   ReaderSearchDelegate({
     required this.ref,
     required this.textId,
@@ -70,6 +76,7 @@ class ReaderSearchDelegate extends SearchDelegate<Map<String, String>?> {
     if (query.isNotEmpty && !_hasSubmitted) {
       _submittedQuery = query;
       _hasSubmitted = true;
+      _submission++;
     }
     return _buildSearchResults(context);
   }
@@ -81,6 +88,24 @@ class ReaderSearchDelegate extends SearchDelegate<Map<String, String>?> {
       _submittedQuery = '';
     }
     return _buildSearchResults(context);
+  }
+
+  /// Sends `search_performed` for the current submission once its results
+  /// are shown. A refetch for the same submission (a language change, a
+  /// rebuild) sends nothing. Runs after the frame, as it's called from build.
+  void _trackSubmissionOnce(WidgetRef ref, int resultCount) {
+    if (_trackedSubmission == _submission) return;
+    _trackedSubmission = _submission;
+    final submittedQuery = _submittedQuery;
+    // Read now: the results widget may be gone by the next frame.
+    final analytics = ref.read(searchAnalyticsProvider);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      analytics.searched(
+        surface: SearchSurface.reader,
+        query: submittedQuery,
+        resultCount: resultCount,
+      );
+    });
   }
 
   Widget _buildSearchResults(BuildContext context) {
@@ -134,6 +159,13 @@ class ReaderSearchDelegate extends SearchDelegate<Map<String, String>?> {
                 customMessage: context.l10n.reader_search_failed,
               ),
               (searchResponse) {
+                _trackSubmissionOnce(
+                  ref,
+                  searchResponse.sources.fold(
+                    0,
+                    (count, source) => count + source.segmentMatches.length,
+                  ),
+                );
                 if (searchResponse.sources.isEmpty) {
                   return _buildNoResults(context);
                 }

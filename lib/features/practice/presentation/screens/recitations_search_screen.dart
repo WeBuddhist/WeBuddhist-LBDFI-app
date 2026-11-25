@@ -277,15 +277,17 @@ class _RecitationsSearchScreenState
     final booksPending = wantsBooks && (bookAsync.isLoading || queryPending);
     final chantsPending = wantsText && chantState.isLoading;
 
-    // Only once every source answered for this query: a failed source has
-    // stopped loading too, and counting it would send a wrong total and
-    // block the correct one when the retry succeeds.
+    // Only once the query's own sources (books, library chants) succeeded: a
+    // failed one has stopped loading too, and counting it would send a wrong
+    // total and block the correct one when the retry succeeds. The space-chant
+    // feed is shared, not per query, so it only has to have finished; if it
+    // failed, its chants aren't shown and aren't counted.
     final spacesAsync = ref.watch(spaceChantsProvider);
     _trackSearchOnceSettled(
       settled:
           !queryPending &&
           _succeeded(bookAsync) &&
-          _succeeded(spacesAsync) &&
+          !spacesAsync.isLoading &&
           !chantState.isLoading &&
           chantState.error == null &&
           chantState.query.trim() == _bookQuery,

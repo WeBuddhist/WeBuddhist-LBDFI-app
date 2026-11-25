@@ -172,6 +172,7 @@ abstract final class AnalyticsEvents {
 
   // Settings (§5.13)
   static const String contentLanguageChanged = 'content_language_changed';
+  static const String uiLanguageChanged = 'ui_language_changed';
   static const String notificationSettingChanged =
       'notification_setting_changed';
 
