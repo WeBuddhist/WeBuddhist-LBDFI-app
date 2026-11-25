@@ -1176,5 +1176,11 @@
   "mala_images_load_error": "โหลดรูปภาพไม่ได้",
   "mala_bookmarked": "บุ๊กมาร์กแล้ว",
   "mala_beads_load_error": "โหลดแบบเม็ดลูกประคำไม่ได้",
-  "mala_appearance_save_failed": "บันทึกไม่สำเร็จ โปรดลองอีกครั้ง"
+  "mala_appearance_save_failed": "บันทึกไม่สำเร็จ โปรดลองอีกครั้ง",
+  "practice_next_session": "ช่วงเวลาถัดไป",
+  "practice_more_in_session": "+อีก {count} รายการในช่วงเวลานี้",
+  "practice_from_your_spaces": "จากกลุ่มของคุณ",
+  "practice_discover_more": "ค้นพบเพิ่มเติม",
+  "practice_space_accumulations": "ยอดสะสมของกลุ่ม",
+  "practice_no_space_accumulations": "ขณะนี้ยังไม่มียอดสะสมจากกลุ่มอื่น"
 }

@@ -4312,4 +4312,25 @@ class AppLocalizationsTh extends AppLocalizations {
 
   @override
   String get mala_appearance_save_failed => 'บันทึกไม่สำเร็จ โปรดลองอีกครั้ง';
+
+  @override
+  String get practice_next_session => 'ช่วงเวลาถัดไป';
+
+  @override
+  String practice_more_in_session(int count) {
+    return '+อีก $count รายการในช่วงเวลานี้';
+  }
+
+  @override
+  String get practice_from_your_spaces => 'จากกลุ่มของคุณ';
+
+  @override
+  String get practice_discover_more => 'ค้นพบเพิ่มเติม';
+
+  @override
+  String get practice_space_accumulations => 'ยอดสะสมของกลุ่ม';
+
+  @override
+  String get practice_no_space_accumulations =>
+      'ขณะนี้ยังไม่มียอดสะสมจากกลุ่มอื่น';
 }

@@ -4374,4 +4374,25 @@ class AppLocalizationsMn extends AppLocalizations {
   @override
   String get mala_appearance_save_failed =>
       'Хадгалж чадсангүй. Дахин оролдоно уу';
+
+  @override
+  String get practice_next_session => 'Дараагийн хичээл';
+
+  @override
+  String practice_more_in_session(int count) {
+    return 'Энэ хичээлд +$count бусад';
+  }
+
+  @override
+  String get practice_from_your_spaces => 'Таны орон зайнаас';
+
+  @override
+  String get practice_discover_more => 'Илүү ихийг судлах';
+
+  @override
+  String get practice_space_accumulations => 'Орон зайн хуримтлал';
+
+  @override
+  String get practice_no_space_accumulations =>
+      'Одоогоор бусад орон зайн хуримтлал алга';
 }

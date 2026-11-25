@@ -7602,6 +7602,42 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Couldn\'t save. Please try again'**
   String get mala_appearance_save_failed;
+
+  /// No description provided for @practice_next_session.
+  ///
+  /// In en, this message translates to:
+  /// **'Next session'**
+  String get practice_next_session;
+
+  /// No description provided for @practice_more_in_session.
+  ///
+  /// In en, this message translates to:
+  /// **'+{count} more in this session'**
+  String practice_more_in_session(int count);
+
+  /// No description provided for @practice_from_your_spaces.
+  ///
+  /// In en, this message translates to:
+  /// **'From your spaces'**
+  String get practice_from_your_spaces;
+
+  /// No description provided for @practice_discover_more.
+  ///
+  /// In en, this message translates to:
+  /// **'Discover more'**
+  String get practice_discover_more;
+
+  /// No description provided for @practice_space_accumulations.
+  ///
+  /// In en, this message translates to:
+  /// **'Space accumulations'**
+  String get practice_space_accumulations;
+
+  /// No description provided for @practice_no_space_accumulations.
+  ///
+  /// In en, this message translates to:
+  /// **'No accumulations from other spaces right now'**
+  String get practice_no_space_accumulations;
 }
 
 class _AppLocalizationsDelegate

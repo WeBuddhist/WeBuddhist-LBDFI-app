@@ -1271,5 +1271,18 @@
   "group_event_duration": "དུས་ཡུན།",
   "group_event_duration_decrease": "དུས་ཡུན་ཐུང་དུ་ཐོངས།",
   "group_event_duration_increase": "དུས་ཡུན་རིང་དུ་ཐོངས།",
-  "timer_duration_hours": "ཆུ་ཚོད།"
+  "timer_duration_hours": "ཆུ་ཚོད།",
+  "practice_next_session": "ཉམས་ལེན་ཚན་པ་རྗེས་མ།",
+  "practice_more_in_session": "ཚན་པ་འདིའི་ནང་ +{count} གཞན།",
+  "@practice_more_in_session": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "practice_from_your_spaces": "ཁྱེད་ཀྱི་ཚོགས་པ་ནས།",
+  "practice_discover_more": "དེ་ལས་མང་བ་གསར་རྙེད།",
+  "practice_space_accumulations": "ཚོགས་པའི་བསགས་གྲངས།",
+  "practice_no_space_accumulations": "ད་ལྟ་ཚོགས་པ་གཞན་དག་གི་བསགས་གྲངས་མི་འདུག"
 }

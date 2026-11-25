@@ -3891,12 +3891,10 @@ class TolgeeAppLocalizations extends AppLocalizations {
 
   @override
   String group_removed_message(String group, String duration) =>
-      TolgeeBridge.format(
-        localeName,
-        'group_removed_message',
-        <String, Object>{'group': group, 'duration': duration},
-        () => _fallback.group_removed_message(group, duration),
-      );
+      TolgeeBridge.format(localeName, 'group_removed_message', <String, Object>{
+        'group': group,
+        'duration': duration,
+      }, () => _fallback.group_removed_message(group, duration));
 
   @override
   String group_removed_message_no_date(String group) => TolgeeBridge.format(
@@ -5579,12 +5577,10 @@ class TolgeeAppLocalizations extends AppLocalizations {
 
   @override
   String event_replay_session(String day, String session) =>
-      TolgeeBridge.format(
-        localeName,
-        'event_replay_session',
-        <String, Object>{'day': day, 'session': session},
-        () => _fallback.event_replay_session(day, session),
-      );
+      TolgeeBridge.format(localeName, 'event_replay_session', <String, Object>{
+        'day': day,
+        'session': session,
+      }, () => _fallback.event_replay_session(day, session));
 
   @override
   String get event_replay_recording => TolgeeBridge.get(
@@ -8320,12 +8316,10 @@ class TolgeeAppLocalizations extends AppLocalizations {
 
   @override
   String reader_round_position(String current, String total) =>
-      TolgeeBridge.format(
-        localeName,
-        'reader_round_position',
-        <String, Object>{'current': current, 'total': total},
-        () => _fallback.reader_round_position(current, total),
-      );
+      TolgeeBridge.format(localeName, 'reader_round_position', <String, Object>{
+        'current': current,
+        'total': total,
+      }, () => _fallback.reader_round_position(current, total));
 
   @override
   String reader_round_number(String current) => TolgeeBridge.format(
@@ -8337,12 +8331,10 @@ class TolgeeAppLocalizations extends AppLocalizations {
 
   @override
   String reader_count_position(String current, String total) =>
-      TolgeeBridge.format(
-        localeName,
-        'reader_count_position',
-        <String, Object>{'current': current, 'total': total},
-        () => _fallback.reader_count_position(current, total),
-      );
+      TolgeeBridge.format(localeName, 'reader_count_position', <String, Object>{
+        'current': current,
+        'total': total,
+      }, () => _fallback.reader_count_position(current, total));
 
   @override
   String reader_show_script_in(String language) => TolgeeBridge.format(
@@ -8656,5 +8648,48 @@ class TolgeeAppLocalizations extends AppLocalizations {
     localeName,
     'mala_appearance_save_failed',
     () => _fallback.mala_appearance_save_failed,
+  );
+
+  @override
+  String get practice_next_session => TolgeeBridge.get(
+    localeName,
+    'practice_next_session',
+    () => _fallback.practice_next_session,
+  );
+
+  @override
+  String practice_more_in_session(int count) => TolgeeBridge.format(
+    localeName,
+    'practice_more_in_session',
+    <String, Object>{'count': count},
+    () => _fallback.practice_more_in_session(count),
+  );
+
+  @override
+  String get practice_from_your_spaces => TolgeeBridge.get(
+    localeName,
+    'practice_from_your_spaces',
+    () => _fallback.practice_from_your_spaces,
+  );
+
+  @override
+  String get practice_discover_more => TolgeeBridge.get(
+    localeName,
+    'practice_discover_more',
+    () => _fallback.practice_discover_more,
+  );
+
+  @override
+  String get practice_space_accumulations => TolgeeBridge.get(
+    localeName,
+    'practice_space_accumulations',
+    () => _fallback.practice_space_accumulations,
+  );
+
+  @override
+  String get practice_no_space_accumulations => TolgeeBridge.get(
+    localeName,
+    'practice_no_space_accumulations',
+    () => _fallback.practice_no_space_accumulations,
   );
 }

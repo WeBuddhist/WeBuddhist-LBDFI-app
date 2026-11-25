@@ -4399,4 +4399,25 @@ class AppLocalizationsMy extends AppLocalizations {
 
   @override
   String get mala_appearance_save_failed => 'သိမ်း၍ မရပါ။ ထပ်ကြိုးစားပါ';
+
+  @override
+  String get practice_next_session => 'နောက်အချိန်အပိုင်း';
+
+  @override
+  String practice_more_in_session(int count) {
+    return 'ဤအချိန်အပိုင်းတွင် +နောက်ထပ် $count ခု';
+  }
+
+  @override
+  String get practice_from_your_spaces => 'သင့်အဖွဲ့များမှ';
+
+  @override
+  String get practice_discover_more => 'ထပ်မံရှာဖွေရန်';
+
+  @override
+  String get practice_space_accumulations => 'အဖွဲ့ စုဆောင်းမှုများ';
+
+  @override
+  String get practice_no_space_accumulations =>
+      'လောလောဆယ် အခြားအဖွဲ့များမှ စုဆောင်းမှု မရှိပါ';
 }

@@ -1271,5 +1271,18 @@
   "mala_images_load_error": "Зургийг ачаалж чадсангүй",
   "mala_bookmarked": "Хавчуурганд нэмсэн",
   "mala_beads_load_error": "Мөхлөгийн загваруудыг ачаалж чадсангүй",
-  "mala_appearance_save_failed": "Хадгалж чадсангүй. Дахин оролдоно уу"
+  "mala_appearance_save_failed": "Хадгалж чадсангүй. Дахин оролдоно уу",
+  "practice_next_session": "Дараагийн хичээл",
+  "practice_more_in_session": "Энэ хичээлд +{count} бусад",
+  "@practice_more_in_session": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "practice_from_your_spaces": "Таны орон зайнаас",
+  "practice_discover_more": "Илүү ихийг судлах",
+  "practice_space_accumulations": "Орон зайн хуримтлал",
+  "practice_no_space_accumulations": "Одоогоор бусад орон зайн хуримтлал алга"
 }

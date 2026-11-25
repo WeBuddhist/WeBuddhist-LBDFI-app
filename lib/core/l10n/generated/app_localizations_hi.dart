@@ -4359,4 +4359,25 @@ class AppLocalizationsHi extends AppLocalizations {
   @override
   String get mala_appearance_save_failed =>
       'सहेजा नहीं जा सका। कृपया फिर से प्रयास करें';
+
+  @override
+  String get practice_next_session => 'अगला सत्र';
+
+  @override
+  String practice_more_in_session(int count) {
+    return 'इस सत्र में +$count और';
+  }
+
+  @override
+  String get practice_from_your_spaces => 'आपके स्पेस से';
+
+  @override
+  String get practice_discover_more => 'और खोजें';
+
+  @override
+  String get practice_space_accumulations => 'स्पेस संचय';
+
+  @override
+  String get practice_no_space_accumulations =>
+      'अभी अन्य स्पेस से कोई संचय नहीं है';
 }

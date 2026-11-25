@@ -1,32 +1,101 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_pecha/core/config/locale/locale_notifier.dart';
 import 'package:flutter_pecha/core/constants/app_assets.dart';
+import 'package:flutter_pecha/core/error/failures.dart';
 import 'package:flutter_pecha/core/extensions/context_ext.dart';
+import 'package:flutter_pecha/core/widgets/error_state_widget.dart';
+import 'package:flutter_pecha/features/auth/presentation/providers/state_providers.dart';
+import 'package:flutter_pecha/features/group_profile/domain/entities/group_practice.dart';
 import 'package:flutter_pecha/features/home/domain/entities/series.dart';
+import 'package:flutter_pecha/features/practice/presentation/providers/practice_explore_providers.dart';
+import 'package:flutter_pecha/features/practice/presentation/providers/practice_spaces_providers.dart';
 import 'package:flutter_pecha/features/practice/presentation/screens/plans_search_screen.dart';
+import 'package:flutter_pecha/features/practice/presentation/widgets/chants/chant_filter_pills.dart';
+import 'package:flutter_pecha/features/practice/presentation/widgets/chants/chant_load_notice.dart';
+import 'package:flutter_pecha/features/practice/presentation/widgets/practice_plan_card.dart';
 import 'package:flutter_pecha/features/practice/presentation/widgets/practice_plan_list_tile.dart';
+import 'package:flutter_pecha/features/practice/presentation/widgets/practice_space_cards.dart';
+import 'package:flutter_pecha/features/practice/presentation/widgets/practice_spaces_section.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:fpdart/fpdart.dart';
+import 'package:go_router/go_router.dart';
 
-class AllPlansScreen extends StatelessWidget {
-  const AllPlansScreen({
-    super.key,
-    required this.seriesList,
-    required this.onTap,
-  });
+/// Which plans the Plans screen lists.
+enum _PlansFilter { all, mySpaces, otherSpaces }
 
-  final List<Series> seriesList;
-  final ValueChanged<Series> onTap;
+/// The Plans screen, opened by Home's Plans shortcut and by Practice →
+/// Plans → See all.
+///
+/// Pills pick the plans: All is the catalog plus every space's plans, My
+/// spaces the spaces the user joined, Other spaces the rest. Under All the
+/// catalog's featured plans come first in a carousel.
+class AllPlansScreen extends ConsumerStatefulWidget {
+  const AllPlansScreen({super.key});
 
-  void _openSearch(BuildContext context) {
+  @override
+  ConsumerState<AllPlansScreen> createState() => _AllPlansScreenState();
+}
+
+class _AllPlansScreenState extends ConsumerState<AllPlansScreen> {
+  _PlansFilter _filter = _PlansFilter.all;
+  final _scrollController = ScrollController();
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  void _openSeries(Series series) {
+    context.pushNamed('home-series-detail', pathParameters: {'id': series.id});
+  }
+
+  void _openSearch() {
     Navigator.of(context).push(
       MaterialPageRoute(
         settings: const RouteSettings(name: 'plans-search'),
-        builder: (_) => PlansSearchScreen(onTap: onTap),
+        builder: (_) => PlansSearchScreen(onTap: _openSeries),
       ),
     );
+  }
+
+  void _select(_PlansFilter filter) {
+    if (filter == _filter) return;
+    setState(() => _filter = filter);
+    if (_scrollController.hasClients) _scrollController.jumpTo(0);
+  }
+
+  Future<void> _refresh(_PlansFilter filter) async {
+    await Future.wait([
+      if (filter == _PlansFilter.all)
+        ref
+            .read(practiceExploreRepositoryProvider)
+            .refreshSeries(ref.read(contentLanguageProvider)),
+      if (filter != _PlansFilter.otherSpaces)
+        ref.refresh(practiceSpaceAllPlansProvider(true).future),
+      if (filter != _PlansFilter.mySpaces)
+        ref.refresh(practiceSpaceAllPlansProvider(false).future),
+    ]);
+  }
+
+  void _retrySpaces() {
+    ref.invalidate(practiceSpaceAllPlansProvider(true));
+    ref.invalidate(practiceSpaceAllPlansProvider(false));
   }
 
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
+    final isGuest = ref.watch(
+      authProvider.select((auth) => !auth.isLoggedIn || auth.isGuest),
+    );
+    // A guest has no spaces of their own, so no My spaces pill.
+    final filters = [
+      _PlansFilter.all,
+      if (!isGuest) _PlansFilter.mySpaces,
+      _PlansFilter.otherSpaces,
+    ];
+    final filter = filters.contains(_filter) ? _filter : _PlansFilter.all;
 
     return Scaffold(
       appBar: AppBar(
@@ -34,6 +103,7 @@ class AllPlansScreen extends StatelessWidget {
         scrolledUnderElevation: 0,
         leading: IconButton(
           icon: const Icon(AppAssets.arrowLeft),
+          tooltip: MaterialLocalizations.of(context).backButtonTooltip,
           onPressed: () => Navigator.of(context).pop(),
         ),
         title: Text(
@@ -44,23 +114,210 @@ class AllPlansScreen extends StatelessWidget {
           IconButton(
             icon: const Icon(Icons.search),
             tooltip: l10n.search_for_plans,
-            onPressed: () => _openSearch(context),
+            onPressed: _openSearch,
           ),
         ],
       ),
-      body: ListView.builder(
-        padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
-        itemCount: seriesList.length,
-        itemBuilder: (context, index) {
-          final series = seriesList[index];
-          return Padding(
-            padding: const EdgeInsets.only(bottom: 12),
-            child: PracticePlanListTile(
-              series: series,
-              onTap: () => onTap(series),
+      body: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          ChantFilterPills(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            labels: [
+              for (final f in filters)
+                switch (f) {
+                  _PlansFilter.all => l10n.chants_filter_all,
+                  _PlansFilter.mySpaces => l10n.my_groups,
+                  _PlansFilter.otherSpaces => l10n.chants_other_spaces,
+                },
+            ],
+            selectedIndex: filters.indexOf(filter),
+            onSelected: (i) => _select(filters[i]),
+          ),
+          Expanded(
+            child: RefreshIndicator(
+              onRefresh: () => _refresh(filter),
+              child: _buildList(context, filter),
             ),
-          );
-        },
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildList(BuildContext context, _PlansFilter filter) {
+    final l10n = context.l10n;
+    final catalog =
+        filter == _PlansFilter.all
+            ? _read(ref.watch(practiceExploreSeriesProvider))
+            : const _Loaded<List<Series>>.done(<Series>[]);
+    final joined =
+        filter != _PlansFilter.otherSpaces
+            ? _read(ref.watch(practiceSpaceAllPlansProvider(true)))
+            : const _Loaded<List<GroupPractice>>.done(<GroupPractice>[]);
+    final others =
+        filter != _PlansFilter.mySpaces
+            ? _read(ref.watch(practiceSpaceAllPlansProvider(false)))
+            : const _Loaded<List<GroupPractice>>.done(<GroupPractice>[]);
+
+    final series = catalog.value ?? const <Series>[];
+    final featured = series.where((s) => s.featured).toList();
+    final catalogRows = series.where((s) => !s.featured).toList();
+    final spaceRows = [...?joined.value, ...?others.value];
+    final rowCount = catalogRows.length + spaceRows.length;
+
+    final isLoading = catalog.isLoading || joined.isLoading || others.isLoading;
+    final spacesFailed = joined.failure != null || others.failure != null;
+    final failure = catalog.failure ?? joined.failure ?? others.failure;
+
+    if (featured.isEmpty && rowCount == 0) {
+      if (isLoading) return const Center(child: CircularProgressIndicator());
+      if (failure != null) {
+        return _fill(
+          ErrorStateWidget(
+            error: failure.message,
+            onRetry: () {
+              ref.invalidate(practiceExploreSeriesProvider);
+              _retrySpaces();
+            },
+          ),
+        );
+      }
+      return _fill(Text(l10n.no_plans_found, textAlign: TextAlign.center));
+    }
+
+    return CustomScrollView(
+      controller: _scrollController,
+      physics: const AlwaysScrollableScrollPhysics(),
+      slivers: [
+        // Some space plans could not be read: said above what did load.
+        if (spacesFailed)
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: const EdgeInsets.only(top: 4),
+              child: ChantLoadNotice(
+                message: l10n.unableToLoad,
+                onRetry: _retrySpaces,
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+              ),
+            ),
+          ),
+        if (featured.isNotEmpty) ...[
+          SliverToBoxAdapter(
+            child: _Heading(title: l10n.creator_featured_plan),
+          ),
+          SliverToBoxAdapter(
+            child: SizedBox(
+              height: practicePlanRailHeight(context),
+              child: ListView.separated(
+                scrollDirection: Axis.horizontal,
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                itemCount: featured.length,
+                separatorBuilder: (_, _) => const SizedBox(width: 12),
+                itemBuilder:
+                    (context, index) => Align(
+                      alignment: Alignment.topCenter,
+                      child: PracticePlanCard(
+                        series: featured[index],
+                        onTap: () => _openSeries(featured[index]),
+                      ),
+                    ),
+              ),
+            ),
+          ),
+          if (rowCount > 0)
+            SliverToBoxAdapter(
+              child: _Heading(title: l10n.home_shortcut_plans),
+            ),
+        ],
+        SliverPadding(
+          padding: EdgeInsets.fromLTRB(16, featured.isEmpty ? 8 : 0, 16, 0),
+          sliver: SliverList.separated(
+            itemCount: rowCount,
+            separatorBuilder: (_, _) => const SizedBox(height: 12),
+            itemBuilder: (context, index) {
+              if (index < catalogRows.length) {
+                final s = catalogRows[index];
+                return PracticePlanListTile(
+                  series: s,
+                  onTap: () => _openSeries(s),
+                );
+              }
+              return PracticeSpacePlanListTile(
+                practice: spaceRows[index - catalogRows.length],
+              );
+            },
+          ),
+        ),
+        SliverToBoxAdapter(
+          child: Padding(
+            padding: const EdgeInsets.only(top: 16, bottom: 32),
+            child:
+                isLoading
+                    ? const Center(child: CircularProgressIndicator())
+                    : const SizedBox.shrink(),
+          ),
+        ),
+      ],
+    );
+  }
+
+  /// Centers [child] in a scroll view, so pull-to-refresh still works.
+  Widget _fill(Widget child) {
+    return LayoutBuilder(
+      builder:
+          (context, constraints) => SingleChildScrollView(
+            physics: const AlwaysScrollableScrollPhysics(),
+            child: SizedBox(
+              height: constraints.maxHeight,
+              child: Center(
+                child: Padding(padding: const EdgeInsets.all(24), child: child),
+              ),
+            ),
+          ),
+    );
+  }
+}
+
+/// One source of the list: its loaded value, its failure, or still loading.
+class _Loaded<T> {
+  const _Loaded({this.value, this.failure, this.isLoading = false});
+  const _Loaded.done(T this.value) : failure = null, isLoading = false;
+
+  final T? value;
+  final Failure? failure;
+  final bool isLoading;
+}
+
+_Loaded<T> _read<T>(AsyncValue<Either<Failure, T>> async) {
+  final result = async.valueOrNull;
+  if (result == null) {
+    return _Loaded(
+      isLoading: !async.hasError,
+      failure: async.hasError ? UnknownFailure(async.error.toString()) : null,
+    );
+  }
+  return result.fold(
+    (failure) => _Loaded(failure: failure),
+    (value) => _Loaded(value: value),
+  );
+}
+
+class _Heading extends StatelessWidget {
+  const _Heading({required this.title});
+
+  final String title;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 12, 16, 10),
+      child: Text(
+        title,
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
+        strutStyle: context.tibetanStrutStyle(18),
+        style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
       ),
     );
   }

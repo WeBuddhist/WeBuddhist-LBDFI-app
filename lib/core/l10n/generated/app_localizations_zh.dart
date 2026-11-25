@@ -4198,6 +4198,26 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get mala_appearance_save_failed => '無法儲存。請再試一次';
+
+  @override
+  String get practice_next_session => '下一堂課程';
+
+  @override
+  String practice_more_in_session(int count) {
+    return '此課程還有 $count 項';
+  }
+
+  @override
+  String get practice_from_your_spaces => '來自你的社群';
+
+  @override
+  String get practice_discover_more => '探索更多';
+
+  @override
+  String get practice_space_accumulations => '社群持誦計數';
+
+  @override
+  String get practice_no_space_accumulations => '目前沒有其他社群的持誦計數';
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hans`).
@@ -8173,4 +8193,24 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String get mala_appearance_save_failed => '无法保存。请再试一次';
+
+  @override
+  String get practice_next_session => '下一堂课程';
+
+  @override
+  String practice_more_in_session(int count) {
+    return '此课程还有 $count 项';
+  }
+
+  @override
+  String get practice_from_your_spaces => '来自你的社群';
+
+  @override
+  String get practice_discover_more => '探索更多';
+
+  @override
+  String get practice_space_accumulations => '社群持诵计数';
+
+  @override
+  String get practice_no_space_accumulations => '目前没有其他社群的持诵计数';
 }

@@ -1271,5 +1271,18 @@
   "mala_images_load_error": "तस्बिरहरू लोड गर्न सकिएन",
   "mala_bookmarked": "बुकमार्क गरियो",
   "mala_beads_load_error": "दानाका शैलीहरू लोड गर्न सकिएन",
-  "mala_appearance_save_failed": "सुरक्षित गर्न सकिएन। कृपया फेरि प्रयास गर्नुहोस्"
+  "mala_appearance_save_failed": "सुरक्षित गर्न सकिएन। कृपया फेरि प्रयास गर्नुहोस्",
+  "practice_next_session": "अर्को सत्र",
+  "practice_more_in_session": "यस सत्रमा +{count} थप",
+  "@practice_more_in_session": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "practice_from_your_spaces": "तपाईंका स्पेसहरूबाट",
+  "practice_discover_more": "थप अन्वेषण गर्नुहोस्",
+  "practice_space_accumulations": "स्पेस संचय",
+  "practice_no_space_accumulations": "अहिले अन्य स्पेसहरूबाट कुनै संचय छैन"
 }

@@ -1261,5 +1261,18 @@
   "mala_images_load_error": "無法載入圖片",
   "mala_bookmarked": "已加入書籤",
   "mala_beads_load_error": "無法載入念珠款式",
-  "mala_appearance_save_failed": "無法儲存。請再試一次"
+  "mala_appearance_save_failed": "無法儲存。請再試一次",
+  "practice_next_session": "下一堂課程",
+  "practice_more_in_session": "此課程還有 {count} 項",
+  "@practice_more_in_session": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "practice_from_your_spaces": "來自你的社群",
+  "practice_discover_more": "探索更多",
+  "practice_space_accumulations": "社群持誦計數",
+  "practice_no_space_accumulations": "目前沒有其他社群的持誦計數"
 }

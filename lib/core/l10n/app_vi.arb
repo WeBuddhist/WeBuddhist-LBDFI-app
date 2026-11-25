@@ -1176,5 +1176,11 @@
   "mala_images_load_error": "Không tải được hình ảnh",
   "mala_bookmarked": "Đã đánh dấu",
   "mala_beads_load_error": "Không tải được kiểu hạt",
-  "mala_appearance_save_failed": "Không lưu được. Vui lòng thử lại"
+  "mala_appearance_save_failed": "Không lưu được. Vui lòng thử lại",
+  "practice_next_session": "Buổi tu tiếp theo",
+  "practice_more_in_session": "+{count} mục khác trong buổi này",
+  "practice_from_your_spaces": "Từ các nhóm của bạn",
+  "practice_discover_more": "Khám phá thêm",
+  "practice_space_accumulations": "Tích lũy của nhóm",
+  "practice_no_space_accumulations": "Hiện chưa có tích lũy nào từ các nhóm khác"
 }

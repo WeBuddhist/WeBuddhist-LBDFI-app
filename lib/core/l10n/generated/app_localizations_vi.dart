@@ -4360,4 +4360,25 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get mala_appearance_save_failed => 'Không lưu được. Vui lòng thử lại';
+
+  @override
+  String get practice_next_session => 'Buổi tu tiếp theo';
+
+  @override
+  String practice_more_in_session(int count) {
+    return '+$count mục khác trong buổi này';
+  }
+
+  @override
+  String get practice_from_your_spaces => 'Từ các nhóm của bạn';
+
+  @override
+  String get practice_discover_more => 'Khám phá thêm';
+
+  @override
+  String get practice_space_accumulations => 'Tích lũy của nhóm';
+
+  @override
+  String get practice_no_space_accumulations =>
+      'Hiện chưa có tích lũy nào từ các nhóm khác';
 }

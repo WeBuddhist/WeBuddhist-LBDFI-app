@@ -4375,4 +4375,25 @@ class AppLocalizationsNe extends AppLocalizations {
   @override
   String get mala_appearance_save_failed =>
       'सुरक्षित गर्न सकिएन। कृपया फेरि प्रयास गर्नुहोस्';
+
+  @override
+  String get practice_next_session => 'अर्को सत्र';
+
+  @override
+  String practice_more_in_session(int count) {
+    return 'यस सत्रमा +$count थप';
+  }
+
+  @override
+  String get practice_from_your_spaces => 'तपाईंका स्पेसहरूबाट';
+
+  @override
+  String get practice_discover_more => 'थप अन्वेषण गर्नुहोस्';
+
+  @override
+  String get practice_space_accumulations => 'स्पेस संचय';
+
+  @override
+  String get practice_no_space_accumulations =>
+      'अहिले अन्य स्पेसहरूबाट कुनै संचय छैन';
 }

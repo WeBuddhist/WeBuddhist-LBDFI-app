@@ -4370,4 +4370,25 @@ class AppLocalizationsBo extends AppLocalizations {
   @override
   String get mala_appearance_save_failed =>
       'ཉར་ཚགས་བྱེད་མ་ཐུབ། བསྐྱར་དུ་ཚོད་ལྟ་བྱོས།';
+
+  @override
+  String get practice_next_session => 'ཉམས་ལེན་ཚན་པ་རྗེས་མ།';
+
+  @override
+  String practice_more_in_session(int count) {
+    return 'ཚན་པ་འདིའི་ནང་ +$count གཞན།';
+  }
+
+  @override
+  String get practice_from_your_spaces => 'ཁྱེད་ཀྱི་ཚོགས་པ་ནས།';
+
+  @override
+  String get practice_discover_more => 'དེ་ལས་མང་བ་གསར་རྙེད།';
+
+  @override
+  String get practice_space_accumulations => 'ཚོགས་པའི་བསགས་གྲངས།';
+
+  @override
+  String get practice_no_space_accumulations =>
+      'ད་ལྟ་ཚོགས་པ་གཞན་དག་གི་བསགས་གྲངས་མི་འདུག';
 }
