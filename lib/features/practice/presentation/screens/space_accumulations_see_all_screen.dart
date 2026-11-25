@@ -4,17 +4,26 @@ import 'package:flutter_pecha/core/constants/app_assets.dart';
 import 'package:flutter_pecha/core/di/core_providers.dart';
 import 'package:flutter_pecha/core/extensions/context_ext.dart';
 import 'package:flutter_pecha/core/utils/app_logger.dart';
+import 'package:flutter_pecha/features/auth/presentation/providers/state_providers.dart';
 import 'package:flutter_pecha/features/group_profile/domain/entities/group_practice.dart';
 import 'package:flutter_pecha/features/practice/data/datasource/space_chant_books_remote_datasource.dart';
 import 'package:flutter_pecha/features/practice/presentation/widgets/practice_space_cards.dart';
+import 'package:flutter_pecha/features/practice/presentation/widgets/space_filter_pills.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 final _logger = AppLogger('SpaceAccumulationsSeeAll');
 
-/// See all for Discover more → Accumulations: every accumulation from the
-/// spaces the user has not joined, as cards, a page at a time.
+/// Space accumulations, the See all for the accumulation rails under
+/// "From your spaces" and "Discover more": cards a page at a time, with All
+/// / My spaces / Other spaces pills.
 class SpaceAccumulationsSeeAllScreen extends ConsumerStatefulWidget {
-  const SpaceAccumulationsSeeAllScreen({super.key});
+  const SpaceAccumulationsSeeAllScreen({
+    super.key,
+    this.initialFilter = SpaceFilter.otherSpaces,
+  });
+
+  /// My spaces from "From your spaces", Other spaces from "Discover more".
+  final SpaceFilter initialFilter;
 
   @override
   ConsumerState<SpaceAccumulationsSeeAllScreen> createState() =>
@@ -26,12 +35,14 @@ class _SpaceAccumulationsSeeAllScreenState
   static const _pageSize = 20;
 
   final _scrollController = ScrollController();
+  late SpaceFilter _filter = widget.initialFilter;
   final List<GroupPractice> _practices = [];
   bool _isLoading = false;
   bool _hasMore = true;
   bool _failed = false;
 
-  /// Bumped by a refresh so a page still loading for the old list is dropped.
+  /// Bumped by a refresh or a pill change so a page still loading for the
+  /// old list is dropped.
   int _epoch = 0;
 
   late final SpaceChantBooksRemoteDatasource _datasource =
@@ -40,9 +51,24 @@ class _SpaceAccumulationsSeeAllScreenState
   @override
   void initState() {
     super.initState();
+    // A guest has no My spaces pill.
+    if (_filter == SpaceFilter.mySpaces && _isGuest) {
+      _filter = SpaceFilter.otherSpaces;
+    }
     _scrollController.addListener(_onScroll);
     _loadMore();
   }
+
+  bool get _isGuest {
+    final auth = ref.read(authProvider);
+    return !auth.isLoggedIn || auth.isGuest;
+  }
+
+  SpaceMembership get _membership => switch (_filter) {
+    SpaceFilter.all => SpaceMembership.all,
+    SpaceFilter.mySpaces => SpaceMembership.joined,
+    SpaceFilter.otherSpaces => SpaceMembership.notJoined,
+  };
 
   @override
   void dispose() {
@@ -65,7 +91,7 @@ class _SpaceAccumulationsSeeAllScreenState
     try {
       final page = await _datasource.fetchPractices(
         type: GroupPracticeType.accumulator,
-        membership: SpaceMembership.notJoined,
+        membership: _membership,
         language: ref.read(contentLanguageProvider),
         skip: _practices.length,
         limit: _pageSize,
@@ -77,13 +103,20 @@ class _SpaceAccumulationsSeeAllScreenState
         _isLoading = false;
       });
     } catch (e) {
-      _logger.error('Failed to load unjoined space accumulations', e);
+      _logger.error('Failed to load space accumulations', e);
       if (!mounted || epoch != _epoch) return;
       setState(() {
         _isLoading = false;
         _failed = true;
       });
     }
+  }
+
+  void _select(SpaceFilter filter) {
+    if (filter == _filter) return;
+    _filter = filter;
+    if (_scrollController.hasClients) _scrollController.jumpTo(0);
+    _refresh();
   }
 
   Future<void> _refresh() async {
@@ -107,13 +140,32 @@ class _SpaceAccumulationsSeeAllScreenState
           onPressed: () => Navigator.of(context).pop(),
         ),
         title: Text(
-          l10n.accumulations,
+          l10n.practice_space_accumulations,
           style: const TextStyle(fontWeight: FontWeight.bold),
         ),
         centerTitle: true,
         scrolledUnderElevation: 0,
       ),
-      body: RefreshIndicator(onRefresh: _refresh, child: _buildBody(context)),
+      body: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          SpaceFilterPills(
+            filters: SpaceFilter.available(
+              isGuest: ref.watch(
+                authProvider.select((auth) => !auth.isLoggedIn || auth.isGuest),
+              ),
+            ),
+            selected: _filter,
+            onSelected: _select,
+          ),
+          Expanded(
+            child: RefreshIndicator(
+              onRefresh: _refresh,
+              child: _buildBody(context),
+            ),
+          ),
+        ],
+      ),
     );
   }
 
@@ -180,7 +232,9 @@ class _SpaceAccumulationsSeeAllScreenState
     return Padding(
       padding: const EdgeInsets.all(24),
       child: Text(
-        l10n.practice_no_space_accumulations,
+        _filter == SpaceFilter.otherSpaces
+            ? l10n.practice_no_space_accumulations
+            : l10n.accumulations_no_found,
         textAlign: TextAlign.center,
       ),
     );

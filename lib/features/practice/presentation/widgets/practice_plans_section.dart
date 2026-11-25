@@ -3,12 +3,12 @@ import 'package:flutter_pecha/core/extensions/context_ext.dart';
 import 'package:flutter_pecha/features/home/domain/entities/series.dart';
 import 'package:flutter_pecha/features/practice/presentation/providers/practice_explore_providers.dart';
 import 'package:flutter_pecha/features/practice/presentation/providers/practice_spaces_providers.dart';
-import 'package:flutter_pecha/features/practice/presentation/screens/all_plans_screen.dart';
 import 'package:flutter_pecha/features/practice/presentation/widgets/practice_plan_card.dart';
 import 'package:flutter_pecha/features/practice/presentation/widgets/practice_section_container.dart';
 import 'package:flutter_pecha/features/practice/presentation/widgets/practice_section_skeleton.dart';
 import 'package:flutter_pecha/features/practice/presentation/widgets/practice_space_cards.dart';
 import 'package:flutter_pecha/features/practice/presentation/widgets/practice_spaces_section.dart';
+import 'package:flutter_pecha/features/practice/presentation/widgets/space_filter_pills.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
@@ -62,7 +62,7 @@ class PracticePlansSection extends ConsumerWidget {
       isSubsection: isSubsection,
       // The Plans screen also lists the user's own spaces' plans.
       seeAllLabel: l10n.see_all,
-      onSeeAll: () => _showAllPlans(context),
+      onSeeAll: () => openPlansSeeAll(context, SpaceFilter.all),
       child: SizedBox(
         height: practicePlanRailHeight(context),
         child: ListView.separated(
@@ -95,14 +95,5 @@ class PracticePlansSection extends ConsumerWidget {
 
   void _navigateToSeries(BuildContext context, Series series) {
     context.pushNamed('home-series-detail', pathParameters: {'id': series.id});
-  }
-
-  void _showAllPlans(BuildContext context) {
-    Navigator.of(context).push(
-      MaterialPageRoute(
-        settings: const RouteSettings(name: 'all-plans'),
-        builder: (_) => const AllPlansScreen(),
-      ),
-    );
   }
 }

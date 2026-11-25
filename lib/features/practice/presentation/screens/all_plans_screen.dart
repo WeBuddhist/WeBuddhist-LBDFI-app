@@ -10,18 +10,15 @@ import 'package:flutter_pecha/features/home/domain/entities/series.dart';
 import 'package:flutter_pecha/features/practice/presentation/providers/practice_explore_providers.dart';
 import 'package:flutter_pecha/features/practice/presentation/providers/practice_spaces_providers.dart';
 import 'package:flutter_pecha/features/practice/presentation/screens/plans_search_screen.dart';
-import 'package:flutter_pecha/features/practice/presentation/widgets/chants/chant_filter_pills.dart';
 import 'package:flutter_pecha/features/practice/presentation/widgets/chants/chant_load_notice.dart';
 import 'package:flutter_pecha/features/practice/presentation/widgets/practice_plan_card.dart';
 import 'package:flutter_pecha/features/practice/presentation/widgets/practice_plan_list_tile.dart';
 import 'package:flutter_pecha/features/practice/presentation/widgets/practice_space_cards.dart';
 import 'package:flutter_pecha/features/practice/presentation/widgets/practice_spaces_section.dart';
+import 'package:flutter_pecha/features/practice/presentation/widgets/space_filter_pills.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fpdart/fpdart.dart';
 import 'package:go_router/go_router.dart';
-
-/// Which plans the Plans screen lists.
-enum _PlansFilter { all, mySpaces, otherSpaces }
 
 /// The Plans screen, opened by Home's Plans shortcut and by Practice →
 /// Plans → See all.
@@ -30,14 +27,17 @@ enum _PlansFilter { all, mySpaces, otherSpaces }
 /// spaces the spaces the user joined, Other spaces the rest. Under All the
 /// catalog's featured plans come first in a carousel.
 class AllPlansScreen extends ConsumerStatefulWidget {
-  const AllPlansScreen({super.key});
+  const AllPlansScreen({super.key, this.initialFilter = SpaceFilter.all});
+
+  /// The pill it opens on: My spaces from "From your spaces".
+  final SpaceFilter initialFilter;
 
   @override
   ConsumerState<AllPlansScreen> createState() => _AllPlansScreenState();
 }
 
 class _AllPlansScreenState extends ConsumerState<AllPlansScreen> {
-  _PlansFilter _filter = _PlansFilter.all;
+  late SpaceFilter _filter = widget.initialFilter;
   final _scrollController = ScrollController();
 
   @override
@@ -59,21 +59,21 @@ class _AllPlansScreenState extends ConsumerState<AllPlansScreen> {
     );
   }
 
-  void _select(_PlansFilter filter) {
+  void _select(SpaceFilter filter) {
     if (filter == _filter) return;
     setState(() => _filter = filter);
     if (_scrollController.hasClients) _scrollController.jumpTo(0);
   }
 
-  Future<void> _refresh(_PlansFilter filter) async {
+  Future<void> _refresh(SpaceFilter filter) async {
     await Future.wait([
-      if (filter == _PlansFilter.all)
+      if (filter == SpaceFilter.all)
         ref
             .read(practiceExploreRepositoryProvider)
             .refreshSeries(ref.read(contentLanguageProvider)),
-      if (filter != _PlansFilter.otherSpaces)
+      if (filter != SpaceFilter.otherSpaces)
         ref.refresh(practiceSpaceAllPlansProvider(true).future),
-      if (filter != _PlansFilter.mySpaces)
+      if (filter != SpaceFilter.mySpaces)
         ref.refresh(practiceSpaceAllPlansProvider(false).future),
     ]);
   }
@@ -89,13 +89,8 @@ class _AllPlansScreenState extends ConsumerState<AllPlansScreen> {
     final isGuest = ref.watch(
       authProvider.select((auth) => !auth.isLoggedIn || auth.isGuest),
     );
-    // A guest has no spaces of their own, so no My spaces pill.
-    final filters = [
-      _PlansFilter.all,
-      if (!isGuest) _PlansFilter.mySpaces,
-      _PlansFilter.otherSpaces,
-    ];
-    final filter = filters.contains(_filter) ? _filter : _PlansFilter.all;
+    final filters = SpaceFilter.available(isGuest: isGuest);
+    final filter = filters.contains(_filter) ? _filter : SpaceFilter.all;
 
     return Scaffold(
       appBar: AppBar(
@@ -121,18 +116,10 @@ class _AllPlansScreenState extends ConsumerState<AllPlansScreen> {
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          ChantFilterPills(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            labels: [
-              for (final f in filters)
-                switch (f) {
-                  _PlansFilter.all => l10n.chants_filter_all,
-                  _PlansFilter.mySpaces => l10n.my_groups,
-                  _PlansFilter.otherSpaces => l10n.chants_other_spaces,
-                },
-            ],
-            selectedIndex: filters.indexOf(filter),
-            onSelected: (i) => _select(filters[i]),
+          SpaceFilterPills(
+            filters: filters,
+            selected: filter,
+            onSelected: _select,
           ),
           Expanded(
             child: RefreshIndicator(
@@ -145,18 +132,18 @@ class _AllPlansScreenState extends ConsumerState<AllPlansScreen> {
     );
   }
 
-  Widget _buildList(BuildContext context, _PlansFilter filter) {
+  Widget _buildList(BuildContext context, SpaceFilter filter) {
     final l10n = context.l10n;
     final catalog =
-        filter == _PlansFilter.all
+        filter == SpaceFilter.all
             ? _read(ref.watch(practiceExploreSeriesProvider))
             : const _Loaded<List<Series>>.done(<Series>[]);
     final joined =
-        filter != _PlansFilter.otherSpaces
+        filter != SpaceFilter.otherSpaces
             ? _read(ref.watch(practiceSpaceAllPlansProvider(true)))
             : const _Loaded<List<GroupPractice>>.done(<GroupPractice>[]);
     final others =
-        filter != _PlansFilter.mySpaces
+        filter != SpaceFilter.mySpaces
             ? _read(ref.watch(practiceSpaceAllPlansProvider(false)))
             : const _Loaded<List<GroupPractice>>.done(<GroupPractice>[]);
 

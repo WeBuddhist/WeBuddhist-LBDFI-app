@@ -5,11 +5,14 @@ import 'package:flutter_pecha/features/group_profile/domain/entities/group_pract
 import 'package:flutter_pecha/features/practice/domain/entities/chant_book.dart';
 import 'package:flutter_pecha/features/practice/presentation/providers/chants_page_providers.dart';
 import 'package:flutter_pecha/features/practice/presentation/providers/practice_spaces_providers.dart';
+import 'package:flutter_pecha/features/practice/presentation/screens/all_plans_screen.dart';
 import 'package:flutter_pecha/features/practice/presentation/screens/chant_books_see_all_screen.dart';
+import 'package:flutter_pecha/features/practice/presentation/screens/space_accumulations_see_all_screen.dart';
 import 'package:flutter_pecha/features/practice/presentation/utils/chants_page_actions.dart';
 import 'package:flutter_pecha/features/practice/presentation/widgets/chants/chant_book_card.dart';
 import 'package:flutter_pecha/features/practice/presentation/widgets/practice_section_container.dart';
 import 'package:flutter_pecha/features/practice/presentation/widgets/practice_space_cards.dart';
+import 'package:flutter_pecha/features/practice/presentation/widgets/space_filter_pills.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fpdart/fpdart.dart';
 
@@ -71,6 +74,8 @@ class PracticeSpacesSection extends ConsumerWidget {
           PracticeSectionContainer(
             title: l10n.home_shortcut_plans,
             isSubsection: true,
+            seeAllLabel: l10n.see_all,
+            onSeeAll: () => openPlansSeeAll(context, SpaceFilter.mySpaces),
             child: PracticeSpacePlanRail(practices: plans),
           ),
         if (books.isNotEmpty)
@@ -89,11 +94,35 @@ class PracticeSpacesSection extends ConsumerWidget {
           PracticeSectionContainer(
             title: l10n.practice_space_accumulations,
             isSubsection: true,
+            seeAllLabel: l10n.see_all,
+            onSeeAll:
+                () =>
+                    openSpaceAccumulationsSeeAll(context, SpaceFilter.mySpaces),
             child: PracticeSpaceAccumulatorRail(practices: accumulations),
           ),
       ],
     );
   }
+}
+
+/// Opens the Plans screen on [filter].
+void openPlansSeeAll(BuildContext context, SpaceFilter filter) {
+  Navigator.of(context).push(
+    MaterialPageRoute(
+      settings: const RouteSettings(name: 'all-plans'),
+      builder: (_) => AllPlansScreen(initialFilter: filter),
+    ),
+  );
+}
+
+/// Opens the Space accumulations screen on [filter].
+void openSpaceAccumulationsSeeAll(BuildContext context, SpaceFilter filter) {
+  Navigator.of(context).push(
+    MaterialPageRoute(
+      settings: const RouteSettings(name: 'space-accumulations-see-all'),
+      builder: (_) => SpaceAccumulationsSeeAllScreen(initialFilter: filter),
+    ),
+  );
 }
 
 void openChantBooksSeeAll(BuildContext context, ChantBooksSeeAll list) {

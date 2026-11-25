@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_pecha/core/extensions/context_ext.dart';
 import 'package:flutter_pecha/features/group_profile/domain/entities/group_practice.dart';
 import 'package:flutter_pecha/features/practice/presentation/providers/practice_spaces_providers.dart';
-import 'package:flutter_pecha/features/practice/presentation/screens/space_accumulations_see_all_screen.dart';
 import 'package:flutter_pecha/features/practice/presentation/widgets/practice_section_container.dart';
 import 'package:flutter_pecha/features/practice/presentation/widgets/practice_section_skeleton.dart';
 import 'package:flutter_pecha/features/practice/presentation/widgets/practice_space_cards.dart';
 import 'package:flutter_pecha/features/practice/presentation/widgets/practice_spaces_section.dart';
+import 'package:flutter_pecha/features/practice/presentation/widgets/space_filter_pills.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 /// Accumulations to discover: cards for the accumulations of spaces the
@@ -46,17 +46,9 @@ class PracticeAccumulationsSection extends ConsumerWidget {
       title: l10n.accumulations,
       isSubsection: isSubsection,
       seeAllLabel: l10n.see_all,
-      onSeeAll: () => _showAll(context),
+      onSeeAll:
+          () => openSpaceAccumulationsSeeAll(context, SpaceFilter.otherSpaces),
       child: PracticeSpaceAccumulatorRail(practices: accumulations),
-    );
-  }
-
-  void _showAll(BuildContext context) {
-    Navigator.of(context).push(
-      MaterialPageRoute(
-        settings: const RouteSettings(name: 'space-accumulations-see-all'),
-        builder: (_) => const SpaceAccumulationsSeeAllScreen(),
-      ),
     );
   }
 }
