@@ -1,19 +1,20 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_pecha/brand/brand.dart';
 
 class AppColors {
   AppColors._();
 
   // ============ Primary Colors (Temple Red) ============
-  /// Temple Red, the primary brand colour (Brand Guidelines v1.0).
-  /// The other shades are mixed from it toward white or black.
-  static const Color primary = Color(0xFFE94043);
-  static const Color primaryLight = Color(0xFFED6669); // 20% white
-  static const Color primaryDark = Color(0xFFAF3032); // 25% black
-  static const Color primaryDarkest = Color(0xFF872527); // 42% black
+  /// White-label: the primary colour and its shades come from [BrandColors]
+  /// (lib/brand/brand.dart). WeBuddhist uses Temple Red #E94043.
+  static const Color primary = BrandColors.primary;
+  static const Color primaryLight = BrandColors.primaryLight;
+  static const Color primaryDark = BrandColors.primaryDark;
+  static const Color primaryDarkest = BrandColors.primaryDarkest;
 
   /// Primary color containers and tints
-  static const Color primaryContainer = Color(0xFFFDECEC); // 90% white
-  static const Color primarySurface = Color(0xFFFEF5F6); // 95% white
+  static const Color primaryContainer = BrandColors.primaryContainer;
+  static const Color primarySurface = BrandColors.primarySurface;
 
   /// Unread count pill and unread dot for chats. Logo red in both themes.
   static const Color unreadBadge = primary;
@@ -22,9 +23,9 @@ class AppColors {
   // ============ Legacy gold (AI + onboarding only) ============
   /// Previous gold primary — kept so AI / onboarding stay visually unchanged
   /// while the rest of the app moves to logo red.
-  static const Color accentGold = Color(0xFFDEAD2D);
-  static const Color accentGoldDark = Color(0xFFB3861C);
-  static const Color accentGoldDarkest = Color(0xFF805700);
+  static const Color accentGold = BrandColors.gold;
+  static const Color accentGoldDark = BrandColors.goldDark;
+  static const Color accentGoldDarkest = BrandColors.goldDarkest;
   static const Color accentGoldContainer = Color(0xFFFAE6E6);
   static const Color accentGoldSurface = Color(0xFFFCF2F2);
 
@@ -32,7 +33,7 @@ class AppColors {
   static const Color poemAuthor = Color(0xFFC17600);
 
   // ============ Surface Colors ============
-  static const Color surfaceLight = Color(0xFFFBF9F4); // Light BG
+  static const Color surfaceLight = BrandColors.cream; // Light BG
   static const Color surfaceWhite = Color(0xFFFFFFFF);
 
   // Dark mode surfaces
@@ -50,7 +51,7 @@ class AppColors {
 
   // ============ Gold/Accent Colors ============
   /// Warm gold tones for cards and highlights
-  static const Color goldLight = Color(0xFFFBF9F4); // MG 50
+  static const Color goldLight = BrandColors.cream; // MG 50
   static const Color goldAccent = Color(0xFFF6F3E9); // MG 100
 
   /// Fill for plan progress bars (plan cards, day-complete sheet).
@@ -95,7 +96,7 @@ class AppColors {
   // ============ Blue Colors ============
   static const Color blue = Color(0xFF0C53C5); // Light mode
   static const Color blueDark = Color(0xFF8CB5F8); // Dark mode
-  static const Color brandblue = Color(0xFF3382FD);
+  static const Color brandblue = BrandColors.saffron;
 
   /// My Practices card and filled action button — dark card with a subtle blue tint.
   static final Color myPracticesBackground = Color.lerp(cardDark, blue, 0.18)!;
@@ -110,15 +111,15 @@ class AppColors {
   static const Color danger = Color(0xFFD32F2F);
 
   // ============ Background Colors ============
-  static const Color scaffoldBackgroundLight = Color(0xFFFBF9F4);
+  static const Color scaffoldBackgroundLight = BrandColors.cream;
   static const Color scaffoldBackgroundDark = Color(0xFF000000);
   static const Color cardBackgroundLight = Color(0xFFFFFFFF);
   static const Color cardBackgroundDark = Color(0xFF232121);
 
   // onboarding screen ring color
-  static const Color outerCircleColor = Color(0xFFAD2424);
-  static const Color middleCircleColor = Color(0xFF871C1C);
-  static const Color innerCircleColor = Color(0xFF611414);
+  static const Color outerCircleColor = BrandColors.ringOuter;
+  static const Color middleCircleColor = BrandColors.ringMiddle;
+  static const Color innerCircleColor = BrandColors.ringInner;
 
   // ============ Mala mantra band ============
   /// Tinted band behind the scrolling mantra: #FDAE33 at 10%.

@@ -5,6 +5,7 @@ import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:flutter_pecha/brand/brand.dart';
 import 'package:flutter_pecha/core/analytics/clarity_analytics_service.dart';
 import 'package:flutter_pecha/core/analytics/entry_analytics.dart';
 import 'package:flutter_pecha/core/analytics/posthog_analytics_service.dart';
@@ -507,7 +508,7 @@ class _MyAppState extends ConsumerState<MyApp> with WidgetsBindingObserver {
       ),
       child: PostHogAnalyticsService.wrap(
         MaterialApp.router(
-          title: 'WeBuddhist',
+          title: Brand.appName,
           theme: AppTheme.lightTheme(locale),
           darkTheme: AppTheme.darkTheme(locale),
           themeMode: themeMode,
