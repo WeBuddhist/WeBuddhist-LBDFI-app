@@ -252,7 +252,8 @@ final localeProvider = StateNotifierProvider<LocaleNotifier, Locale>((ref) {
   String? previous;
   _onceLoaded(ref, loaded, () {
     return notifier.addListener((locale) {
-      final code = locale.languageCode;
+      // Full tag, so Simplified Chinese ('zh-Hans') stays apart from 'zh'.
+      final code = locale.toLanguageTag();
       analytics.languagesInUse(uiLanguage: code);
       // The first call is the saved language; later ones are real changes.
       if (previous != null && previous != code) {

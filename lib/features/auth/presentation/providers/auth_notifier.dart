@@ -842,7 +842,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
                 ? {
                   ...guestFlag,
                   AnalyticsProperties.uiLanguage:
-                      ref.read(localeProvider).languageCode,
+                      ref.read(localeProvider).toLanguageTag(),
                   AnalyticsProperties.contentLanguage: ref.read(
                     contentLanguageProvider,
                   ),
