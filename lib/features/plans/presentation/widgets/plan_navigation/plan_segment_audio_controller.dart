@@ -43,7 +43,9 @@ class PlanSegmentAudioController extends ChangeNotifier {
     required this.onSegmentComplete,
     this.resolveUrl,
     this.refreshCooldown = const Duration(seconds: 10),
+    AudioPlayer Function()? createPlayer,
   }) : _url = url,
+       _createPlayer = createPlayer ?? AudioPlayer.new,
        progress = ValueNotifier(
          describePlanAudioProgress(
            position: Duration.zero,
@@ -72,6 +74,9 @@ class PlanSegmentAudioController extends ChangeNotifier {
 
   /// Shortest time between two URL refreshes after player errors.
   final Duration refreshCooldown;
+
+  /// Builds the player; tests pass a fake since just_audio needs a platform.
+  final AudioPlayer Function() _createPlayer;
   DateTime? _lastRefreshAt;
 
   /// Where the next [_startAudio] resumes after an error stopped playback.
@@ -248,7 +253,7 @@ class PlanSegmentAudioController extends ChangeNotifier {
     final resumeAt = _resumeAt;
 
     try {
-      _player ??= AudioPlayer();
+      _player ??= _createPlayer();
 
       // Tear down stale subscriptions before rebinding.
       _playerStateSub?.cancel();

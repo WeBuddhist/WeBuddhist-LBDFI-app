@@ -13,6 +13,7 @@ import 'package:flutter_pecha/features/group_profile/presentation/widgets/group_
 import 'package:flutter_pecha/features/group_profile/presentation/widgets/group_accumulator_chant_footer.dart';
 import 'package:flutter_pecha/features/group_profile/presentation/widgets/group_recitation_audio_sheet.dart';
 import 'package:flutter_pecha/features/library/data/models/library_recording.dart';
+import 'package:flutter_pecha/features/library/data/repositories/library_repository.dart';
 import 'package:flutter_pecha/features/library/presentation/providers/library_providers.dart';
 import 'package:flutter_pecha/features/mala/domain/entities/mala_accumulation_selection.dart';
 import 'package:flutter_pecha/features/mala/domain/entities/mantra.dart';
@@ -65,8 +66,27 @@ import 'package:flutter_pecha/features/recitation/presentation/widgets/recitatio
 import 'package:flutter_pecha/features/texts/data/models/text_detail.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:just_audio/just_audio.dart';
 
 /// Main reader screen - thin orchestrator that composes child widgets
+/// Player for a library chant recording. It has no fixed URL: the
+/// presigned link is fetched on play and again after a player error.
+@visibleForTesting
+PlanSegmentAudioController chantRecordingAudioController(
+  LibraryRepository repository,
+  ChantAudioTrack track, {
+  AudioPlayer Function()? createPlayer,
+}) {
+  return PlanSegmentAudioController(
+    url: null,
+    startMs: 0,
+    endMs: null,
+    onSegmentComplete: () {},
+    resolveUrl: () => repository.getRecordingAudioUrl(track.id),
+    createPlayer: createPlayer,
+  );
+}
+
 class ReaderScreen extends ConsumerStatefulWidget {
   final String textId;
   final String? segmentId;
@@ -603,24 +623,14 @@ class _ReaderScreenState extends ConsumerState<ReaderScreen>
     if (!mounted || recordings.isEmpty) return;
     final language = Localizations.localeOf(context).languageCode;
     setState(() {
-      _chantTracks = [
-        for (final recording in recordings)
-          ChantAudioTrack(id: recording.id, title: recording.titleIn(language)),
-      ];
+      _chantTracks = ChantAudioTrack.fromRecordings(recordings, language);
     });
     if (autoPlay) _playCurrentCollectionAudio();
   }
 
   /// The recording play will start: the menu choice, or the first one.
-  ChantAudioTrack? get _currentCollectionTrack {
-    final tracks = _chantTracks;
-    if (tracks.isEmpty) return null;
-    final selected = _selectedCollectionTrack;
-    if (selected != null && tracks.any((track) => track.id == selected.id)) {
-      return selected;
-    }
-    return tracks.first;
-  }
+  ChantAudioTrack? get _currentCollectionTrack =>
+      ChantAudioTrack.toPlay(_chantTracks, _selectedCollectionTrack);
 
   @override
   void dispose() {
@@ -641,13 +651,7 @@ class _ReaderScreenState extends ConsumerState<ReaderScreen>
     // Stop the old file now, but dispose it after this frame. The play
     // button and progress bar drop their listeners during the rebuild.
     previous?.cancel();
-    _audioController = PlanSegmentAudioController(
-      url: null,
-      startMs: 0,
-      endMs: null,
-      onSegmentComplete: () {},
-      resolveUrl: () => repository.getRecordingAudioUrl(track.id),
-    );
+    _audioController = chantRecordingAudioController(repository, track);
     if (previous != null) {
       WidgetsBinding.instance.addPostFrameCallback((_) => previous.dispose());
     }

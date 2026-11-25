@@ -1,5 +1,8 @@
+import 'package:dio/dio.dart';
+import 'package:flutter_pecha/features/library/data/datasource/library_remote_datasource.dart';
 import 'package:flutter_pecha/features/library/data/models/library_json.dart';
 import 'package:flutter_pecha/features/library/data/models/library_recording.dart';
+import 'package:flutter_pecha/features/library/data/models/library_text.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../../library_test_server.dart';
@@ -69,8 +72,7 @@ void main() {
       final server = LibraryTestServer({
         '/v2/editions/ed-1':
             (_) => jsonBody({'id': 'ed-1', 'text_id': 'text-1'}),
-        '/v2/editions/ed-1/recordings':
-            (_) => jsonBody([_recording('rec-1')]),
+        '/v2/editions/ed-1/recordings': (_) => jsonBody([_recording('rec-1')]),
         '/v2/texts/text-1':
             (_) => jsonBody({
               'id': 'text-1',
@@ -148,6 +150,184 @@ void main() {
 
       expect(await repo.getRecordingAudioUrl('rec-1'), endsWith('sig=1'));
       expect(await repo.getRecordingAudioUrl('rec-1'), endsWith('sig=2'));
+    });
+  });
+
+  group('datasource', () {
+    late List<RequestOptions> sent;
+    late LibraryRemoteDatasource datasource;
+
+    setUp(() {
+      sent = [];
+      final dio = Dio(BaseOptions(baseUrl: 'https://library.test'));
+      dio.httpClientAdapter = FakeHttpAdapter((options) async {
+        sent.add(options);
+        return switch (options.uri.path) {
+          '/v2/recordings/rec-1/audio-url' => jsonBody({
+            'url': 'https://s3/rec-1?sig',
+            'expires_in': 3600,
+          }),
+          '/v2/texts/text-1/audios' => jsonBody([
+            {
+              'id': 'aud-1',
+              'title': {'en': 'Sung'},
+              'recordings': ['rec-1'],
+            },
+          ]),
+          _ => jsonBody([_recording('rec-1')]),
+        };
+      });
+      datasource = LibraryRemoteDatasource(dio: dio);
+    });
+
+    test('calls each recordings endpoint', () async {
+      expect(
+        (await datasource.fetchEditionRecordings('ed-1')).single.id,
+        'rec-1',
+      );
+      expect(
+        (await datasource.fetchAudioRecordings('aud-1')).single.id,
+        'rec-1',
+      );
+      expect((await datasource.fetchTextAudios('text-1')).single.recordingIds, [
+        'rec-1',
+      ]);
+      expect(sent.map((o) => o.uri.path), [
+        '/v2/editions/ed-1/recordings',
+        '/v2/audios/aud-1/recordings',
+        '/v2/texts/text-1/audios',
+      ]);
+      // Recording lists may come from the HTTP cache.
+      expect(sent.every((o) => o.extra['no_cache'] != true), isTrue);
+    });
+
+    test('the audio link always skips the HTTP cache', () async {
+      final link = await datasource.fetchRecordingAudioUrl('rec-1');
+      expect(link.url, 'https://s3/rec-1?sig');
+      expect(sent.single.extra['no_cache'], isTrue);
+    });
+
+    test('a payload of the wrong shape is a format error', () async {
+      final dio = Dio(BaseOptions(baseUrl: 'https://library.test'));
+      dio.httpClientAdapter = FakeHttpAdapter(
+        (_) async => jsonBody({'detail': 'not a list'}),
+      );
+      final broken = LibraryRemoteDatasource(dio: dio);
+      expect(
+        () => broken.fetchEditionRecordings('ed-1'),
+        throwsA(isA<FormatException>()),
+      );
+    });
+  });
+
+  group('more repository cases', () {
+    test('LibraryText reads its performances from audios', () {
+      final text = LibraryText.fromJson({
+        'id': 'text-1',
+        'title': {'bo': 'x'},
+        'language': 'bo',
+        'audios': ['aud-1', 'aud-2'],
+      });
+      expect(text.audioIds, ['aud-1', 'aud-2']);
+      expect(
+        LibraryText.fromJson({
+          'id': 't',
+          'title': {},
+          'language': 'bo',
+        }).audioIds,
+        isEmpty,
+      );
+    });
+
+    test('an older text id resolves to its first edition', () async {
+      final server = LibraryTestServer({
+        '/v2/texts/text-1':
+            (_) => jsonBody({
+              'id': 'text-1',
+              'title': {'bo': 'x'},
+              'language': 'bo',
+              'editions': ['ed-1'],
+              'audios': ['aud-1'],
+            }),
+        '/v2/editions/ed-1':
+            (_) => jsonBody({'id': 'ed-1', 'text_id': 'text-1'}),
+        '/v2/editions/ed-1/recordings': (_) => jsonBody([_recording('rec-1')]),
+      });
+      final repo = server.repository();
+
+      final recordings = await repo.getChantRecordings('text-1');
+      expect(recordings.single.id, 'rec-1');
+      expect(await repo.hasChantRecordings('text-1'), isTrue);
+    });
+
+    test('an edition with no list of its own uses the text\'s', () async {
+      final server = LibraryTestServer({
+        '/v2/editions/ed-1':
+            (_) => jsonBody({'id': 'ed-1', 'text_id': 'text-1'}),
+        // No /recordings route: the server answers 404.
+        '/v2/texts/text-1':
+            (_) => jsonBody({
+              'id': 'text-1',
+              'title': {'bo': 'x'},
+              'language': 'bo',
+              'audios': ['aud-1'],
+            }),
+        '/v2/audios/aud-1/recordings':
+            (_) => jsonBody([_recording('rec-9', editionId: 'ed-other')]),
+      });
+      final repo = server.repository();
+
+      final recordings = await repo.getChantRecordings('ed-1');
+      expect(recordings.single.id, 'rec-9');
+      expect(recordings.single.editionId, 'ed-other');
+    });
+
+    test('an unknown chant fails the lookup and is retried later', () async {
+      final server = LibraryTestServer({});
+      final repo = server.repository();
+
+      await expectLater(repo.getChantRecordings('missing'), throwsA(anything));
+      await expectLater(repo.getChantRecordings('missing'), throwsA(anything));
+      expect(server.count('/v2/editions/missing'), 2);
+    });
+
+    test('a server error on the list is not hidden as no recordings', () async {
+      final server = LibraryTestServer({
+        '/v2/editions/ed-1':
+            (_) => jsonBody({'id': 'ed-1', 'text_id': 'text-1'}),
+        '/v2/editions/ed-1/recordings':
+            (_) => jsonBody({'detail': 'boom'}, statusCode: 500),
+      });
+      final repo = server.repository();
+
+      await expectLater(repo.getChantRecordings('ed-1'), throwsA(anything));
+    });
+
+    test('getTextAudios lists performances, none when unknown', () async {
+      final server = LibraryTestServer({
+        '/v2/texts/text-1/audios':
+            (_) => jsonBody([
+              {
+                'id': 'aud-1',
+                'title': {'en': 'Sung'},
+                'recordings': ['rec-1'],
+              },
+            ]),
+      });
+      final repo = server.repository();
+
+      expect((await repo.getTextAudios('text-1')).single.id, 'aud-1');
+      expect(await repo.getTextAudios('missing'), isEmpty);
+    });
+
+    test('an empty audio link is an error, not a blank url', () async {
+      final server = LibraryTestServer({
+        '/v2/recordings/rec-1/audio-url': (_) => jsonBody({'url': ' '}),
+      });
+      await expectLater(
+        server.repository().getRecordingAudioUrl('rec-1'),
+        throwsA(anything),
+      );
     });
   });
 }

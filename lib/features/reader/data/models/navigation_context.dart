@@ -1,3 +1,4 @@
+import 'package:flutter_pecha/features/library/data/models/library_recording.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_pecha/core/utils/audio_url.dart';
 
@@ -635,6 +636,29 @@ class ChantAudioTrack {
   final String title;
 
   const ChantAudioTrack({required this.id, required this.title});
+
+  /// One track per recording, in the library's order (those that follow the
+  /// edition first), titled in [language] when the library has it.
+  static List<ChantAudioTrack> fromRecordings(
+    List<LibraryRecording> recordings,
+    String? language,
+  ) => [
+    for (final recording in recordings)
+      ChantAudioTrack(id: recording.id, title: recording.titleIn(language)),
+  ];
+
+  /// The track play starts: [selected] while it is still offered, else the
+  /// first. Null when there are none.
+  static ChantAudioTrack? toPlay(
+    List<ChantAudioTrack> tracks,
+    ChantAudioTrack? selected,
+  ) {
+    if (tracks.isEmpty) return null;
+    if (selected != null && tracks.any((track) => track.id == selected.id)) {
+      return selected;
+    }
+    return tracks.first;
+  }
 
   @override
   bool operator ==(Object other) =>
