@@ -4218,6 +4218,20 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get practice_no_space_accumulations => '目前沒有其他社群的持誦計數';
+
+  @override
+  String get practice_search_hint => '搜尋修持';
+
+  @override
+  String get practice_search_recent => '最近';
+
+  @override
+  String practice_search_no_results(String query) {
+    return '找不到「$query」的結果';
+  }
+
+  @override
+  String get practice_popular_practices => '熱門修持';
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hans`).
@@ -8213,4 +8227,18 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String get practice_no_space_accumulations => '目前没有其他社群的持诵计数';
+
+  @override
+  String get practice_search_hint => '搜索修持';
+
+  @override
+  String get practice_search_recent => '最近';
+
+  @override
+  String practice_search_no_results(String query) {
+    return '找不到“$query”的结果';
+  }
+
+  @override
+  String get practice_popular_practices => '热门修持';
 }

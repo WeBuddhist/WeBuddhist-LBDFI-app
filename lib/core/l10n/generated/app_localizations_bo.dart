@@ -4391,4 +4391,18 @@ class AppLocalizationsBo extends AppLocalizations {
   @override
   String get practice_no_space_accumulations =>
       'ད་ལྟ་ཚོགས་པ་གཞན་དག་གི་བསགས་གྲངས་མི་འདུག';
+
+  @override
+  String get practice_search_hint => 'ཉམས་ལེན་འཚོལ།';
+
+  @override
+  String get practice_search_recent => 'ཉེ་ཆར།';
+
+  @override
+  String practice_search_no_results(String query) {
+    return '\"$query\" ཡི་འབྲས་བུ་མི་འདུག';
+  }
+
+  @override
+  String get practice_popular_practices => 'དར་ཁྱབ་ཆེ་བའི་ཉམས་ལེན།';
 }

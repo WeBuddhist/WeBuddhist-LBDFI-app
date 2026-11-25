@@ -4381,4 +4381,18 @@ class AppLocalizationsVi extends AppLocalizations {
   @override
   String get practice_no_space_accumulations =>
       'Hiện chưa có tích lũy nào từ các nhóm khác';
+
+  @override
+  String get practice_search_hint => 'Tìm thực hành';
+
+  @override
+  String get practice_search_recent => 'Gần đây';
+
+  @override
+  String practice_search_no_results(String query) {
+    return 'Không có kết quả cho \"$query\"';
+  }
+
+  @override
+  String get practice_popular_practices => 'Thực hành phổ biến';
 }

@@ -72,15 +72,29 @@ class _AllPlansScreenState extends ConsumerState<AllPlansScreen> {
             .read(practiceExploreRepositoryProvider)
             .refreshSeries(ref.read(contentLanguageProvider)),
       if (filter != SpaceFilter.otherSpaces)
-        ref.refresh(practiceSpaceAllPlansProvider(true).future),
+        ref.refresh(
+          practiceSpaceFeedProvider((
+            row: PracticeSpaceRow.plans,
+            joined: true,
+          )).future,
+        ),
       if (filter != SpaceFilter.mySpaces)
-        ref.refresh(practiceSpaceAllPlansProvider(false).future),
+        ref.refresh(
+          practiceSpaceFeedProvider((
+            row: PracticeSpaceRow.plans,
+            joined: false,
+          )).future,
+        ),
     ]);
   }
 
   void _retrySpaces() {
-    ref.invalidate(practiceSpaceAllPlansProvider(true));
-    ref.invalidate(practiceSpaceAllPlansProvider(false));
+    ref.invalidate(
+      practiceSpaceFeedProvider((row: PracticeSpaceRow.plans, joined: true)),
+    );
+    ref.invalidate(
+      practiceSpaceFeedProvider((row: PracticeSpaceRow.plans, joined: false)),
+    );
   }
 
   @override
@@ -140,11 +154,25 @@ class _AllPlansScreenState extends ConsumerState<AllPlansScreen> {
             : const _Loaded<List<Series>>.done(<Series>[]);
     final joined =
         filter != SpaceFilter.otherSpaces
-            ? _read(ref.watch(practiceSpaceAllPlansProvider(true)))
+            ? _read(
+              ref.watch(
+                practiceSpaceFeedProvider((
+                  row: PracticeSpaceRow.plans,
+                  joined: true,
+                )),
+              ),
+            )
             : const _Loaded<List<GroupPractice>>.done(<GroupPractice>[]);
     final others =
         filter != SpaceFilter.mySpaces
-            ? _read(ref.watch(practiceSpaceAllPlansProvider(false)))
+            ? _read(
+              ref.watch(
+                practiceSpaceFeedProvider((
+                  row: PracticeSpaceRow.plans,
+                  joined: false,
+                )),
+              ),
+            )
             : const _Loaded<List<GroupPractice>>.done(<GroupPractice>[]);
 
     final series = catalog.value ?? const <Series>[];

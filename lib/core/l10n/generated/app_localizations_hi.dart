@@ -4380,4 +4380,18 @@ class AppLocalizationsHi extends AppLocalizations {
   @override
   String get practice_no_space_accumulations =>
       'अभी अन्य स्पेस से कोई संचय नहीं है';
+
+  @override
+  String get practice_search_hint => 'अभ्यास खोजें';
+
+  @override
+  String get practice_search_recent => 'हाल ही में';
+
+  @override
+  String practice_search_no_results(String query) {
+    return '\"$query\" के लिए कोई परिणाम नहीं';
+  }
+
+  @override
+  String get practice_popular_practices => 'लोकप्रिय अभ्यास';
 }

@@ -8692,4 +8692,33 @@ class TolgeeAppLocalizations extends AppLocalizations {
     'practice_no_space_accumulations',
     () => _fallback.practice_no_space_accumulations,
   );
+
+  @override
+  String get practice_search_hint => TolgeeBridge.get(
+    localeName,
+    'practice_search_hint',
+    () => _fallback.practice_search_hint,
+  );
+
+  @override
+  String get practice_search_recent => TolgeeBridge.get(
+    localeName,
+    'practice_search_recent',
+    () => _fallback.practice_search_recent,
+  );
+
+  @override
+  String practice_search_no_results(String query) => TolgeeBridge.format(
+    localeName,
+    'practice_search_no_results',
+    <String, Object>{'query': query},
+    () => _fallback.practice_search_no_results(query),
+  );
+
+  @override
+  String get practice_popular_practices => TolgeeBridge.get(
+    localeName,
+    'practice_popular_practices',
+    () => _fallback.practice_popular_practices,
+  );
 }

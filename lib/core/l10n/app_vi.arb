@@ -1182,5 +1182,9 @@
   "practice_from_your_spaces": "Từ các nhóm của bạn",
   "practice_discover_more": "Khám phá thêm",
   "practice_space_accumulations": "Tích lũy của nhóm",
-  "practice_no_space_accumulations": "Hiện chưa có tích lũy nào từ các nhóm khác"
+  "practice_no_space_accumulations": "Hiện chưa có tích lũy nào từ các nhóm khác",
+  "practice_search_hint": "Tìm thực hành",
+  "practice_search_recent": "Gần đây",
+  "practice_search_no_results": "Không có kết quả cho \"{query}\"",
+  "practice_popular_practices": "Thực hành phổ biến"
 }

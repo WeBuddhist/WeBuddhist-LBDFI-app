@@ -4333,4 +4333,18 @@ class AppLocalizationsTh extends AppLocalizations {
   @override
   String get practice_no_space_accumulations =>
       'ขณะนี้ยังไม่มียอดสะสมจากกลุ่มอื่น';
+
+  @override
+  String get practice_search_hint => 'ค้นหาการปฏิบัติ';
+
+  @override
+  String get practice_search_recent => 'ล่าสุด';
+
+  @override
+  String practice_search_no_results(String query) {
+    return 'ไม่พบผลลัพธ์สำหรับ \"$query\"';
+  }
+
+  @override
+  String get practice_popular_practices => 'การปฏิบัติยอดนิยม';
 }

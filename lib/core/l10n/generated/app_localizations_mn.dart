@@ -4395,4 +4395,18 @@ class AppLocalizationsMn extends AppLocalizations {
   @override
   String get practice_no_space_accumulations =>
       'Одоогоор бусад орон зайн хуримтлал алга';
+
+  @override
+  String get practice_search_hint => 'Бясалгал хайх';
+
+  @override
+  String get practice_search_recent => 'Сүүлд';
+
+  @override
+  String practice_search_no_results(String query) {
+    return '\"$query\"-д тохирох илэрц алга';
+  }
+
+  @override
+  String get practice_popular_practices => 'Түгээмэл бясалгалууд';
 }

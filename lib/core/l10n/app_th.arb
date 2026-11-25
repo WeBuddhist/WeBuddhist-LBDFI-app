@@ -1182,5 +1182,9 @@
   "practice_from_your_spaces": "จากกลุ่มของคุณ",
   "practice_discover_more": "ค้นพบเพิ่มเติม",
   "practice_space_accumulations": "ยอดสะสมของกลุ่ม",
-  "practice_no_space_accumulations": "ขณะนี้ยังไม่มียอดสะสมจากกลุ่มอื่น"
+  "practice_no_space_accumulations": "ขณะนี้ยังไม่มียอดสะสมจากกลุ่มอื่น",
+  "practice_search_hint": "ค้นหาการปฏิบัติ",
+  "practice_search_recent": "ล่าสุด",
+  "practice_search_no_results": "ไม่พบผลลัพธ์สำหรับ \"{query}\"",
+  "practice_popular_practices": "การปฏิบัติยอดนิยม"
 }

@@ -8,6 +8,7 @@ import 'package:flutter_pecha/features/practice/presentation/providers/chants_pa
 import 'package:flutter_pecha/features/practice/presentation/providers/practice_explore_providers.dart';
 import 'package:flutter_pecha/features/practice/presentation/providers/practice_spaces_providers.dart';
 import 'package:flutter_pecha/features/practice/presentation/providers/routine_api_providers.dart';
+import 'package:flutter_pecha/features/practice/presentation/screens/practice_search_screen.dart';
 import 'package:flutter_pecha/features/practice/presentation/widgets/practice_accumulations_section.dart';
 import 'package:flutter_pecha/features/practice/presentation/widgets/practice_chants_section.dart';
 import 'package:flutter_pecha/features/practice/presentation/widgets/practice_next_session_section.dart';
@@ -58,6 +59,15 @@ class _PracticeExploreScreenState extends ConsumerState<PracticeExploreScreen> {
     context.pushNamed('bookmarks');
   }
 
+  void _openSearch() {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        settings: const RouteSettings(name: 'practice-search'),
+        builder: (_) => const PracticeSearchScreen(),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
@@ -71,6 +81,15 @@ class _PracticeExploreScreenState extends ConsumerState<PracticeExploreScreen> {
             onPressed: _openBookmarks,
             icon: Icon(
               AppAssets.bookmarkSimple,
+              size: 24,
+              color: Theme.of(context).colorScheme.onSurface,
+            ),
+          ),
+          IconButton(
+            tooltip: MaterialLocalizations.of(context).searchFieldLabel,
+            onPressed: _openSearch,
+            icon: Icon(
+              AppAssets.search,
               size: 24,
               color: Theme.of(context).colorScheme.onSurface,
             ),

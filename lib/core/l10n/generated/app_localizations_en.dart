@@ -4349,4 +4349,18 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get practice_no_space_accumulations =>
       'No accumulations from other spaces right now';
+
+  @override
+  String get practice_search_hint => 'Search practices';
+
+  @override
+  String get practice_search_recent => 'Recent';
+
+  @override
+  String practice_search_no_results(String query) {
+    return 'No results for \"$query\"';
+  }
+
+  @override
+  String get practice_popular_practices => 'Popular practices';
 }

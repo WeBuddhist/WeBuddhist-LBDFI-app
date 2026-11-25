@@ -4420,4 +4420,18 @@ class AppLocalizationsMy extends AppLocalizations {
   @override
   String get practice_no_space_accumulations =>
       'လောလောဆယ် အခြားအဖွဲ့များမှ စုဆောင်းမှု မရှိပါ';
+
+  @override
+  String get practice_search_hint => 'ကျင့်စဉ်များ ရှာရန်';
+
+  @override
+  String get practice_search_recent => 'မကြာသေးမီက';
+
+  @override
+  String practice_search_no_results(String query) {
+    return '\"$query\" အတွက် ရလဒ် မရှိပါ';
+  }
+
+  @override
+  String get practice_popular_practices => 'လူကြိုက်များသော ကျင့်စဉ်များ';
 }

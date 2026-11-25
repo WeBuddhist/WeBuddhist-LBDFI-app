@@ -7638,6 +7638,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'No accumulations from other spaces right now'**
   String get practice_no_space_accumulations;
+
+  /// No description provided for @practice_search_hint.
+  ///
+  /// In en, this message translates to:
+  /// **'Search practices'**
+  String get practice_search_hint;
+
+  /// No description provided for @practice_search_recent.
+  ///
+  /// In en, this message translates to:
+  /// **'Recent'**
+  String get practice_search_recent;
+
+  /// No description provided for @practice_search_no_results.
+  ///
+  /// In en, this message translates to:
+  /// **'No results for \"{query}\"'**
+  String practice_search_no_results(String query);
+
+  /// No description provided for @practice_popular_practices.
+  ///
+  /// In en, this message translates to:
+  /// **'Popular practices'**
+  String get practice_popular_practices;
 }
 
 class _AppLocalizationsDelegate

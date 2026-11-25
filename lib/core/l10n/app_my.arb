@@ -1182,5 +1182,9 @@
   "practice_from_your_spaces": "သင့်အဖွဲ့များမှ",
   "practice_discover_more": "ထပ်မံရှာဖွေရန်",
   "practice_space_accumulations": "အဖွဲ့ စုဆောင်းမှုများ",
-  "practice_no_space_accumulations": "လောလောဆယ် အခြားအဖွဲ့များမှ စုဆောင်းမှု မရှိပါ"
+  "practice_no_space_accumulations": "လောလောဆယ် အခြားအဖွဲ့များမှ စုဆောင်းမှု မရှိပါ",
+  "practice_search_hint": "ကျင့်စဉ်များ ရှာရန်",
+  "practice_search_recent": "မကြာသေးမီက",
+  "practice_search_no_results": "\"{query}\" အတွက် ရလဒ် မရှိပါ",
+  "practice_popular_practices": "လူကြိုက်များသော ကျင့်စဉ်များ"
 }

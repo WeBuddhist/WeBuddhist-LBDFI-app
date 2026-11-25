@@ -1284,5 +1284,16 @@
   "practice_from_your_spaces": "तपाईंका स्पेसहरूबाट",
   "practice_discover_more": "थप अन्वेषण गर्नुहोस्",
   "practice_space_accumulations": "स्पेस संचय",
-  "practice_no_space_accumulations": "अहिले अन्य स्पेसहरूबाट कुनै संचय छैन"
+  "practice_no_space_accumulations": "अहिले अन्य स्पेसहरूबाट कुनै संचय छैन",
+  "practice_search_hint": "अभ्यास खोज्नुहोस्",
+  "practice_search_recent": "हालैका",
+  "practice_search_no_results": "\"{query}\" को लागि कुनै नतिजा छैन",
+  "@practice_search_no_results": {
+    "placeholders": {
+      "query": {
+        "type": "String"
+      }
+    }
+  },
+  "practice_popular_practices": "लोकप्रिय अभ्यासहरू"
 }

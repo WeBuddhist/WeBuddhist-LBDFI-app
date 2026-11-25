@@ -84,51 +84,96 @@ Future<Either<Failure, List<GroupPractice>>> _loadRow(
   }
 }
 
-/// Feed page size, and the most pages read per type, for the Plans screen.
+/// Feed page size, and the most pages read per type, for full lists.
 const int _allPlansPageSize = 50;
 const int _allPlansMaxPages = 10;
 
-/// Every plan and series from the spaces the user joined ([joined] true) or
-/// has not, for the Plans screen's space pills. Empty for a guest asking
-/// for joined spaces. Re-read on the same changes as the rails.
-final practiceSpaceAllPlansProvider = FutureProvider.autoDispose
-    .family<Either<Failure, List<GroupPractice>>, bool>((ref, joined) {
+/// Every practice of one row (plans and series, or accumulations) from the
+/// spaces the user joined (`joined` true) or has not. The Plans screen's
+/// space pills and Practice search read it. Empty for a guest asking for
+/// joined spaces. Re-read on the same changes as the rails.
+final practiceSpaceFeedProvider = FutureProvider.autoDispose
+    .family<Either<Failure, List<GroupPractice>>, PracticeSpaceQuery>((
+      ref,
+      query,
+    ) {
       final signedIn = ref.watch(
         authProvider.select((auth) => auth.isLoggedIn && !auth.isGuest),
       );
       ref.watch(mySpaceMembershipEpochProvider);
       final language = ref.watch(contentLanguageProvider);
-      if (joined && !signedIn) {
+      if (query.joined && !signedIn) {
         return Future.value(const Right(<GroupPractice>[]));
       }
       final datasource = SpaceChantBooksRemoteDatasource(
         dio: ref.watch(dioProvider),
       );
       return ref.cacheSuccessFor(
-        _loadAllPlans(datasource, joined, language),
+        _loadFeed(datasource, query, language),
         spaceChantsCacheTime,
       );
     });
 
-Future<Either<Failure, List<GroupPractice>>> _loadAllPlans(
+Future<Either<Failure, List<GroupPractice>>> _loadFeed(
   SpaceChantBooksRemoteDatasource datasource,
-  bool joined,
+  PracticeSpaceQuery query,
   String language,
 ) async {
   try {
     final membership =
-        joined ? SpaceMembership.joined : SpaceMembership.notJoined;
+        query.joined ? SpaceMembership.joined : SpaceMembership.notJoined;
     final lists = await Future.wait([
-      for (final type in PracticeSpaceRow.plans.types)
+      for (final type in query.row.types)
         _fetchEveryPage(datasource, type, membership, language),
     ]);
     final practices = [for (final list in lists) ...list.where(_hasPayload)];
     _sortNewestFirst(practices);
     return Right(practices);
   } catch (e) {
-    return Left(ExceptionMapper.map(e, context: 'practiceSpaceAllPlans'));
+    return Left(ExceptionMapper.map(e, context: 'practiceSpaceFeed'));
   }
 }
+
+/// Key of [practiceSpaceSearchProvider].
+typedef PracticeSpaceSearchQuery = ({PracticeSpaceRow row, String query});
+
+/// Space practices of one row whose title holds the query, from the
+/// joined spaces and then the rest. The feed's `search` matches only chant
+/// book names, so the full feed is matched here, as space chants are.
+final practiceSpaceSearchProvider = FutureProvider.autoDispose.family<
+  Either<Failure, List<GroupPractice>>,
+  PracticeSpaceSearchQuery
+>((ref, search) async {
+  final needle = search.query.trim().toLowerCase();
+  if (needle.isEmpty) return const Right(<GroupPractice>[]);
+  final results = await Future.wait([
+    ref.watch(
+      practiceSpaceFeedProvider((row: search.row, joined: true)).future,
+    ),
+    ref.watch(
+      practiceSpaceFeedProvider((row: search.row, joined: false)).future,
+    ),
+  ]);
+  final matches = <GroupPractice>[];
+  for (final result in results) {
+    final failure = result.getLeft().toNullable();
+    if (failure != null) return Left(failure);
+    matches.addAll(
+      result
+          .getOrElse((_) => const [])
+          .where((p) => spacePracticeTitle(p).toLowerCase().contains(needle)),
+    );
+  }
+  return Right(matches);
+});
+
+/// The title a space practice card shows.
+String spacePracticeTitle(GroupPractice practice) =>
+    practice.series?.title ??
+    practice.plan?.title ??
+    practice.accumulator?.title ??
+    practice.collection?.name ??
+    '';
 
 /// Reads one type's feed page by page, up to [_allPlansMaxPages] pages.
 Future<List<GroupPractice>> _fetchEveryPage(
