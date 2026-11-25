@@ -245,6 +245,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       // The verse-of-the-day week; also stores today's verse on its own.
       ref.read(verseOfDayDomainRepositoryProvider).refreshRecentVerses(
         language: language,
+        tradition: ref.read(verseOfDayTraditionProvider),
       ),
       ref.read(todayEventsDomainRepositoryProvider).refreshTodayEvents(
         language: language,
