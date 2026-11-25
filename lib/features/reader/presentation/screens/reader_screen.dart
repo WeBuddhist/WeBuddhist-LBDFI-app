@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_pecha/core/config/router/app_router.dart';
 import 'package:flutter_pecha/core/config/router/app_routes.dart';
 import 'package:flutter_pecha/core/error/load_error_kind.dart';
-import 'package:flutter_pecha/core/utils/audio_url.dart';
+import 'package:flutter_pecha/core/utils/app_logger.dart';
 import 'package:flutter_pecha/core/widgets/slide_away_header.dart';
 import 'package:flutter_pecha/features/group_chat/presentation/widgets/prayer_requests_button.dart';
 import 'package:flutter_pecha/features/group_profile/presentation/providers/group_accumulator_providers.dart';
@@ -12,6 +12,8 @@ import 'package:flutter_pecha/features/group_profile/presentation/widgets/add_of
 import 'package:flutter_pecha/features/group_profile/presentation/widgets/group_accumulator_chant_bar.dart';
 import 'package:flutter_pecha/features/group_profile/presentation/widgets/group_accumulator_chant_footer.dart';
 import 'package:flutter_pecha/features/group_profile/presentation/widgets/group_recitation_audio_sheet.dart';
+import 'package:flutter_pecha/features/library/data/models/library_recording.dart';
+import 'package:flutter_pecha/features/library/presentation/providers/library_providers.dart';
 import 'package:flutter_pecha/features/mala/domain/entities/mala_accumulation_selection.dart';
 import 'package:flutter_pecha/features/mala/domain/entities/mantra.dart';
 import 'package:flutter_pecha/features/mala/presentation/providers/accumulation_chant_counter.dart';
@@ -204,16 +206,21 @@ class _ReaderScreenState extends ConsumerState<ReaderScreen>
 
   // ─── Audio ─────────────────────────────────────────────────────────────
   // Plays the current SOURCE_REFERENCE subtask's audio when the reader is
-  // opened from a plan. Shares the engine with PlanTextScreen.
+  // opened from a plan, and the library's recordings of a chant. Shares the
+  // engine with PlanTextScreen.
   PlanSegmentAudioController? _audioController;
   bool _isAdvancing = false;
+  static final _logger = AppLogger('ReaderScreen');
+
+  /// Library recordings of the chant on screen; empty until they load, and
+  /// for plans and the library reader.
+  List<ChantAudioTrack> _chantTracks = const [];
 
   /// Recording chosen from Audio versions on this screen. Null means the
   /// first recording of the chant on screen.
-  CollectionAudioTrack? _selectedCollectionTrack;
+  ChantAudioTrack? _selectedCollectionTrack;
 
-  bool get _hasCollectionAudioChoices =>
-      widget.navigationContext?.hasCollectionAudioChoices ?? false;
+  bool get _hasCollectionAudioChoices => _chantTracks.isNotEmpty;
 
   bool get _hasAudio =>
       (_audioController?.hasAudio ?? false) || _hasCollectionAudioChoices;
@@ -254,10 +261,9 @@ class _ReaderScreenState extends ConsumerState<ReaderScreen>
       for (final (index, source) in item.sources.indexed)
         ReaderParams(
           textId: source.textId,
-          segmentId:
-              index == 0
-                  ? widget.segmentId ?? source.firstSegmentId
-                  : source.firstSegmentId,
+          segmentId: index == 0
+              ? widget.segmentId ?? source.firstSegmentId
+              : source.firstSegmentId,
           segmentIds: source.segmentIds,
           navigationContext: ctx,
           sourceLanguage: source.language,
@@ -507,15 +513,14 @@ class _ReaderScreenState extends ConsumerState<ReaderScreen>
     // drop the widget's listener, dispose the counter and lose the count
     // the user just confirmed.
     final container = ProviderScope.containerOf(context, listen: false);
-    final added =
-        _openedEndedAccumulator
-            ? await addOfflineChantsToPersonal(
-              container.read,
-              container.listen,
-              mantra,
-              count,
-            )
-            : addOfflineChantsToSelection(ref.read, mantra, count);
+    final added = _openedEndedAccumulator
+        ? await addOfflineChantsToPersonal(
+            container.read,
+            container.listen,
+            mantra,
+            count,
+          )
+        : addOfflineChantsToSelection(ref.read, mantra, count);
     if (!mounted) return;
     if (!added) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -550,9 +555,9 @@ class _ReaderScreenState extends ConsumerState<ReaderScreen>
   /// current item has resolvable audio (its own `audioUrl` wins over the
   /// day-level track). Auto-plays when the navigation requested it.
   ///
-  /// A group recitation collection plays the recording passed in with the
-  /// route (the chant's first one, from the list play circle). The reader's
-  /// own play button starts that same first recording when nothing was passed.
+  /// A chant (chant list, routine, recitation collection) loads the
+  /// library's recordings of the text; the play button starts the first, and
+  /// the list play circle (`autoPlay`) starts it once they have loaded.
   void _initAudio() {
     final ctx = widget.navigationContext;
     if (ctx == null) return;
@@ -577,22 +582,38 @@ class _ReaderScreenState extends ConsumerState<ReaderScreen>
       return;
     }
 
-    if (ctx.source != NavigationSource.groupRecitationCollection) return;
-    final track = ctx.initialCollectionAudio;
-    if (!ctx.autoPlay || track == null) return;
-    if (!ctx.currentCollectionAudioTracks.any(
-      (option) => option.id == track.id,
-    )) {
+    if (!ctx.playsChantRecordings) return;
+    unawaited(_loadChantRecordings(autoPlay: ctx.autoPlay));
+  }
+
+  /// Fetches the chant's recordings from the library. A failure leaves the
+  /// reader without audio, as a chant with no recordings would be.
+  Future<void> _loadChantRecordings({required bool autoPlay}) async {
+    final editionId = widget.textId.trim();
+    if (editionId.isEmpty) return;
+    final List<LibraryRecording> recordings;
+    try {
+      recordings = await ref
+          .read(libraryRepositoryProvider)
+          .getChantRecordings(editionId);
+    } catch (e) {
+      _logger.warning('Chant recordings for $editionId failed', e);
       return;
     }
-    _selectedCollectionTrack = track;
-    _replaceCollectionAudio(track);
+    if (!mounted || recordings.isEmpty) return;
+    final language = Localizations.localeOf(context).languageCode;
+    setState(() {
+      _chantTracks = [
+        for (final recording in recordings)
+          ChantAudioTrack(id: recording.id, title: recording.titleIn(language)),
+      ];
+    });
+    if (autoPlay) _playCurrentCollectionAudio();
   }
 
   /// The recording play will start: the menu choice, or the first one.
-  CollectionAudioTrack? get _currentCollectionTrack {
-    final tracks =
-        widget.navigationContext?.currentCollectionAudioTracks ?? const [];
+  ChantAudioTrack? get _currentCollectionTrack {
+    final tracks = _chantTracks;
     if (tracks.isEmpty) return null;
     final selected = _selectedCollectionTrack;
     if (selected != null && tracks.any((track) => track.id == selected.id)) {
@@ -612,20 +633,20 @@ class _ReaderScreenState extends ConsumerState<ReaderScreen>
   }
 
   /// Swaps in [track] and starts it. When the file ends, playback stops
-  /// and the play button can start the same recording again.
-  void _replaceCollectionAudio(CollectionAudioTrack track) {
-    final url = normalizeAudioUrl(track.url);
-    if (url == null) return;
-
+  /// and the play button can start the same recording again. The file's
+  /// presigned link is fetched on play and again whenever it expires.
+  void _replaceCollectionAudio(ChantAudioTrack track) {
+    final repository = ref.read(libraryRepositoryProvider);
     final previous = _audioController;
     // Stop the old file now, but dispose it after this frame. The play
     // button and progress bar drop their listeners during the rebuild.
     previous?.cancel();
     _audioController = PlanSegmentAudioController(
-      url: url,
+      url: null,
       startMs: 0,
       endMs: null,
       onSegmentComplete: () {},
+      resolveUrl: () => repository.getRecordingAudioUrl(track.id),
     );
     if (previous != null) {
       WidgetsBinding.instance.addPostFrameCallback((_) => previous.dispose());
@@ -644,8 +665,7 @@ class _ReaderScreenState extends ConsumerState<ReaderScreen>
   }
 
   Future<void> _openCollectionAudioSheet() async {
-    final tracks =
-        widget.navigationContext?.currentCollectionAudioTracks ?? const [];
+    final tracks = _chantTracks;
     if (tracks.isEmpty || !mounted) return;
     // The ⋮ sheet has just closed. Let that route finish before opening this one.
     await Future<void>.delayed(Duration.zero);
@@ -724,11 +744,10 @@ class _ReaderScreenState extends ConsumerState<ReaderScreen>
     final navContext = widget.navigationContext;
     if (navContext == null || _isAdvancing) return;
     final state = ref.read(readerNotifierProvider(_params));
-    final primaryVersionId =
-        ref
-            .read(readerDualSettingsProvider(_params.settingsScope))
-            .primary
-            .versionId;
+    final primaryVersionId = ref
+        .read(readerDualSettingsProvider(_params.settingsScope))
+        .primary
+        .versionId;
     final onThisText =
         (navContext.currentItem?.hasSourceText(position.textId) ?? false) ||
         LivePositionResolver.textMatches(
@@ -925,10 +944,8 @@ class _ReaderScreenState extends ConsumerState<ReaderScreen>
           localizations.error_server_title,
           localizations.reader_error_server_message,
         ),
-        LoadErrorKind.missing || null => (
-          localizations.no_content,
-          localizations.noContentAvailable,
-        ),
+        LoadErrorKind.missing ||
+        null => (localizations.no_content, localizations.noContentAvailable),
       };
       return _buildStatusView(
         context,
@@ -937,8 +954,8 @@ class _ReaderScreenState extends ConsumerState<ReaderScreen>
           message: message,
           retryLabel: localizations.retry,
           backLabel: localizations.back,
-          onRetry:
-              () => ref.read(readerNotifierProvider(_params).notifier).reload(),
+          onRetry: () =>
+              ref.read(readerNotifierProvider(_params).notifier).reload(),
           onBack: () => _navigateBack(context),
         ),
       );
@@ -952,8 +969,9 @@ class _ReaderScreenState extends ConsumerState<ReaderScreen>
     final showAudioOnNav =
         _hasAudio && SwipeNavigationWrapper.showsBottomBar(active);
     final isBottomOverlayVisible = !isPanelOpen && _hasAudio && !showAudioOnNav;
-    final chantBarHeight =
-        _isGroupAccumulatorChant ? GroupAccumulatorChantBar.barHeight : 0.0;
+    final chantBarHeight = _isGroupAccumulatorChant
+        ? GroupAccumulatorChantBar.barHeight
+        : 0.0;
     final chantMantra = _chantMantra;
     // Watched here rather than where the footer is built, so an open panel
     // hiding the footer does not let go of the selected target's counter.
@@ -962,29 +980,29 @@ class _ReaderScreenState extends ConsumerState<ReaderScreen>
     final contentBottomPadding =
         (showAudioOnNav
             ? (_bottomBarHeight > 0
-                ? _bottomBarHeight + 16
-                : _selectedSegmentOverlayFallbackHeight)
+                  ? _bottomBarHeight + 16
+                  : _selectedSegmentOverlayFallbackHeight)
             : isBottomOverlayVisible
             ? (_bottomOverlayHeight > 0
-                ? _bottomOverlayHeight + 16
-                : _selectedSegmentOverlayFallbackHeight)
+                  ? _bottomOverlayHeight + 16
+                  : _selectedSegmentOverlayFallbackHeight)
             : _defaultContentBottomPadding) +
         chantBarHeight;
     final bottomInset = MediaQuery.of(context).padding.bottom;
     final chantFooter =
         chantMantra != null && !isPanelOpen && !_openedEndedAccumulator
-            ? GroupAccumulatorChantFooter(
-              // The recitation just finished counts as one completed, unless
-              // Finish and count has already counted it.
-              completedCount:
-                  _recitationsCounted + (_finishedRecitationCounted ? 0 : 1),
-              onReciteAgain: _onReciteAgain,
-              onFinishAndCount: _finishAndCount,
-              onFinishWithoutCounting: _finishWithoutCounting,
-              canCount: isChantTargetReady,
-              isFinishing: _isFinishing,
-            )
-            : null;
+        ? GroupAccumulatorChantFooter(
+            // The recitation just finished counts as one completed, unless
+            // Finish and count has already counted it.
+            completedCount:
+                _recitationsCounted + (_finishedRecitationCounted ? 0 : 1),
+            onReciteAgain: _onReciteAgain,
+            onFinishAndCount: _finishAndCount,
+            onFinishWithoutCounting: _finishWithoutCounting,
+            canCount: isChantTargetReady,
+            isFinishing: _isFinishing,
+          )
+        : null;
 
     return Stack(
       children: [
@@ -1029,10 +1047,9 @@ class _ReaderScreenState extends ConsumerState<ReaderScreen>
                   params: _activeParams,
                   textDetail: state.textDetail!,
                   isAppBarVisible: _isAppBarVisible,
-                  aboveBottomBar:
-                      showAudioOnNav
-                          ? _buildAudioCluster(gap: _playBarGap)
-                          : null,
+                  aboveBottomBar: showAudioOnNav
+                      ? _buildAudioCluster(gap: _playBarGap)
+                      : null,
                   onBottomBarHeight: (height) {
                     if ((_bottomBarHeight - height).abs() < 1) return;
                     setState(() => _bottomBarHeight = height);
@@ -1078,14 +1095,12 @@ class _ReaderScreenState extends ConsumerState<ReaderScreen>
             height: bottomInset,
             child: Builder(
               // Read under the reader's Theme, not this State's context.
-              builder:
-                  (context) => ColoredBox(
-                    color:
-                        ReaderPalette.resolve(
-                          Theme.of(context),
-                          ref,
-                        ).drawerBackground,
-                  ),
+              builder: (context) => ColoredBox(
+                color: ReaderPalette.resolve(
+                  Theme.of(context),
+                  ref,
+                ).drawerBackground,
+              ),
             ),
           ),
         // The floating audio button, while the navigation strip is away for
@@ -1144,8 +1159,9 @@ class _ReaderScreenState extends ConsumerState<ReaderScreen>
     final eventId = _eventId;
     final liveEventId = _liveEventId;
     final liveSyncToggle = _livePill(liveEventId);
-    final prayerRequestsButton =
-        eventId == null ? null : PrayerRequestsIconButton(eventId: eventId);
+    final prayerRequestsButton = eventId == null
+        ? null
+        : PrayerRequestsIconButton(eventId: eventId);
     if (_isEmbedded) {
       return PlanEmbeddedHeader(
         onClose: _closeEmbedded,
@@ -1164,13 +1180,15 @@ class _ReaderScreenState extends ConsumerState<ReaderScreen>
       prayerRequestsButton: prayerRequestsButton,
       // Picking a result replaces the route without the event, which drops
       // the live sync, so the reader that follows a recitation has no search.
-      onSearchPressed:
-          liveEventId == null ? () => _handleSearch(context) : null,
+      onSearchPressed: liveEventId == null
+          ? () => _handleSearch(context)
+          : null,
       onLanguagesPressed: () => _openLanguagesSheet(context),
       // The event page already offers share and offline recitations, so the
       // menu goes there.
-      onMorePressed:
-          eventId == null ? () => _openMoreBottomSheet(context) : null,
+      onMorePressed: eventId == null
+          ? () => _openMoreBottomSheet(context)
+          : null,
       onFontSizePressed: () => _openDisplaySheet(context),
     );
   }
@@ -1201,10 +1219,9 @@ class _ReaderScreenState extends ConsumerState<ReaderScreen>
         PlanAudioPlayerBar(
           controller: _audioController,
           versionTitle: title,
-          onVersionTap:
-              title == null
-                  ? null
-                  : () => unawaited(_openCollectionAudioSheet()),
+          onVersionTap: title == null
+              ? null
+              : () => unawaited(_openCollectionAudioSheet()),
         ),
       ],
     );
@@ -1278,8 +1295,10 @@ class _ReaderScreenState extends ConsumerState<ReaderScreen>
   Future<void> _handleSearch(BuildContext context) async {
     final router = ref.read(appRouterProvider);
     final textId = _activeParams.textId;
-    final language =
-        ref.read(readerNotifierProvider(_activeParams)).textDetail?.language;
+    final language = ref
+        .read(readerNotifierProvider(_activeParams))
+        .textDetail
+        ?.language;
 
     // Close selection before search
     _clearTransientState();
@@ -1365,8 +1384,9 @@ class _ReaderScreenState extends ConsumerState<ReaderScreen>
     _clearTransientState();
 
     // Adds the edition the user opened, not the original it is shown under.
-    final openedText =
-        ref.read(readerNotifierProvider(_activeParams)).openedText;
+    final openedText = ref
+        .read(readerNotifierProvider(_activeParams))
+        .openedText;
     final showAddToPractices =
         (widget.navigationContext?.source == NavigationSource.recitationList ||
             widget.navigationContext?.source == NavigationSource.routine) &&
@@ -1377,14 +1397,15 @@ class _ReaderScreenState extends ConsumerState<ReaderScreen>
       textId: _activeParams.textId,
       showAddToPractices: showAddToPractices,
       showOfflineRecitation: _isGroupAccumulatorChant,
-      onAddToPractices:
-          showAddToPractices
-              ? () => _openRoutineWithRecitation(context, openedText)
-              : null,
-      onAddOfflineRecitation:
-          _isGroupAccumulatorChant ? _addOfflineChantCount : null,
-      onAudioVersions:
-          _hasCollectionAudioChoices ? () => _openCollectionAudioSheet() : null,
+      onAddToPractices: showAddToPractices
+          ? () => _openRoutineWithRecitation(context, openedText)
+          : null,
+      onAddOfflineRecitation: _isGroupAccumulatorChant
+          ? _addOfflineChantCount
+          : null,
+      onAudioVersions: _hasCollectionAudioChoices
+          ? () => _openCollectionAudioSheet()
+          : null,
     );
   }
 

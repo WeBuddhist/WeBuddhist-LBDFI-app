@@ -69,13 +69,12 @@ class GroupSpaceRoomButtons extends ConsumerWidget {
           icon: AppAssets.handsPraying,
           tooltip: context.l10n.event_prayer_requests,
           hasUnread: unread?.prayer ?? false,
-          onPressed:
-              () => unawaited(
-                PrayerRequestsSheet.show(
-                  context,
-                  scope: PrayerRoomScope.group(profile.id),
-                ),
-              ),
+          onPressed: () => unawaited(
+            PrayerRequestsSheet.show(
+              context,
+              scope: PrayerRoomScope.group(profile.id),
+            ),
+          ),
         ),
         _DottedIconButton(
           icon: AppAssets.chatCircleDots,
