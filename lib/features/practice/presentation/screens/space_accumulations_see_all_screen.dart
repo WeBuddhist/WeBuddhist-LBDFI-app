@@ -110,6 +110,7 @@ class _SpaceAccumulationsSeeAllScreenState
         _hasMore = page.hasMore && page.practices.isNotEmpty;
         _isLoading = false;
       });
+      _continuePaging();
     } catch (e) {
       _logger.error('Failed to load space accumulations', e);
       if (!mounted || epoch != _epoch) return;
@@ -118,6 +119,21 @@ class _SpaceAccumulationsSeeAllScreenState
         _failed = true;
       });
     }
+  }
+
+  /// Rows without a card can leave a page with nothing to show, or too
+  /// little to scroll: the empty state has no scroll listener and a short
+  /// list never fires one. Reads the next page once the frame has laid
+  /// out, until the list can scroll or the feed ends.
+  void _continuePaging() {
+    if (!_hasMore) return;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted || _isLoading || !_hasMore) return;
+      final canScroll =
+          _scrollController.hasClients &&
+          _scrollController.position.maxScrollExtent > 0;
+      if (!canScroll) _loadMore();
+    });
   }
 
   void _select(SpaceFilter filter) {

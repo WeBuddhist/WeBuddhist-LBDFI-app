@@ -74,6 +74,11 @@ class _PracticeSearchScreenState extends ConsumerState<PracticeSearchScreen> {
   /// reported once, when every section has answered.
   String? _trackedQuery;
 
+  /// A query the user submitted with the keyboard, saved to the recent
+  /// list once its results are in rather than at the keypress, when the
+  /// debounce may still hold the previous query.
+  String? _submitted;
+
   late final String _language = ref.read(contentLanguageProvider);
 
   @override
@@ -125,6 +130,18 @@ class _PracticeSearchScreenState extends ConsumerState<PracticeSearchScreen> {
     _debounce?.cancel();
     _debounce = Timer(const Duration(milliseconds: 500), () {
       if (mounted) setState(() => _query = active ? trimmed : '');
+    });
+  }
+
+  /// Search pressed on the keyboard: settle the typed query now instead of
+  /// after the debounce, and remember it once its results have answered.
+  void _onSubmitted(String text) {
+    final trimmed = text.trim();
+    _debounce?.cancel();
+    if (trimmed.length < chantsSearchMinQueryLength) return;
+    setState(() {
+      _query = trimmed;
+      _submitted = trimmed;
     });
   }
 
@@ -225,7 +242,7 @@ class _PracticeSearchScreenState extends ConsumerState<PracticeSearchScreen> {
                       controller: _controller,
                       focusNode: _focusNode,
                       onChanged: _onChanged,
-                      onSubmitted: (_) => _remember(),
+                      onSubmitted: _onSubmitted,
                       textInputAction: TextInputAction.search,
                       style: theme.textTheme.bodyMedium?.copyWith(fontSize: 15),
                       decoration: InputDecoration(
@@ -368,6 +385,11 @@ class _PracticeSearchScreenState extends ConsumerState<PracticeSearchScreen> {
             _failed(booksAsync) ||
             _failed(spaceChantsAsync) ||
             (spaceChants?.isPartial ?? false));
+
+    if (!anyLoading && _submitted == _query) {
+      _submitted = null;
+      _remember();
+    }
 
     if (!anyLoading) {
       _trackSearched(
