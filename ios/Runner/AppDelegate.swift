@@ -4,9 +4,11 @@ import UIKit
 import flutter_local_notifications
 import airbridge_flutter_sdk
 
-
+// The app uses the UIScene life cycle (see UIApplicationSceneManifest in Info.plist).
+// iOS 27 refuses to launch apps built with the iOS 27 SDK that don't, so plugins are
+// registered when Flutter creates its engine, and URLs arrive through SceneDelegate.
 @main
-@objc class AppDelegate: FlutterAppDelegate {
+@objc class AppDelegate: FlutterAppDelegate, FlutterImplicitEngineDelegate {
   /// Retained for the app's lifetime — it owns the running Live Activity.
   private let timerLiveActivityBridge = TimerLiveActivityBridge()
 
@@ -23,44 +25,59 @@ import airbridge_flutter_sdk
       UNUserNotificationCenter.current().delegate = self as UNUserNotificationCenterDelegate
     }
 
-    GeneratedPluginRegistrant.register(with: self)
-
-    if let controller = window?.rootViewController as? FlutterViewController {
-      timerLiveActivityBridge.register(with: controller.binaryMessenger)
-    }
-
     let airbridgeAppName = Bundle.main.object(forInfoDictionaryKey: "AIRBRIDGE_APP_NAME") as? String ?? ""
     let airbridgeSdkToken = Bundle.main.object(forInfoDictionaryKey: "AIRBRIDGE_SDK_TOKEN") as? String ?? ""
     AirbridgeFlutter.initializeSDK(name: airbridgeAppName, token: airbridgeSdkToken)
-    
+
     return super.application(application, didFinishLaunchingWithOptions: launchOptions)
   }
-  
-  override func application(
-    _ app: UIApplication,
-    open url: URL,
-    options: [UIApplication.OpenURLOptionsKey : Any] = [:]
-  ) -> Bool {
-    if shouldHandleWithAirbridge(url) {
-      AirbridgeFlutter.trackDeeplink(url: url)
-      return true
-    }
-    return super.application(app, open: url, options: options)
+
+  func didInitializeImplicitFlutterEngine(_ engineBridge: FlutterImplicitEngineBridge) {
+    GeneratedPluginRegistrant.register(with: engineBridge.pluginRegistry)
+    timerLiveActivityBridge.register(with: engineBridge.applicationRegistrar.messenger())
   }
-  
-  override func application(
-    _ application: UIApplication,
-    continue userActivity: NSUserActivity,
-    restorationHandler: @escaping ([UIUserActivityRestoring]?) -> Void
-  ) -> Bool {
-    if let url = userActivity.webpageURL, shouldHandleWithAirbridge(url) {
-      AirbridgeFlutter.trackDeeplink(userActivity: userActivity)
-      return true
+}
+
+/// Receives the URLs and universal links that `application(_:open:)` and
+/// `application(_:continue:)` got before the scene life cycle. Airbridge links go to
+/// Airbridge; everything else goes on to Flutter and its plugins.
+class SceneDelegate: FlutterSceneDelegate {
+  override func scene(
+    _ scene: UIScene,
+    willConnectTo session: UISceneSession,
+    options connectionOptions: UIScene.ConnectionOptions
+  ) {
+    super.scene(scene, willConnectTo: session, options: connectionOptions)
+    for context in connectionOptions.urlContexts where Self.isAirbridge(context.url) {
+      AirbridgeFlutter.trackDeeplink(url: context.url)
     }
-    return super.application(application, continue: userActivity, restorationHandler: restorationHandler)
+    for activity in connectionOptions.userActivities {
+      if let url = activity.webpageURL, Self.isAirbridge(url) {
+        AirbridgeFlutter.trackDeeplink(userActivity: activity)
+      }
+    }
   }
 
-  private func shouldHandleWithAirbridge(_ url: URL) -> Bool {
+  override func scene(_ scene: UIScene, openURLContexts URLContexts: Set<UIOpenURLContext>) {
+    let airbridge = URLContexts.filter { Self.isAirbridge($0.url) }
+    for context in airbridge {
+      AirbridgeFlutter.trackDeeplink(url: context.url)
+    }
+    let others = URLContexts.subtracting(airbridge)
+    if !others.isEmpty {
+      super.scene(scene, openURLContexts: others)
+    }
+  }
+
+  override func scene(_ scene: UIScene, continue userActivity: NSUserActivity) {
+    if let url = userActivity.webpageURL, Self.isAirbridge(url) {
+      AirbridgeFlutter.trackDeeplink(userActivity: userActivity)
+      return
+    }
+    super.scene(scene, continue: userActivity)
+  }
+
+  private static func isAirbridge(_ url: URL) -> Bool {
     let scheme = url.scheme?.lowercased() ?? ""
     let host = url.host?.lowercased() ?? ""
     return scheme == "webuddhist"
