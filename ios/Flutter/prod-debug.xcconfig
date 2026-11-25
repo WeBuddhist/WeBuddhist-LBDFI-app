@@ -3,7 +3,7 @@
 #include? "Secrets.xcconfig"
 
 FLUTTER_TARGET=lib/main_prod.dart
-BUNDLE_ID=org.pecha.app
+BUNDLE_ID=com.webuddhist.lbdfi
 APP_NAME=LBDFI
-AUTH0_SCHEME=org.pecha.app
+AUTH0_SCHEME=com.webuddhist.lbdfi
 AIRBRIDGE_APP_NAME=webuddhist

@@ -5,7 +5,7 @@
 #
 # Inputs (brand/logo/lbdfi-mark-color.png) → outputs:
 #   brand/logo/lbdfi-mark-heritage.png       gold line-art + saffron jewels, transparent fills
-#   assets/launcher/app_icon.png             iOS / store icon, emblem on Robe Maroon (no alpha)
+#   assets/launcher/app_icon.png             iOS / store icon, emblem on white (no alpha)
 #   assets/launcher/app_icon_foreground.png  Android adaptive foreground (background colour is in pubspec)
 #   assets/images/webuddhist_logo.png        in-app logo (file name kept so upstream code is untouched)
 #   android res drawable-*/splash_logo.png   native splash logo
@@ -17,8 +17,8 @@ cd "$(dirname "$0")/.."
 
 SRC=brand/logo/lbdfi-mark-color.png
 MARK=brand/logo/lbdfi-mark-heritage.png
-MAROON="#980404"
-GOLD="#D9A534"
+ICON_BG="#FFFFFF"   # white: saffron emblem on white (Theravada look, chosen 25 Nov 2026)
+GOLD="#C98A1E"      # LBDFI gold, deep enough to read on white
 
 command -v magick >/dev/null || { echo "ImageMagick (magick) is required"; exit 1; }
 
@@ -29,8 +29,8 @@ magick "$SRC" \
   -trim +repage -resize 1024x1024 -gravity center -background none -extent 1024x1024 \
   -strip "$MARK"
 
-# Icon: emblem at 74% on maroon, like the WeBuddhist icon's proportions.
-magick -size 1024x1024 "xc:$MAROON" \( "$MARK" -resize 758x758 \) -gravity center -composite \
+# Icon: emblem at 74% on white, like the WeBuddhist icon's proportions.
+magick -size 1024x1024 "xc:$ICON_BG" \( "$MARK" -resize 758x758 \) -gravity center -composite \
   -alpha off -strip assets/launcher/app_icon.png
 magick "$MARK" -resize 758x758 -gravity center -background none -extent 1024x1024 \
   -strip assets/launcher/app_icon_foreground.png
