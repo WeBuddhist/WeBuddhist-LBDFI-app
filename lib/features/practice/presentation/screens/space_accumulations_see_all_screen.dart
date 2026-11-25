@@ -39,6 +39,10 @@ class _SpaceAccumulationsSeeAllScreenState
   final List<GroupPractice> _practices = [];
   bool _isLoading = false;
   bool _hasMore = true;
+
+  /// Feed rows read so far, cards or not: the next page's offset. Rows
+  /// without an accumulator are not shown, so this can pass the card count.
+  int _rowsRead = 0;
   bool _failed = false;
 
   /// Bumped by a refresh or a pill change so a page still loading for the
@@ -93,11 +97,12 @@ class _SpaceAccumulationsSeeAllScreenState
         type: GroupPracticeType.accumulator,
         membership: _membership,
         language: ref.read(contentLanguageProvider),
-        skip: _practices.length,
+        skip: _rowsRead,
         limit: _pageSize,
       );
       if (!mounted || epoch != _epoch) return;
       setState(() {
+        _rowsRead += page.practices.length;
         _practices.addAll(page.practices.where((p) => p.accumulator != null));
         _hasMore = page.hasMore && page.practices.isNotEmpty;
         _isLoading = false;
@@ -123,6 +128,7 @@ class _SpaceAccumulationsSeeAllScreenState
     _epoch++;
     setState(() {
       _practices.clear();
+      _rowsRead = 0;
       _hasMore = true;
       _isLoading = false;
       _failed = false;

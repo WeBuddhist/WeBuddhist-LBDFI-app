@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_pecha/core/extensions/context_ext.dart';
 import 'package:flutter_pecha/features/practice/presentation/providers/practice_explore_providers.dart';
 import 'package:flutter_pecha/features/practice/presentation/providers/practice_spaces_providers.dart';
+import 'package:flutter_pecha/features/practice/presentation/screens/all_recitations_screen.dart';
 import 'package:flutter_pecha/features/practice/presentation/screens/chant_books_see_all_screen.dart';
 import 'package:flutter_pecha/features/practice/presentation/utils/recitation_reader_navigation.dart';
 import 'package:flutter_pecha/features/practice/presentation/widgets/practice_chant_list_tile.dart';
@@ -40,18 +41,21 @@ class PracticeChantsSection extends ConsumerWidget {
       return const SizedBox.shrink();
     }
     // See all opens the chant books screen on "Other spaces", the same
-    // screen "From your spaces" opens on "Your spaces".
-    final showSeeAll = spaceBooks.isNotEmpty;
+    // screen "From your spaces" opens on "Your spaces". With no such books
+    // but more catalog chants than the preview, it opens the full chant
+    // list instead, so those chants are still reachable.
+    final VoidCallback? onSeeAll =
+        spaceBooks.isNotEmpty
+            ? () => openChantBooksSeeAll(context, ChantBooksSeeAll.otherSpaces)
+            : (page != null && page.total > recitations.length)
+            ? () => _showAllRecitations(context)
+            : null;
 
     return PracticeSectionContainer(
       title: l10n.home_chants,
       isSubsection: isSubsection,
-      seeAllLabel: showSeeAll ? l10n.see_all : null,
-      onSeeAll:
-          showSeeAll
-              ? () =>
-                  openChantBooksSeeAll(context, ChantBooksSeeAll.otherSpaces)
-              : null,
+      seeAllLabel: onSeeAll != null ? l10n.see_all : null,
+      onSeeAll: onSeeAll,
       child: Column(
         children: [
           if (spaceBooks.isNotEmpty) ...[
@@ -66,6 +70,15 @@ class PracticeChantsSection extends ConsumerWidget {
               onTap: () => openRecitationReader(context, r),
             ),
         ],
+      ),
+    );
+  }
+
+  void _showAllRecitations(BuildContext context) {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        settings: const RouteSettings(name: 'all-recitations'),
+        builder: (_) => const AllRecitationsScreen(),
       ),
     );
   }

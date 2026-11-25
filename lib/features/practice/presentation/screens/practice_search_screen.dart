@@ -24,6 +24,7 @@ import 'package:flutter_pecha/features/practice/presentation/providers/series_se
 import 'package:flutter_pecha/features/practice/presentation/utils/chants_page_sections.dart';
 import 'package:flutter_pecha/features/practice/presentation/utils/recitation_reader_navigation.dart';
 import 'package:flutter_pecha/features/practice/presentation/widgets/chants/chant_book_card.dart';
+import 'package:flutter_pecha/features/practice/presentation/widgets/chants/chant_load_notice.dart';
 import 'package:flutter_pecha/features/practice/presentation/widgets/chants/chant_rows.dart';
 import 'package:flutter_pecha/features/practice/presentation/widgets/chants/space_chant_rows.dart';
 import 'package:flutter_pecha/features/practice/presentation/widgets/practice_chant_list_tile.dart';
@@ -266,7 +267,9 @@ class _PracticeSearchScreenState extends ConsumerState<PracticeSearchScreen> {
       )),
     );
     final booksAsync = ref.watch(chantBookSearchProvider(_query));
-    final spaceChantsAsync = ref.watch(spaceChantsProvider);
+    // Every space chant, filtered here to the search's language rather than
+    // the Chants page's saved one, so both chant sources agree.
+    final spaceChantsAsync = ref.watch(allSpaceChantsProvider);
 
     final catalogPlans = seriesState.results;
     final spacePlans = _list(spacePlansAsync);
@@ -275,7 +278,7 @@ class _PracticeSearchScreenState extends ConsumerState<PracticeSearchScreen> {
     final books = _list(booksAsync);
     final spaceChants = spaceChantsAsync.valueOrNull?.fold(
       (_) => null,
-      (c) => c,
+      (c) => c.inLanguage(_language),
     );
     final spaceMatches =
         spaceChants == null || _query.isEmpty
@@ -313,14 +316,20 @@ class _PracticeSearchScreenState extends ConsumerState<PracticeSearchScreen> {
         audioLoading ||
         textLoading;
 
+    // A search that failed, or space chants read with some books missing:
+    // what was found may be incomplete, so a retry is offered.
+    final failed =
+        !queryPending &&
+        (seriesState.error != null ||
+            malaState.error != null ||
+            chantState.error != null ||
+            _failed(spacePlansAsync) ||
+            _failed(spaceAccAsync) ||
+            _failed(booksAsync) ||
+            _failed(spaceChantsAsync) ||
+            (spaceChants?.isPartial ?? false));
+
     if (!_found && !anyLoading) {
-      final failed =
-          seriesState.error != null ||
-          malaState.error != null ||
-          chantState.error != null ||
-          _failed(spacePlansAsync) ||
-          _failed(spaceAccAsync) ||
-          _failed(booksAsync);
       if (failed) return _SearchError(onRetry: _retry);
       return _NoResults(query: typed);
     }
@@ -335,6 +344,15 @@ class _PracticeSearchScreenState extends ConsumerState<PracticeSearchScreen> {
       keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
       padding: const EdgeInsets.only(bottom: 32),
       children: [
+        if (failed && !anyLoading)
+          Padding(
+            padding: const EdgeInsets.only(top: 8),
+            child: ChantLoadNotice(
+              message: l10n.unableToLoad,
+              onRetry: _retry,
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+            ),
+          ),
         if (hasPlans)
           section(
             l10n.home_shortcut_plans,
@@ -430,7 +448,10 @@ class _PracticeSearchScreenState extends ConsumerState<PracticeSearchScreen> {
     ref.read(accumulationSearchProvider.notifier).retry();
     ref.read(practiceRecitationSearchProvider(_language).notifier).retry();
     ref.invalidate(practiceSpaceFeedProvider);
+    // Re-reads the space books, and with them the space chants and the
+    // chant book search.
     ref.invalidate(spaceChantBooksProvider);
+    ref.invalidate(allSpaceChantsProvider);
     ref.invalidate(chantBookSearchProvider(_query));
   }
 
