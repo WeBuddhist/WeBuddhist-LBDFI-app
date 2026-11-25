@@ -22,6 +22,7 @@ jobs:
   # settings page read the version from pubspec via --build-name, so this single
   # bump keeps all three in sync. See CONTRIBUTING.md for the conventions.
   version:
+    if: github.repository == 'WeBuddhist/WeBuddhist-app'  # white-label fork guard: never publish the WeBuddhist app or push to its Tolgee from a fork
     name: 🔖 Bump version
     runs-on: ubuntu-latest
     permissions:
@@ -52,6 +53,7 @@ jobs:
           git push origin HEAD:${{ github.ref_name }}
 
   android:
+    if: github.repository == 'WeBuddhist/WeBuddhist-app'  # white-label fork guard: never publish the WeBuddhist app or push to its Tolgee from a fork
     needs: version
     uses: ./.github/workflows/build-android.yml
     with:
@@ -66,6 +68,7 @@ jobs:
     secrets: inherit
 
   ios:
+    if: github.repository == 'WeBuddhist/WeBuddhist-app'  # white-label fork guard: never publish the WeBuddhist app or push to its Tolgee from a fork
     needs: version
     uses: ./.github/workflows/build-ios.yml
     with:
@@ -80,6 +83,7 @@ jobs:
     secrets: inherit
 
   github_release:
+    if: github.repository == 'WeBuddhist/WeBuddhist-app'  # white-label fork guard: never publish the WeBuddhist app or push to its Tolgee from a fork
     name: 📦 GitHub Release
     needs: [ version, android, ios ]
     runs-on: ubuntu-latest
