@@ -224,7 +224,7 @@ void main() {
         GoRoute(
           path: '/home/events/:id',
           builder: (context, state) {
-            onPush?.call(state.uri.path);
+            onPush?.call(state.uri.toString());
             return const Scaffold(body: Text('event page'));
           },
         ),
