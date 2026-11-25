@@ -203,6 +203,54 @@ class MalaAnalytics {
       AnalyticsProperties.pendingDelta: pendingDelta,
     });
   }
+
+  /// A mala setting the user changed. The image and skin fire after the
+  /// server saved them and carry the mantra; a null [value] there means the
+  /// default was restored.
+  void settingChanged({
+    required MalaSetting setting,
+    Object? value,
+    String? presetId,
+  }) {
+    _analytics.trackInBackground(AnalyticsEvents.malaSettingChanged, {
+      AnalyticsProperties.setting: setting.key,
+      AnalyticsProperties.value:
+          value ?? (setting.isAppearance ? 'default' : null),
+      if (presetId != null) AnalyticsProperties.presetId: presetId,
+    });
+  }
+
+  /// The count was reset to zero on the server. [groupAccumulatorId] is set
+  /// when a group accumulation's count was reset.
+  void countReset({required String presetId, String? groupAccumulatorId}) {
+    _analytics.trackInBackground(AnalyticsEvents.malaCountReset, {
+      AnalyticsProperties.presetId: presetId,
+      AnalyticsProperties.mode:
+          groupAccumulatorId == null ? 'personal' : 'group',
+      if (groupAccumulatorId != null)
+        AnalyticsProperties.groupAccumulatorId: groupAccumulatorId,
+    });
+  }
+}
+
+/// A mala setting, carried as `setting` on `mala_setting_changed`.
+enum MalaSetting {
+  sound,
+  vibration,
+  leftHanded,
+  animation,
+  speed,
+  deityImage,
+  skin;
+
+  String get key => switch (this) {
+    MalaSetting.leftHanded => 'left_handed',
+    MalaSetting.deityImage => 'deity_image',
+    _ => name,
+  };
+
+  bool get isAppearance =>
+      this == MalaSetting.deityImage || this == MalaSetting.skin;
 }
 
 /// Groups counted beads into sessions for `mala_session_started`,

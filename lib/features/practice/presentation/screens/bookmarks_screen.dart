@@ -10,6 +10,7 @@ import 'package:flutter_pecha/features/practice/presentation/widgets/bookmark_ca
 import 'package:flutter_pecha/features/practice/presentation/widgets/filter_pill.dart';
 import 'package:flutter_pecha/features/reader/data/models/navigation_context.dart';
 import 'package:flutter_pecha/features/timer/domain/entities/preset_timer.dart';
+import 'package:flutter_pecha/features/practice/presentation/utils/practice_analytics.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
@@ -76,6 +77,7 @@ class _BookmarksScreenState extends ConsumerState<BookmarksScreen>
   @override
   void initState() {
     super.initState();
+    ref.read(practiceAnalyticsProvider).bookmarksOpened();
     _tabs = ref.read(bookmarksProvider).visibleTabs;
     _tabController = TabController(length: _tabs.length, vsync: this);
   }
@@ -138,7 +140,10 @@ class _BookmarksScreenState extends ConsumerState<BookmarksScreen>
         final textId = bookmark.textId ?? bookmark.sourceId;
         context.push(
           '/reader/$textId',
-          extra: NavigationContext(source: NavigationSource.normal),
+          extra: const NavigationContext(
+            source: NavigationSource.normal,
+            fromBookmarks: true,
+          ),
         );
       case BookmarkItemType.series:
         context.pushNamed(

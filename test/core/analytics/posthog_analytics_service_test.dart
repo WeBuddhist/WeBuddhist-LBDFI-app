@@ -36,4 +36,29 @@ void main() {
     expect(observers.whereType<PosthogObserver>(), hasLength(1));
     expect(observers.whereType<ClarityScreenObserver>(), hasLength(1));
   });
+
+  test('first_app_version goes out with a login, not a restored session', () {
+    expect(
+      PostHogAnalyticsService.setOnceProperties(
+        properties: {'is_guest': false},
+        appVersion: '2.48.0',
+      ),
+      {'first_app_version': '2.48.0'},
+    );
+    // A cold start re-identifies without person properties.
+    expect(
+      PostHogAnalyticsService.setOnceProperties(
+        properties: null,
+        appVersion: '2.48.0',
+      ),
+      isNull,
+    );
+    expect(
+      PostHogAnalyticsService.setOnceProperties(
+        properties: {'is_guest': false},
+        appVersion: null,
+      ),
+      isNull,
+    );
+  });
 }

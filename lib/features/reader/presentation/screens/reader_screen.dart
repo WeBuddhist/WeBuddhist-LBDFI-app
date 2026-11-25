@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_pecha/core/analytics/media_analytics.dart';
 import 'package:flutter_pecha/core/config/router/app_router.dart';
 import 'package:flutter_pecha/core/config/router/app_routes.dart';
 import 'package:flutter_pecha/core/error/load_error_kind.dart';
@@ -562,11 +563,25 @@ class _ReaderScreenState extends ConsumerState<ReaderScreen>
       final url = ctx.effectiveAudioUrlFor(item);
       if (url == null) return;
 
+      // Read now: the summary arrives from dispose, where `ref` is gone.
+      final media = ref.read(mediaAnalyticsProvider);
       _audioController = PlanSegmentAudioController(
         url: url,
         startMs: item.startMs,
         endMs: item.endMs,
         onSegmentComplete: _onAudioSegmentComplete,
+        onListened:
+            (listen) => media.audioPlayed(
+              surface: AudioSurface.plan,
+              listened: listen.listened,
+              speed: listen.speed,
+              repeat: listen.repeat,
+              completed: listen.completed,
+              planId: ctx.planId,
+              dayNumber: ctx.dayNumber,
+              textId: widget.textId,
+              eventId: ctx.isFromEvent ? ctx.eventId : null,
+            ),
       );
 
       if (ctx.autoPlay) {
@@ -621,11 +636,24 @@ class _ReaderScreenState extends ConsumerState<ReaderScreen>
     // Stop the old file now, but dispose it after this frame. The play
     // button and progress bar drop their listeners during the rebuild.
     previous?.cancel();
+    final media = ref.read(mediaAnalyticsProvider);
+    final ctx = widget.navigationContext;
     _audioController = PlanSegmentAudioController(
       url: url,
       startMs: 0,
       endMs: null,
       onSegmentComplete: () {},
+      onListened:
+          (listen) => media.audioPlayed(
+            surface: AudioSurface.recitationCollection,
+            listened: listen.listened,
+            speed: listen.speed,
+            repeat: listen.repeat,
+            completed: listen.completed,
+            textId: widget.textId,
+            collectionId: ctx?.collectionId,
+            eventId: (ctx?.isFromEvent ?? false) ? ctx?.eventId : null,
+          ),
     );
     if (previous != null) {
       WidgetsBinding.instance.addPostFrameCallback((_) => previous.dispose());
@@ -1205,6 +1233,10 @@ class _ReaderScreenState extends ConsumerState<ReaderScreen>
               title == null
                   ? null
                   : () => unawaited(_openCollectionAudioSheet()),
+          onSettingChanged:
+              (setting, value) => ref
+                  .read(mediaAnalyticsProvider)
+                  .audioSettingChanged(setting: setting, value: value),
         ),
       ],
     );

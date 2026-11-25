@@ -153,7 +153,7 @@ void main() {
         GoRoute(
           path: '/home/events/:id',
           builder: (context, state) {
-            onPush(state.uri.path);
+            onPush(state.uri.toString());
             return const Scaffold(body: Text('event page'));
           },
         ),

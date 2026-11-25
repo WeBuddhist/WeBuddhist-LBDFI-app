@@ -999,12 +999,16 @@ Future<bool> enrollSeriesThroughGroup({
   required String groupId,
   required GroupType groupType,
 }) async {
+  // Read before enrolling: afterwards the server has already added the user,
+  // so the profile would say they were a member and the join wouldn't count.
+  final profileResult = await ref.read(groupProfileProvider(groupId).future);
+  // Get the notifier only now: it auto-disposes, so one read before the
+  // await above could be gone by the time enroll runs.
   final notifier = ref.read(seriesEnrollmentProvider(seriesId).notifier);
   final ok = await notifier.enroll(groupId: groupId);
   if (!ok) return false;
 
   final followKey = GroupFollowKey(groupId: groupId, groupType: groupType);
-  final profileResult = await ref.read(groupProfileProvider(groupId).future);
   profileResult.fold(
     (_) {},
     (profile) => ref

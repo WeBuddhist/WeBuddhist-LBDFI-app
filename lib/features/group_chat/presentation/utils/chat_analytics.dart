@@ -243,6 +243,30 @@ class GroupChatAnalytics {
     });
   }
 
+  /// The chat list (inbox) opened. [hasUnread] is what the list last
+  /// showed; null when it hasn't loaded yet.
+  void chatsListOpened({bool? hasUnread}) {
+    _track(AnalyticsEvents.chatsListOpened, {
+      if (hasUnread != null) AnalyticsProperties.hasUnread: hasUnread,
+    });
+  }
+
+  /// A prayer-request list opened: an event's or a space's sheet, or the
+  /// user's own list (`scope: mine`). [source] says what opened it.
+  void prayerRequestsOpened({
+    required String scope,
+    String? eventId,
+    String? groupId,
+    String? source,
+  }) {
+    _track(AnalyticsEvents.prayerRequestsOpened, {
+      AnalyticsProperties.scope: scope,
+      if (eventId != null) AnalyticsProperties.eventId: eventId,
+      if (groupId != null) AnalyticsProperties.groupId: groupId,
+      if (source != null) AnalyticsProperties.source: source,
+    });
+  }
+
   void _track(String event, Map<String, Object?> properties) {
     unawaited(
       _analytics.track(event, properties: properties).catchError((

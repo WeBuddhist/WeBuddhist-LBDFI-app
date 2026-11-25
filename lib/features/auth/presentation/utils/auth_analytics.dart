@@ -110,11 +110,18 @@ class AuthAnalytics {
   /// [source] is null when login started somewhere other than the login page
   /// or drawer. [isNewUser] is true when the account has not finished
   /// onboarding, null when that could not be checked.
+  ///
+  /// A new account also records its sign-up method on the person, once.
   void loginSucceeded({String? method, AuthSource? source, bool? isNewUser}) {
+    final resolvedMethod = method ?? 'default';
     _analytics.trackInBackground(AnalyticsEvents.authLoginSucceeded, {
-      AnalyticsProperties.method: method ?? 'default',
+      AnalyticsProperties.method: resolvedMethod,
       AnalyticsProperties.source: source?.key,
       if (isNewUser != null) AnalyticsProperties.isNewUser: isNewUser,
+      if (isNewUser == true)
+        AnalyticsProperties.personSetOnce: {
+          AnalyticsProperties.signupMethod: resolvedMethod,
+        },
     });
   }
 

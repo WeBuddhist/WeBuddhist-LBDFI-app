@@ -13,6 +13,7 @@ import 'package:flutter_pecha/features/calendar/presentation/widgets/calendar_he
 import 'package:flutter_pecha/features/calendar/presentation/widgets/calendar_month_nav.dart';
 import 'package:flutter_pecha/features/calendar/presentation/widgets/personal_event_sheet.dart';
 import 'package:flutter_pecha/features/calendar/presentation/widgets/tibetan_calendar_grid.dart';
+import 'package:flutter_pecha/features/calendar/presentation/utils/calendar_analytics.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
@@ -40,6 +41,9 @@ class _TibetanCalendarScreenState extends ConsumerState<TibetanCalendarScreen>
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
+    ref
+        .read(calendarAnalyticsProvider)
+        .calendarViewed(calendarType: ref.read(selectedCalendarTypeProvider));
     // Fresh entry to the screen always shows today.
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _syncToToday();
