@@ -115,6 +115,9 @@ class ProtectedRoutes {
   /// The token is sent when the user is authenticated; silently skipped for guests.
   static const List<String> optionalPaths = [
     '/plans/{planId}/days',
+    // Poems feed: public for guests (All traditions poems only); with a token
+    // the backend adds poems for the caller's saved traditions.
+    '/poems',
     // Verse of the day: public for guests; when logged in, Bearer + existing
     // X-Timezone lets the backend upsert user_metadata.timezone.
     '/verse-of-day/today',
