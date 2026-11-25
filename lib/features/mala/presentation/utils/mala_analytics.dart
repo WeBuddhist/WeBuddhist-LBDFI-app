@@ -18,6 +18,25 @@ enum MalaInput { tap, swipe, mixed }
 /// What switched the mantra, carried on `mala_mantra_switched` as `via`.
 enum MalaSwitchVia { carousel, catalogue }
 
+/// Where the Mala screen was opened from, carried on `mala_screen_opened` as
+/// `source`. Openers put it in the `/mala` route's extra under `'source'`.
+enum MalaOpenSource {
+  home,
+  practiceTab,
+  routine,
+  notification,
+  bookmarks,
+  groupAccumulation,
+  deepLink;
+
+  String get key => switch (this) {
+    MalaOpenSource.practiceTab => 'practice_tab',
+    MalaOpenSource.groupAccumulation => 'group_accumulation',
+    MalaOpenSource.deepLink => 'deep_link',
+    _ => name,
+  };
+}
+
 extension MalaSelectionAnalytics on MalaAccumulationSelection {
   MalaMode get analyticsMode => isPersonal ? MalaMode.personal : MalaMode.group;
 }
@@ -57,7 +76,7 @@ class MalaAnalytics {
     required String mantraName,
     required MalaMode mode,
     String? groupId,
-    String? source,
+    MalaOpenSource? source,
   }) {
     _analytics.trackInBackground(AnalyticsEvents.malaScreenOpened, {
       if (presetId != null) AnalyticsProperties.presetId: presetId,
@@ -67,7 +86,7 @@ class MalaAnalytics {
       AnalyticsProperties.mantraName: mantraName,
       AnalyticsProperties.mode: mode.name,
       if (groupId != null) AnalyticsProperties.groupId: groupId,
-      if (source != null) AnalyticsProperties.source: source,
+      if (source != null) AnalyticsProperties.source: source.key,
     });
   }
 

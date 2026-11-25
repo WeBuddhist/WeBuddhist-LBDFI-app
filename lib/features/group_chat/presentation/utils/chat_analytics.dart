@@ -222,6 +222,27 @@ class GroupChatAnalytics {
     AnalyticsProperties.eventId: scope?.eventId,
   };
 
+  /// A one-to-one chat screen opened. Direct rooms have no group, so they get
+  /// their own events instead of the group chat ones.
+  void directChatOpened({required String roomId}) {
+    _track(AnalyticsEvents.directChatOpened, {
+      AnalyticsProperties.roomId: roomId,
+    });
+  }
+
+  /// The server accepted a message in a one-to-one chat.
+  void directMessageSent({
+    required String roomId,
+    required String messageId,
+    required bool isReply,
+  }) {
+    _track(AnalyticsEvents.directMessageSent, {
+      AnalyticsProperties.roomId: roomId,
+      AnalyticsProperties.messageId: messageId,
+      AnalyticsProperties.isReply: isReply,
+    });
+  }
+
   void _track(String event, Map<String, Object?> properties) {
     unawaited(
       _analytics.track(event, properties: properties).catchError((

@@ -1,5 +1,5 @@
 import 'package:flutter_pecha/shared/domain/value_objects/responsive_image.dart';
-import 'package:flutter_pecha/features/group_profile/domain/entities/visible_name.dart';
+import 'package:flutter_pecha/shared/domain/visible_name.dart';
 
 class GroupEventLink {
   final String id;

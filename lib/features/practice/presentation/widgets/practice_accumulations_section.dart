@@ -4,6 +4,7 @@ import 'package:flutter_pecha/core/extensions/context_ext.dart';
 import 'package:flutter_pecha/features/auth/presentation/providers/state_providers.dart';
 import 'package:flutter_pecha/features/auth/presentation/widgets/login_drawer.dart';
 import 'package:flutter_pecha/features/mala/domain/entities/mantra.dart';
+import 'package:flutter_pecha/features/mala/presentation/utils/mala_analytics.dart';
 import 'package:flutter_pecha/features/practice/presentation/providers/practice_explore_providers.dart';
 import 'package:flutter_pecha/features/practice/presentation/screens/all_accumulations_screen.dart';
 import 'package:flutter_pecha/features/practice/presentation/widgets/practice_accumulation_circle_item.dart';
@@ -76,10 +77,16 @@ class PracticeAccumulationsSection extends ConsumerWidget {
   void _navigateToMala(BuildContext context, WidgetRef ref, Mantra mantra) {
     final isGuest = ref.read(authProvider).isGuest;
     if (isGuest) {
-      LoginDrawer.show(context, ref);
+      LoginDrawer.show(context, ref, feature: 'mala');
       return;
     }
-    context.push('/mala', extra: {'presetId': mantra.presetId});
+    context.push(
+      '/mala',
+      extra: {
+        'presetId': mantra.presetId,
+        'source': MalaOpenSource.practiceTab,
+      },
+    );
   }
 
   void _showAllAccumulations(

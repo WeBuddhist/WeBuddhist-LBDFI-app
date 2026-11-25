@@ -129,6 +129,7 @@ class _ActiveTimerScreenState extends ConsumerState<ActiveTimerScreen>
   int get _totalMs => widget.presetTimer.durationMs;
 
   String get _presetId => widget.presetTimer.id;
+  TimerKind get _timerKind => TimerKind.of(widget.presetTimer);
 
   String? get _ambientSoundId {
     final id = widget.presetTimer.ambientSoundId;
@@ -358,7 +359,12 @@ class _ActiveTimerScreenState extends ConsumerState<ActiveTimerScreen>
     _armCompletionBellIfBackgrounded(endsAt);
     ref
         .read(timerAnalyticsProvider)
-        .timerStarted(presetId: _presetId, durationSeconds: _totalMs ~/ 1000);
+        .timerStarted(
+          presetId: _presetId,
+          kind: _timerKind,
+          durationSeconds: _totalMs ~/ 1000,
+          ambientSoundId: _ambientSoundId,
+        );
   }
 
   /// Fetches the sound catalogue for this session.
@@ -503,9 +509,11 @@ class _ActiveTimerScreenState extends ConsumerState<ActiveTimerScreen>
         .read(timerAnalyticsProvider)
         .timerCompleted(
           presetId: _presetId,
+          kind: _timerKind,
           durationSeconds: _totalMs ~/ 1000,
           wasBackgrounded: _wasBackgrounded,
           pauseCount: _pauseCount,
+          ambientSoundId: _ambientSoundId,
         );
   }
 
@@ -582,7 +590,7 @@ class _ActiveTimerScreenState extends ConsumerState<ActiveTimerScreen>
 
     if (_phase == _TimerPhase.running) {
       _reportTimerStop();
-      _trackDiscarded();
+      _trackDiscarded(TimerEndAction.finish);
     }
 
     setState(() {
@@ -598,18 +606,20 @@ class _ActiveTimerScreenState extends ConsumerState<ActiveTimerScreen>
     _timer = null;
     unawaited(_keepAlive.stop());
     unawaited(_ambientPlayer.stop());
-    if (_phase == _TimerPhase.running) _trackDiscarded();
+    if (_phase == _TimerPhase.running) _trackDiscarded(TimerEndAction.discard);
     _clearBackgroundSurfaces();
     context.pop();
   }
 
   /// The session ended before the bell, by Finish or Discard.
-  void _trackDiscarded() {
+  void _trackDiscarded(TimerEndAction action) {
     final elapsedMs = _elapsedMs;
     ref
         .read(timerAnalyticsProvider)
         .timerDiscarded(
           presetId: _presetId,
+          kind: _timerKind,
+          action: action,
           elapsedSeconds: elapsedMs ~/ 1000,
           pctComplete:
               _totalMs <= 0 ? 100 : (elapsedMs * 100 ~/ _totalMs).clamp(0, 100),

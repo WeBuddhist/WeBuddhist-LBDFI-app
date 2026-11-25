@@ -22,7 +22,7 @@ class StorageKeys {
   /// Refresh token for getting new access tokens
   static const String refreshToken = 'refresh_token';
 
-  /// ID token from Auth0
+  /// Unused since sign-in moved to Firebase; kept so the key is not reused.
   static const String idToken = 'id_token';
 
   /// User ID
@@ -34,7 +34,34 @@ class StorageKeys {
 
   /// ID of the currently logged-in user, written before the router fires
   /// so feature code can resolve the active account.
+  ///
+  /// This is the id **local data is keyed by** (mala counts, pending timer
+  /// stops and plan actions, caches) and the analytics identity. It is the
+  /// backend user id, except for an account that was signed in on this phone
+  /// before sign-in moved from Auth0 to Firebase: that account keeps the id it
+  /// had then (see [legacyAuth0UserId]). To compare with ids the backend
+  /// returns, use the profile's id (`userProvider`), not this.
   static const String currentUserId = 'current_user_id';
+
+  /// The [currentUserId] the Auth0 builds used for the account that was
+  /// signed in when the app was updated: the Auth0 subject (`google-oauth2|…`).
+  /// Kept for good, with [legacyAuth0BackendUserId], so that account goes on
+  /// using it and nothing stored under it is stranded.
+  static const String legacyAuth0UserId = 'legacy_auth0_user_id';
+
+  /// The backend user id of that same account, which is how a later sign-in
+  /// is recognised as it.
+  static const String legacyAuth0BackendUserId =
+      'legacy_auth0_backend_user_id';
+
+  /// How the signed-in account logged in: `google`, `apple` or `phone`.
+  static const String signInMethod = 'sign_in_method';
+
+  /// The method last used to sign in on this phone. Unlike [signInMethod] it
+  /// is kept after signing out, so the sign-in buttons can mark it "Last
+  /// used" and the person does not pick another by mistake and land in a
+  /// different, empty account.
+  static const String lastSignInMethod = 'last_sign_in_method';
 
   /// Current onboarding step
   static const String onboardingStep = 'onboarding_step';

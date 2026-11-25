@@ -17,6 +17,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_pecha/core/widgets/screen_cache_builder.dart';
 import 'package:flutter_pecha/features/group_profile/domain/entities/group_events_page.dart';
+import 'package:flutter_pecha/core/config/router/app_routes.dart';
 
 class GroupProfileEventsTab extends ConsumerWidget {
   final String groupId;
@@ -100,7 +101,13 @@ class GroupProfileEventsTab extends ConsumerWidget {
                           showGroup: event.groupId != groupId,
                           isDark: isDark,
                           lineHeight: lineHeight,
-                          onTap: () => context.push('/home/events/${event.id}'),
+                          onTap:
+                              () => context.push(
+                                AppRoutes.groupEventPath(
+                                  event.id,
+                                  source: 'group_page',
+                                ),
+                              ),
                         ),
                       );
                     }, childCount: page.events.length),
@@ -204,7 +211,13 @@ extension on GroupProfileEventsTab {
                           showGroup: false,
                           isDark: isDark,
                           lineHeight: lineHeight,
-                          onTap: () => context.push('/home/events/${event.id}'),
+                          onTap:
+                              () => context.push(
+                                AppRoutes.groupEventPath(
+                                  event.id,
+                                  source: 'group_page',
+                                ),
+                              ),
                         ),
                       );
                     }, childCount: live.length),

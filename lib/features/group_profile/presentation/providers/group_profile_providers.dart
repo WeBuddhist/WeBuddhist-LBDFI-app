@@ -746,7 +746,11 @@ class GroupFollowNotifier extends StateNotifier<GroupFollowState> {
     );
   }
 
-  Future<bool> follow({GroupProfile? connectGroup}) async {
+  /// [via] is where the join button was, for `group_followed`.
+  Future<bool> follow({
+    GroupProfile? connectGroup,
+    String via = 'profile',
+  }) async {
     if (state is GroupFollowLoading) return false;
     final wasFollowing = lastConfirmedGroupMembership(state);
     _membershipEpoch++;
@@ -764,7 +768,11 @@ class GroupFollowNotifier extends StateNotifier<GroupFollowState> {
         _applyJoinedState(connectGroup: connectGroup, incrementCount: true);
         _ref
             .read(groupAnalyticsProvider)
-            .groupFollowed(groupId: _key.groupId, groupType: _key.groupType);
+            .groupFollowed(
+              groupId: _key.groupId,
+              groupType: _key.groupType,
+              via: via,
+            );
         return true;
       },
     );
@@ -772,7 +780,13 @@ class GroupFollowNotifier extends StateNotifier<GroupFollowState> {
 
   /// Backend auto-joins the group when enrolling in a series via group_id.
   /// Updates join UI immediately without a manual refresh.
-  void markAutoJoinedFromPracticeEnrollment({required GroupProfile group}) {
+  ///
+  /// [via] (`event`, `series` or `accumulation`) is sent on `group_followed`
+  /// when [group] shows the user was not a member before.
+  void markAutoJoinedFromPracticeEnrollment({
+    required GroupProfile group,
+    required String via,
+  }) {
     if (!_isAuthenticated) return;
 
     final alreadyFollowing = switch (state) {
@@ -780,6 +794,18 @@ class GroupFollowNotifier extends StateNotifier<GroupFollowState> {
       _ => false,
     };
     if (alreadyFollowing) return;
+
+    // The profile may have been loaded after the server joined; then it says
+    // following already and the join is not counted twice.
+    if (!group.isFollowing) {
+      _ref
+          .read(groupAnalyticsProvider)
+          .groupFollowed(
+            groupId: _key.groupId,
+            groupType: _key.groupType,
+            via: via,
+          );
+    }
 
     _applyJoinedState(connectGroup: group, incrementCount: true);
   }
@@ -983,7 +1009,7 @@ Future<bool> enrollSeriesThroughGroup({
     (_) {},
     (profile) => ref
         .read(groupFollowProvider(followKey).notifier)
-        .markAutoJoinedFromPracticeEnrollment(group: profile),
+        .markAutoJoinedFromPracticeEnrollment(group: profile, via: 'series'),
   );
   ref.invalidate(groupProfileProvider(groupId));
   refreshGroupPractices(ref, groupId);
@@ -2002,6 +2028,7 @@ Future<GroupJoinRequestOutcome> submitGroupJoinRequest({
       return const GroupJoinRequestOutcome.failed();
     },
     (_) {
+      ref.read(groupAnalyticsProvider).groupJoinRequested(groupId: groupId);
       // The server accepted the request, so any earlier ban is over.
       clearGroupRemovalNotice(ref, groupId);
       ref.invalidate(groupProfileProvider(groupId));

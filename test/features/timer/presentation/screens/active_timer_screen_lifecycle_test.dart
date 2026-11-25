@@ -571,7 +571,9 @@ void main() {
       expect(analytics.eventNames, [AnalyticsEvents.timerStarted]);
       expect(analytics.events.single.properties, {
         'preset_id': 'timer-1',
+        'timer_kind': 'preset',
         'duration_s': 10,
+        'has_ambient_sound': false,
       });
     });
 
@@ -605,9 +607,11 @@ void main() {
       ]);
       expect(analytics.events.last.properties, {
         'preset_id': 'timer-1',
+        'timer_kind': 'preset',
         'duration_s': 10,
         'was_backgrounded': true,
         'pause_count': 1,
+        'has_ambient_sound': false,
       });
     });
 
@@ -631,6 +635,8 @@ void main() {
       ]);
       expect(analytics.events.last.properties, {
         'preset_id': 'timer-1',
+        'timer_kind': 'preset',
+        'action': 'finish',
         'elapsed_s': 4,
         'pct_complete': 40,
       });

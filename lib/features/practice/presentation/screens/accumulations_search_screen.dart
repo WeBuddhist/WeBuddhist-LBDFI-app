@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_pecha/core/analytics/search_analytics.dart';
 import 'package:flutter_pecha/core/extensions/context_ext.dart';
 import 'package:flutter_pecha/core/theme/app_colors.dart';
 import 'package:flutter_pecha/features/mala/domain/entities/mantra.dart';
@@ -215,7 +216,17 @@ class _AccumulationsSearchScreenState
               return PracticeAccumulationItem(
                 mantra: mantra,
                 language: widget.language,
-                onTap: () => widget.onTap(mantra),
+                onTap: () {
+                  ref
+                      .read(searchAnalyticsProvider)
+                      .resultOpened(
+                        surface: SearchSurface.accumulations,
+                        position: index,
+                        itemType: 'mantra',
+                        itemId: mantra.presetId,
+                      );
+                  widget.onTap(mantra);
+                },
               );
             },
           ),

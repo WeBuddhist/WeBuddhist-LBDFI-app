@@ -536,6 +536,43 @@
   "continueWithGoogle": "Continue with Google",
   "continueWithApple": "Continue with Apple",
   "continueWithPhone": "Continue with phone",
+  "login_last_used": "Last used",
+  "@login_last_used": {
+    "description": "Small tag on the sign-in button for the method this phone last signed in with"
+  },
+  "phone_login_title": "Enter your phone number",
+  "phone_login_subtitle": "We'll text you a code to confirm it's you.",
+  "phone_login_number_hint": "Phone number",
+  "phone_login_country_search": "Search country",
+  "phone_login_send_code": "Send code",
+  "phone_login_code_title": "Enter the code",
+  "phone_login_code_subtitle": "We sent a 6-digit code to {phoneNumber}.",
+  "@phone_login_code_subtitle": {
+    "placeholders": {
+      "phoneNumber": {
+        "type": "String"
+      }
+    }
+  },
+  "phone_login_code_hint": "6-digit code",
+  "phone_login_verify": "Verify",
+  "phone_login_resend": "Resend code",
+  "phone_login_resend_in": "Resend code in {seconds}s",
+  "@phone_login_resend_in": {
+    "placeholders": {
+      "seconds": {
+        "type": "int"
+      }
+    }
+  },
+  "phone_login_change_number": "Change number",
+  "login_error_invalid_phone": "Enter a valid phone number.",
+  "login_error_invalid_code": "That code isn't right. Check it and try again.",
+  "login_error_code_expired": "That code has expired. Request a new one.",
+  "login_error_too_many_requests": "Too many attempts. Please try again later.",
+  "login_error_network": "Check your internet connection and try again.",
+  "login_error_email_not_verified": "This account's email address isn't verified yet. Verify it with your provider and try again.",
+  "login_error_generic": "We couldn't sign you in. Please try again.",
   "exploreAsGuest": "Explore as a guest",
   "signIn": "Sign In",
   "profileError": "Error loading profile",
@@ -2228,5 +2265,30 @@
   "mala_images_load_error": "Could not load images",
   "mala_bookmarked": "Bookmarked",
   "mala_beads_load_error": "Could not load bead styles",
-  "mala_appearance_save_failed": "Couldn't save. Please try again"
+  "mala_appearance_save_failed": "Couldn't save. Please try again",
+  "session_search_plans_hint": "Search plans",
+  "@session_search_plans_hint": {
+    "description": "Search field hint on the Plans tab of Add to session."
+  },
+  "session_search_chants_hint": "Search chants",
+  "@session_search_chants_hint": {
+    "description": "Search field hint on the Chants tab of Add to session."
+  },
+  "session_search_malas_hint": "Search malas",
+  "@session_search_malas_hint": {
+    "description": "Search field hint on the Malas tab of Add to session."
+  },
+  "session_search_timers_hint": "Search timers by name or length",
+  "@session_search_timers_hint": {
+    "description": "Search field hint on the Timers tab of Add to session; timers match by name or by duration such as '10 min'."
+  },
+  "search_min_query_length": "{count, plural, =1{Type at least 1 character to search} other{Type at least {count} characters to search}}",
+  "@search_min_query_length": {
+    "description": "Shown instead of results while a search query is shorter than the minimum the server accepts.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  }
 }

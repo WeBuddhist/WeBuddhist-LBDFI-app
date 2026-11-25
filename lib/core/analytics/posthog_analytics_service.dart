@@ -6,6 +6,8 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_pecha/core/analytics/analytics_events.dart';
 import 'package:flutter_pecha/core/analytics/analytics_service.dart';
 import 'package:flutter_pecha/core/analytics/app_open_analytics.dart';
+import 'package:flutter_pecha/core/analytics/clarity_screen_observer.dart';
+import 'package:flutter_pecha/core/analytics/clarity_screen_tracker.dart';
 import 'package:flutter_pecha/core/analytics/foreground_gate.dart';
 import 'package:flutter_pecha/core/analytics/no_op_analytics_service.dart';
 import 'package:flutter_pecha/core/utils/app_logger.dart';
@@ -159,27 +161,36 @@ class PostHogAnalyticsService implements AnalyticsService {
     );
   }
 
+  /// Names the screen actually on top across the root and tab navigators,
+  /// as Clarity does. PosthogObserver alone skips the unnamed tab shell and
+  /// never sees a tab switch, so `$screen_name` kept the last pushed screen
+  /// after going back to a tab.
+  late final ClarityScreenTracker _screenTracker = ClarityScreenTracker(
+    onScreenChanged: _captureScreen,
+  );
+
   @override
   List<NavigatorObserver> get routeObservers => [
-    PosthogObserver(routeFilter: _screenRouteFilter),
+    // Kept only for the navigator context PostHog shows surveys in. Screens
+    // come from [_screenTracker], so this observer never sends one.
+    PosthogObserver(routeFilter: _neverTrack),
+    ClarityScreenObserver(_screenTracker),
   ];
 
-  /// While the UI has not been shown, PosthogObserver would still send
-  /// screens: it takes a missing lifecycle state, as in audio_service's
-  /// headless engine, for the foreground. Those screens are queued on the
-  /// gate instead, named as PosthogObserver names them.
-  bool _screenRouteFilter(Route<dynamic>? route) {
-    if (!defaultPostHogRouteFilter(route)) return false;
-    if (_foregroundGate.isOpen) return true;
-    final String? name = route?.settings.name;
-    if (_isInitialized && name != null && name.trim().isNotEmpty) {
-      final String screenName = name == '/' ? "root ('/')" : name;
-      unawaited(
-        _foregroundGate.run(() => Posthog().screen(screenName: screenName)),
-      );
-    }
-    return false;
+  /// Bottom tabs are not routes: main() reports the selected one here, and
+  /// the tab shell is then named `tab-<tab>`.
+  void setTab(String tab) => _screenTracker.setTab(tab);
+
+  /// Sends one `$screen` per change of the visible screen. Until the UI is
+  /// first shown they wait on the gate, like events.
+  void _captureScreen(String screenName) {
+    if (!_isInitialized) return;
+    unawaited(
+      _foregroundGate.run(() => Posthog().screen(screenName: screenName)),
+    );
   }
+
+  static bool _neverTrack(Route<dynamic>? route) => false;
 
   /// Session replay only records inside [PostHogWidget]; it must mount after
   /// [initialize], which main() guarantees. Returns [child] untouched when
@@ -200,10 +211,21 @@ class PostHogAnalyticsService implements AnalyticsService {
     await setSuperProperties({
       'environment': Env.environment,
       'app_flavor': Env.appFlavor,
+      'build_mode': buildMode,
       'platform': Platform.operatingSystem,
       if (packageInfo != null) 'app_version': packageInfo.version,
       if (packageInfo != null) 'build_number': packageInfo.buildNumber,
     });
+  }
+
+  /// `debug` or `profile` when the app runs from a developer's machine
+  /// (`flutter run`); store and TestFlight builds are always `release`. Sent
+  /// as `build_mode` so local runs can be filtered out of real-user data.
+  @visibleForTesting
+  static String get buildMode {
+    if (kReleaseMode) return 'release';
+    if (kProfileMode) return 'profile';
+    return 'debug';
   }
 
   /// An event with a `group_id` belongs to that sangha. PostHog reads

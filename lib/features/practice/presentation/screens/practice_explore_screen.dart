@@ -67,7 +67,7 @@ class _PracticeExploreScreenState extends ConsumerState<PracticeExploreScreen> {
               variant: PracticeActionButtonVariant.outlined,
               onTap: () {
                 if (ref.read(authProvider).isGuest) {
-                  LoginDrawer.show(context, ref);
+                  LoginDrawer.show(context, ref, feature: 'bookmarks');
                   return;
                 }
                 context.pushNamed('bookmarks');

@@ -73,7 +73,7 @@ class PracticeTimersSection extends ConsumerWidget {
   ) {
     final isGuest = ref.read(authProvider).isGuest;
     if (isGuest) {
-      LoginDrawer.show(context, ref);
+      LoginDrawer.show(context, ref, feature: 'timer');
       return;
     }
     context.push('/home/timers/active', extra: timer);

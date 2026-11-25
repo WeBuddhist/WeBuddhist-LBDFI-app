@@ -1,4 +1,5 @@
 import 'package:fpdart/fpdart.dart';
+import 'package:flutter_pecha/core/analytics/search_analytics.dart';
 import 'package:flutter_pecha/core/config/locale/locale_notifier.dart';
 import 'package:flutter_pecha/core/error/failures.dart';
 import 'package:flutter_pecha/features/texts/data/models/text/reader_response.dart';
@@ -83,9 +84,21 @@ final multilingualSearchProvider = FutureProvider.family<Either<Failure, Multili
   // Use provided language parameter, otherwise fall back to locale
   final language = params.language ?? ref.watch(contentLanguageProvider);
 
-  return multilingualSearchUseCase(MultilingualSearchParams(
+  final result = await multilingualSearchUseCase(MultilingualSearchParams(
     query: params.query,
     language: language,
     textId: params.textId,
   ));
+  // Only the reader's in-text search uses this provider.
+  result.fold((_) {}, (response) {
+    ref.read(searchAnalyticsProvider).searched(
+      surface: SearchSurface.reader,
+      query: params.query,
+      resultCount: response.sources.fold(
+        0,
+        (count, source) => count + source.segmentMatches.length,
+      ),
+    );
+  });
+  return result;
 });

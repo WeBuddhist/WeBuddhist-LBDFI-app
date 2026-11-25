@@ -1108,6 +1108,75 @@ class AppLocalizationsTh extends AppLocalizations {
   String get continueWithPhone => 'ดำเนินการต่อด้วยเบอร์โทรศัพท์';
 
   @override
+  String get login_last_used => 'ใช้ล่าสุด';
+
+  @override
+  String get phone_login_title => 'กรอกหมายเลขโทรศัพท์ของคุณ';
+
+  @override
+  String get phone_login_subtitle =>
+      'เราจะส่งรหัสทาง SMS เพื่อยืนยันว่าเป็นคุณ';
+
+  @override
+  String get phone_login_number_hint => 'หมายเลขโทรศัพท์';
+
+  @override
+  String get phone_login_country_search => 'ค้นหาประเทศ';
+
+  @override
+  String get phone_login_send_code => 'ส่งรหัส';
+
+  @override
+  String get phone_login_code_title => 'กรอกรหัส';
+
+  @override
+  String phone_login_code_subtitle(String phoneNumber) {
+    return 'เราได้ส่งรหัส 6 หลักไปที่ $phoneNumber แล้ว';
+  }
+
+  @override
+  String get phone_login_code_hint => 'รหัส 6 หลัก';
+
+  @override
+  String get phone_login_verify => 'ยืนยัน';
+
+  @override
+  String get phone_login_resend => 'ส่งรหัสอีกครั้ง';
+
+  @override
+  String phone_login_resend_in(int seconds) {
+    return 'ส่งรหัสอีกครั้งได้ใน $seconds วินาที';
+  }
+
+  @override
+  String get phone_login_change_number => 'เปลี่ยนหมายเลข';
+
+  @override
+  String get login_error_invalid_phone => 'กรุณากรอกหมายเลขโทรศัพท์ที่ถูกต้อง';
+
+  @override
+  String get login_error_invalid_code =>
+      'รหัสไม่ถูกต้อง กรุณาตรวจสอบแล้วลองอีกครั้ง';
+
+  @override
+  String get login_error_code_expired => 'รหัสหมดอายุแล้ว กรุณาขอรหัสใหม่';
+
+  @override
+  String get login_error_too_many_requests =>
+      'ลองหลายครั้งเกินไป กรุณาลองใหม่ภายหลัง';
+
+  @override
+  String get login_error_network =>
+      'กรุณาตรวจสอบการเชื่อมต่ออินเทอร์เน็ตแล้วลองอีกครั้ง';
+
+  @override
+  String get login_error_email_not_verified =>
+      'อีเมลของบัญชีนี้ยังไม่ได้รับการยืนยัน กรุณายืนยันกับผู้ให้บริการของคุณแล้วลองอีกครั้ง';
+
+  @override
+  String get login_error_generic => 'ไม่สามารถเข้าสู่ระบบได้ กรุณาลองอีกครั้ง';
+
+  @override
   String get exploreAsGuest => 'สำรวจในฐานะผู้เยี่ยมชม';
 
   @override
@@ -4340,4 +4409,21 @@ class AppLocalizationsTh extends AppLocalizations {
 
   @override
   String get mala_appearance_save_failed => 'บันทึกไม่สำเร็จ โปรดลองอีกครั้ง';
+
+  @override
+  String get session_search_plans_hint => 'ค้นหาแผนการปฏิบัติ';
+
+  @override
+  String get session_search_chants_hint => 'ค้นหาบทสวด';
+
+  @override
+  String get session_search_malas_hint => 'ค้นหาลูกประคำ';
+
+  @override
+  String get session_search_timers_hint => 'ค้นหาตัวจับเวลาตามชื่อหรือระยะเวลา';
+
+  @override
+  String search_min_query_length(int count) {
+    return 'พิมพ์อย่างน้อย $count ตัวอักษรเพื่อค้นหา';
+  }
 }

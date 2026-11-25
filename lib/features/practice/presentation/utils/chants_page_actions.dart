@@ -81,7 +81,7 @@ Future<void> openSpaceChant(
 Future<void> createChantBook(BuildContext context, WidgetRef ref) async {
   final auth = ref.read(authProvider);
   if (auth.isGuest || !auth.isLoggedIn) {
-    LoginDrawer.show(context, ref);
+    LoginDrawer.show(context, ref, feature: 'chant_book_create');
     return;
   }
   try {
