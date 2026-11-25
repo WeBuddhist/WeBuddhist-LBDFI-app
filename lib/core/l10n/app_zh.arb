@@ -1261,5 +1261,10 @@
   "mala_images_load_error": "無法載入圖片",
   "mala_bookmarked": "已加入書籤",
   "mala_beads_load_error": "無法載入念珠款式",
-  "mala_appearance_save_failed": "無法儲存。請再試一次"
+  "mala_appearance_save_failed": "無法儲存。請再試一次",
+  "session_search_plans_hint": "搜尋計劃",
+  "session_search_chants_hint": "搜尋持誦",
+  "session_search_malas_hint": "搜尋念珠",
+  "session_search_timers_hint": "依名稱或時長搜尋計時",
+  "search_min_query_length": "請至少輸入 {count} 個字元以搜尋"
 }

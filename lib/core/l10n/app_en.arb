@@ -2206,5 +2206,30 @@
   "mala_images_load_error": "Could not load images",
   "mala_bookmarked": "Bookmarked",
   "mala_beads_load_error": "Could not load bead styles",
-  "mala_appearance_save_failed": "Couldn't save. Please try again"
+  "mala_appearance_save_failed": "Couldn't save. Please try again",
+  "session_search_plans_hint": "Search plans",
+  "@session_search_plans_hint": {
+    "description": "Search field hint on the Plans tab of Add to session."
+  },
+  "session_search_chants_hint": "Search chants",
+  "@session_search_chants_hint": {
+    "description": "Search field hint on the Chants tab of Add to session."
+  },
+  "session_search_malas_hint": "Search malas",
+  "@session_search_malas_hint": {
+    "description": "Search field hint on the Malas tab of Add to session."
+  },
+  "session_search_timers_hint": "Search timers by name or length",
+  "@session_search_timers_hint": {
+    "description": "Search field hint on the Timers tab of Add to session; timers match by name or by duration such as '10 min'."
+  },
+  "search_min_query_length": "{count, plural, =1{Type at least 1 character to search} other{Type at least {count} characters to search}}",
+  "@search_min_query_length": {
+    "description": "Shown instead of results while a search query is shorter than the minimum the server accepts.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  }
 }

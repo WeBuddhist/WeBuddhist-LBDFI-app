@@ -4198,6 +4198,23 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get mala_appearance_save_failed => '無法儲存。請再試一次';
+
+  @override
+  String get session_search_plans_hint => '搜尋計劃';
+
+  @override
+  String get session_search_chants_hint => '搜尋持誦';
+
+  @override
+  String get session_search_malas_hint => '搜尋念珠';
+
+  @override
+  String get session_search_timers_hint => '依名稱或時長搜尋計時';
+
+  @override
+  String search_min_query_length(int count) {
+    return '請至少輸入 $count 個字元以搜尋';
+  }
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hans`).
@@ -8173,4 +8190,21 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String get mala_appearance_save_failed => '无法保存。请再试一次';
+
+  @override
+  String get session_search_plans_hint => '搜索计划';
+
+  @override
+  String get session_search_chants_hint => '搜索持诵';
+
+  @override
+  String get session_search_malas_hint => '搜索念珠';
+
+  @override
+  String get session_search_timers_hint => '按名称或时长搜索计时';
+
+  @override
+  String search_min_query_length(int count) {
+    return '请至少输入 $count 个字符以搜索';
+  }
 }

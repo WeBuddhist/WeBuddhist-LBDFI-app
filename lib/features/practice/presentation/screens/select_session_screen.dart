@@ -19,6 +19,7 @@ import 'package:flutter_pecha/features/practice/presentation/widgets/practice_ch
 import 'package:flutter_pecha/features/practice/presentation/widgets/practice_my_chants_collection_list_tile.dart';
 import 'package:flutter_pecha/features/recitation/data/models/my_recitation_list_collection_model.dart';
 import 'package:flutter_pecha/features/recitation/data/models/recitation_model.dart';
+import 'package:flutter_pecha/features/recitation/presentation/providers/recitation_search_provider.dart';
 import 'package:flutter_pecha/features/recitation/presentation/widgets/recitation_list_skeleton.dart';
 import 'package:flutter_pecha/core/theme/font_config.dart';
 import 'package:flutter_pecha/features/timer/domain/entities/preset_timer.dart';
@@ -113,7 +114,8 @@ class _SelectSessionScreenState extends ConsumerState<SelectSessionScreen>
   void _onPlansScroll() {
     if (!_plansScrollController.hasClients) return;
     final position = _plansScrollController.position;
-    final isAtEnd = position.maxScrollExtent <= 0 ||
+    final isAtEnd =
+        position.maxScrollExtent <= 0 ||
         position.pixels >= position.maxScrollExtent - 200;
     if (!isAtEnd) return;
     ref.read(sessionSeriesPaginatedProvider.notifier).loadMore();
@@ -122,7 +124,8 @@ class _SelectSessionScreenState extends ConsumerState<SelectSessionScreen>
   void _onChantsScroll() {
     if (!_chantsScrollController.hasClients) return;
     final position = _chantsScrollController.position;
-    final isAtEnd = position.maxScrollExtent <= 0 ||
+    final isAtEnd =
+        position.maxScrollExtent <= 0 ||
         position.pixels >= position.maxScrollExtent - 200;
     if (!isAtEnd) return;
     final languageCode = ref.read(contentLanguageProvider);
@@ -177,13 +180,15 @@ class _SelectSessionScreenState extends ConsumerState<SelectSessionScreen>
     _queriesByTab[activeTab] = '';
     _searchController.clear();
 
+    // Only clear searches that were started; reading a search provider just
+    // to clear it would create it (and its Dio) for nothing.
     final languageCode = ref.read(contentLanguageProvider);
     if (activeTab == 0) {
-      _seriesSearch().clear();
+      _seriesSearchNotifier?.clear();
     } else if (activeTab == 1) {
       ref.read(practiceRecitationSearchProvider(languageCode).notifier).clear();
     } else if (activeTab == 2) {
-      ref.read(accumulationSearchProvider.notifier).clear();
+      _accumulationSearchNotifier?.clear();
     }
 
     setState(() => _isSearching = false);
@@ -218,10 +223,10 @@ class _SelectSessionScreenState extends ConsumerState<SelectSessionScreen>
 
   String _searchHint(AppLocalizations localizations) {
     return switch (_tabController.index) {
-      0 => localizations.search_plans,
-      1 => localizations.recitations_search,
-      2 => localizations.accumulations_search,
-      _ => localizations.text_search_hint,
+      0 => localizations.session_search_plans_hint,
+      1 => localizations.session_search_chants_hint,
+      2 => localizations.session_search_malas_hint,
+      _ => localizations.session_search_timers_hint,
     };
   }
 
@@ -326,80 +331,110 @@ class _SelectSessionScreenState extends ConsumerState<SelectSessionScreen>
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final localizations = AppLocalizations.of(context)!;
 
-    if (_isSearching) {
-      return Scaffold(
-        body: SafeArea(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              _buildSearchHeader(context, isDark),
-              Expanded(child: _buildSearchResults()),
-            ],
-          ),
-        ),
-      );
-    }
-
+    // The tab lists stay mounted (offstage) while searching so their
+    // autoDispose providers keep the loaded pages and scroll position.
     return Scaffold(
-      appBar: AppBar(
-        leading: IconButton(
-          icon: const Icon(AppAssets.arrowLeft),
-          onPressed: () => Navigator.of(context).maybePop(),
-        ),
-        title: Text(
-          localizations.routine_add_session,
-          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
-        ),
-        scrolledUnderElevation: 0,
-        centerTitle: true,
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.search, size: 22),
-            onPressed: _openSearch,
-          ),
-        ],
-        bottom: TabBar(
-          controller: _tabController,
-          tabs: [
-            Tab(text: localizations.home_shortcut_plans),
-            Tab(text: localizations.home_chants),
-            Tab(text: localizations.session_mala),
-            Tab(text: localizations.home_timer),
+      appBar:
+          _isSearching
+              ? null
+              : AppBar(
+                leading: IconButton(
+                  icon: const Icon(AppAssets.arrowLeft),
+                  onPressed: () => Navigator.of(context).maybePop(),
+                ),
+                title: Text(
+                  localizations.routine_add_session,
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 18,
+                  ),
+                ),
+                scrolledUnderElevation: 0,
+                centerTitle: true,
+                actions: [
+                  IconButton(
+                    icon: const Icon(Icons.search, size: 22),
+                    onPressed: _openSearch,
+                  ),
+                ],
+                bottom: TabBar(
+                  controller: _tabController,
+                  tabs: [
+                    Tab(text: localizations.home_shortcut_plans),
+                    Tab(text: localizations.home_chants),
+                    Tab(text: localizations.session_mala),
+                    Tab(text: localizations.home_timer),
+                  ],
+                  labelStyle: context.tabLabelStyle(
+                    const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+                  ),
+                  unselectedLabelStyle: context.tabLabelStyle(
+                    const TextStyle(
+                      fontWeight: FontWeight.normal,
+                      fontSize: 14,
+                    ),
+                  ),
+                  labelColor:
+                      isDark
+                          ? AppColors.textPrimaryDark
+                          : AppColors.textPrimary,
+                  unselectedLabelColor:
+                      isDark
+                          ? AppColors.textTertiaryDark
+                          : AppColors.textSecondary,
+                  indicatorColor: Colors.blue,
+                  indicatorSize: TabBarIndicatorSize.tab,
+                  dividerColor: Colors.transparent,
+                ),
+              ),
+      body: SafeArea(
+        top: _isSearching,
+        bottom: _isSearching,
+        left: _isSearching,
+        right: _isSearching,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            if (_isSearching) _buildSearchHeader(context, isDark),
+            Expanded(
+              key: const ValueKey('session-picker-body'),
+              child: IndexedStack(
+                index: _isSearching ? 1 : 0,
+                children: [
+                  TabBarView(
+                    controller: _tabController,
+                    children: [
+                      _PlansTab(
+                        scrollController: _plansScrollController,
+                        enrollingItemId: _enrollingItemId,
+                        onSeriesSelected: _onSeriesSelected,
+                        searchQuery: '',
+                      ),
+                      _ChantsTab(
+                        scrollController: _chantsScrollController,
+                        enrollingItemId: _enrollingItemId,
+                        onRecitationSelected: _onRecitationSelected,
+                        onCollectionSelected: _onCollectionSelected,
+                        searchQuery: '',
+                      ),
+                      _MalasTab(
+                        onMantraSelected: _onMantraSelected,
+                        searchQuery: '',
+                      ),
+                      _TimersTab(
+                        onTimerSelected: _onTimerSelected,
+                        searchQuery: '',
+                      ),
+                    ],
+                  ),
+                  _isSearching
+                      ? _buildSearchResults()
+                      : const SizedBox.shrink(),
+                ],
+              ),
+            ),
           ],
-          labelStyle: context.tabLabelStyle(
-            const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
-          ),
-          unselectedLabelStyle: context.tabLabelStyle(
-            const TextStyle(fontWeight: FontWeight.normal, fontSize: 14),
-          ),
-          labelColor:
-              isDark ? AppColors.textPrimaryDark : AppColors.textPrimary,
-          unselectedLabelColor:
-              isDark ? AppColors.textTertiaryDark : AppColors.textSecondary,
-          indicatorColor: Colors.blue,
-          indicatorSize: TabBarIndicatorSize.tab,
-          dividerColor: Colors.transparent,
         ),
-      ),
-      body: TabBarView(
-        controller: _tabController,
-        children: [
-          _PlansTab(
-            scrollController: _plansScrollController,
-            enrollingItemId: _enrollingItemId,
-            onSeriesSelected: _onSeriesSelected,
-            searchQuery: '',
-          ),
-          _ChantsTab(
-            scrollController: _chantsScrollController,
-            enrollingItemId: _enrollingItemId,
-            onRecitationSelected: _onRecitationSelected,
-            onCollectionSelected: _onCollectionSelected,
-            searchQuery: '',
-          ),
-          _MalasTab(onMantraSelected: _onMantraSelected, searchQuery: ''),
-          _TimersTab(onTimerSelected: _onTimerSelected, searchQuery: ''),
-        ],
       ),
     );
   }
@@ -624,8 +659,13 @@ class _ChantsTab extends ConsumerWidget {
     final query = searchQuery.trim();
 
     if (query.isNotEmpty) {
-      if (query.length < 3) {
-        return const SizedBox.shrink();
+      // The search notifier sends nothing below this length; say so rather
+      // than leaving the screen blank.
+      const minLength = RecitationSearchNotifier.minQueryLength;
+      if (query.length < minLength) {
+        return _SessionTabMessage(
+          message: context.l10n.search_min_query_length(minLength),
+        );
       }
 
       final searchState = ref.watch(
@@ -1029,38 +1069,50 @@ class _TimersTab extends ConsumerWidget {
             ),
             (timers) {
               final query = searchQuery.trim().toLowerCase();
+              final isTibetan = AppFontConfig.isTibetanLanguage(
+                Localizations.localeOf(context).languageCode,
+              );
               final visibleTimers =
                   query.isEmpty
                       ? timers
                       : timers.where((timer) {
-                          if (timer.name.toLowerCase().contains(query)) {
-                            return true;
+                        if (timer.name.toLowerCase().contains(query)) {
+                          return true;
+                        }
+                        // The title TimerPickerCard shows for a timer the
+                        // user created.
+                        final title =
+                            timer.isUserCreated
+                                ? timer.description?.trim().toLowerCase()
+                                : null;
+                        if (title != null && title.contains(query)) {
+                          return true;
+                        }
+                        final parts = PresetTimer.durationPartsFromMs(
+                          timer.durationMs,
+                        );
+                        final compound = parts.length > 1;
+                        final buffer = StringBuffer();
+                        for (var i = 0; i < parts.length; i++) {
+                          if (i > 0) buffer.write(' ');
+                          final part = parts[i];
+                          final unit = switch (part.unit) {
+                            TimerDurationUnit.hours => l10n.timer_duration_hr,
+                            TimerDurationUnit.minutes => l10n.timer_min,
+                            TimerDurationUnit.seconds =>
+                              l10n.timer_duration_sec,
+                          };
+                          final valueStr = '${part.value}';
+                          final gap = compound ? '' : ' ';
+                          if (isTibetan) {
+                            buffer.write('$unit$gap$valueStr');
+                          } else {
+                            buffer.write('$valueStr$gap$unit');
                           }
-                          final isTibetan = AppFontConfig.isTibetanLanguage(
-                            Localizations.localeOf(context).languageCode,
-                          );
-                          final parts = PresetTimer.durationPartsFromMs(timer.durationMs);
-                          final compound = parts.length > 1;
-                          final buffer = StringBuffer();
-                          for (var i = 0; i < parts.length; i++) {
-                            if (i > 0) buffer.write(' ');
-                            final part = parts[i];
-                            final unit = switch (part.unit) {
-                              TimerDurationUnit.hours => l10n.timer_duration_hr,
-                              TimerDurationUnit.minutes => l10n.timer_min,
-                              TimerDurationUnit.seconds => l10n.timer_duration_sec,
-                            };
-                            final valueStr = '${part.value}';
-                            final gap = compound ? '' : ' ';
-                            if (isTibetan) {
-                              buffer.write('$unit$gap$valueStr');
-                            } else {
-                              buffer.write('$valueStr$gap$unit');
-                            }
-                          }
-                          final durationLabel = buffer.toString().toLowerCase();
-                          return durationLabel.contains(query);
-                        }).toList();
+                        }
+                        final durationLabel = buffer.toString().toLowerCase();
+                        return durationLabel.contains(query);
+                      }).toList();
 
               // Same split and order as the timers screen: the user's own
               // timers as created, then presets shortest first.

@@ -1546,5 +1546,10 @@
   "mala_images_load_error": "无法加载图片",
   "mala_bookmarked": "已加入书签",
   "mala_beads_load_error": "无法加载念珠款式",
-  "mala_appearance_save_failed": "无法保存。请再试一次"
+  "mala_appearance_save_failed": "无法保存。请再试一次",
+  "session_search_plans_hint": "搜索计划",
+  "session_search_chants_hint": "搜索持诵",
+  "session_search_malas_hint": "搜索念珠",
+  "session_search_timers_hint": "按名称或时长搜索计时",
+  "search_min_query_length": "请至少输入 {count} 个字符以搜索"
 }

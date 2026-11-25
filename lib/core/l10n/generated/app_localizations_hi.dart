@@ -4359,4 +4359,21 @@ class AppLocalizationsHi extends AppLocalizations {
   @override
   String get mala_appearance_save_failed =>
       'सहेजा नहीं जा सका। कृपया फिर से प्रयास करें';
+
+  @override
+  String get session_search_plans_hint => 'योजनाएँ खोजें';
+
+  @override
+  String get session_search_chants_hint => 'जप खोजें';
+
+  @override
+  String get session_search_malas_hint => 'मालाएँ खोजें';
+
+  @override
+  String get session_search_timers_hint => 'नाम या अवधि से टाइमर खोजें';
+
+  @override
+  String search_min_query_length(int count) {
+    return 'खोजने के लिए कम से कम $count अक्षर लिखें';
+  }
 }

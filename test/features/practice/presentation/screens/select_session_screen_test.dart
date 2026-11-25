@@ -8,6 +8,7 @@ import 'package:flutter_pecha/features/practice/presentation/providers/session_s
 import 'package:flutter_pecha/features/practice/presentation/screens/select_session_screen.dart';
 import 'package:flutter_pecha/features/recitation/data/models/my_recitation_list_collection_model.dart';
 import 'package:flutter_pecha/features/recitation/data/models/recitation_model.dart';
+import 'package:flutter_pecha/features/recitation/presentation/providers/recitation_search_provider.dart';
 import 'package:flutter_pecha/core/cache/screen_cache/screen_cache_notifier.dart';
 import 'package:flutter_pecha/features/timer/domain/entities/ambient_sound.dart';
 import 'package:flutter_pecha/features/timer/domain/entities/preset_timer.dart';
@@ -40,6 +41,21 @@ class _FixedRecitations extends StateNotifier<PracticeRecitationsState>
   dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
 }
 
+/// Chant search that never reaches a repository.
+class _IdleRecitationSearch extends StateNotifier<RecitationSearchState>
+    implements RecitationSearchNotifier {
+  _IdleRecitationSearch() : super(const RecitationSearchState());
+
+  @override
+  void search(String query) => state = state.copyWith(query: query);
+
+  @override
+  void clear() => state = const RecitationSearchState();
+
+  @override
+  dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
+}
+
 const _collection = MyRecitationListCollectionModel(
   type: 'RECITATION_COLLECTION',
   name: 'Morning prayers',
@@ -67,19 +83,24 @@ Future<Future<SessionSelection?>> _openPicker(
   ),
   List<PresetTimer> timers = const [],
   List<AmbientSound> sounds = const [],
+  VoidCallback? onSeriesListCreated,
 }) async {
   final navigatorKey = GlobalKey<NavigatorState>();
   await tester.pumpWidget(
     ProviderScope(
       overrides: [
         contentLanguageProvider.overrideWith((ref) => _FixedContentLanguage()),
-        sessionSeriesPaginatedProvider.overrideWith(
-          (ref) => _IdleSessionSeries(),
-        ),
+        sessionSeriesPaginatedProvider.overrideWith((ref) {
+          onSeriesListCreated?.call();
+          return _IdleSessionSeries();
+        }),
         malaCatalogueProvider.overrideWith(ScreenCacheNotifier.pending),
         practiceRecitationsPaginatedProvider(
           'en',
         ).overrideWith((ref) => _FixedRecitations(chants)),
+        practiceRecitationSearchProvider(
+          'en',
+        ).overrideWith((ref) => _IdleRecitationSearch()),
         presetTimersFutureProvider.overrideWith(
           () => ScreenCacheNotifier((ref, bind) => Right(timers)),
         ),
@@ -256,5 +277,74 @@ void main() {
 
       expect(find.text('No timers found'), findsOneWidget);
     });
+
+    testWidgets('search finds your timer by the title on its card', (
+      tester,
+    ) async {
+      await _openPicker(
+        tester,
+        tab: 'Timer',
+        timers: const [_morningTimer, _fiveMinutePreset],
+        sounds: const [_seaWaves],
+      );
+
+      await tester.tap(find.byIcon(Icons.search));
+      await tester.pumpAndSettle();
+      expect(find.text('Search timers by name or length'), findsOneWidget);
+      await tester.enterText(find.byType(TextField), 'Morning');
+      await tester.pumpAndSettle();
+
+      // The tab list stays mounted behind the results, so only count what
+      // the user can tap.
+      expect(find.text('Morning meditation').hitTestable(), findsOneWidget);
+      expect(
+        find.text('5 min', findRichText: true).hitTestable(),
+        findsNothing,
+      );
+    });
+  });
+
+  group('Chant search', () {
+    testWidgets('hint names the tab', (tester) async {
+      await _openChantsTab(tester, _collectionAndChant());
+
+      await tester.tap(find.byIcon(Icons.search));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Search chants'), findsOneWidget);
+    });
+
+    testWidgets('asks for more characters below the minimum', (tester) async {
+      await _openChantsTab(tester, _collectionAndChant());
+
+      await tester.tap(find.byIcon(Icons.search));
+      await tester.pumpAndSettle();
+      await tester.enterText(find.byType(TextField), 'He');
+      await tester.pumpAndSettle();
+
+      expect(
+        find.text('Type at least 3 characters to search'),
+        findsOneWidget,
+      );
+    });
+  });
+
+  testWidgets('opening and closing search keeps the loaded plans list', (
+    tester,
+  ) async {
+    var created = 0;
+    await _openPicker(
+      tester,
+      tab: 'Plans',
+      onSeriesListCreated: () => created++,
+    );
+    expect(created, 1);
+
+    await tester.tap(find.byIcon(Icons.search));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byIcon(Icons.arrow_back_ios_new));
+    await tester.pumpAndSettle();
+
+    expect(created, 1);
   });
 }

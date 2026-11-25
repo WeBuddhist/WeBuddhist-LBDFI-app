@@ -4328,4 +4328,27 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get mala_appearance_save_failed => 'Couldn\'t save. Please try again';
+
+  @override
+  String get session_search_plans_hint => 'Search plans';
+
+  @override
+  String get session_search_chants_hint => 'Search chants';
+
+  @override
+  String get session_search_malas_hint => 'Search malas';
+
+  @override
+  String get session_search_timers_hint => 'Search timers by name or length';
+
+  @override
+  String search_min_query_length(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Type at least $count characters to search',
+      one: 'Type at least 1 character to search',
+    );
+    return '$_temp0';
+  }
 }

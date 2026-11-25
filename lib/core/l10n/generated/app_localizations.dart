@@ -7602,6 +7602,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Couldn\'t save. Please try again'**
   String get mala_appearance_save_failed;
+
+  /// Search field hint on the Plans tab of Add to session.
+  ///
+  /// In en, this message translates to:
+  /// **'Search plans'**
+  String get session_search_plans_hint;
+
+  /// Search field hint on the Chants tab of Add to session.
+  ///
+  /// In en, this message translates to:
+  /// **'Search chants'**
+  String get session_search_chants_hint;
+
+  /// Search field hint on the Malas tab of Add to session.
+  ///
+  /// In en, this message translates to:
+  /// **'Search malas'**
+  String get session_search_malas_hint;
+
+  /// Search field hint on the Timers tab of Add to session; timers match by name or by duration such as '10 min'.
+  ///
+  /// In en, this message translates to:
+  /// **'Search timers by name or length'**
+  String get session_search_timers_hint;
+
+  /// Shown instead of results while a search query is shorter than the minimum the server accepts.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{Type at least 1 character to search} other{Type at least {count} characters to search}}'**
+  String search_min_query_length(int count);
 }
 
 class _AppLocalizationsDelegate
