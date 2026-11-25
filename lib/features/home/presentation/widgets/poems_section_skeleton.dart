@@ -31,7 +31,10 @@ class PoemsSectionSkeleton extends StatelessWidget {
                 ),
                 child: Container(
                   width: cardWidth,
-                  height: PoemPreviewCard.heightFor(cardWidth),
+                  height: PoemPreviewCard.heightFor(
+                    cardWidth,
+                    MediaQuery.textScalerOf(context),
+                  ),
                   clipBehavior: Clip.antiAlias,
                   decoration: BoxDecoration(
                     color: cardColor,

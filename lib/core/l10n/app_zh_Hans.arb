@@ -33,7 +33,7 @@
       }
     }
   },
-  "home_practices_sessions": "{count, plural,\nother {{count} 座}\n}",
+  "home_practices_sessions": "{count, plural,\nother {{count} 次}\n}",
   "@home_practices_sessions": {
     "placeholders": {
       "count": {

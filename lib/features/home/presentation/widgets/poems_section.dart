@@ -116,7 +116,10 @@ class _PoemsContentState extends State<_PoemsContent> {
           builder: (context, constraints) {
             final cardWidth = PoemsSection.cardWidthFor(constraints.maxWidth);
             return SizedBox(
-              height: PoemPreviewCard.heightFor(cardWidth),
+              height: PoemPreviewCard.heightFor(
+                cardWidth,
+                MediaQuery.textScalerOf(context),
+              ),
               child: PageView.builder(
                 controller: _pageController,
                 // Pages start at the left edge, so the next card peeks in.

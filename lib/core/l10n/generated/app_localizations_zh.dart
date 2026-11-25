@@ -74,7 +74,7 @@ class AppLocalizationsZh extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count 座',
+      other: '$count 次',
     );
     return '$_temp0';
   }
@@ -4390,7 +4390,7 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count 座',
+      other: '$count 次',
     );
     return '$_temp0';
   }

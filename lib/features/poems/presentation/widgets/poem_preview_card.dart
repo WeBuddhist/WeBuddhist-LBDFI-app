@@ -24,18 +24,27 @@ class PoemPreviewCard extends ConsumerWidget {
 
   static const borderRadius = 12.0;
 
-  /// Room under the cover: a 2-line title, the divider, about four lines of
-  /// the poem, and the author row. Larger text shows fewer poem lines rather
-  /// than shrinking the cover.
-  static const textAreaHeight = 224.0;
+  /// Room under the cover that doesn't grow with text size: padding, gaps,
+  /// the lotus divider, the rule and the share button.
+  static const _textAreaFixed = 92.0;
+
+  /// Room under the cover taken by text at 1×: a 2-line title and about
+  /// four lines of the poem.
+  static const _textAreaText = 132.0;
+
+  /// Room under the cover (224 at 1×). The text part grows with the system
+  /// text size so a 2-line title and the author row never clip; the poem
+  /// lines take whatever is left.
+  static double textAreaHeightFor(TextScaler textScaler) =>
+      _textAreaFixed + textScaler.scale(_textAreaText);
 
   static double coverHeightFor(double width) =>
       width * coverHeight / coverWidth;
 
   /// Full card height for a card [width] wide, so every cover keeps the
   /// design ratio.
-  static double heightFor(double width) =>
-      coverHeightFor(width) + textAreaHeight;
+  static double heightFor(double width, TextScaler textScaler) =>
+      coverHeightFor(width) + textAreaHeightFor(textScaler);
 
   final Poem poem;
   final VoidCallback onTap;
@@ -119,7 +128,7 @@ class PoemPreviewCard extends ConsumerWidget {
                       ),
             ),
             SizedBox(
-              height: textAreaHeight,
+              height: textAreaHeightFor(MediaQuery.textScalerOf(context)),
               child: Padding(
                 padding: const EdgeInsets.fromLTRB(16, 14, 6, 4),
                 child: Column(
