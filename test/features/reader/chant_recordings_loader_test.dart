@@ -91,6 +91,49 @@ void main() {
       expect(await loader.fetch(), isFalse);
     });
 
+    test('leaving while it loads keeps the list but plays nothing', () async {
+      final gate = Completer<List<LibraryRecording>>();
+      final loader = ChantRecordingsLoader(() => gate.future);
+      addTearDown(loader.dispose);
+
+      final pending = loader.fetch();
+      // The pop starts: the reader is still mounted during its animation.
+      loader.cancelPending();
+      gate.complete(const [LibraryRecording(id: 'rec-1')]);
+
+      expect(await pending, isFalse);
+      expect(loader.status, ChantRecordingsStatus.ready);
+      expect(loader.recordings.single.id, 'rec-1');
+    });
+
+    test('a failure that lands after leaving is not reported', () async {
+      final gate = Completer<List<LibraryRecording>>();
+      final loader = ChantRecordingsLoader(() => gate.future);
+      addTearDown(loader.dispose);
+
+      final pending = loader.fetch();
+      loader.cancelPending();
+      gate.completeError(Exception('offline'));
+
+      expect(await pending, isFalse);
+      expect(loader.hasFailed, isTrue);
+    });
+
+    test('a fetch started after a cancel acts as usual', () async {
+      var fail = false;
+      final loader = ChantRecordingsLoader(() async {
+        if (fail) throw Exception('offline');
+        return const [LibraryRecording(id: 'rec-1')];
+      });
+      addTearDown(loader.dispose);
+
+      loader.cancelPending();
+      expect(await loader.fetch(), isTrue);
+
+      fail = true;
+      await expectLater(loader.fetch(), throwsException);
+    });
+
     test('a retry reaches the library again after a failure', () async {
       var fail = true;
       final server = LibraryTestServer({

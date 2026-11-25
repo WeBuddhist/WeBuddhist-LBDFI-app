@@ -631,6 +631,15 @@ class _ReaderScreenState extends ConsumerState<ReaderScreen>
     unawaited(_fetchChantRecordings(play: ctx.autoPlay));
   }
 
+  /// Stops audio when the reader leaves or moves on to another text. The
+  /// player stops at once, and a recordings lookup still in flight lands
+  /// without starting a new one, which it otherwise could during the exit
+  /// animation while this state is still mounted.
+  void _stopAudio() {
+    _chantRecordings?.cancelPending();
+    _audioController?.cancel();
+  }
+
   void _onChantRecordingsChanged() {
     if (mounted) setState(() {});
   }
@@ -736,7 +745,7 @@ class _ReaderScreenState extends ConsumerState<ReaderScreen>
     final navContext = widget.navigationContext;
     if (navContext == null) return;
 
-    _audioController?.cancel();
+    _stopAudio();
     ref.read(planSubtaskCompletionProvider).completeCurrent(navContext);
     _clearTransientState();
 
@@ -815,7 +824,7 @@ class _ReaderScreenState extends ConsumerState<ReaderScreen>
     if (newContext == null) return;
 
     _isAdvancing = true;
-    _audioController?.cancel();
+    _stopAudio();
     if (navContext.source == NavigationSource.plan &&
         index > (navContext.currentTextIndex ?? -1)) {
       // Moving on with the group finishes this text, as a swipe would.
@@ -924,7 +933,7 @@ class _ReaderScreenState extends ConsumerState<ReaderScreen>
         onPopInvokedWithResult: (didPop, _) {
           if (!didPop) return;
           // Stop audio immediately so nothing plays during the exit animation.
-          _audioController?.cancel();
+          _stopAudio();
           WidgetsBinding.instance.addPostFrameCallback((_) {
             if (!mounted) return;
             // Clear transient reader state after navigation finishes so this
@@ -1239,7 +1248,7 @@ class _ReaderScreenState extends ConsumerState<ReaderScreen>
   /// The embedded host has no route of its own, so the leave work that the
   /// route's PopScope would do (see [build]) runs here instead.
   void _closeEmbedded() {
-    _audioController?.cancel();
+    _stopAudio();
     _invalidatePlanProviders();
     _settlePendingRecitation();
     if (_isGroupAccumulatorChant && !_chantSessionFinished) {

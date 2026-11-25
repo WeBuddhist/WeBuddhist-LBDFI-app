@@ -24,22 +24,34 @@ class ChantRecordingsLoader extends ChangeNotifier {
 
   bool _disposed = false;
 
+  /// Bumped by [cancelPending]; a fetch that started under an older value
+  /// still stores its result but reports that it should not be acted on.
+  int _generation = 0;
+
+  /// The reader is leaving (or moving to another text): a load still in
+  /// flight lands, but its [fetch] returns false and does not throw, so the
+  /// caller starts no audio and reports no error.
+  void cancelPending() => _generation++;
+
   /// Loads the list. Returns true when it loaded (possibly empty), false
-  /// when it was already loading or this was disposed meanwhile. A failed
-  /// request sets [hasFailed] and rethrows so the caller can report it. The
+  /// when it was already loading, this was disposed meanwhile, or
+  /// [cancelPending] ran while it loaded. A failed request sets [hasFailed]
+  /// and rethrows so the caller can report it, unless it was cancelled. The
   /// repository drops failed lookups, so calling again asks again.
   Future<bool> fetch() async {
     if (_disposed || isLoading) return false;
+    final generation = _generation;
     _set(ChantRecordingsStatus.loading);
     try {
       final recordings = await _load();
       if (_disposed) return false;
       _recordings = recordings;
       _set(ChantRecordingsStatus.ready);
-      return true;
+      return generation == _generation;
     } catch (_) {
       if (_disposed) return false;
       _set(ChantRecordingsStatus.failed);
+      if (generation != _generation) return false;
       rethrow;
     }
   }
