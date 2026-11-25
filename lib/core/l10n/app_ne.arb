@@ -33,6 +33,14 @@
       }
     }
   },
+  "home_practices_sessions": "{count, plural,\n=1 {1 सत्र}\nother {{count} सत्रहरू}\n}",
+  "@home_practices_sessions": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "home_shortcut_plans": "योजनाहरू",
   "home_chants": "जप",
   "home_mala": "माला",
@@ -351,6 +359,26 @@
   "continueWithGoogle": "Google सँग जारी राख्नुहोस्",
   "continueWithApple": "Apple सँग जारी राख्नुहोस्",
   "continueWithPhone": "फोनसँग जारी राख्नुहोस्",
+  "login_last_used": "पछिल्लो पटक प्रयोग गरिएको",
+  "phone_login_title": "आफ्नो फोन नम्बर प्रविष्ट गर्नुहोस्",
+  "phone_login_subtitle": "तपाईं नै हुनुहुन्छ भनी पुष्टि गर्न हामी तपाईंलाई एउटा कोड पठाउनेछौं।",
+  "phone_login_number_hint": "फोन नम्बर",
+  "phone_login_country_search": "देश खोज्नुहोस्",
+  "phone_login_send_code": "कोड पठाउनुहोस्",
+  "phone_login_code_title": "कोड प्रविष्ट गर्नुहोस्",
+  "phone_login_code_subtitle": "हामीले {phoneNumber} मा ६ अङ्कको कोड पठाएका छौं।",
+  "phone_login_code_hint": "६ अङ्कको कोड",
+  "phone_login_verify": "प्रमाणित गर्नुहोस्",
+  "phone_login_resend": "कोड फेरि पठाउनुहोस्",
+  "phone_login_resend_in": "{seconds} सेकेन्डमा कोड फेरि पठाउनुहोस्",
+  "phone_login_change_number": "नम्बर परिवर्तन गर्नुहोस्",
+  "login_error_invalid_phone": "कृपया मान्य फोन नम्बर प्रविष्ट गर्नुहोस्।",
+  "login_error_invalid_code": "यो कोड मिलेन। जाँचेर फेरि प्रयास गर्नुहोस्।",
+  "login_error_code_expired": "यो कोडको म्याद सकियो। नयाँ कोड माग्नुहोस्।",
+  "login_error_too_many_requests": "धेरै पटक प्रयास भयो। कृपया पछि फेरि प्रयास गर्नुहोस्।",
+  "login_error_network": "आफ्नो इन्टरनेट जडान जाँचेर फेरि प्रयास गर्नुहोस्।",
+  "login_error_email_not_verified": "यो खाताको इमेल ठेगाना अझै प्रमाणित भएको छैन। आफ्नो प्रदायकमार्फत प्रमाणित गरेर फेरि प्रयास गर्नुहोस्।",
+  "login_error_generic": "हामीले तपाईंलाई साइन इन गराउन सकेनौं। कृपया फेरि प्रयास गर्नुहोस्।",
   "exploreAsGuest": "अतिथिको रूपमा अन्वेषण गर्नुहोस्",
   "signIn": "साइन इन गर्नुहोस्",
   "profileError": "प्रोफाइल लोड गर्दा त्रुटि भयो",
@@ -1272,6 +1300,13 @@
   "mala_bookmarked": "बुकमार्क गरियो",
   "mala_beads_load_error": "दानाका शैलीहरू लोड गर्न सकिएन",
   "mala_appearance_save_failed": "सुरक्षित गर्न सकिएन। कृपया फेरि प्रयास गर्नुहोस्",
+  "session_search_plans_hint": "योजनाहरू खोज्नुहोस्",
+  "session_search_chants_hint": "जप खोज्नुहोस्",
+  "session_search_malas_hint": "मालाहरू खोज्नुहोस्",
+  "session_search_timers_hint": "नाम वा अवधिद्वारा टाइमर खोज्नुहोस्",
+  "search_min_query_length": "खोज्न कम्तीमा {count} अक्षर टाइप गर्नुहोस्",
+  "splash_tagline_1": "हामी बौद्धहरू सँगै साधना गर्छौं",
+  "splash_tagline_2": "हामी बौद्धहरू दैनिक साधना गर्छौं",
   "practice_next_session": "अर्को सत्र",
   "practice_more_in_session": "यस सत्रमा +{count} थप",
   "@practice_more_in_session": {

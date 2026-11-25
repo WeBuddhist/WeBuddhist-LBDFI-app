@@ -63,13 +63,14 @@ class _GroupProfileScreenState extends ConsumerState<GroupProfileScreen> {
       // `/home` is guest-accessible, so the query alone is no proof of login.
       final authState = ref.read(authProvider);
       if (authState.isGuest || !authState.isLoggedIn) {
-        LoginDrawer.show(context, ref);
+        LoginDrawer.show(context, ref, feature: 'group_open');
         return;
       }
       unawaited(
         PrayerRequestsSheet.show(
           context,
           scope: PrayerRoomScope.group(widget.groupId),
+          source: 'link',
         ),
       );
     });

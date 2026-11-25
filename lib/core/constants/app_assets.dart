@@ -67,6 +67,9 @@ class AppAssets {
   static const IconData readerRootText = PhosphorIconsRegular.bookOpenText;
   static const IconData readerCopy = PhosphorIconsRegular.copy;
   static const IconData readerShare = PhosphorIconsRegular.shareNetwork;
+
+  /// The lotus between a poem card's title and its lines.
+  static const IconData poemLotus = PhosphorIconsRegular.flowerLotus;
   static const IconData readerChevronRight = PhosphorIconsRegular.caretRight;
 
   // ========== SETTINGS & PROFILE ICONS ==========

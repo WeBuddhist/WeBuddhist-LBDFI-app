@@ -8,6 +8,7 @@ import 'package:flutter_pecha/features/mala/domain/entities/mantra_appearance.da
 import 'package:flutter_pecha/features/mala/domain/repositories/mala_appearance_repository.dart';
 import 'package:flutter_pecha/features/mala/presentation/providers/mala_providers.dart';
 import 'package:flutter_pecha/features/mala/presentation/providers/space_mantra_providers.dart';
+import 'package:flutter_pecha/features/mala/presentation/utils/mala_analytics.dart';
 import 'package:flutter_pecha/features/more/presentation/providers/mantra_counts_provider.dart';
 import 'package:flutter_pecha/shared/domain/value_objects/responsive_image.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -40,6 +41,7 @@ class MalaAppearanceNotifier
     AppearancePick? deityImage,
     AppearancePick? malaSkin,
   }) async {
+    final analytics = ref.read(malaAnalyticsProvider);
     try {
       final updated = await _repository.updateAppearance(
         arg,
@@ -47,6 +49,20 @@ class MalaAppearanceNotifier
         malaSkin: malaSkin,
       );
       state = AsyncData(updated);
+      if (deityImage != null) {
+        analytics.settingChanged(
+          setting: MalaSetting.deityImage,
+          value: deityImage.id,
+          presetId: arg,
+        );
+      }
+      if (malaSkin != null) {
+        analytics.settingChanged(
+          setting: MalaSetting.skin,
+          value: malaSkin.id,
+          presetId: arg,
+        );
+      }
       // Other lists carry the choice too; refresh them in the background.
       ref.invalidate(mantraCountsProvider);
       ref.invalidate(joinedSpaceMantrasProvider);

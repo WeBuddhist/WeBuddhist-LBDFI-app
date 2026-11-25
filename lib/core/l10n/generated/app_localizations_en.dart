@@ -74,6 +74,17 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String home_practices_sessions(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count sessions',
+      one: '1 session',
+    );
+    return '$_temp0';
+  }
+
+  @override
   String get home_shortcut_plans => 'Plans';
 
   @override
@@ -1111,6 +1122,77 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get continueWithPhone => 'Continue with phone';
+
+  @override
+  String get login_last_used => 'Last used';
+
+  @override
+  String get phone_login_title => 'Enter your phone number';
+
+  @override
+  String get phone_login_subtitle =>
+      'We\'ll text you a code to confirm it\'s you.';
+
+  @override
+  String get phone_login_number_hint => 'Phone number';
+
+  @override
+  String get phone_login_country_search => 'Search country';
+
+  @override
+  String get phone_login_send_code => 'Send code';
+
+  @override
+  String get phone_login_code_title => 'Enter the code';
+
+  @override
+  String phone_login_code_subtitle(String phoneNumber) {
+    return 'We sent a 6-digit code to $phoneNumber.';
+  }
+
+  @override
+  String get phone_login_code_hint => '6-digit code';
+
+  @override
+  String get phone_login_verify => 'Verify';
+
+  @override
+  String get phone_login_resend => 'Resend code';
+
+  @override
+  String phone_login_resend_in(int seconds) {
+    return 'Resend code in ${seconds}s';
+  }
+
+  @override
+  String get phone_login_change_number => 'Change number';
+
+  @override
+  String get login_error_invalid_phone => 'Enter a valid phone number.';
+
+  @override
+  String get login_error_invalid_code =>
+      'That code isn\'t right. Check it and try again.';
+
+  @override
+  String get login_error_code_expired =>
+      'That code has expired. Request a new one.';
+
+  @override
+  String get login_error_too_many_requests =>
+      'Too many attempts. Please try again later.';
+
+  @override
+  String get login_error_network =>
+      'Check your internet connection and try again.';
+
+  @override
+  String get login_error_email_not_verified =>
+      'This account\'s email address isn\'t verified yet. Verify it with your provider and try again.';
+
+  @override
+  String get login_error_generic =>
+      'We couldn\'t sign you in. Please try again.';
 
   @override
   String get exploreAsGuest => 'Explore as a guest';
@@ -4102,6 +4184,34 @@ class AppLocalizationsEn extends AppLocalizations {
   String get timer_duration_sec => 'sec';
 
   @override
+  String get timer_resume => 'Resume';
+
+  @override
+  String get timer_paused_caption => 'Paused · tap to resume';
+
+  @override
+  String get timer_discard_title => 'Discard this session?';
+
+  @override
+  String timer_discard_message(String elapsed) {
+    return 'Your $elapsed of practice won’t be saved';
+  }
+
+  @override
+  String get timer_save_session => 'Save session';
+
+  @override
+  String get timer_session_saved => 'Session saved';
+
+  @override
+  String get timer_session_complete => 'Session complete';
+
+  @override
+  String timer_saved_to_practice(String elapsed) {
+    return '$elapsed · saved to your practice';
+  }
+
+  @override
   String get reader_display_title => 'Display';
 
   @override
@@ -4328,6 +4438,29 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get mala_appearance_save_failed => 'Couldn\'t save. Please try again';
+
+  @override
+  String get session_search_plans_hint => 'Search plans';
+
+  @override
+  String get session_search_chants_hint => 'Search chants';
+
+  @override
+  String get session_search_malas_hint => 'Search malas';
+
+  @override
+  String get session_search_timers_hint => 'Search timers by name or length';
+
+  @override
+  String search_min_query_length(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Type at least $count characters to search',
+      one: 'Type at least 1 character to search',
+    );
+    return '$_temp0';
+  }
 
   @override
   String get practice_next_session => 'Next session';

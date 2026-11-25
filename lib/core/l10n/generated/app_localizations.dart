@@ -227,6 +227,12 @@ abstract class AppLocalizations {
   /// **'{count} chants'**
   String home_recitation_count(int count);
 
+  /// No description provided for @home_practices_sessions.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural,\n=1 {1 session}\nother {{count} sessions}\n}'**
+  String home_practices_sessions(int count);
+
   /// No description provided for @home_shortcut_plans.
   ///
   /// In en, this message translates to:
@@ -2068,6 +2074,126 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Continue with phone'**
   String get continueWithPhone;
+
+  /// Small tag on the sign-in button for the method this phone last signed in with
+  ///
+  /// In en, this message translates to:
+  /// **'Last used'**
+  String get login_last_used;
+
+  /// No description provided for @phone_login_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter your phone number'**
+  String get phone_login_title;
+
+  /// No description provided for @phone_login_subtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'We\'ll text you a code to confirm it\'s you.'**
+  String get phone_login_subtitle;
+
+  /// No description provided for @phone_login_number_hint.
+  ///
+  /// In en, this message translates to:
+  /// **'Phone number'**
+  String get phone_login_number_hint;
+
+  /// No description provided for @phone_login_country_search.
+  ///
+  /// In en, this message translates to:
+  /// **'Search country'**
+  String get phone_login_country_search;
+
+  /// No description provided for @phone_login_send_code.
+  ///
+  /// In en, this message translates to:
+  /// **'Send code'**
+  String get phone_login_send_code;
+
+  /// No description provided for @phone_login_code_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter the code'**
+  String get phone_login_code_title;
+
+  /// No description provided for @phone_login_code_subtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'We sent a 6-digit code to {phoneNumber}.'**
+  String phone_login_code_subtitle(String phoneNumber);
+
+  /// No description provided for @phone_login_code_hint.
+  ///
+  /// In en, this message translates to:
+  /// **'6-digit code'**
+  String get phone_login_code_hint;
+
+  /// No description provided for @phone_login_verify.
+  ///
+  /// In en, this message translates to:
+  /// **'Verify'**
+  String get phone_login_verify;
+
+  /// No description provided for @phone_login_resend.
+  ///
+  /// In en, this message translates to:
+  /// **'Resend code'**
+  String get phone_login_resend;
+
+  /// No description provided for @phone_login_resend_in.
+  ///
+  /// In en, this message translates to:
+  /// **'Resend code in {seconds}s'**
+  String phone_login_resend_in(int seconds);
+
+  /// No description provided for @phone_login_change_number.
+  ///
+  /// In en, this message translates to:
+  /// **'Change number'**
+  String get phone_login_change_number;
+
+  /// No description provided for @login_error_invalid_phone.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a valid phone number.'**
+  String get login_error_invalid_phone;
+
+  /// No description provided for @login_error_invalid_code.
+  ///
+  /// In en, this message translates to:
+  /// **'That code isn\'t right. Check it and try again.'**
+  String get login_error_invalid_code;
+
+  /// No description provided for @login_error_code_expired.
+  ///
+  /// In en, this message translates to:
+  /// **'That code has expired. Request a new one.'**
+  String get login_error_code_expired;
+
+  /// No description provided for @login_error_too_many_requests.
+  ///
+  /// In en, this message translates to:
+  /// **'Too many attempts. Please try again later.'**
+  String get login_error_too_many_requests;
+
+  /// No description provided for @login_error_network.
+  ///
+  /// In en, this message translates to:
+  /// **'Check your internet connection and try again.'**
+  String get login_error_network;
+
+  /// No description provided for @login_error_email_not_verified.
+  ///
+  /// In en, this message translates to:
+  /// **'This account\'s email address isn\'t verified yet. Verify it with your provider and try again.'**
+  String get login_error_email_not_verified;
+
+  /// No description provided for @login_error_generic.
+  ///
+  /// In en, this message translates to:
+  /// **'We couldn\'t sign you in. Please try again.'**
+  String get login_error_generic;
 
   /// No description provided for @exploreAsGuest.
   ///
@@ -7177,6 +7303,54 @@ abstract class AppLocalizations {
   /// **'sec'**
   String get timer_duration_sec;
 
+  /// No description provided for @timer_resume.
+  ///
+  /// In en, this message translates to:
+  /// **'Resume'**
+  String get timer_resume;
+
+  /// No description provided for @timer_paused_caption.
+  ///
+  /// In en, this message translates to:
+  /// **'Paused · tap to resume'**
+  String get timer_paused_caption;
+
+  /// No description provided for @timer_discard_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Discard this session?'**
+  String get timer_discard_title;
+
+  /// No description provided for @timer_discard_message.
+  ///
+  /// In en, this message translates to:
+  /// **'Your {elapsed} of practice won’t be saved'**
+  String timer_discard_message(String elapsed);
+
+  /// No description provided for @timer_save_session.
+  ///
+  /// In en, this message translates to:
+  /// **'Save session'**
+  String get timer_save_session;
+
+  /// No description provided for @timer_session_saved.
+  ///
+  /// In en, this message translates to:
+  /// **'Session saved'**
+  String get timer_session_saved;
+
+  /// No description provided for @timer_session_complete.
+  ///
+  /// In en, this message translates to:
+  /// **'Session complete'**
+  String get timer_session_complete;
+
+  /// No description provided for @timer_saved_to_practice.
+  ///
+  /// In en, this message translates to:
+  /// **'{elapsed} · saved to your practice'**
+  String timer_saved_to_practice(String elapsed);
+
   /// No description provided for @reader_display_title.
   ///
   /// In en, this message translates to:
@@ -7602,6 +7776,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Couldn\'t save. Please try again'**
   String get mala_appearance_save_failed;
+
+  /// Search field hint on the Plans tab of Add to session.
+  ///
+  /// In en, this message translates to:
+  /// **'Search plans'**
+  String get session_search_plans_hint;
+
+  /// Search field hint on the Chants tab of Add to session.
+  ///
+  /// In en, this message translates to:
+  /// **'Search chants'**
+  String get session_search_chants_hint;
+
+  /// Search field hint on the Malas tab of Add to session.
+  ///
+  /// In en, this message translates to:
+  /// **'Search malas'**
+  String get session_search_malas_hint;
+
+  /// Search field hint on the Timers tab of Add to session; timers match by name or by duration such as '10 min'.
+  ///
+  /// In en, this message translates to:
+  /// **'Search timers by name or length'**
+  String get session_search_timers_hint;
+
+  /// Shown instead of results while a search query is shorter than the minimum the server accepts.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{Type at least 1 character to search} other{Type at least {count} characters to search}}'**
+  String search_min_query_length(int count);
 
   /// No description provided for @practice_next_session.
   ///

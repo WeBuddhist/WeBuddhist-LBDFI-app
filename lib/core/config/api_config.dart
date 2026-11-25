@@ -46,6 +46,12 @@ class ApiConfig {
   static const String v2Prefix = '/../v2';
   static const String spacesV2Path = '$v2Prefix/spaces';
 
+  /// v2 public posts-and-events feed of spaces; Home's feed for guests.
+  static const String spacesFeedV2Path = '$v2Prefix/spaces/feed';
+
+  /// v2 personalised home feed (`GET /feed`), cursor-paged; members only.
+  static const String feedV2Path = '$v2Prefix/feed';
+
   /// v2 mantra routes: `/{id}/images` lists a mantra's deity images.
   static const String mantrasV2Path = '$v2Prefix/mantras';
 

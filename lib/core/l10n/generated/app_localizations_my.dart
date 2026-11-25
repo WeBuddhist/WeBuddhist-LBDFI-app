@@ -73,6 +73,16 @@ class AppLocalizationsMy extends AppLocalizations {
   }
 
   @override
+  String home_practices_sessions(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count ကြိမ်',
+    );
+    return '$_temp0';
+  }
+
+  @override
   String get home_shortcut_plans => 'သင်ခန်းစာအစီအစဉ်များ';
 
   @override
@@ -1124,6 +1134,76 @@ class AppLocalizationsMy extends AppLocalizations {
 
   @override
   String get continueWithPhone => 'ဖုန်းဖြင့် ဆက်လက်ရန်';
+
+  @override
+  String get login_last_used => 'နောက်ဆုံးအသုံးပြုခဲ့သည်';
+
+  @override
+  String get phone_login_title => 'သင့်ဖုန်းနံပါတ်ကို ထည့်ပါ';
+
+  @override
+  String get phone_login_subtitle =>
+      'သင်ဖြစ်ကြောင်း အတည်ပြုရန် ကုဒ်တစ်ခုကို စာတိုဖြင့် ပို့ပေးပါမည်။';
+
+  @override
+  String get phone_login_number_hint => 'ဖုန်းနံပါတ်';
+
+  @override
+  String get phone_login_country_search => 'နိုင်ငံရှာရန်';
+
+  @override
+  String get phone_login_send_code => 'ကုဒ်ပို့ရန်';
+
+  @override
+  String get phone_login_code_title => 'ကုဒ်ထည့်ပါ';
+
+  @override
+  String phone_login_code_subtitle(String phoneNumber) {
+    return '$phoneNumber သို့ ဂဏန်း ၆ လုံးပါ ကုဒ်ကို ပို့ပြီးပါပြီ။';
+  }
+
+  @override
+  String get phone_login_code_hint => 'ဂဏန်း ၆ လုံးကုဒ်';
+
+  @override
+  String get phone_login_verify => 'အတည်ပြုရန်';
+
+  @override
+  String get phone_login_resend => 'ကုဒ်ပြန်ပို့ရန်';
+
+  @override
+  String phone_login_resend_in(int seconds) {
+    return '$seconds စက္ကန့်အကြာတွင် ကုဒ်ပြန်ပို့နိုင်သည်';
+  }
+
+  @override
+  String get phone_login_change_number => 'နံပါတ်ပြောင်းရန်';
+
+  @override
+  String get login_error_invalid_phone => 'မှန်ကန်သော ဖုန်းနံပါတ်ကို ထည့်ပါ။';
+
+  @override
+  String get login_error_invalid_code =>
+      'ကုဒ်မမှန်ပါ။ စစ်ဆေးပြီး ထပ်ကြိုးစားပါ။';
+
+  @override
+  String get login_error_code_expired =>
+      'ကုဒ်သက်တမ်းကုန်သွားပါပြီ။ ကုဒ်အသစ်တောင်းပါ။';
+
+  @override
+  String get login_error_too_many_requests =>
+      'ကြိုးစားမှုအကြိမ်ရေ များလွန်းပါသည်။ နောက်မှ ထပ်ကြိုးစားပါ။';
+
+  @override
+  String get login_error_network =>
+      'အင်တာနက်ချိတ်ဆက်မှုကို စစ်ဆေးပြီး ထပ်ကြိုးစားပါ။';
+
+  @override
+  String get login_error_email_not_verified =>
+      'ဤအကောင့်၏ အီးမေးလ်လိပ်စာကို အတည်မပြုရသေးပါ။ သင့်ဝန်ဆောင်မှုပေးသူထံတွင် အတည်ပြုပြီး ထပ်ကြိုးစားပါ။';
+
+  @override
+  String get login_error_generic => 'အကောင့်ဝင်၍ မရပါ။ ထပ်ကြိုးစားပါ။';
 
   @override
   String get exploreAsGuest => 'ဧည့်သည်အဖြစ် လေ့လာရန်';
@@ -4173,6 +4253,34 @@ class AppLocalizationsMy extends AppLocalizations {
   String get timer_duration_sec => 'စက္ကန့်';
 
   @override
+  String get timer_resume => 'Resume';
+
+  @override
+  String get timer_paused_caption => 'Paused · tap to resume';
+
+  @override
+  String get timer_discard_title => 'Discard this session?';
+
+  @override
+  String timer_discard_message(String elapsed) {
+    return 'Your $elapsed of practice won’t be saved';
+  }
+
+  @override
+  String get timer_save_session => 'Save session';
+
+  @override
+  String get timer_session_saved => 'Session saved';
+
+  @override
+  String get timer_session_complete => 'Session complete';
+
+  @override
+  String timer_saved_to_practice(String elapsed) {
+    return '$elapsed · saved to your practice';
+  }
+
+  @override
   String get reader_display_title => 'Display';
 
   @override
@@ -4399,6 +4507,24 @@ class AppLocalizationsMy extends AppLocalizations {
 
   @override
   String get mala_appearance_save_failed => 'သိမ်း၍ မရပါ။ ထပ်ကြိုးစားပါ';
+
+  @override
+  String get session_search_plans_hint => 'သင်ခန်းစာအစီအစဉ်များ ရှာဖွေရန်';
+
+  @override
+  String get session_search_chants_hint => 'ရွတ်ဆိုရန်စာများ ရှာဖွေရန်';
+
+  @override
+  String get session_search_malas_hint => 'ပုတီးများ ရှာဖွေရန်';
+
+  @override
+  String get session_search_timers_hint =>
+      'အမည် သို့မဟုတ် ကြာချိန်ဖြင့် အချိန်မှတ်စက် ရှာဖွေရန်';
+
+  @override
+  String search_min_query_length(int count) {
+    return 'ရှာဖွေရန် အနည်းဆုံး စာလုံး $count လုံး ရိုက်ထည့်ပါ';
+  }
 
   @override
   String get practice_next_session => 'နောက်အချိန်အပိုင်း';

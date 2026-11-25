@@ -109,6 +109,9 @@ class GroupChatNotificationBell extends ConsumerWidget {
             onPressed:
                 () => navigator.push<void>(
                   MaterialPageRoute<void>(
+                    // The name of the notifications route, so it counts as
+                    // the same screen however it was opened.
+                    settings: const RouteSettings(name: 'notifications'),
                     builder: (_) => const NotificationSettingsScreen(),
                   ),
                 ),

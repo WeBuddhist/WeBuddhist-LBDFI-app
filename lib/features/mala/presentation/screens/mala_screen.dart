@@ -59,7 +59,7 @@ class MalaScreen extends ConsumerStatefulWidget {
   final GroupAccumulator? singleAccumulation;
 
   /// Where the screen was opened from, carried on `mala_screen_opened`.
-  final String? source;
+  final MalaOpenSource? source;
 
   @override
   ConsumerState<MalaScreen> createState() => _MalaScreenState();

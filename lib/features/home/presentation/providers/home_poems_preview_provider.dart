@@ -36,8 +36,7 @@ final homePoemsPreviewSourceProvider =
       );
     });
 
-/// Poems are fully public, so — unlike [homeGroupEventsPreviewProvider] —
-/// this fetches for guests too. Stored page is the first state.
+/// Poems are fully public, so this fetches for guests too. Stored page is the first state.
 final homePoemsPreviewProvider = AsyncNotifierProvider.autoDispose<
   AutoDisposeScreenCacheNotifier<List<Poem>, List<Poem>>,
   List<Poem>

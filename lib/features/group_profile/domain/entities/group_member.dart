@@ -1,5 +1,5 @@
 import 'package:flutter_pecha/features/group_profile/domain/entities/group_member_role.dart';
-import 'package:flutter_pecha/features/group_profile/domain/entities/visible_name.dart';
+import 'package:flutter_pecha/shared/domain/visible_name.dart';
 
 class GroupMember {
   final String userId;

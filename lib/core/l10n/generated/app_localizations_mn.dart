@@ -73,6 +73,17 @@ class AppLocalizationsMn extends AppLocalizations {
   }
 
   @override
+  String home_practices_sessions(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count хичээл',
+      one: '1 хичээл',
+    );
+    return '$_temp0';
+  }
+
+  @override
   String get home_shortcut_plans => 'Төлөвлөгөө';
 
   @override
@@ -1122,6 +1133,76 @@ class AppLocalizationsMn extends AppLocalizations {
 
   @override
   String get continueWithPhone => 'Утсаар үргэлжлүүлэх';
+
+  @override
+  String get login_last_used => 'Сүүлд ашигласан';
+
+  @override
+  String get phone_login_title => 'Утасны дугаараа оруулна уу';
+
+  @override
+  String get phone_login_subtitle =>
+      'Таныг мөн эсэхийг баталгаажуулахын тулд бид танд код илгээнэ.';
+
+  @override
+  String get phone_login_number_hint => 'Утасны дугаар';
+
+  @override
+  String get phone_login_country_search => 'Улс хайх';
+
+  @override
+  String get phone_login_send_code => 'Код илгээх';
+
+  @override
+  String get phone_login_code_title => 'Кодоо оруулна уу';
+
+  @override
+  String phone_login_code_subtitle(String phoneNumber) {
+    return 'Бид $phoneNumber дугаар руу 6 оронтой код илгээлээ.';
+  }
+
+  @override
+  String get phone_login_code_hint => '6 оронтой код';
+
+  @override
+  String get phone_login_verify => 'Баталгаажуулах';
+
+  @override
+  String get phone_login_resend => 'Кодыг дахин илгээх';
+
+  @override
+  String phone_login_resend_in(int seconds) {
+    return '$seconds секундын дараа кодыг дахин илгээх';
+  }
+
+  @override
+  String get phone_login_change_number => 'Дугаар солих';
+
+  @override
+  String get login_error_invalid_phone => 'Зөв утасны дугаар оруулна уу.';
+
+  @override
+  String get login_error_invalid_code =>
+      'Код буруу байна. Шалгаад дахин оролдоно уу.';
+
+  @override
+  String get login_error_code_expired =>
+      'Кодын хугацаа дууссан. Шинэ код авна уу.';
+
+  @override
+  String get login_error_too_many_requests =>
+      'Хэт олон удаа оролдлоо. Дараа дахин оролдоно уу.';
+
+  @override
+  String get login_error_network =>
+      'Интернэт холболтоо шалгаад дахин оролдоно уу.';
+
+  @override
+  String get login_error_email_not_verified =>
+      'Энэ бүртгэлийн имэйл хаяг баталгаажаагүй байна. Үйлчилгээ үзүүлэгчээрээ баталгаажуулаад дахин оролдоно уу.';
+
+  @override
+  String get login_error_generic => 'Нэвтэрч чадсангүй. Дахин оролдоно уу.';
 
   @override
   String get exploreAsGuest => 'Зочноор судлах';
@@ -4125,10 +4206,10 @@ class AppLocalizationsMn extends AppLocalizations {
       'A timer with this duration, sound, and title already exists.';
 
   @override
-  String get splash_tagline_1 => 'We Buddhists practice together';
+  String get splash_tagline_1 => 'Бид буддистууд хамтдаа бясалгадаг';
 
   @override
-  String get splash_tagline_2 => 'We Buddhists practice daily';
+  String get splash_tagline_2 => 'Бид буддистууд өдөр бүр бясалгадаг';
 
   @override
   String get timer_create_custom => 'Create a custom timer';
@@ -4144,6 +4225,34 @@ class AppLocalizationsMn extends AppLocalizations {
 
   @override
   String get timer_duration_sec => 'sec';
+
+  @override
+  String get timer_resume => 'Resume';
+
+  @override
+  String get timer_paused_caption => 'Paused · tap to resume';
+
+  @override
+  String get timer_discard_title => 'Discard this session?';
+
+  @override
+  String timer_discard_message(String elapsed) {
+    return 'Your $elapsed of practice won’t be saved';
+  }
+
+  @override
+  String get timer_save_session => 'Save session';
+
+  @override
+  String get timer_session_saved => 'Session saved';
+
+  @override
+  String get timer_session_complete => 'Session complete';
+
+  @override
+  String timer_saved_to_practice(String elapsed) {
+    return '$elapsed · saved to your practice';
+  }
 
   @override
   String get reader_display_title => 'Харагдац';
@@ -4374,6 +4483,24 @@ class AppLocalizationsMn extends AppLocalizations {
   @override
   String get mala_appearance_save_failed =>
       'Хадгалж чадсангүй. Дахин оролдоно уу';
+
+  @override
+  String get session_search_plans_hint => 'Төлөвлөгөө хайх';
+
+  @override
+  String get session_search_chants_hint => 'Магтаал хайх';
+
+  @override
+  String get session_search_malas_hint => 'Эрхи хайх';
+
+  @override
+  String get session_search_timers_hint =>
+      'Нэр эсвэл хугацаагаар цаг хэмжигч хайх';
+
+  @override
+  String search_min_query_length(int count) {
+    return 'Хайхын тулд дор хаяж $count тэмдэгт бичнэ үү';
+  }
 
   @override
   String get practice_next_session => 'Дараагийн хичээл';

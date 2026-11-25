@@ -73,6 +73,17 @@ class AppLocalizationsNe extends AppLocalizations {
   }
 
   @override
+  String home_practices_sessions(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count सत्रहरू',
+      one: '1 सत्र',
+    );
+    return '$_temp0';
+  }
+
+  @override
   String get home_shortcut_plans => 'योजनाहरू';
 
   @override
@@ -1127,6 +1138,78 @@ class AppLocalizationsNe extends AppLocalizations {
 
   @override
   String get continueWithPhone => 'फोनसँग जारी राख्नुहोस्';
+
+  @override
+  String get login_last_used => 'पछिल्लो पटक प्रयोग गरिएको';
+
+  @override
+  String get phone_login_title => 'आफ्नो फोन नम्बर प्रविष्ट गर्नुहोस्';
+
+  @override
+  String get phone_login_subtitle =>
+      'तपाईं नै हुनुहुन्छ भनी पुष्टि गर्न हामी तपाईंलाई एउटा कोड पठाउनेछौं।';
+
+  @override
+  String get phone_login_number_hint => 'फोन नम्बर';
+
+  @override
+  String get phone_login_country_search => 'देश खोज्नुहोस्';
+
+  @override
+  String get phone_login_send_code => 'कोड पठाउनुहोस्';
+
+  @override
+  String get phone_login_code_title => 'कोड प्रविष्ट गर्नुहोस्';
+
+  @override
+  String phone_login_code_subtitle(String phoneNumber) {
+    return 'हामीले $phoneNumber मा ६ अङ्कको कोड पठाएका छौं।';
+  }
+
+  @override
+  String get phone_login_code_hint => '६ अङ्कको कोड';
+
+  @override
+  String get phone_login_verify => 'प्रमाणित गर्नुहोस्';
+
+  @override
+  String get phone_login_resend => 'कोड फेरि पठाउनुहोस्';
+
+  @override
+  String phone_login_resend_in(int seconds) {
+    return '$seconds सेकेन्डमा कोड फेरि पठाउनुहोस्';
+  }
+
+  @override
+  String get phone_login_change_number => 'नम्बर परिवर्तन गर्नुहोस्';
+
+  @override
+  String get login_error_invalid_phone =>
+      'कृपया मान्य फोन नम्बर प्रविष्ट गर्नुहोस्।';
+
+  @override
+  String get login_error_invalid_code =>
+      'यो कोड मिलेन। जाँचेर फेरि प्रयास गर्नुहोस्।';
+
+  @override
+  String get login_error_code_expired =>
+      'यो कोडको म्याद सकियो। नयाँ कोड माग्नुहोस्।';
+
+  @override
+  String get login_error_too_many_requests =>
+      'धेरै पटक प्रयास भयो। कृपया पछि फेरि प्रयास गर्नुहोस्।';
+
+  @override
+  String get login_error_network =>
+      'आफ्नो इन्टरनेट जडान जाँचेर फेरि प्रयास गर्नुहोस्।';
+
+  @override
+  String get login_error_email_not_verified =>
+      'यो खाताको इमेल ठेगाना अझै प्रमाणित भएको छैन। आफ्नो प्रदायकमार्फत प्रमाणित गरेर फेरि प्रयास गर्नुहोस्।';
+
+  @override
+  String get login_error_generic =>
+      'हामीले तपाईंलाई साइन इन गराउन सकेनौं। कृपया फेरि प्रयास गर्नुहोस्।';
 
   @override
   String get exploreAsGuest => 'अतिथिको रूपमा अन्वेषण गर्नुहोस्';
@@ -4126,10 +4209,10 @@ class AppLocalizationsNe extends AppLocalizations {
       'A timer with this duration, sound, and title already exists.';
 
   @override
-  String get splash_tagline_1 => 'We Buddhists practice together';
+  String get splash_tagline_1 => 'हामी बौद्धहरू सँगै साधना गर्छौं';
 
   @override
-  String get splash_tagline_2 => 'We Buddhists practice daily';
+  String get splash_tagline_2 => 'हामी बौद्धहरू दैनिक साधना गर्छौं';
 
   @override
   String get timer_create_custom => 'Create a custom timer';
@@ -4145,6 +4228,34 @@ class AppLocalizationsNe extends AppLocalizations {
 
   @override
   String get timer_duration_sec => 'sec';
+
+  @override
+  String get timer_resume => 'Resume';
+
+  @override
+  String get timer_paused_caption => 'Paused · tap to resume';
+
+  @override
+  String get timer_discard_title => 'Discard this session?';
+
+  @override
+  String timer_discard_message(String elapsed) {
+    return 'Your $elapsed of practice won’t be saved';
+  }
+
+  @override
+  String get timer_save_session => 'Save session';
+
+  @override
+  String get timer_session_saved => 'Session saved';
+
+  @override
+  String get timer_session_complete => 'Session complete';
+
+  @override
+  String timer_saved_to_practice(String elapsed) {
+    return '$elapsed · saved to your practice';
+  }
 
   @override
   String get reader_display_title => 'प्रदर्शन';
@@ -4375,6 +4486,23 @@ class AppLocalizationsNe extends AppLocalizations {
   @override
   String get mala_appearance_save_failed =>
       'सुरक्षित गर्न सकिएन। कृपया फेरि प्रयास गर्नुहोस्';
+
+  @override
+  String get session_search_plans_hint => 'योजनाहरू खोज्नुहोस्';
+
+  @override
+  String get session_search_chants_hint => 'जप खोज्नुहोस्';
+
+  @override
+  String get session_search_malas_hint => 'मालाहरू खोज्नुहोस्';
+
+  @override
+  String get session_search_timers_hint => 'नाम वा अवधिद्वारा टाइमर खोज्नुहोस्';
+
+  @override
+  String search_min_query_length(int count) {
+    return 'खोज्न कम्तीमा $count अक्षर टाइप गर्नुहोस्';
+  }
 
   @override
   String get practice_next_session => 'अर्को सत्र';

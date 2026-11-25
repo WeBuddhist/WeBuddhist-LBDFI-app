@@ -5,6 +5,9 @@ import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:flutter_pecha/core/analytics/install_attribution_analytics.dart';
+import 'package:flutter_pecha/core/analytics/app_open_analytics.dart';
+import 'package:flutter_pecha/core/analytics/analytics_providers.dart';
 import 'package:flutter_pecha/core/analytics/clarity_analytics_service.dart';
 import 'package:flutter_pecha/core/analytics/entry_analytics.dart';
 import 'package:flutter_pecha/core/analytics/posthog_analytics_service.dart';
@@ -211,6 +214,18 @@ void main() async {
     overrides: [routineLocalStorageProvider.overrideWithValue(routineStorage)],
   );
 
+  // The launch splash is the first screen drawn, so read the saved theme and
+  // language before it: otherwise its first frames follow the phone's theme
+  // and the default language. The native launch screen covers the wait.
+  try {
+    await Future.wait([
+      container.read(themeModeProvider.notifier).ensureInitialized(),
+      container.read(localeProvider.notifier).ensureInitialized(),
+    ]);
+  } catch (e) {
+    _logger.warning('Error preloading theme and language: $e');
+  }
+
   // Set container reference for notification navigation
   NotificationService.setContainer(container);
 
@@ -219,6 +234,14 @@ void main() async {
     Airbridge.setOnDeeplinkReceived((url) {
       _logger.info('Airbridge deep link received: $url');
       AirbridgeDeepLinkService.storePendingDeepLink(url);
+    });
+    // Which campaign or link brought this install; sent to PostHog once.
+    final installAttribution = InstallAttributionAnalytics(
+      container.read(analyticsServiceProvider),
+      SharedPreferencesAppOpenStore(),
+    );
+    Airbridge.setOnAttributionReceived((attribution) {
+      unawaited(installAttribution.attributionReceived(attribution));
     });
     _logger.info('Airbridge deep link handler initialized');
   } catch (e) {
@@ -362,13 +385,14 @@ class _MyAppState extends ConsumerState<MyApp> with WidgetsBindingObserver {
       unawaited(ref.read(readerLayoutLanguageGuardProvider).sync(next));
     });
 
-    // Bottom tabs are not routes, so Clarity's screen name for the home
-    // shell has to follow the selected tab from here, and PostHog's
-    // route-based screen events never see a tab change.
+    // Bottom tabs are not routes, so the screen name Clarity and PostHog give
+    // the home shell has to follow the selected tab from here. Both are told
+    // before tab_viewed is sent, so that event carries the new tab's name.
     ref.listen<int>(mainNavigationIndexProvider, (previous, next) {
       if (previous == next) return;
       final tab = MainTab.values[next].name;
       ClarityAnalyticsService.instance.setTab(tab);
+      PostHogAnalyticsService.instance.setTab(tab);
       ref.read(homeAnalyticsProvider).tabViewed(tab: tab);
     });
 

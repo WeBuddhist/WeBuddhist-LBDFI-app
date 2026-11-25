@@ -507,7 +507,7 @@ class _CollectionActionBar extends ConsumerWidget {
   /// GROUP_RECITATION_COLLECTION session and lets the user place its time block.
   void _addToPractices(BuildContext context, WidgetRef ref) {
     if (ref.read(authProvider).isGuest) {
-      LoginDrawer.show(context, ref);
+      LoginDrawer.show(context, ref, feature: 'recitation_collection_add_to_practices');
       return;
     }
     context.pushNamed(

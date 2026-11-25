@@ -73,6 +73,17 @@ class AppLocalizationsBo extends AppLocalizations {
   }
 
   @override
+  String home_practices_sessions(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'ཐུན་ $count',
+      one: 'ཐུན་ 1',
+    );
+    return '$_temp0';
+  }
+
+  @override
   String get home_shortcut_plans => 'ཐུན་འཆར།';
 
   @override
@@ -1123,6 +1134,76 @@ class AppLocalizationsBo extends AppLocalizations {
 
   @override
   String get continueWithPhone => 'ཁ་པར་བརྒྱུད་ནས་མུ་མཐུད་རོགས།';
+
+  @override
+  String get login_last_used => 'ཐེངས་སྔོན་མར་བེད་སྤྱོད་བྱས།';
+
+  @override
+  String get phone_login_title => 'ཁྱེད་ཀྱི་ཁ་པར་ཨང་གྲངས་འཇུག་རོགས།';
+
+  @override
+  String get phone_login_subtitle =>
+      'ཁྱེད་རང་ཡིན་པ་གཏན་འཁེལ་བྱེད་ཆེད། ང་ཚོས་འཕྲིན་ཐུང་བརྒྱུད་ནས་ཨང་རྟགས་ཤིག་བསྐུར་རྒྱུ་ཡིན།';
+
+  @override
+  String get phone_login_number_hint => 'ཁ་པར་ཨང་གྲངས།';
+
+  @override
+  String get phone_login_country_search => 'རྒྱལ་ཁབ་འཚོལ།';
+
+  @override
+  String get phone_login_send_code => 'ཨང་རྟགས་བསྐུར།';
+
+  @override
+  String get phone_login_code_title => 'ཨང་རྟགས་འཇུག་རོགས།';
+
+  @override
+  String phone_login_code_subtitle(String phoneNumber) {
+    return 'ང་ཚོས་ $phoneNumber ལ་ཨང་ཀི་ 6 ཅན་གྱི་ཨང་རྟགས་བསྐུར་ཟིན།';
+  }
+
+  @override
+  String get phone_login_code_hint => 'ཨང་ཀི་ 6 ཅན་གྱི་ཨང་རྟགས།';
+
+  @override
+  String get phone_login_verify => 'གཏན་འཁེལ་བྱེད།';
+
+  @override
+  String get phone_login_resend => 'ཨང་རྟགས་བསྐྱར་དུ་བསྐུར།';
+
+  @override
+  String phone_login_resend_in(int seconds) {
+    return 'སྐར་ཆ་ $seconds རྗེས་ཨང་རྟགས་བསྐྱར་དུ་བསྐུར་ཆོག';
+  }
+
+  @override
+  String get phone_login_change_number => 'ཨང་གྲངས་བརྗེ།';
+
+  @override
+  String get login_error_invalid_phone => 'ཁ་པར་ཨང་གྲངས་ཡང་དག་པ་ཞིག་འཇུག་རོགས།';
+
+  @override
+  String get login_error_invalid_code =>
+      'ཨང་རྟགས་དེ་མ་འགྲིག ཞིབ་བཤེར་བྱས་ནས་བསྐྱར་དུ་ཚོད་ལྟ་བྱོས།';
+
+  @override
+  String get login_error_code_expired =>
+      'ཨང་རྟགས་དེའི་དུས་ཚོད་རྫོགས་ཟིན། གསར་པ་ཞིག་ལེན་རོགས།';
+
+  @override
+  String get login_error_too_many_requests =>
+      'ཚོད་ལྟ་ཐེངས་མང་དྲགས་སོང་། རྗེས་སུ་བསྐྱར་དུ་ཚོད་ལྟ་བྱོས།';
+
+  @override
+  String get login_error_network =>
+      'དྲ་རྒྱའི་འབྲེལ་མཐུད་ལ་ཞིབ་བཤེར་བྱས་ནས་བསྐྱར་དུ་ཚོད་ལྟ་བྱོས།';
+
+  @override
+  String get login_error_email_not_verified =>
+      'རྩིས་ཁྲ་འདིའི་གློག་འཕྲིན་ཁ་བྱང་གཏན་འཁེལ་བྱས་མེད། ཁྱེད་ཀྱི་ཞབས་ཞུ་མཁོ་སྤྲོད་པ་བརྒྱུད་ནས་གཏན་འཁེལ་བྱས་རྗེས་བསྐྱར་དུ་ཚོད་ལྟ་བྱོས།';
+
+  @override
+  String get login_error_generic => 'ནང་འཛུལ་བྱེད་མ་ཐུབ། བསྐྱར་དུ་ཚོད་ལྟ་བྱོས།';
 
   @override
   String get exploreAsGuest => 'མགྲོན་པོའི་ངོ་བོར་ཉུལ་ཞིབ་བྱོས།';
@@ -4121,10 +4202,10 @@ class AppLocalizationsBo extends AppLocalizations {
       'A timer with this duration, sound, and title already exists.';
 
   @override
-  String get splash_tagline_1 => 'We Buddhists practice together';
+  String get splash_tagline_1 => 'ང་ཚོ་ནང་པས་མཉམ་དུ་ཉམས་ལེན་བྱེད།';
 
   @override
-  String get splash_tagline_2 => 'We Buddhists practice daily';
+  String get splash_tagline_2 => 'ང་ཚོ་ནང་པས་ཉིན་ལྟར་ཉམས་ལེན་བྱེད།';
 
   @override
   String get timer_create_custom => 'Create a custom timer';
@@ -4140,6 +4221,34 @@ class AppLocalizationsBo extends AppLocalizations {
 
   @override
   String get timer_duration_sec => 'sec';
+
+  @override
+  String get timer_resume => 'Resume';
+
+  @override
+  String get timer_paused_caption => 'Paused · tap to resume';
+
+  @override
+  String get timer_discard_title => 'Discard this session?';
+
+  @override
+  String timer_discard_message(String elapsed) {
+    return 'Your $elapsed of practice won’t be saved';
+  }
+
+  @override
+  String get timer_save_session => 'Save session';
+
+  @override
+  String get timer_session_saved => 'Session saved';
+
+  @override
+  String get timer_session_complete => 'Session complete';
+
+  @override
+  String timer_saved_to_practice(String elapsed) {
+    return '$elapsed · saved to your practice';
+  }
 
   @override
   String get reader_display_title => 'མངོན་ཚུལ།';
@@ -4370,6 +4479,23 @@ class AppLocalizationsBo extends AppLocalizations {
   @override
   String get mala_appearance_save_failed =>
       'ཉར་ཚགས་བྱེད་མ་ཐུབ། བསྐྱར་དུ་ཚོད་ལྟ་བྱོས།';
+
+  @override
+  String get session_search_plans_hint => 'ཐུན་འཆར་འཚོལ།';
+
+  @override
+  String get session_search_chants_hint => 'ཞལ་འདོན་འཚོལ།';
+
+  @override
+  String get session_search_malas_hint => 'ཕྲེང་བ་འཚོལ།';
+
+  @override
+  String get session_search_timers_hint => 'མིང་ངམ་དུས་ཡུན་གྱིས་སྒོམ་ཡུན་འཚོལ།';
+
+  @override
+  String search_min_query_length(int count) {
+    return 'འཚོལ་བར་ཡི་གེ་ཉུང་མཐར་ $count འབྲི་དགོས།';
+  }
 
   @override
   String get practice_next_session => 'ཉམས་ལེན་ཚན་པ་རྗེས་མ།';

@@ -70,6 +70,16 @@ class AppLocalizationsZh extends AppLocalizations {
   }
 
   @override
+  String home_practices_sessions(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count 次',
+    );
+    return '$_temp0';
+  }
+
+  @override
   String get home_shortcut_plans => '計劃';
 
   @override
@@ -1075,6 +1085,71 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get continueWithPhone => '使用電話繼續';
+
+  @override
+  String get login_last_used => '上次使用';
+
+  @override
+  String get phone_login_title => '輸入您的電話號碼';
+
+  @override
+  String get phone_login_subtitle => '我們會以簡訊傳送驗證碼給您，以確認您的身分。';
+
+  @override
+  String get phone_login_number_hint => '電話號碼';
+
+  @override
+  String get phone_login_country_search => '搜尋國家或地區';
+
+  @override
+  String get phone_login_send_code => '傳送驗證碼';
+
+  @override
+  String get phone_login_code_title => '輸入驗證碼';
+
+  @override
+  String phone_login_code_subtitle(String phoneNumber) {
+    return '我們已將 6 位數驗證碼傳送至 $phoneNumber。';
+  }
+
+  @override
+  String get phone_login_code_hint => '6 位數驗證碼';
+
+  @override
+  String get phone_login_verify => '驗證';
+
+  @override
+  String get phone_login_resend => '重新傳送驗證碼';
+
+  @override
+  String phone_login_resend_in(int seconds) {
+    return '$seconds 秒後可重新傳送驗證碼';
+  }
+
+  @override
+  String get phone_login_change_number => '更改號碼';
+
+  @override
+  String get login_error_invalid_phone => '請輸入有效的電話號碼。';
+
+  @override
+  String get login_error_invalid_code => '驗證碼不正確，請檢查後再試一次。';
+
+  @override
+  String get login_error_code_expired => '驗證碼已過期，請重新取得驗證碼。';
+
+  @override
+  String get login_error_too_many_requests => '嘗試次數過多，請稍後再試。';
+
+  @override
+  String get login_error_network => '請檢查您的網路連線後再試一次。';
+
+  @override
+  String get login_error_email_not_verified =>
+      '此帳號的電子郵件地址尚未驗證。請先向您的服務提供者完成驗證，然後再試一次。';
+
+  @override
+  String get login_error_generic => '無法登入，請再試一次。';
 
   @override
   String get exploreAsGuest => '以訪客身份探索';
@@ -3954,10 +4029,10 @@ class AppLocalizationsZh extends AppLocalizations {
       'A timer with this duration, sound, and title already exists.';
 
   @override
-  String get splash_tagline_1 => 'We Buddhists practice together';
+  String get splash_tagline_1 => '我們佛弟子一起修持';
 
   @override
-  String get splash_tagline_2 => 'We Buddhists practice daily';
+  String get splash_tagline_2 => '我們佛弟子每日修持';
 
   @override
   String get timer_create_custom => 'Create a custom timer';
@@ -3973,6 +4048,34 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get timer_duration_sec => 'sec';
+
+  @override
+  String get timer_resume => 'Resume';
+
+  @override
+  String get timer_paused_caption => 'Paused · tap to resume';
+
+  @override
+  String get timer_discard_title => 'Discard this session?';
+
+  @override
+  String timer_discard_message(String elapsed) {
+    return 'Your $elapsed of practice won’t be saved';
+  }
+
+  @override
+  String get timer_save_session => 'Save session';
+
+  @override
+  String get timer_session_saved => 'Session saved';
+
+  @override
+  String get timer_session_complete => 'Session complete';
+
+  @override
+  String timer_saved_to_practice(String elapsed) {
+    return '$elapsed · saved to your practice';
+  }
 
   @override
   String get reader_display_title => '顯示';
@@ -4200,6 +4303,23 @@ class AppLocalizationsZh extends AppLocalizations {
   String get mala_appearance_save_failed => '無法儲存。請再試一次';
 
   @override
+  String get session_search_plans_hint => '搜尋計劃';
+
+  @override
+  String get session_search_chants_hint => '搜尋持誦';
+
+  @override
+  String get session_search_malas_hint => '搜尋念珠';
+
+  @override
+  String get session_search_timers_hint => '依名稱或時長搜尋計時';
+
+  @override
+  String search_min_query_length(int count) {
+    return '請至少輸入 $count 個字元以搜尋';
+  }
+
+  @override
   String get practice_next_session => '下一堂課程';
 
   @override
@@ -4297,6 +4417,16 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   @override
   String home_recitation_count(int count) {
     return '$count 持诵';
+  }
+
+  @override
+  String home_practices_sessions(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count 次',
+    );
+    return '$_temp0';
   }
 
   @override
@@ -5293,6 +5423,71 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String get continueWithPhone => '使用电话继续';
+
+  @override
+  String get login_last_used => '上次使用';
+
+  @override
+  String get phone_login_title => '输入您的电话号码';
+
+  @override
+  String get phone_login_subtitle => '我们会通过短信向您发送验证码，以确认您的身份。';
+
+  @override
+  String get phone_login_number_hint => '电话号码';
+
+  @override
+  String get phone_login_country_search => '搜索国家或地区';
+
+  @override
+  String get phone_login_send_code => '发送验证码';
+
+  @override
+  String get phone_login_code_title => '输入验证码';
+
+  @override
+  String phone_login_code_subtitle(String phoneNumber) {
+    return '我们已将 6 位验证码发送至 $phoneNumber。';
+  }
+
+  @override
+  String get phone_login_code_hint => '6 位验证码';
+
+  @override
+  String get phone_login_verify => '验证';
+
+  @override
+  String get phone_login_resend => '重新发送验证码';
+
+  @override
+  String phone_login_resend_in(int seconds) {
+    return '$seconds 秒后可重新发送验证码';
+  }
+
+  @override
+  String get phone_login_change_number => '更换号码';
+
+  @override
+  String get login_error_invalid_phone => '请输入有效的电话号码。';
+
+  @override
+  String get login_error_invalid_code => '验证码不正确，请检查后重试。';
+
+  @override
+  String get login_error_code_expired => '验证码已过期，请重新获取验证码。';
+
+  @override
+  String get login_error_too_many_requests => '尝试次数过多，请稍后再试。';
+
+  @override
+  String get login_error_network => '请检查网络连接后重试。';
+
+  @override
+  String get login_error_email_not_verified =>
+      '此账号的电子邮件地址尚未验证。请先在您的服务提供商处完成验证，然后重试。';
+
+  @override
+  String get login_error_generic => '无法登录，请重试。';
 
   @override
   String get exploreAsGuest => '以访客身份探索';
@@ -8207,6 +8402,23 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String get mala_appearance_save_failed => '无法保存。请再试一次';
+
+  @override
+  String get session_search_plans_hint => '搜索计划';
+
+  @override
+  String get session_search_chants_hint => '搜索持诵';
+
+  @override
+  String get session_search_malas_hint => '搜索念珠';
+
+  @override
+  String get session_search_timers_hint => '按名称或时长搜索计时';
+
+  @override
+  String search_min_query_length(int count) {
+    return '请至少输入 $count 个字符以搜索';
+  }
 
   @override
   String get practice_next_session => '下一堂课程';

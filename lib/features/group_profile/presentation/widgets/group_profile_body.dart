@@ -50,11 +50,13 @@ import 'package:flutter_pecha/features/group_profile/presentation/widgets/group_
 import 'package:flutter_pecha/features/home/presentation/providers/series_enrollment_provider.dart';
 import 'package:flutter_pecha/features/plans/presentation/widgets/plan_inline_markdown_view.dart';
 import 'package:flutter_pecha/shared/utils/helper_functions.dart';
+import 'package:flutter_pecha/features/group_profile/presentation/utils/group_event_analytics.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:flutter_pecha/core/utils/network_image_utils.dart';
+import 'package:flutter_pecha/core/config/router/app_routes.dart';
 
 class GroupProfileBody extends ConsumerStatefulWidget {
   final GroupProfile profile;
@@ -904,7 +906,7 @@ class _GroupProfileBodyState extends ConsumerState<GroupProfileBody>
   Future<void> _onCreatePost(GroupProfile profile) async {
     final authState = ref.read(authProvider);
     if (authState.isGuest || !authState.isLoggedIn) {
-      LoginDrawer.show(context, ref);
+      LoginDrawer.show(context, ref, feature: 'group_post_create');
       return;
     }
     if (!_canPublishPosts(profile)) return;
@@ -922,7 +924,7 @@ class _GroupProfileBodyState extends ConsumerState<GroupProfileBody>
   Future<void> _onCreateEvent(GroupProfile profile) async {
     final authState = ref.read(authProvider);
     if (authState.isGuest || !authState.isLoggedIn) {
-      LoginDrawer.show(context, ref);
+      LoginDrawer.show(context, ref, feature: 'group_event_create');
       return;
     }
     if (!_canPublishPosts(profile)) return;
@@ -954,7 +956,11 @@ class _GroupProfileBodyState extends ConsumerState<GroupProfileBody>
     ref.invalidate(groupEventsProvider(profile.id));
     ref.invalidate(groupCmsEventsProvider(profile.id));
     if (result.isDraft) _showPostSnackBar(context.l10n.group_event_draft_saved);
-    if (result.openEvent) context.push('/home/events/${result.event.id}');
+    if (result.openEvent) {
+      context.push(
+        AppRoutes.groupEventPath(result.event.id, source: 'created'),
+      );
+    }
   }
 
   Future<void> _onDeleteDraft(
@@ -962,6 +968,7 @@ class _GroupProfileBodyState extends ConsumerState<GroupProfileBody>
     GroupEventCmsItem item,
   ) async {
     final l10n = context.l10n;
+    final analytics = ref.read(groupEventAnalyticsProvider);
     final success = await showDestructiveConfirmationDialog(
       context,
       title: l10n.group_event_draft_delete_title,
@@ -973,6 +980,9 @@ class _GroupProfileBodyState extends ConsumerState<GroupProfileBody>
         return result.isRight();
       },
     );
+    if (success == true) {
+      analytics.eventDeleted(eventId: item.event.id, groupId: profile.id);
+    }
     if (!mounted || success == null) return;
     if (success) {
       ref.invalidate(groupCmsEventsProvider(profile.id));
@@ -1464,7 +1474,7 @@ class _GroupProfileBodyState extends ConsumerState<GroupProfileBody>
   ) async {
     final authState = ref.read(authProvider);
     if (authState.isGuest || !authState.isLoggedIn) {
-      LoginDrawer.show(context, ref);
+      LoginDrawer.show(context, ref, feature: 'group_accumulator_join');
       return;
     }
 
@@ -1475,6 +1485,7 @@ class _GroupProfileBodyState extends ConsumerState<GroupProfileBody>
       groupId: profile.id,
       group: profile,
       awaitRefresh: false,
+      source: 'group_page',
     );
 
     if (!mounted) return;
@@ -1573,7 +1584,7 @@ class _GroupProfileBodyState extends ConsumerState<GroupProfileBody>
   ) async {
     final authState = ref.read(authProvider);
     if (authState.isGuest || !authState.isLoggedIn) {
-      LoginDrawer.show(context, ref);
+      LoginDrawer.show(context, ref, feature: 'practice_with_us');
       return;
     }
 
@@ -1665,7 +1676,7 @@ class _GroupFollowButton extends ConsumerWidget {
   ) async {
     final authState = ref.read(authProvider);
     if (authState.isGuest || !authState.isLoggedIn) {
-      LoginDrawer.show(context, ref);
+      LoginDrawer.show(context, ref, feature: 'group_join_request');
       return;
     }
 
@@ -2057,7 +2068,7 @@ class _GroupFollowButton extends ConsumerWidget {
   ) async {
     final authState = ref.read(authProvider);
     if (authState.isGuest || !authState.isLoggedIn) {
-      LoginDrawer.show(context, ref);
+      LoginDrawer.show(context, ref, feature: 'group_follow');
       return;
     }
 

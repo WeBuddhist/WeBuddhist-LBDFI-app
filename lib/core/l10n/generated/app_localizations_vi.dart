@@ -73,6 +73,16 @@ class AppLocalizationsVi extends AppLocalizations {
   }
 
   @override
+  String home_practices_sessions(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count buổi',
+    );
+    return '$_temp0';
+  }
+
+  @override
   String get home_shortcut_plans => 'Lộ trình';
 
   @override
@@ -1118,6 +1128,74 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get continueWithPhone => 'Tiếp tục bằng số điện thoại';
+
+  @override
+  String get login_last_used => 'Dùng lần trước';
+
+  @override
+  String get phone_login_title => 'Nhập số điện thoại của bạn';
+
+  @override
+  String get phone_login_subtitle =>
+      'Chúng tôi sẽ gửi mã qua tin nhắn để xác nhận đó là bạn.';
+
+  @override
+  String get phone_login_number_hint => 'Số điện thoại';
+
+  @override
+  String get phone_login_country_search => 'Tìm quốc gia';
+
+  @override
+  String get phone_login_send_code => 'Gửi mã';
+
+  @override
+  String get phone_login_code_title => 'Nhập mã';
+
+  @override
+  String phone_login_code_subtitle(String phoneNumber) {
+    return 'Chúng tôi đã gửi mã gồm 6 chữ số đến $phoneNumber.';
+  }
+
+  @override
+  String get phone_login_code_hint => 'Mã 6 chữ số';
+
+  @override
+  String get phone_login_verify => 'Xác minh';
+
+  @override
+  String get phone_login_resend => 'Gửi lại mã';
+
+  @override
+  String phone_login_resend_in(int seconds) {
+    return 'Gửi lại mã sau $seconds giây';
+  }
+
+  @override
+  String get phone_login_change_number => 'Đổi số';
+
+  @override
+  String get login_error_invalid_phone => 'Vui lòng nhập số điện thoại hợp lệ.';
+
+  @override
+  String get login_error_invalid_code =>
+      'Mã không đúng. Hãy kiểm tra và thử lại.';
+
+  @override
+  String get login_error_code_expired => 'Mã đã hết hạn. Hãy yêu cầu mã mới.';
+
+  @override
+  String get login_error_too_many_requests =>
+      'Quá nhiều lần thử. Vui lòng thử lại sau.';
+
+  @override
+  String get login_error_network => 'Hãy kiểm tra kết nối internet và thử lại.';
+
+  @override
+  String get login_error_email_not_verified =>
+      'Địa chỉ email của tài khoản này chưa được xác minh. Hãy xác minh với nhà cung cấp của bạn rồi thử lại.';
+
+  @override
+  String get login_error_generic => 'Không thể đăng nhập. Vui lòng thử lại.';
 
   @override
   String get exploreAsGuest => 'Khám phá với tư cách khách';
@@ -4134,6 +4212,34 @@ class AppLocalizationsVi extends AppLocalizations {
   String get timer_duration_sec => 'giây';
 
   @override
+  String get timer_resume => 'Resume';
+
+  @override
+  String get timer_paused_caption => 'Paused · tap to resume';
+
+  @override
+  String get timer_discard_title => 'Discard this session?';
+
+  @override
+  String timer_discard_message(String elapsed) {
+    return 'Your $elapsed of practice won’t be saved';
+  }
+
+  @override
+  String get timer_save_session => 'Save session';
+
+  @override
+  String get timer_session_saved => 'Session saved';
+
+  @override
+  String get timer_session_complete => 'Session complete';
+
+  @override
+  String timer_saved_to_practice(String elapsed) {
+    return '$elapsed · saved to your practice';
+  }
+
+  @override
   String get reader_display_title => 'Display';
 
   @override
@@ -4360,6 +4466,24 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get mala_appearance_save_failed => 'Không lưu được. Vui lòng thử lại';
+
+  @override
+  String get session_search_plans_hint => 'Tìm kiếm lộ trình';
+
+  @override
+  String get session_search_chants_hint => 'Tìm kiếm bài tụng';
+
+  @override
+  String get session_search_malas_hint => 'Tìm kiếm chuỗi hạt';
+
+  @override
+  String get session_search_timers_hint =>
+      'Tìm hẹn giờ theo tên hoặc thời lượng';
+
+  @override
+  String search_min_query_length(int count) {
+    return 'Nhập ít nhất $count ký tự để tìm kiếm';
+  }
 
   @override
   String get practice_next_session => 'Buổi tu tiếp theo';
