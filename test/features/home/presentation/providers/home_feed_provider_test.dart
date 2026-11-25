@@ -234,7 +234,13 @@ void main() {
     expect(feed.state.isLoadingMore, isFalse);
     expect(feed.state.feedEnded, isTrue);
 
+    // Scrolling on doesn't re-send it; only Retry does.
+    expect(feed.state.canLoadMore, isFalse);
+    await feed.loadMore();
+    expect(repository.calls, hasLength(1));
+
     unawaited(feed.retry());
+    expect(feed.state.error, isNull);
     expect(repository.calls.map((call) => call.after), [
       const HomeFeedCursor('c1'),
       const HomeFeedCursor('c1'),

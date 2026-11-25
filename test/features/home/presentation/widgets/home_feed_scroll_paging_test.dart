@@ -1,4 +1,3 @@
-import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
@@ -130,6 +129,92 @@ void main() {
     }
 
     expect(repository.afters, [const HomeFeedCursor('c1')]);
-    unawaited(Future<void>.value());
   });
+
+  testWidgets('pages on without a scroll while the end is still in reach', (
+    tester,
+  ) async {
+    // Page two holds nothing Home shows; page three is the last.
+    final repository = _ScriptedRepository([
+      _page([], next: 'c2'),
+      _page(['p1']),
+    ]);
+    final firstPage = ScreenCacheSource<HomeFeedPage>(
+      store: FakeScreenCacheStore(),
+      key: 'k',
+      fetchJson: () async => _page(['p0'], next: 'c1'),
+      fromJson:
+          (json) => HomeFeedModel.parseMemberPage(
+            jsonDecode(jsonEncode(json)) as Map<String, dynamic>,
+            language: 'en',
+          ),
+      failureMessage: 'f',
+    );
+
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          homeFeedProvider.overrideWith(
+            (ref) => HomeFeedNotifier(
+              repository: repository,
+              firstPage: firstPage,
+              signedIn: true,
+              language: 'en',
+            ),
+          ),
+        ],
+        child: MaterialApp(
+          home: Scaffold(
+            body: CustomScrollView(
+              slivers: [
+                Consumer(
+                  builder: (context, ref, _) {
+                    final state = ref.watch(homeFeedProvider);
+                    HomeFeedSliver.continuePaging(context, ref, state);
+                    return SliverList.builder(
+                      itemCount: state.items.length,
+                      itemBuilder:
+                          (_, i) => SizedBox(
+                            height: 100,
+                            child: Text('card $i'),
+                          ),
+                    );
+                  },
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(repository.afters, [
+      const HomeFeedCursor('c1'),
+      const HomeFeedCursor('c2'),
+    ]);
+    expect(find.text('card 1'), findsOneWidget);
+  });
+}
+
+class _ScriptedRepository implements HomeFeedRepository {
+  _ScriptedRepository(this._pages);
+
+  final List<Map<String, dynamic>> _pages;
+  final afters = <HomeFeedPageToken?>[];
+
+  @override
+  Future<Either<Failure, HomeFeedPage>> getFeed({
+    required bool signedIn,
+    required String language,
+    HomeFeedPageToken? after,
+  }) async {
+    afters.add(after);
+    return Right(
+      HomeFeedModel.parseMemberPage(
+        _pages[afters.length - 1],
+        language: 'en',
+      ),
+    );
+  }
 }

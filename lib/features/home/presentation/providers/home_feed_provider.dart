@@ -45,6 +45,14 @@ class HomeFeedState {
       !isLoadingMore &&
       (!hasMore || error != null);
 
+  /// A next page exists and nothing is in flight or failed.
+  bool get canLoadMore =>
+      next != null &&
+      hasMore &&
+      !isLoading &&
+      !isLoadingMore &&
+      error == null;
+
   HomeFeedState copyWith({
     List<ConnectFeedItem>? items,
     bool? isLoading,
@@ -153,7 +161,14 @@ class HomeFeedNotifier extends StateNotifier<HomeFeedState> {
     }
   }
 
+  /// The next page, asked for as Home nears its end. After a failure it
+  /// waits for [retry], so scrolling doesn't re-send the failed request.
   Future<void> loadMore() async {
+    if (state.error != null) return;
+    return _loadNextPage();
+  }
+
+  Future<void> _loadNextPage() async {
     final next = state.next;
     if (next == null ||
         !state.hasMore ||
@@ -197,7 +212,9 @@ class HomeFeedNotifier extends StateNotifier<HomeFeedState> {
 
   /// Retry after a failure: page one if nothing is shown, else the next page.
   Future<void> retry() =>
-      state.items.isEmpty || state.next == null ? loadInitial() : loadMore();
+      state.items.isEmpty || state.next == null
+          ? loadInitial()
+          : _loadNextPage();
 
   /// A like, unlike or comment count changed elsewhere.
   void updatePost(ConnectPost post) {

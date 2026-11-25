@@ -33,6 +33,26 @@ class HomeFeedSliver extends ConsumerWidget {
     return false;
   }
 
+  /// For a sliver's build: scrolling asks for pages, but a page that adds
+  /// little (or nothing, after filtering) can leave Home's end in reach with
+  /// no scroll to come. After the frame, asks for the next page if so.
+  static void continuePaging(
+    BuildContext context,
+    WidgetRef ref,
+    HomeFeedState state,
+  ) {
+    if (!state.canLoadMore) return;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!context.mounted) return;
+      final position = Scrollable.maybeOf(context)?.position;
+      if (position != null &&
+          position.hasContentDimensions &&
+          position.extentAfter < loadMoreExtent) {
+        ref.read(homeFeedProvider.notifier).loadMore();
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final state = ref.watch(homeFeedProvider);
@@ -49,6 +69,8 @@ class HomeFeedSliver extends ConsumerWidget {
     // would be dropped, and poems fetched again, each time it scrolls off.
     ref.listen(homePoemsPreviewProvider, (_, _) {});
 
+    continuePaging(context, ref, state);
+
     if (state.items.isEmpty && !state.feedEnded) {
       return const SliverToBoxAdapter(
         child: Column(
@@ -61,14 +83,20 @@ class HomeFeedSliver extends ConsumerWidget {
     final rows = buildHomeFeedRows(state.items, feedEnded: state.feedEnded);
     final hasTitle = state.items.isNotEmpty;
     final footer = _footer(context, ref, state);
+    // Right after the last card, ahead of the poems and share that close a
+    // short feed; first when there are no cards.
+    final footerAt = rows.lastIndexWhere((row) => row is HomeFeedItemRow) + 1;
     final count = (hasTitle ? 1 : 0) + rows.length + (footer == null ? 0 : 1);
 
     return SliverList.builder(
       itemCount: count,
       itemBuilder: (context, index) {
         if (hasTitle && index == 0) return const _FeedTitle();
-        final rowIndex = index - (hasTitle ? 1 : 0);
-        if (rowIndex == rows.length) return footer!;
+        var rowIndex = index - (hasTitle ? 1 : 0);
+        if (footer != null) {
+          if (rowIndex == footerAt) return footer;
+          if (rowIndex > footerAt) rowIndex--;
+        }
         final row = rows[rowIndex];
         final previous = rowIndex > 0 ? rows[rowIndex - 1] : null;
         return switch (row) {
@@ -96,7 +124,8 @@ class HomeFeedSliver extends ConsumerWidget {
     );
   }
 
-  /// Spinner while a page loads, Retry after a page failed with cards shown.
+  /// Spinner while a page loads; after any failed read (page one included,
+  /// stored cards or not) a message with Retry.
   Widget? _footer(BuildContext context, WidgetRef ref, HomeFeedState state) {
     if (state.isLoadingMore) {
       return const Padding(
@@ -104,18 +133,42 @@ class HomeFeedSliver extends ConsumerWidget {
         child: Center(child: CircularProgressIndicator()),
       );
     }
-    if (state.error != null && state.next != null && state.items.isNotEmpty) {
-      return Padding(
-        padding: const EdgeInsets.symmetric(vertical: 8),
-        child: Center(
-          child: TextButton(
-            onPressed: () => ref.read(homeFeedProvider.notifier).retry(),
-            child: Text(context.l10n.retry),
-          ),
-        ),
+    if (state.error != null && !state.isLoading) {
+      return HomeFeedErrorRow(
+        onRetry: () => ref.read(homeFeedProvider.notifier).retry(),
       );
     }
     return null;
+  }
+}
+
+/// "Something went wrong" with Retry, where the feed stopped.
+class HomeFeedErrorRow extends StatelessWidget {
+  const HomeFeedErrorRow({super.key, required this.onRetry});
+
+  final VoidCallback onRetry;
+
+  @override
+  Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final fontSize = getLocalizedFontSize(AppTextSize.body);
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
+      child: Column(
+        children: [
+          Text(
+            context.l10n.something_went_wrong,
+            textAlign: TextAlign.center,
+            strutStyle: context.tibetanStrutStyle(fontSize),
+            style: TextStyle(
+              fontSize: fontSize,
+              color: isDark ? AppColors.grey400 : AppColors.grey600,
+            ),
+          ),
+          TextButton(onPressed: onRetry, child: Text(context.l10n.retry)),
+        ],
+      ),
+    );
   }
 }
 
