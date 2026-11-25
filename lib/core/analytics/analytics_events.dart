@@ -4,6 +4,8 @@ abstract final class AnalyticsEvents {
   static const String authLoginSucceeded = 'auth_login_succeeded';
   static const String authLoginFailed = 'auth_login_failed';
   static const String authGuestStarted = 'auth_guest_started';
+  static const String authLogout = 'auth_logout';
+  static const String accountDeleted = 'account_deleted';
 
   // Onboarding
   static const String onboardingCompleted = 'onboarding_completed';
@@ -15,13 +17,16 @@ abstract final class AnalyticsEvents {
   static const String planPreviewed = 'plan_previewed';
   static const String planAddedToPractices = 'plan_added_to_practices';
   static const String planUnenrolled = 'plan_unenrolled';
-  static const String planSearched = 'plan_searched';
 
   // Series
   static const String seriesViewed = 'series_viewed';
   static const String seriesBookmarked = 'series_bookmarked';
   static const String seriesAddedToPractices = 'series_added_to_practices';
   static const String seriesSearched = 'series_searched';
+
+  // Search, every search box (`surface` says which)
+  static const String searchPerformed = 'search_performed';
+  static const String searchResultOpened = 'search_result_opened';
 
   // Group events
   static const String groupEventViewed = 'group_event_viewed';
@@ -41,6 +46,8 @@ abstract final class AnalyticsEvents {
   static const String groupViewed = 'group_viewed';
   static const String groupFollowed = 'group_followed';
   static const String groupUnfollowed = 'group_unfollowed';
+  static const String groupJoinRequested = 'group_join_requested';
+  static const String groupAccumulatorJoined = 'group_accumulator_joined';
   static const String recitationCollectionOpened =
       'recitation_collection_opened';
   static const String recitationCollectionItemCompleted =
@@ -52,9 +59,14 @@ abstract final class AnalyticsEvents {
   static const String postOpened = 'post_opened';
   static const String postLinkOpened = 'post_link_opened';
   static const String groupPostCreated = 'group_post_created';
+  static const String postLiked = 'post_liked';
+  static const String postUnliked = 'post_unliked';
+  static const String postCommentCreated = 'post_comment_created';
+  static const String postCommentDeleted = 'post_comment_deleted';
 
   // Entry points (plan §5.1)
   static const String deepLinkOpened = 'deep_link_opened';
+  static const String installAttributed = 'install_attributed';
   static const String pushNotificationOpened = 'push_notification_opened';
   static const String localNotificationOpened = 'local_notification_opened';
   static const String notificationPermissionPrompted =
@@ -69,8 +81,6 @@ abstract final class AnalyticsEvents {
   static const String onboardingStepViewed = 'onboarding_step_viewed';
   static const String onboardingLanguageSelected =
       'onboarding_language_selected';
-  static const String onboardingEventPlanSelected =
-      'onboarding_event_plan_selected';
 
   // Auth and guest conversion (§5.3)
   static const String authLoginStarted = 'auth_login_started';
@@ -80,8 +90,11 @@ abstract final class AnalyticsEvents {
   // Home (§5.4)
   static const String homeViewed = 'home_viewed';
   static const String tabViewed = 'tab_viewed';
+  static const String homeCardTapped = 'home_card_tapped';
+  static const String verseLiked = 'verse_liked';
+  static const String verseUnliked = 'verse_unliked';
+  static const String verseCommentPosted = 'verse_comment_posted';
   static const String seriesEnrolled = 'series_enrolled';
-  static const String seriesUnenrolled = 'series_unenrolled';
 
   // Me page
   static const String meItemTapped = 'me_item_tapped';
@@ -96,6 +109,7 @@ abstract final class AnalyticsEvents {
   static const String planDayViewed = 'plan_day_viewed';
   static const String planTaskCompleted = 'plan_task_completed';
   static const String planTaskUncompleted = 'plan_task_uncompleted';
+  static const String planSubtaskCompleted = 'plan_subtask_completed';
   static const String planCompleted = 'plan_completed';
 
   // Reader (§5.7)
@@ -115,6 +129,9 @@ abstract final class AnalyticsEvents {
   static const String timerStarted = 'timer_started';
   static const String timerCompleted = 'timer_completed';
   static const String timerDiscarded = 'timer_discarded';
+  static const String timerCreated = 'timer_created';
+  static const String timerUpdated = 'timer_updated';
+  static const String timerDeleted = 'timer_deleted';
 
   // Settings (§5.13)
   static const String contentLanguageChanged = 'content_language_changed';
@@ -131,6 +148,8 @@ abstract final class AnalyticsEvents {
 
   // Group chat
   static const String groupChatOpened = 'group_chat_opened';
+  static const String directChatOpened = 'direct_chat_opened';
+  static const String directMessageSent = 'direct_message_sent';
   static const String groupMessageSent = 'group_message_sent';
   static const String groupMessageDeleted = 'group_message_deleted';
   static const String groupMessageReacted = 'group_message_reacted';
@@ -224,11 +243,11 @@ abstract final class AnalyticsProperties {
   static const String uiLanguage = 'ui_language';
   static const String durationMs = 'duration_ms';
   static const String traditionsCount = 'traditions_count';
-  static const String eventPlanSelected = 'event_plan_selected';
 
   // Auth
   static const String isNewUser = 'is_new_user';
   static const String feature = 'feature';
+  static const String loginAttempted = 'login_attempted';
 
   // Home / sharing
   static const String hasRoutine = 'has_routine';
@@ -236,6 +255,8 @@ abstract final class AnalyticsProperties {
   static const String surface = 'surface';
   static const String format = 'format';
   static const String tab = 'tab';
+  static const String section = 'section';
+  static const String verseId = 'verse_id';
 
   // Me page
   static const String item = 'item';
@@ -300,6 +321,17 @@ abstract final class AnalyticsProperties {
   static const String wasBackgrounded = 'was_backgrounded';
   static const String pauseCount = 'pause_count';
   static const String elapsedSeconds = 'elapsed_s';
+  static const String timerKind = 'timer_kind';
+  static const String ambientSoundId = 'ambient_sound_id';
+  static const String hasAmbientSound = 'has_ambient_sound';
+  static const String status = 'status';
+  static const String utmSource = 'utm_source';
+  static const String utmMedium = 'utm_medium';
+  static const String utmCampaign = 'utm_campaign';
+  static const String acquisitionChannel = 'acquisition_channel';
+  static const String acquisitionCampaign = 'acquisition_campaign';
+  static const String acquisitionAdGroup = 'acquisition_ad_group';
+  static const String acquisitionAdCreative = 'acquisition_ad_creative';
   static const String pctComplete = 'pct_complete';
 
   // Settings

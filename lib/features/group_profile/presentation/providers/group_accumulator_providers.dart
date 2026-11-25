@@ -16,6 +16,7 @@ import 'package:flutter_pecha/features/mala/presentation/providers/mala_sync_man
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fpdart/fpdart.dart';
 import 'package:flutter_pecha/core/cache/screen_cache/screen_cache_notifier.dart';
+import 'package:flutter_pecha/features/group_profile/presentation/utils/group_analytics.dart';
 
 final groupAccumulatorRemoteDatasourceProvider =
     Provider<GroupAccumulatorRemoteDatasource>((ref) {
@@ -385,11 +386,20 @@ Future<bool> joinGroupAccumulator({
   required String groupId,
   GroupProfile? group,
   bool awaitRefresh = true,
+  String? source,
 }) async {
   final repository = container.read(groupAccumulatorRepositoryProvider);
   final result = await repository.joinGroupAccumulator(accumulatorId);
 
   if (result.isLeft()) return false;
+
+  container
+      .read(groupAnalyticsProvider)
+      .groupAccumulatorJoined(
+        accumulatorId: accumulatorId,
+        groupId: groupId,
+        source: source,
+      );
 
   container
       .read(groupAccumulatorJoinCacheProvider(groupId).notifier)
@@ -410,7 +420,10 @@ Future<bool> joinGroupAccumulator({
     );
     container
         .read(groupFollowProvider(followKey).notifier)
-        .markAutoJoinedFromPracticeEnrollment(group: resolvedGroup);
+        .markAutoJoinedFromPracticeEnrollment(
+          group: resolvedGroup,
+          via: 'accumulation',
+        );
   }
 
   refreshGroupAccumulatorData(

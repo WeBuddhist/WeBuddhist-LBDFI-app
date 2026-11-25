@@ -120,7 +120,7 @@ class MoreScreen extends ConsumerWidget {
                 title: localizations.sign_in,
                 onTap:
                     () =>
-                        LoginDrawer.show(context, ref, useRootNavigator: true),
+                        LoginDrawer.show(context, ref, useRootNavigator: true, feature: 'me_sign_in'),
               ),
             ] else ...[
               const _SignInAccountRow(),

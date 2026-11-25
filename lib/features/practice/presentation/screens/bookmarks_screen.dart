@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_pecha/core/constants/app_assets.dart';
 import 'package:flutter_pecha/core/extensions/context_ext.dart';
 import 'package:flutter_pecha/core/theme/app_colors.dart';
+import 'package:flutter_pecha/features/mala/presentation/utils/mala_analytics.dart';
 import 'package:flutter_pecha/features/practice/data/models/bookmark_models.dart';
 import 'package:flutter_pecha/features/practice/presentation/providers/bookmark_providers.dart';
 import 'package:flutter_pecha/features/practice/presentation/widgets/bookmark_card.dart';
@@ -159,7 +160,13 @@ class _BookmarksScreenState extends ConsumerState<BookmarksScreen>
           ),
         );
       case BookmarkItemType.accumulator:
-        context.push('/mala', extra: {'presetId': bookmark.sourceId});
+        context.push(
+          '/mala',
+          extra: {
+            'presetId': bookmark.sourceId,
+            'source': MalaOpenSource.bookmarks,
+          },
+        );
       case BookmarkItemType.groupRecitationCollection:
         final groupId = bookmark.groupId;
         if (groupId == null || groupId.isEmpty) return;

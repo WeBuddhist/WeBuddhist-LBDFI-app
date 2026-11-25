@@ -367,9 +367,9 @@ and [`lib/core/config/router/README.md`](lib/core/config/router/README.md).
 | Workflow | Trigger | What it does |
 | --- | --- | --- |
 | `ci.yml` | PR into `develop` / `main` | Tolgee bridge check, ARB doctor, `flutter analyze`, `flutter test` |
-| `release-dev.yml` | push to `develop` | Previews the next version, builds the **dev** flavor, uploads to Play internal + TestFlight |
-| `release-prod.yml` | push to `main` | Bumps the version (committed + tagged), builds the **prod** flavor, uploads to stores, creates a GitHub release |
-| `build-android.yml` / `build-ios.yml` | called by the release workflows | Signed build per flavor; `.env.*` written by `ci/scripts/create_env_files.sh` from secrets |
+| `release-prod.yml` | push to `main` | Bumps the version (committed to `main`), builds `org.pecha.app` against the **testing** server, uploads to TestFlight + Play internal |
+| `release-prod.yml` | push a `vX.Y.Z` tag | Builds against the **prod** server, submits for App Store review (auto-release), Play production at 100%, GitHub Release. See [CONTRIBUTING.md](CONTRIBUTING.md) |
+| `build-android.yml` / `build-ios.yml` | called by `release-prod.yml` | Signed `org.pecha.app` build for one server; `.env.<server>` written by `ci/scripts/create_env_files.sh` (URLs in the script, keys from secrets) |
 | `tolgee-sync.yml` | weekly / manual | Syncs ARB ↔ Tolgee and opens a PR |
 | `code-review.yml` | PRs, PR comments, pushes to `main` | Automated code review (Amchi) |
 

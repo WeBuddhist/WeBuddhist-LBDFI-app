@@ -16,6 +16,7 @@ import 'package:flutter_pecha/features/more/presentation/providers/user_stats_pr
 import 'package:flutter_pecha/features/more/presentation/widgets/streak_share_sheet.dart';
 import 'package:flutter_pecha/shared/utils/helper_functions.dart';
 import 'package:flutter_pecha/shared/widgets/main_tab_app_bar.dart';
+import 'package:flutter_pecha/features/home/presentation/utils/home_analytics.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
@@ -249,7 +250,16 @@ class _HomeEventBannerState extends ConsumerState<HomeEventBanner> {
       padding: const EdgeInsets.fromLTRB(10, 0, 10, 8),
       child: TodayEventBadge(
         events: liveFirst,
-        onSelect: (eventId) => openHomeLiveEvent(context, eventId),
+        onSelect: (eventId) {
+          ref
+              .read(homeAnalyticsProvider)
+              .cardTapped(
+                section: HomeSection.eventBanner,
+                targetId: eventId,
+                position: liveFirst.indexWhere((item) => item.id == eventId),
+              );
+          openHomeLiveEvent(context, eventId);
+        },
       ),
     );
   }

@@ -107,7 +107,7 @@ class _CreateEditCollectionScreenState
   bool _ensureSignedIn() {
     final auth = ref.read(authProvider);
     if (auth.isLoggedIn && !auth.isGuest) return true;
-    LoginDrawer.show(context, ref);
+    LoginDrawer.show(context, ref, feature: 'recitation_collection_edit');
     return false;
   }
 

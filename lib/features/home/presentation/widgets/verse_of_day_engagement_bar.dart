@@ -34,7 +34,7 @@ class VerseOfDayEngagementBar extends ConsumerWidget {
   Future<void> _toggleLike(BuildContext context, WidgetRef ref) async {
     final authState = ref.read(authProvider);
     if (authState.isGuest || !authState.isLoggedIn) {
-      LoginDrawer.show(context, ref);
+      LoginDrawer.show(context, ref, feature: 'verse_like');
       return;
     }
 
@@ -50,7 +50,7 @@ class VerseOfDayEngagementBar extends ConsumerWidget {
   void _showLikers(BuildContext context, WidgetRef ref) {
     final authState = ref.read(authProvider);
     if (authState.isGuest || !authState.isLoggedIn) {
-      LoginDrawer.show(context, ref);
+      LoginDrawer.show(context, ref, feature: 'verse_likers');
       return;
     }
 

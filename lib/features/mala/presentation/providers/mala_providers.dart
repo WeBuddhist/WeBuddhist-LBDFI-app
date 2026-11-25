@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:typed_data';
 
+import 'package:flutter_pecha/core/analytics/search_analytics.dart';
 import 'package:flutter_pecha/core/cache/screen_cache/screen_cache_providers.dart';
 import 'package:flutter_pecha/core/config/locale/locale_notifier.dart';
 import 'package:flutter_pecha/core/cache/screen_cache/screen_cache_notifier.dart';
@@ -242,6 +243,7 @@ final accumulationSearchProvider =
       return AccumulationSearchNotifier(
         repository: ref.watch(malaRepositoryProvider),
         languageCode: ref.watch(contentLanguageProvider),
+        analytics: ref.watch(searchAnalyticsProvider),
       );
     });
 

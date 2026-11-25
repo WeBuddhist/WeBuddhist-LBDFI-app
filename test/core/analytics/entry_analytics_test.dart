@@ -13,6 +13,24 @@ void main() {
     analytics = EntryAnalytics(service);
   });
 
+  test('a deep link carries its utm values when it has them', () {
+    analytics.deepLinkOpened(
+      source: 'app_links',
+      routeKind: 'event',
+      targetId: 'e1',
+      utmSource: 'instagram',
+      utmCampaign: 'tara_2026',
+    );
+
+    expect(service.events.single.properties, {
+      'source': 'app_links',
+      'route_kind': 'event',
+      'target_id': 'e1',
+      'utm_source': 'instagram',
+      'utm_campaign': 'tara_2026',
+    });
+  });
+
   test('deepLinkOpened carries the handler, route kind and target', () {
     analytics.deepLinkOpened(
       source: 'app_links',

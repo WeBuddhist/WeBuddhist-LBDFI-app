@@ -198,7 +198,7 @@ class _GroupAccumulatorScreenState
   void _onAddToPractices(GroupAccumulatorDetail detail) {
     final authState = ref.read(authProvider);
     if (authState.isGuest || !authState.isLoggedIn) {
-      LoginDrawer.show(context, ref);
+      LoginDrawer.show(context, ref, feature: 'group_accumulator_add_to_practices');
       return;
     }
 
@@ -270,7 +270,7 @@ class _GroupAccumulatorScreenState
   Future<void> _onJoinTap(GroupAccumulatorDetail detail) async {
     final authState = ref.read(authProvider);
     if (authState.isGuest || !authState.isLoggedIn) {
-      LoginDrawer.show(context, ref);
+      LoginDrawer.show(context, ref, feature: 'group_accumulator_join');
       return;
     }
 
@@ -279,6 +279,7 @@ class _GroupAccumulatorScreenState
       container: ProviderScope.containerOf(context, listen: false),
       accumulatorId: detail.id,
       groupId: detail.groupId,
+      source: 'accumulator_page',
     );
 
     if (!mounted) return;
