@@ -8301,6 +8301,64 @@ class TolgeeAppLocalizations extends AppLocalizations {
   );
 
   @override
+  String get timer_resume => TolgeeBridge.get(
+    localeName,
+    'timer_resume',
+    () => _fallback.timer_resume,
+  );
+
+  @override
+  String get timer_paused_caption => TolgeeBridge.get(
+    localeName,
+    'timer_paused_caption',
+    () => _fallback.timer_paused_caption,
+  );
+
+  @override
+  String get timer_discard_title => TolgeeBridge.get(
+    localeName,
+    'timer_discard_title',
+    () => _fallback.timer_discard_title,
+  );
+
+  @override
+  String timer_discard_message(String elapsed) => TolgeeBridge.format(
+    localeName,
+    'timer_discard_message',
+    <String, Object>{'elapsed': elapsed},
+    () => _fallback.timer_discard_message(elapsed),
+  );
+
+  @override
+  String get timer_save_session => TolgeeBridge.get(
+    localeName,
+    'timer_save_session',
+    () => _fallback.timer_save_session,
+  );
+
+  @override
+  String get timer_session_saved => TolgeeBridge.get(
+    localeName,
+    'timer_session_saved',
+    () => _fallback.timer_session_saved,
+  );
+
+  @override
+  String get timer_session_complete => TolgeeBridge.get(
+    localeName,
+    'timer_session_complete',
+    () => _fallback.timer_session_complete,
+  );
+
+  @override
+  String timer_saved_to_practice(String elapsed) => TolgeeBridge.format(
+    localeName,
+    'timer_saved_to_practice',
+    <String, Object>{'elapsed': elapsed},
+    () => _fallback.timer_saved_to_practice(elapsed),
+  );
+
+  @override
   String get reader_display_title => TolgeeBridge.get(
     localeName,
     'reader_display_title',

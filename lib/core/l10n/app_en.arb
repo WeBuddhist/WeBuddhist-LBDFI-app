@@ -2122,6 +2122,28 @@
   "timer_duration_hours": "hours",
   "timer_duration_hr": "hr",
   "timer_duration_sec": "sec",
+  "timer_resume": "Resume",
+  "timer_paused_caption": "Paused · tap to resume",
+  "timer_discard_title": "Discard this session?",
+  "timer_discard_message": "Your {elapsed} of practice won’t be saved",
+  "@timer_discard_message": {
+    "placeholders": {
+      "elapsed": {
+        "type": "String"
+      }
+    }
+  },
+  "timer_save_session": "Save session",
+  "timer_session_saved": "Session saved",
+  "timer_session_complete": "Session complete",
+  "timer_saved_to_practice": "{elapsed} · saved to your practice",
+  "@timer_saved_to_practice": {
+    "placeholders": {
+      "elapsed": {
+        "type": "String"
+      }
+    }
+  },
   "reader_display_title": "Display",
   "text_size": "Text size",
   "reader_more_settings": "More settings",

@@ -7297,6 +7297,54 @@ abstract class AppLocalizations {
   /// **'sec'**
   String get timer_duration_sec;
 
+  /// No description provided for @timer_resume.
+  ///
+  /// In en, this message translates to:
+  /// **'Resume'**
+  String get timer_resume;
+
+  /// No description provided for @timer_paused_caption.
+  ///
+  /// In en, this message translates to:
+  /// **'Paused · tap to resume'**
+  String get timer_paused_caption;
+
+  /// No description provided for @timer_discard_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Discard this session?'**
+  String get timer_discard_title;
+
+  /// No description provided for @timer_discard_message.
+  ///
+  /// In en, this message translates to:
+  /// **'Your {elapsed} of practice won’t be saved'**
+  String timer_discard_message(String elapsed);
+
+  /// No description provided for @timer_save_session.
+  ///
+  /// In en, this message translates to:
+  /// **'Save session'**
+  String get timer_save_session;
+
+  /// No description provided for @timer_session_saved.
+  ///
+  /// In en, this message translates to:
+  /// **'Session saved'**
+  String get timer_session_saved;
+
+  /// No description provided for @timer_session_complete.
+  ///
+  /// In en, this message translates to:
+  /// **'Session complete'**
+  String get timer_session_complete;
+
+  /// No description provided for @timer_saved_to_practice.
+  ///
+  /// In en, this message translates to:
+  /// **'{elapsed} · saved to your practice'**
+  String timer_saved_to_practice(String elapsed);
+
   /// No description provided for @reader_display_title.
   ///
   /// In en, this message translates to:
