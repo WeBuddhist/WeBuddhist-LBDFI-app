@@ -1196,5 +1196,10 @@
   "mala_images_load_error": "ပုံများ ဖွင့်၍ မရပါ",
   "mala_bookmarked": "မှတ်ထားပြီး",
   "mala_beads_load_error": "ပုတီးစေ့ ပုံစံများ ဖွင့်၍ မရပါ",
-  "mala_appearance_save_failed": "သိမ်း၍ မရပါ။ ထပ်ကြိုးစားပါ"
+  "mala_appearance_save_failed": "သိမ်း၍ မရပါ။ ထပ်ကြိုးစားပါ",
+  "session_search_plans_hint": "သင်ခန်းစာအစီအစဉ်များ ရှာဖွေရန်",
+  "session_search_chants_hint": "ရွတ်ဆိုရန်စာများ ရှာဖွေရန်",
+  "session_search_malas_hint": "ပုတီးများ ရှာဖွေရန်",
+  "session_search_timers_hint": "အမည် သို့မဟုတ် ကြာချိန်ဖြင့် အချိန်မှတ်စက် ရှာဖွေရန်",
+  "search_min_query_length": "ရှာဖွေရန် အနည်းဆုံး စာလုံး {count} လုံး ရိုက်ထည့်ပါ"
 }

@@ -4440,4 +4440,21 @@ class AppLocalizationsBo extends AppLocalizations {
   @override
   String get mala_appearance_save_failed =>
       'ཉར་ཚགས་བྱེད་མ་ཐུབ། བསྐྱར་དུ་ཚོད་ལྟ་བྱོས།';
+
+  @override
+  String get session_search_plans_hint => 'ཐུན་འཆར་འཚོལ།';
+
+  @override
+  String get session_search_chants_hint => 'ཞལ་འདོན་འཚོལ།';
+
+  @override
+  String get session_search_malas_hint => 'ཕྲེང་བ་འཚོལ།';
+
+  @override
+  String get session_search_timers_hint => 'མིང་ངམ་དུས་ཡུན་གྱིས་སྒོམ་ཡུན་འཚོལ།';
+
+  @override
+  String search_min_query_length(int count) {
+    return 'འཚོལ་བར་ཡི་གེ་ཉུང་མཐར་ $count འབྲི་དགོས།';
+  }
 }

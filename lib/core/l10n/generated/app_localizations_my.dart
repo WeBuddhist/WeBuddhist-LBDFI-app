@@ -4469,4 +4469,22 @@ class AppLocalizationsMy extends AppLocalizations {
 
   @override
   String get mala_appearance_save_failed => 'သိမ်း၍ မရပါ။ ထပ်ကြိုးစားပါ';
+
+  @override
+  String get session_search_plans_hint => 'သင်ခန်းစာအစီအစဉ်များ ရှာဖွေရန်';
+
+  @override
+  String get session_search_chants_hint => 'ရွတ်ဆိုရန်စာများ ရှာဖွေရန်';
+
+  @override
+  String get session_search_malas_hint => 'ပုတီးများ ရှာဖွေရန်';
+
+  @override
+  String get session_search_timers_hint =>
+      'အမည် သို့မဟုတ် ကြာချိန်ဖြင့် အချိန်မှတ်စက် ရှာဖွေရန်';
+
+  @override
+  String search_min_query_length(int count) {
+    return 'ရှာဖွေရန် အနည်းဆုံး စာလုံး $count လုံး ရိုက်ထည့်ပါ';
+  }
 }

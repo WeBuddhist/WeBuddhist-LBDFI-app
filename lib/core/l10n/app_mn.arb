@@ -1292,6 +1292,11 @@
   "mala_bookmarked": "Хавчуурганд нэмсэн",
   "mala_beads_load_error": "Мөхлөгийн загваруудыг ачаалж чадсангүй",
   "mala_appearance_save_failed": "Хадгалж чадсангүй. Дахин оролдоно уу",
+  "session_search_plans_hint": "Төлөвлөгөө хайх",
+  "session_search_chants_hint": "Магтаал хайх",
+  "session_search_malas_hint": "Эрхи хайх",
+  "session_search_timers_hint": "Нэр эсвэл хугацаагаар цаг хэмжигч хайх",
+  "search_min_query_length": "Хайхын тулд дор хаяж {count} тэмдэгт бичнэ үү",
   "splash_tagline_1": "Бид буддистууд хамтдаа бясалгадаг",
   "splash_tagline_2": "Бид буддистууд өдөр бүр бясалгадаг"
 }

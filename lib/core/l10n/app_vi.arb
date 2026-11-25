@@ -1196,5 +1196,10 @@
   "mala_images_load_error": "Không tải được hình ảnh",
   "mala_bookmarked": "Đã đánh dấu",
   "mala_beads_load_error": "Không tải được kiểu hạt",
-  "mala_appearance_save_failed": "Không lưu được. Vui lòng thử lại"
+  "mala_appearance_save_failed": "Không lưu được. Vui lòng thử lại",
+  "session_search_plans_hint": "Tìm kiếm lộ trình",
+  "session_search_chants_hint": "Tìm kiếm bài tụng",
+  "session_search_malas_hint": "Tìm kiếm chuỗi hạt",
+  "session_search_timers_hint": "Tìm hẹn giờ theo tên hoặc thời lượng",
+  "search_min_query_length": "Nhập ít nhất {count} ký tự để tìm kiếm"
 }

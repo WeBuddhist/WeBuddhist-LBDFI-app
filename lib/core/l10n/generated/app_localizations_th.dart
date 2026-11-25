@@ -4381,4 +4381,21 @@ class AppLocalizationsTh extends AppLocalizations {
 
   @override
   String get mala_appearance_save_failed => 'บันทึกไม่สำเร็จ โปรดลองอีกครั้ง';
+
+  @override
+  String get session_search_plans_hint => 'ค้นหาแผนการปฏิบัติ';
+
+  @override
+  String get session_search_chants_hint => 'ค้นหาบทสวด';
+
+  @override
+  String get session_search_malas_hint => 'ค้นหาลูกประคำ';
+
+  @override
+  String get session_search_timers_hint => 'ค้นหาตัวจับเวลาตามชื่อหรือระยะเวลา';
+
+  @override
+  String search_min_query_length(int count) {
+    return 'พิมพ์อย่างน้อย $count ตัวอักษรเพื่อค้นหา';
+  }
 }

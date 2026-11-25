@@ -4444,4 +4444,22 @@ class AppLocalizationsMn extends AppLocalizations {
   @override
   String get mala_appearance_save_failed =>
       'Хадгалж чадсангүй. Дахин оролдоно уу';
+
+  @override
+  String get session_search_plans_hint => 'Төлөвлөгөө хайх';
+
+  @override
+  String get session_search_chants_hint => 'Магтаал хайх';
+
+  @override
+  String get session_search_malas_hint => 'Эрхи хайх';
+
+  @override
+  String get session_search_timers_hint =>
+      'Нэр эсвэл хугацаагаар цаг хэмжигч хайх';
+
+  @override
+  String search_min_query_length(int count) {
+    return 'Хайхын тулд дор хаяж $count тэмдэгт бичнэ үү';
+  }
 }

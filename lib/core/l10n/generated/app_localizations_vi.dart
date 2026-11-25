@@ -4428,4 +4428,22 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get mala_appearance_save_failed => 'Không lưu được. Vui lòng thử lại';
+
+  @override
+  String get session_search_plans_hint => 'Tìm kiếm lộ trình';
+
+  @override
+  String get session_search_chants_hint => 'Tìm kiếm bài tụng';
+
+  @override
+  String get session_search_malas_hint => 'Tìm kiếm chuỗi hạt';
+
+  @override
+  String get session_search_timers_hint =>
+      'Tìm hẹn giờ theo tên hoặc thời lượng';
+
+  @override
+  String search_min_query_length(int count) {
+    return 'Nhập ít nhất $count ký tự để tìm kiếm';
+  }
 }

@@ -8799,4 +8799,40 @@ class TolgeeAppLocalizations extends AppLocalizations {
     'mala_appearance_save_failed',
     () => _fallback.mala_appearance_save_failed,
   );
+
+  @override
+  String get session_search_plans_hint => TolgeeBridge.get(
+    localeName,
+    'session_search_plans_hint',
+    () => _fallback.session_search_plans_hint,
+  );
+
+  @override
+  String get session_search_chants_hint => TolgeeBridge.get(
+    localeName,
+    'session_search_chants_hint',
+    () => _fallback.session_search_chants_hint,
+  );
+
+  @override
+  String get session_search_malas_hint => TolgeeBridge.get(
+    localeName,
+    'session_search_malas_hint',
+    () => _fallback.session_search_malas_hint,
+  );
+
+  @override
+  String get session_search_timers_hint => TolgeeBridge.get(
+    localeName,
+    'session_search_timers_hint',
+    () => _fallback.session_search_timers_hint,
+  );
+
+  @override
+  String search_min_query_length(int count) => TolgeeBridge.format(
+    localeName,
+    'search_min_query_length',
+    <String, Object>{'count': count},
+    () => _fallback.search_min_query_length(count),
+  );
 }

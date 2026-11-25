@@ -1196,5 +1196,10 @@
   "mala_images_load_error": "โหลดรูปภาพไม่ได้",
   "mala_bookmarked": "บุ๊กมาร์กแล้ว",
   "mala_beads_load_error": "โหลดแบบเม็ดลูกประคำไม่ได้",
-  "mala_appearance_save_failed": "บันทึกไม่สำเร็จ โปรดลองอีกครั้ง"
+  "mala_appearance_save_failed": "บันทึกไม่สำเร็จ โปรดลองอีกครั้ง",
+  "session_search_plans_hint": "ค้นหาแผนการปฏิบัติ",
+  "session_search_chants_hint": "ค้นหาบทสวด",
+  "session_search_malas_hint": "ค้นหาลูกประคำ",
+  "session_search_timers_hint": "ค้นหาตัวจับเวลาตามชื่อหรือระยะเวลา",
+  "search_min_query_length": "พิมพ์อย่างน้อย {count} ตัวอักษรเพื่อค้นหา"
 }
