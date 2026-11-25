@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:ui' show FontFeature;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_pecha/core/constants/app_assets.dart';
@@ -94,11 +93,12 @@ class _ActiveTimerScreenState extends ConsumerState<ActiveTimerScreen>
   /// Same idea for the 3-second pre-roll.
   DateTime? _countdownEndsAt;
 
-  /// Elapsed time of the last reported stop, so pausing and then finishing does
-  /// not post the same session twice.
-  int? _lastReportedMs;
+  /// A session is reported to the practice log exactly once: when it completes
+  /// or when the user saves it from Finish. Pausing does not report, so Discard
+  /// can keep its promise that nothing is saved.
+  bool _stopReported = false;
 
-  /// Finish, discard, and countdown Cancel all pop this route. A second leave
+  /// Done, Discard, and countdown Cancel all pop this route. A second leave
   /// (system back landing in the same frame as the button) must not pop the
   /// screen underneath.
   bool _hasLeft = false;
@@ -440,14 +440,13 @@ class _ActiveTimerScreenState extends ConsumerState<ActiveTimerScreen>
 
       for (final sound in sounds) {
         if (sound.id == soundId) {
+          // A pause or Finish hold issued while the track was loading is kept
+          // by the player itself, so the track loads without starting.
           await _ambientPlayer.play(sound.url);
-          // The session can end, pause, or sit behind Finish while the track
-          // is loading, after the stop/pause it issued has already run
-          // against nothing. Finish only pauses: dismissing it calls resume.
+          // The session can end while the track is loading, after the stop
+          // it issued has already run against nothing.
           if (!mounted || _phase != _TimerPhase.running) {
             await _ambientPlayer.stop();
-          } else if (_isPaused || _heldForFinishDialog) {
-            await _ambientPlayer.pause();
           }
           return;
         }
@@ -559,7 +558,6 @@ class _ActiveTimerScreenState extends ConsumerState<ActiveTimerScreen>
       unawaited(_keepAlive.stop());
       _cancelCompletionBell();
       _showPausedNotification();
-      _reportTimerStop();
     } else {
       unawaited(_ambientPlayer.resume());
       unawaited(_keepAlive.start());
@@ -598,6 +596,15 @@ class _ActiveTimerScreenState extends ConsumerState<ActiveTimerScreen>
     });
   }
 
+  /// Leaves the finished screen. Guarded like [_discardSession], so Done
+  /// landing in the same frame as system back cannot pop the screen
+  /// underneath.
+  void _leave() {
+    if (_hasLeft) return;
+    _hasLeft = true;
+    context.pop();
+  }
+
   void _discardSession() {
     if (_hasLeft) return;
     _hasLeft = true;
@@ -631,12 +638,9 @@ class _ActiveTimerScreenState extends ConsumerState<ActiveTimerScreen>
     // behind it; the API would reject the stop as "Timer not found".
     if (widget.presetTimer.id.isEmpty) return;
 
+    if (_stopReported) return;
+    _stopReported = true;
     final elapsedMs = _elapsedMs;
-
-    // Pausing already reports the session; a Finish immediately after would
-    // post the same elapsed time again and double-count it.
-    if (_lastReportedMs == elapsedMs) return;
-    _lastReportedMs = elapsedMs;
 
     final useCase = ref.read(stopUserTimerUseCaseProvider);
     useCase(
@@ -804,9 +808,9 @@ class _ActiveTimerScreenState extends ConsumerState<ActiveTimerScreen>
 
   /// Freezes a running session for as long as Finish is open.
   ///
-  /// Pausing would report a stop and count as a pause. Neither belongs to a
-  /// dialog the user can still dismiss. A session that is already paused is
-  /// already frozen, and stays that way.
+  /// Pausing would count as a user pause, which does not belong to a dialog
+  /// the user can still dismiss. A session that is already paused is already
+  /// frozen, and stays that way.
   void _holdForFinishDialog() {
     if (_phase != _TimerPhase.running || _isPaused || _heldForFinishDialog) {
       return;
@@ -881,16 +885,12 @@ class _ActiveTimerScreenState extends ConsumerState<ActiveTimerScreen>
   ({Color track, Color progress}) _ringColors(bool isDark) {
     switch (_phase) {
       case _TimerPhase.finished:
-        return (
-          track: _completionRingColor,
-          progress: _completionRingColor,
-        );
+        return (track: _completionRingColor, progress: _completionRingColor);
       case _TimerPhase.running:
         if (_isPaused) {
           return (
             track: isDark ? AppColors.cardBorderDark : AppColors.grey300,
-            progress:
-                isDark ? AppColors.textSubtleDark : AppColors.grey600,
+            progress: isDark ? AppColors.textSubtleDark : AppColors.grey600,
           );
         }
         return (
@@ -933,7 +933,12 @@ class _ActiveTimerScreenState extends ConsumerState<ActiveTimerScreen>
     return PopScope(
       canPop: _phase == _TimerPhase.finished,
       onPopInvokedWithResult: (didPop, _) {
-        if (didPop) return;
+        if (didPop) {
+          // System back on the finished screen: a Done tap in the same frame
+          // must not pop again.
+          _hasLeft = true;
+          return;
+        }
         if (_phase == _TimerPhase.countdown) {
           _discardSession();
         }
@@ -966,9 +971,10 @@ class _ActiveTimerScreenState extends ConsumerState<ActiveTimerScreen>
                           fontSize: _metaFontSize,
                           fontWeight: FontWeight.w400,
                           height: 1.25,
-                          color: isDark
-                              ? AppColors.textSecondaryDark
-                              : AppColors.textSecondary,
+                          color:
+                              isDark
+                                  ? AppColors.textSecondaryDark
+                                  : AppColors.textSecondary,
                         ),
                       ),
                     ),
@@ -1008,9 +1014,10 @@ class _ActiveTimerScreenState extends ConsumerState<ActiveTimerScreen>
                             fontSize: _metaFontSize,
                             fontWeight: FontWeight.w400,
                             height: 1.25,
-                            color: isDark
-                                ? AppColors.textTertiaryDark
-                                : AppColors.textSecondary,
+                            color:
+                                isDark
+                                    ? AppColors.textTertiaryDark
+                                    : AppColors.textSecondary,
                           ),
                         ),
                       ] else if (_phase == _TimerPhase.finished) ...[
@@ -1038,9 +1045,10 @@ class _ActiveTimerScreenState extends ConsumerState<ActiveTimerScreen>
                             fontSize: _metaFontSize,
                             fontWeight: FontWeight.w400,
                             height: 1.25,
-                            color: isDark
-                                ? AppColors.textTertiaryDark
-                                : AppColors.textSecondary,
+                            color:
+                                isDark
+                                    ? AppColors.textTertiaryDark
+                                    : AppColors.textSecondary,
                           ),
                         ),
                       ] else
@@ -1098,7 +1106,7 @@ class _ActiveTimerScreenState extends ConsumerState<ActiveTimerScreen>
                     width: double.infinity,
                     height: _controlHeight,
                     child: FilledButton(
-                      onPressed: () => context.pop(),
+                      onPressed: _leave,
                       style: FilledButton.styleFrom(
                         backgroundColor: textColor,
                         foregroundColor: Theme.of(context).colorScheme.surface,
@@ -1229,11 +1237,7 @@ class _ActiveTimerScreenState extends ConsumerState<ActiveTimerScreen>
         ),
       );
     } else if (isFinished) {
-      return const Icon(
-        AppAssets.check,
-        size: 56,
-        color: _completionRingColor,
-      );
+      return const Icon(AppAssets.check, size: 56, color: _completionRingColor);
     } else {
       final timeText = _formatDuration(_remainingMs, separator: ':');
       final isDark = Theme.of(context).brightness == Brightness.dark;
@@ -1261,9 +1265,10 @@ class _ActiveTimerScreenState extends ConsumerState<ActiveTimerScreen>
                 fontSize: 14,
                 fontWeight: FontWeight.w400,
                 height: 20 / 14,
-                color: isDark
-                    ? AppColors.textTertiaryDark
-                    : AppColors.textSecondary,
+                color:
+                    isDark
+                        ? AppColors.textTertiaryDark
+                        : AppColors.textSecondary,
               ),
             ),
           ],

@@ -738,6 +738,8 @@ void main() {
       ]);
       expect(analytics.events.last.properties, {
         'preset_id': 'timer-1',
+        'timer_kind': 'preset',
+        'action': 'discard',
         'elapsed_s': 8,
         'pct_complete': 80,
       });
@@ -815,7 +817,7 @@ void main() {
       expect(find.text('Paused · tap to resume'), findsOneWidget);
       expect(find.text('00:08'), findsOneWidget);
       expect(keepAlive.isHolding, isFalse);
-      expect(stops, [(timerId: 'timer-1', durationMs: 2000)]);
+      expect(stops, isEmpty);
 
       await _openFinishDialog(tester);
       clock.advance(const Duration(seconds: 30));
@@ -831,12 +833,88 @@ void main() {
       expect(find.text('00:08'), findsOneWidget);
       expect(find.text('Pause'), findsNothing);
       expect(keepAlive.isHolding, isFalse);
-      expect(stops, [(timerId: 'timer-1', durationMs: 2000)]);
+      expect(stops, isEmpty);
 
       clock.advance(const Duration(seconds: 5));
       await tester.pump(const Duration(seconds: 1));
       expect(find.text('00:08'), findsOneWidget);
       expect(find.text('Session complete'), findsNothing);
+    });
+
+    testWidgets('discarding after a pause saves nothing', (tester) async {
+      final clock = _FakeClock();
+      final analytics = RecordingAnalyticsService();
+      final stops = <_StopCall>[];
+
+      await _pumpRoutedScreen(
+        tester,
+        clock: clock,
+        analytics: analytics,
+        stops: stops,
+      );
+      await _advanceThroughCountdown(tester, clock);
+      await _advanceBy(tester, clock, const Duration(seconds: 3));
+
+      await tester.tap(find.text('Pause'));
+      await tester.pump();
+      await tester.tap(find.text('Resume'));
+      await tester.pump();
+      await _advanceBy(tester, clock, const Duration(seconds: 2));
+      await tester.tap(find.text('Pause'));
+      await tester.pump();
+
+      await _openFinishDialog(tester);
+      await tester.tap(find.text('Discard session'));
+      await tester.pumpAndSettle();
+
+      expect(stops, isEmpty);
+      expect(find.text('Discard this session?'), findsNothing);
+    });
+
+    testWidgets('saving after a pause reports the session once', (
+      tester,
+    ) async {
+      final clock = _FakeClock();
+      final analytics = RecordingAnalyticsService();
+      final stops = <_StopCall>[];
+
+      await _pumpRoutedScreen(
+        tester,
+        clock: clock,
+        analytics: analytics,
+        stops: stops,
+      );
+      await _advanceThroughCountdown(tester, clock);
+      await _advanceBy(tester, clock, const Duration(seconds: 3));
+
+      await tester.tap(find.text('Pause'));
+      await tester.pump();
+      expect(stops, isEmpty);
+
+      await _openFinishDialog(tester);
+      await tester.tap(find.text('Save session'));
+      await tester.pumpAndSettle();
+
+      expect(stops, [(timerId: 'timer-1', durationMs: 3000)]);
+      expect(find.text('3 sec · saved to your practice'), findsOneWidget);
+    });
+  });
+
+  group('done', () {
+    testWidgets('returns to the screen below', (tester) async {
+      final clock = _FakeClock();
+      final analytics = RecordingAnalyticsService();
+
+      await _pumpRoutedScreen(tester, clock: clock, analytics: analytics);
+      await _advanceThroughCountdown(tester, clock);
+      await _advanceBy(tester, clock, _timerDuration);
+      expect(find.text('Session complete'), findsOneWidget);
+
+      await tester.tap(find.text('Done'));
+      await tester.pumpAndSettle();
+
+      expect(find.byType(ActiveTimerScreen), findsNothing);
+      expect(find.byType(Scaffold), findsOneWidget);
     });
   });
 
