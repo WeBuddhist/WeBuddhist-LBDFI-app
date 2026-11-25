@@ -81,6 +81,9 @@ class _SpaceAccumulationsSeeAllScreenState
   }
 
   void _onScroll() {
+    // After a failed page only the Retry button and pull-to-refresh ask
+    // again, or every scroll near the end would repeat the failing request.
+    if (_failed) return;
     final position = _scrollController.position;
     if (position.pixels >= position.maxScrollExtent - 400) _loadMore();
   }

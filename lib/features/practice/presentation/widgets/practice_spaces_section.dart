@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_pecha/core/error/failures.dart';
 import 'package:flutter_pecha/core/extensions/context_ext.dart';
+import 'package:flutter_pecha/features/auth/presentation/providers/state_providers.dart';
 import 'package:flutter_pecha/features/group_profile/domain/entities/group_practice.dart';
 import 'package:flutter_pecha/features/practice/domain/entities/chant_book.dart';
 import 'package:flutter_pecha/features/practice/presentation/providers/chants_page_providers.dart';
@@ -56,11 +57,21 @@ final practiceHasJoinedSpaceContentProvider = Provider.autoDispose<bool>((ref) {
 bool practiceLayoutPending<T>(AsyncValue<T> value) =>
     value.isLoading && !value.isRefreshing;
 
+/// Whether the user is signed in with an account. A guest has no joined
+/// spaces, so their rows are never pending or failed: the tab must not
+/// wait on the public chant-book feed to show them the catalog.
+final _signedInProvider = Provider.autoDispose<bool>((ref) {
+  return ref.watch(
+    authProvider.select((auth) => auth.isLoggedIn && !auth.isGuest),
+  );
+});
+
 /// Whether a "From your spaces" row could not be read, so its emptiness
 /// says nothing about the user's spaces.
 final practiceJoinedSpaceContentFailedProvider = Provider.autoDispose<bool>((
   ref,
 ) {
+  if (!ref.watch(_signedInProvider)) return false;
   bool failed<T>(AsyncValue<Either<Failure, T>> value) =>
       value.hasError || (value.valueOrNull?.isLeft() ?? false);
   return failed(
@@ -87,6 +98,7 @@ final practiceJoinedSpaceContentFailedProvider = Provider.autoDispose<bool>((
 final practiceJoinedSpaceContentLoadingProvider = Provider.autoDispose<bool>((
   ref,
 ) {
+  if (!ref.watch(_signedInProvider)) return false;
   return practiceLayoutPending(
         ref.watch(
           practiceSpacePracticesProvider((
