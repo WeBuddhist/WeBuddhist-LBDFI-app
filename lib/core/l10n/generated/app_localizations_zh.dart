@@ -70,6 +70,16 @@ class AppLocalizationsZh extends AppLocalizations {
   }
 
   @override
+  String home_practices_sessions(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count 次',
+    );
+    return '$_temp0';
+  }
+
+  @override
   String get home_shortcut_plans => '計劃';
 
   @override
@@ -4373,6 +4383,16 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   @override
   String home_recitation_count(int count) {
     return '$count 持诵';
+  }
+
+  @override
+  String home_practices_sessions(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count 次',
+    );
+    return '$_temp0';
   }
 
   @override

@@ -1,8 +1,9 @@
 import 'package:flutter_pecha/features/connect/domain/entities/connect_post.dart';
 import 'package:flutter_pecha/features/connect/presentation/providers/connect_providers.dart';
 import 'package:flutter_pecha/features/connect/presentation/providers/connect_unified_feed_providers.dart';
-import 'package:flutter_pecha/features/group_profile/presentation/providers/group_post_providers.dart';
 import 'package:flutter_pecha/features/connect/presentation/utils/connect_analytics.dart';
+import 'package:flutter_pecha/features/group_profile/presentation/providers/group_post_providers.dart';
+import 'package:flutter_pecha/features/home/presentation/providers/home_feed_provider.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class ConnectPostLikeResult {
@@ -144,6 +145,10 @@ void syncPostToListProviders(
           : myUnifiedConnectFeedProvider;
   if (ref.exists(feedProvider)) {
     ref.read(feedProvider.notifier).updatePost(post);
+  }
+  // Home's feed holds both joined and public spaces' posts.
+  if (ref.exists(homeFeedProvider)) {
+    ref.read(homeFeedProvider.notifier).updatePost(post);
   }
 
   if (groupId != null && ref.exists(groupPostsProvider(groupId))) {

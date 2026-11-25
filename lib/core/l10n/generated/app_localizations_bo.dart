@@ -73,6 +73,17 @@ class AppLocalizationsBo extends AppLocalizations {
   }
 
   @override
+  String home_practices_sessions(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'ཐུན་ $count',
+      one: 'ཐུན་ 1',
+    );
+    return '$_temp0';
+  }
+
+  @override
   String get home_shortcut_plans => 'ཐུན་འཆར།';
 
   @override
