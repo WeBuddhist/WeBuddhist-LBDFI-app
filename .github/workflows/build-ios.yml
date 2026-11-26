@@ -202,6 +202,16 @@ jobs:
             echo "Crashlytics symbol-upload build phase neutralized for the CI archive."
           fi
 
+      # A flavor xcconfig that sets FLUTTER_TARGET overrides the `-t` below
+      # in release builds (Xcode compiles the Dart itself), so the app would
+      # run another lib/main_*.dart and load another server's .env file.
+      - name: 🎯 Check no iOS flavor pins the entry file
+        run: |
+          if grep -n '^FLUTTER_TARGET=' ios/Flutter/*-debug.xcconfig ios/Flutter/*-release.xcconfig; then
+            echo "::error::An iOS flavor xcconfig sets FLUTTER_TARGET; remove it so -t decides the entry file."
+            exit 1
+          fi
+
       - name: 🏗️ Build IPA (${{ inputs.server }} server)
         env:
           AIRBRIDGE_SDK_TOKEN: ${{ secrets.AIRBRIDGE_SDK_TOKEN }}
@@ -214,6 +224,11 @@ jobs:
             --flavor "$FLAVOR" -t "lib/main_${SERVER}.dart" \
             --build-name "$VERSION_NAME" --build-number "$BUILD_NUMBER" \
             --export-options-plist=ios/ExportOptions.plist
+          # The entry file Xcode actually compiled, as flutter wrote it.
+          grep -q "^FLUTTER_TARGET=.*lib/main_${SERVER}.dart$" ios/Flutter/Generated.xcconfig || {
+            echo "::error::Built $(grep '^FLUTTER_TARGET=' ios/Flutter/Generated.xcconfig), expected lib/main_${SERVER}.dart"
+            exit 1
+          }
 
       - name: ⬆️ Upload IPA artifact
         uses: actions/upload-artifact@v4
