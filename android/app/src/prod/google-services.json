@@ -14,6 +14,22 @@
       },
       "oauth_client": [
         {
+          "client_id": "551646315172-92j1i3r28j2anlk4qnpooe24b856i9uq.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.webuddhist.lbdfi",
+            "certificate_hash": "94c0367d00a7efad98fde075457d499e577b05bc"
+          }
+        },
+        {
+          "client_id": "551646315172-h7leqffv3hdt2bu4lbb1qjg1pgbo9ct9.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.webuddhist.lbdfi",
+            "certificate_hash": "41eed5fc6aef623badc75ec6898dee97fbf9f1c5"
+          }
+        },
+        {
           "client_id": "551646315172-kfkbg97ojbn7nus3gi2sju0jocnph2mu.apps.googleusercontent.com",
           "client_type": 3
         }
@@ -55,6 +71,14 @@
           "android_info": {
             "package_name": "org.pecha.app",
             "certificate_hash": "40299cc7a6cf41649a763cd9d566e06765d8c1e8"
+          }
+        },
+        {
+          "client_id": "551646315172-7gqpd2n5aqk5lq2gckis9vebo8cbc642.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "org.pecha.app",
+            "certificate_hash": "f2d8d42f6bc523365d801521c2ef05516e1cf4b8"
           }
         },
         {
