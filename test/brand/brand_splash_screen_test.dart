@@ -65,4 +65,31 @@ void main() {
     expect(region.value.statusBarIconBrightness, Brightness.dark);
     expect(region.value.statusBarBrightness, Brightness.light);
   });
+
+  testWidgets('hands the status bar back to dark mode when it goes', (
+    tester,
+  ) async {
+    final navigator = GlobalKey<NavigatorState>();
+    await tester.pumpWidget(
+      MaterialApp(
+        navigatorKey: navigator,
+        theme: ThemeData.light(),
+        darkTheme: ThemeData.dark(),
+        themeMode: ThemeMode.dark,
+        home: const BrandSplashScreen(playIntro: false),
+      ),
+    );
+    await tester.pump();
+    expect(SystemChrome.latestStyle?.statusBarIconBrightness, Brightness.dark);
+
+    // Like the router leaving the splash: the app itself does not rebuild,
+    // and the next screen has no app bar, so it sets no style of its own.
+    navigator.currentState!.pushReplacement(
+      MaterialPageRoute<void>(builder: (_) => const Scaffold()),
+    );
+    await tester.pumpAndSettle();
+    expect(find.byType(BrandSplashScreen), findsNothing);
+    expect(SystemChrome.latestStyle?.statusBarIconBrightness, Brightness.light);
+    expect(SystemChrome.latestStyle?.statusBarBrightness, Brightness.dark);
+  });
 }

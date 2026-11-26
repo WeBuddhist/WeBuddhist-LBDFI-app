@@ -48,6 +48,10 @@ class _BrandSplashScreenState extends State<BrandSplashScreen> {
   Timer? _hold;
   bool _notified = false;
 
+  /// The app's own brightness (light or dark mode), read while the splash is
+  /// up, so the status bar can be handed back to it when the splash goes.
+  Brightness _appBrightness = Brightness.light;
+
   @override
   void initState() {
     super.initState();
@@ -59,9 +63,24 @@ class _BrandSplashScreenState extends State<BrandSplashScreen> {
   }
 
   @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _appBrightness = Theme.of(context).brightness;
+  }
+
+  @override
   void dispose() {
     _hold?.cancel();
     _notify();
+    // The splash forces dark status bar icons. Screens without an app bar
+    // (login, home) set none of their own, so without this the dark icons
+    // stay and vanish on their dark background in dark mode. Same style
+    // MaterialApp sets for the app's theme.
+    SystemChrome.setSystemUIOverlayStyle(
+      _appBrightness == Brightness.dark
+          ? SystemUiOverlayStyle.light
+          : SystemUiOverlayStyle.dark,
+    );
     super.dispose();
   }
 
