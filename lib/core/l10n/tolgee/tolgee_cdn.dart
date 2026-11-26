@@ -18,7 +18,7 @@ class TolgeeCdn {
   ///
   /// `tool/tolgee_sync.dart` keeps a copy; a parity test keeps them in step.
   static const String baseUrl =
-      'https://cdn.tolg.ee/a23495c159b886551292e856ecf7a332/webuddhist';
+      'https://cdn-tolgee.webuddhist.com/a23495c159b886551292e856ecf7a332/webuddhist';
 
   /// Fetches `$cdnUrl/$tag.json`.
   ///

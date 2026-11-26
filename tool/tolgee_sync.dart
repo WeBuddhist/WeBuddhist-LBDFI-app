@@ -8,7 +8,7 @@ const String tolgeeApiBase = 'https://app.tolgee.io';
 
 /// Kept public so a Flutter test can verify parity with [TolgeeCdn.baseUrl].
 const String tolgeeCdnBase =
-    'https://cdn.tolg.ee/a23495c159b886551292e856ecf7a332/webuddhist';
+    'https://cdn-tolgee.webuddhist.com/a23495c159b886551292e856ecf7a332/webuddhist';
 
 /// Kept public so a Flutter test can verify parity with [TolgeeLocaleMap].
 const Map<String, String> tolgeeSyncLanguageTags = <String, String>{
