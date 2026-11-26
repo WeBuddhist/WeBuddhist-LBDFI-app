@@ -73,6 +73,7 @@ class GroupSpaceRoomButtons extends ConsumerWidget {
             PrayerRequestsSheet.show(
               context,
               scope: PrayerRoomScope.group(profile.id),
+              source: 'group_page',
             ),
           ),
         ),

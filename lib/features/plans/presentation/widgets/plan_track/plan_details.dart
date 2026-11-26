@@ -755,7 +755,11 @@ class _PlanDetailsState extends ConsumerState<PlanDetails> {
       return;
     }
     unawaited(
-      PrayerRequestsSheet.show(context, scope: PrayerRoomScope.event(eventId)),
+      PrayerRequestsSheet.show(
+        context,
+        scope: PrayerRoomScope.event(eventId),
+        source: 'plan',
+      ),
     );
   }
 

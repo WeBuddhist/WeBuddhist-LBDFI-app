@@ -61,6 +61,23 @@ void main() {
     });
   });
 
+  test('pushNotificationOpened carries the notification id and campaign', () {
+    analytics.pushNotificationOpened(
+      appState: PushAppState.background,
+      sessionType: 'PLAN',
+      notificationId: 'n1',
+      campaign: 'losar',
+    );
+
+    expect(service.events.single.properties, {
+      'session_type': 'PLAN',
+      'source_id': null,
+      'app_state': 'background',
+      'notification_id': 'n1',
+      'campaign': 'losar',
+    });
+  });
+
   test('localNotificationOpened carries the type and lateness', () {
     analytics.localNotificationOpened(
       type: 'recitation',

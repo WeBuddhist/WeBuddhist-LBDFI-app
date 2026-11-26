@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_pecha/core/analytics/media_analytics.dart';
 import 'package:flutter_pecha/core/config/router/app_router.dart';
 import 'package:flutter_pecha/core/config/router/app_routes.dart';
 import 'package:flutter_pecha/core/error/load_error_kind.dart';
@@ -68,7 +69,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:just_audio/just_audio.dart';
 
-/// Main reader screen - thin orchestrator that composes child widgets
 /// Player for a library chant recording. It has no fixed URL: the
 /// presigned link is fetched on play and again after a player error.
 @visibleForTesting
@@ -76,17 +76,20 @@ PlanSegmentAudioController chantRecordingAudioController(
   LibraryRepository repository,
   ChantAudioTrack track, {
   AudioPlayer Function()? createPlayer,
+  void Function(PlanAudioListen listen)? onListened,
 }) {
   return PlanSegmentAudioController(
     url: null,
     startMs: 0,
     endMs: null,
     onSegmentComplete: () {},
+    onListened: onListened,
     resolveUrl: () => repository.getRecordingAudioUrl(track.id),
     createPlayer: createPlayer,
   );
 }
 
+/// Main reader screen - thin orchestrator that composes child widgets
 class ReaderScreen extends ConsumerStatefulWidget {
   final String textId;
   final String? segmentId;
@@ -606,11 +609,25 @@ class _ReaderScreenState extends ConsumerState<ReaderScreen>
       final url = ctx.effectiveAudioUrlFor(item);
       if (url == null) return;
 
+      // Read now: the summary arrives from dispose, where `ref` is gone.
+      final media = ref.read(mediaAnalyticsProvider);
       _audioController = PlanSegmentAudioController(
         url: url,
         startMs: item.startMs,
         endMs: item.endMs,
         onSegmentComplete: _onAudioSegmentComplete,
+        onListened:
+            (listen) => media.audioPlayed(
+              surface: AudioSurface.plan,
+              listened: listen.listened,
+              speed: listen.speed,
+              repeat: listen.repeat,
+              completed: listen.completed,
+              planId: ctx.planId,
+              dayNumber: ctx.dayNumber,
+              textId: widget.textId,
+              eventId: ctx.isFromEvent ? ctx.eventId : null,
+            ),
       );
 
       if (ctx.autoPlay) {
@@ -699,7 +716,28 @@ class _ReaderScreenState extends ConsumerState<ReaderScreen>
     // Stop the old file now, but dispose it after this frame. The play
     // button and progress bar drop their listeners during the rebuild.
     previous?.cancel();
-    _audioController = chantRecordingAudioController(repository, track);
+    final media = ref.read(mediaAnalyticsProvider);
+    final ctx = widget.navigationContext;
+    final surface = switch (ctx?.source) {
+      NavigationSource.groupRecitationCollection ||
+      NavigationSource.myRecitationCollection =>
+        AudioSurface.recitationCollection,
+      _ => AudioSurface.reader,
+    };
+    _audioController = chantRecordingAudioController(
+      repository,
+      track,
+      onListened: (listen) => media.audioPlayed(
+        surface: surface,
+        listened: listen.listened,
+        speed: listen.speed,
+        repeat: listen.repeat,
+        completed: listen.completed,
+        textId: widget.textId,
+        collectionId: ctx?.collectionId,
+        eventId: (ctx?.isFromEvent ?? false) ? ctx?.eventId : null,
+      ),
+    );
     if (previous != null) {
       WidgetsBinding.instance.addPostFrameCallback((_) => previous.dispose());
     }
@@ -1274,6 +1312,9 @@ class _ReaderScreenState extends ConsumerState<ReaderScreen>
           onVersionTap: title == null
               ? null
               : () => unawaited(_openCollectionAudioSheet()),
+          onSettingChanged: (setting, value) => ref
+              .read(mediaAnalyticsProvider)
+              .audioSettingChanged(setting: setting, value: value),
         ),
       ],
     );

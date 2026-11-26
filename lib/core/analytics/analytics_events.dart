@@ -64,6 +64,43 @@ abstract final class AnalyticsEvents {
   static const String postCommentCreated = 'post_comment_created';
   static const String postCommentDeleted = 'post_comment_deleted';
 
+  // Audio and video
+  static const String audioPlayed = 'audio_played';
+  static const String audioSettingChanged = 'audio_setting_changed';
+  static const String videoOpened = 'video_opened';
+
+  // Reader settings and live recitation
+  static const String readerSettingChanged = 'reader_setting_changed';
+  static const String recitationLiveFollowed = 'recitation_live_followed';
+
+  // Bookmarks and personal collections
+  static const String bookmarkAdded = 'bookmark_added';
+  static const String bookmarkRemoved = 'bookmark_removed';
+  static const String bookmarksOpened = 'bookmarks_opened';
+  static const String collectionCreated = 'collection_created';
+  static const String collectionUpdated = 'collection_updated';
+  static const String collectionDeleted = 'collection_deleted';
+
+  // Mala settings
+  static const String malaSettingChanged = 'mala_setting_changed';
+  static const String malaCountReset = 'mala_count_reset';
+
+  // Chat list and prayer list
+  static const String chatsListOpened = 'chats_list_opened';
+  static const String prayerRequestsOpened = 'prayer_requests_opened';
+
+  // Event creation (admins)
+  static const String groupEventPublished = 'group_event_published';
+  static const String groupEventDraftSaved = 'group_event_draft_saved';
+  static const String groupEventDeleted = 'group_event_deleted';
+
+  // Calendar
+  static const String calendarViewed = 'calendar_viewed';
+  static const String calendarTypeChanged = 'calendar_type_changed';
+  static const String personalEventCreated = 'personal_event_created';
+  static const String personalEventUpdated = 'personal_event_updated';
+  static const String personalEventDeleted = 'personal_event_deleted';
+
   // Entry points (plan §5.1)
   static const String deepLinkOpened = 'deep_link_opened';
   static const String installAttributed = 'install_attributed';
@@ -135,6 +172,7 @@ abstract final class AnalyticsEvents {
 
   // Settings (§5.13)
   static const String contentLanguageChanged = 'content_language_changed';
+  static const String uiLanguageChanged = 'ui_language_changed';
   static const String notificationSettingChanged =
       'notification_setting_changed';
 
@@ -352,6 +390,48 @@ abstract final class AnalyticsProperties {
 
   /// PostHog's per-event group map, e.g. `{sangha: <group id>}`.
   static const String groups = r'$groups';
+
+  /// Person properties carried on an event: `$set` overwrites, `$set_once`
+  /// keeps the first value.
+  static const String personSet = r'$set';
+  static const String personSetOnce = r'$set_once';
+
+  // Push
+  static const String notificationId = 'notification_id';
+  static const String campaign = 'campaign';
+
+  // Audio, video and settings
+  static const String value = 'value';
+  static const String listenedS = 'listened_s';
+  static const String speed = 'speed';
+  static const String repeat = 'repeat';
+  static const String completed = 'completed';
+  static const String followingS = 'following_s';
+  static const String pausedCount = 'paused_count';
+  static const String resumedCount = 'resumed_count';
+
+  // Collections, events, calendar
+  static const String itemsAdded = 'items_added';
+  static const String itemsRemoved = 'items_removed';
+  static const String reordered = 'reordered';
+  static const String renamed = 'renamed';
+  static const String imageChanged = 'image_changed';
+  static const String hasImage = 'has_image';
+  static const String hasUnread = 'has_unread';
+  static const String scope = 'scope';
+  static const String isEdit = 'is_edit';
+  static const String hasPlan = 'has_plan';
+  static const String hasSeries = 'has_series';
+  static const String hasCollection = 'has_collection';
+  static const String hasAccumulation = 'has_accumulation';
+  static const String calendarType = 'calendar_type';
+  static const String repeats = 'repeats';
+
+  // Person properties
+  static const String signupMethod = 'signup_method';
+  static const String contentLanguage = 'content_language';
+  static const String firstAppVersion = 'first_app_version';
+  static const String onboardingCompletedAt = 'onboarding_completed_at';
 }
 
 /// PostHog group types; a sangha is a WeBuddhist group.

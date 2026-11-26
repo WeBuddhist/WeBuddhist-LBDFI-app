@@ -750,7 +750,11 @@ class NavigationContext {
     this.eventId,
     this.isOnlineAttendee = false,
     this.taskIsLive,
+    this.fromBookmarks = false,
   });
+
+  /// Opened from the Bookmarks screen; only changes `reader_opened.source`.
+  final bool fromBookmarks;
 
   bool get isFromEvent => eventId != null && eventId!.isNotEmpty;
 
@@ -877,6 +881,7 @@ class NavigationContext {
     String? eventId,
     bool? isOnlineAttendee,
     bool? taskIsLive,
+    bool? fromBookmarks,
   }) {
     return NavigationContext(
       source: source ?? this.source,
@@ -902,6 +907,7 @@ class NavigationContext {
       eventId: eventId ?? this.eventId,
       isOnlineAttendee: isOnlineAttendee ?? this.isOnlineAttendee,
       taskIsLive: taskIsLive ?? this.taskIsLive,
+      fromBookmarks: fromBookmarks ?? this.fromBookmarks,
     );
   }
 

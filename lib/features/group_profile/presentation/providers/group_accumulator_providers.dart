@@ -388,6 +388,17 @@ Future<bool> joinGroupAccumulator({
   String? source,
 }) async {
   final repository = container.read(groupAccumulatorRepositoryProvider);
+
+  // Resolved before the join: a profile fetched afterwards already says the
+  // user is a member, and the join would never count as `group_followed`.
+  GroupProfile? resolvedGroup = group;
+  if (resolvedGroup == null) {
+    final profileResult = await container.read(
+      groupProfileProvider(groupId).future,
+    );
+    resolvedGroup = profileResult.fold((_) => null, (profile) => profile);
+  }
+
   final result = await repository.joinGroupAccumulator(accumulatorId);
 
   if (result.isLeft()) return false;
@@ -403,14 +414,6 @@ Future<bool> joinGroupAccumulator({
   container
       .read(groupAccumulatorJoinCacheProvider(groupId).notifier)
       .markJoined(accumulatorId);
-
-  GroupProfile? resolvedGroup = group;
-  if (resolvedGroup == null) {
-    final profileResult = await container.read(
-      groupProfileProvider(groupId).future,
-    );
-    resolvedGroup = profileResult.fold((_) => null, (profile) => profile);
-  }
 
   if (resolvedGroup != null) {
     final followKey = GroupFollowKey(

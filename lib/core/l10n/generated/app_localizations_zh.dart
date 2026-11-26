@@ -70,6 +70,16 @@ class AppLocalizationsZh extends AppLocalizations {
   }
 
   @override
+  String home_practices_sessions(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count 次',
+    );
+    return '$_temp0';
+  }
+
+  @override
   String get home_shortcut_plans => '計劃';
 
   @override
@@ -4308,6 +4318,40 @@ class AppLocalizationsZh extends AppLocalizations {
   String search_min_query_length(int count) {
     return '請至少輸入 $count 個字元以搜尋';
   }
+
+  @override
+  String get practice_next_session => '下一堂課程';
+
+  @override
+  String practice_more_in_session(int count) {
+    return '此課程還有 $count 項';
+  }
+
+  @override
+  String get practice_from_your_spaces => '來自你的社群';
+
+  @override
+  String get practice_discover_more => '探索更多';
+
+  @override
+  String get practice_space_accumulations => '社群持誦計數';
+
+  @override
+  String get practice_no_space_accumulations => '目前沒有其他社群的持誦計數';
+
+  @override
+  String get practice_search_hint => '搜尋修持';
+
+  @override
+  String get practice_search_recent => '最近';
+
+  @override
+  String practice_search_no_results(String query) {
+    return '找不到「$query」的結果';
+  }
+
+  @override
+  String get practice_popular_practices => '熱門修持';
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hans`).
@@ -4373,6 +4417,16 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   @override
   String home_recitation_count(int count) {
     return '$count 持诵';
+  }
+
+  @override
+  String home_practices_sessions(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count 次',
+    );
+    return '$_temp0';
   }
 
   @override
@@ -8365,4 +8419,38 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String search_min_query_length(int count) {
     return '请至少输入 $count 个字符以搜索';
   }
+
+  @override
+  String get practice_next_session => '下一堂课程';
+
+  @override
+  String practice_more_in_session(int count) {
+    return '此课程还有 $count 项';
+  }
+
+  @override
+  String get practice_from_your_spaces => '来自你的社群';
+
+  @override
+  String get practice_discover_more => '探索更多';
+
+  @override
+  String get practice_space_accumulations => '社群持诵计数';
+
+  @override
+  String get practice_no_space_accumulations => '目前没有其他社群的持诵计数';
+
+  @override
+  String get practice_search_hint => '搜索修持';
+
+  @override
+  String get practice_search_recent => '最近';
+
+  @override
+  String practice_search_no_results(String query) {
+    return '找不到“$query”的结果';
+  }
+
+  @override
+  String get practice_popular_practices => '热门修持';
 }

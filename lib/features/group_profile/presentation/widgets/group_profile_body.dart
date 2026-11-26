@@ -50,6 +50,7 @@ import 'package:flutter_pecha/features/group_profile/presentation/widgets/group_
 import 'package:flutter_pecha/features/home/presentation/providers/series_enrollment_provider.dart';
 import 'package:flutter_pecha/features/plans/presentation/widgets/plan_inline_markdown_view.dart';
 import 'package:flutter_pecha/shared/utils/helper_functions.dart';
+import 'package:flutter_pecha/features/group_profile/presentation/utils/group_event_analytics.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
@@ -967,6 +968,7 @@ class _GroupProfileBodyState extends ConsumerState<GroupProfileBody>
     GroupEventCmsItem item,
   ) async {
     final l10n = context.l10n;
+    final analytics = ref.read(groupEventAnalyticsProvider);
     final success = await showDestructiveConfirmationDialog(
       context,
       title: l10n.group_event_draft_delete_title,
@@ -978,6 +980,9 @@ class _GroupProfileBodyState extends ConsumerState<GroupProfileBody>
         return result.isRight();
       },
     );
+    if (success == true) {
+      analytics.eventDeleted(eventId: item.event.id, groupId: profile.id);
+    }
     if (!mounted || success == null) return;
     if (success) {
       ref.invalidate(groupCmsEventsProvider(profile.id));

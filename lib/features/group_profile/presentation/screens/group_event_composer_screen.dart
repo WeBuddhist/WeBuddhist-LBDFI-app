@@ -28,6 +28,7 @@ import 'package:flutter_pecha/features/group_profile/presentation/widgets/group_
 import 'package:flutter_pecha/features/group_profile/presentation/widgets/group_event_settings_sheet.dart';
 import 'package:flutter_pecha/features/group_profile/presentation/widgets/group_event_when_where_step.dart';
 import 'package:flutter_pecha/features/group_profile/presentation/widgets/group_posting_to_row.dart';
+import 'package:flutter_pecha/features/group_profile/presentation/utils/group_event_analytics.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 /// What the composer pops with once an event exists.
@@ -381,6 +382,7 @@ class _GroupEventComposerScreenState
   Future<GroupEvent?> _submit({required String status}) async {
     final l10n = context.l10n;
     final existing = widget.existing;
+    final analytics = ref.read(groupEventAnalyticsProvider);
     setState(() => _isPublishing = true);
 
     String? imageUrl;
@@ -469,7 +471,14 @@ class _GroupEventComposerScreenState
             : l10n.group_event_publish_error,
       );
       return null;
-    }, (event) => event);
+    }, (event) {
+      analytics.eventSaved(
+        event: event,
+        isDraft: status == 'draft',
+        isEdit: existing != null,
+      );
+      return event;
+    });
   }
 
   static bool _sameVenue(GroupEventVenueDraft a, GroupEventVenueDraft b) =>

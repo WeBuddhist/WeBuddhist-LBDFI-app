@@ -398,7 +398,16 @@ class PushMessageNavigator {
           appState: appState,
           sessionType: sessionType.isEmpty ? null : sessionType,
           sourceId: payloadSourceId.isEmpty ? null : payloadSourceId,
+          notificationId: _payloadText(data['notification_id']),
+          campaign: _payloadText(data['campaign']),
         );
+  }
+
+  /// A trimmed payload value, or null when missing or blank. FCM data values
+  /// are strings, but a number is accepted too.
+  static String? _payloadText(Object? value) {
+    final text = value?.toString().trim() ?? '';
+    return text.isEmpty ? null : text;
   }
 
   void _openPracticeTab(GoRouter router) {

@@ -74,6 +74,17 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String home_practices_sessions(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count sessions',
+      one: '1 session',
+    );
+    return '$_temp0';
+  }
+
+  @override
   String get home_shortcut_plans => 'Plans';
 
   @override
@@ -4450,4 +4461,39 @@ class AppLocalizationsEn extends AppLocalizations {
     );
     return '$_temp0';
   }
+
+  @override
+  String get practice_next_session => 'Next session';
+
+  @override
+  String practice_more_in_session(int count) {
+    return '+$count more in this session';
+  }
+
+  @override
+  String get practice_from_your_spaces => 'From your spaces';
+
+  @override
+  String get practice_discover_more => 'Discover more';
+
+  @override
+  String get practice_space_accumulations => 'Space accumulations';
+
+  @override
+  String get practice_no_space_accumulations =>
+      'No accumulations from other spaces right now';
+
+  @override
+  String get practice_search_hint => 'Search practices';
+
+  @override
+  String get practice_search_recent => 'Recent';
+
+  @override
+  String practice_search_no_results(String query) {
+    return 'No results for \"$query\"';
+  }
+
+  @override
+  String get practice_popular_practices => 'Popular practices';
 }
