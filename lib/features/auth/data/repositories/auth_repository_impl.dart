@@ -93,6 +93,9 @@ class AuthRepositoryImpl implements AuthRepository {
   }
 
   @override
+  void cancelPhoneSignIn() => _authService.cancelPhoneSignIn();
+
+  @override
   Future<Either<Failure, AuthCredentials>> loginWithPhoneCode({
     required String verificationId,
     required String smsCode,

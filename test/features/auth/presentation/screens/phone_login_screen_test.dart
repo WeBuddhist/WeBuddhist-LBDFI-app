@@ -45,6 +45,12 @@ class _Auth extends StateNotifier<AuthState> implements AuthNotifier {
     return verifyResult;
   }
 
+  /// How often the screen dropped a pending automatic sign-in.
+  int phoneSignInCancels = 0;
+
+  @override
+  void cancelPhoneSignIn() => phoneSignInCancels++;
+
   void signIn() => state = state.copyWith(isLoggedIn: true);
 
   @override
@@ -227,7 +233,30 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.text(l10n.phone_login_title), findsOneWidget);
+      // Android must not still sign in with the code for the old number.
+      expect(auth.phoneSignInCancels, 1);
       await tester.pumpWidget(const SizedBox());
+    });
+
+    testWidgets('leaving while asked for the code drops its sign-in', (
+      tester,
+    ) async {
+      final l10n = await open(tester);
+      await sendCode(tester, l10n);
+
+      await tester.pumpWidget(const SizedBox());
+
+      expect(auth.phoneSignInCancels, 1);
+    });
+
+    testWidgets('leaving before a code is sent has nothing to drop', (
+      tester,
+    ) async {
+      await open(tester);
+
+      await tester.pumpWidget(const SizedBox());
+
+      expect(auth.phoneSignInCancels, 0);
     });
   });
 }

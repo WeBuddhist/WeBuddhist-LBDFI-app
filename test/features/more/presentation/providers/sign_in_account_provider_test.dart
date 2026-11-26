@@ -33,6 +33,9 @@ class _User extends StateNotifier<UserState> implements UserNotifier {
 
 /// Answers each getCredentials call with the next queued result.
 class _AuthRepository implements AuthRepository {
+  @override
+  void cancelPhoneSignIn() {}
+
   _AuthRepository(this.results);
 
   final List<Either<Failure, AuthCredentials>> results;

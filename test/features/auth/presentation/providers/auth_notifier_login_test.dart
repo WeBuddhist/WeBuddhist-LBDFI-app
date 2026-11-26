@@ -51,6 +51,9 @@ AuthCredentials _credentials(String userId) {
 /// The repository under the real use cases. Each sign-in call answers with
 /// the value set for it.
 class _Repository implements AuthRepository {
+  @override
+  void cancelPhoneSignIn() {}
+
   bool legacySessionRemoved = false;
   bool storedSession = false;
   bool guest = false;

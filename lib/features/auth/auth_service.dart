@@ -199,6 +199,11 @@ class AuthService {
     }
   }
 
+  /// The person left the code screen, or went back to change the number.
+  /// An automatic sign-in Android may still finish for that attempt is
+  /// dropped: they chose not to go on with it.
+  void cancelPhoneSignIn() => _loginAttempt++;
+
   /// Finishes a phone sign-in with the code from the SMS.
   Future<SessionTokens> loginWithPhoneCode({
     required String verificationId,
@@ -376,20 +381,24 @@ class AuthService {
           .refreshAccessToken(tokens.refreshToken)
           .timeout(_kRefreshTimeout);
     } on AuthApiException catch (e) {
-      final sameSession = generation == _sessionGeneration;
+      // The person signed out or in again while this was on the wire, so the
+      // answer is about a session that has ended. Reported as rejected or
+      // refused, it would end the new one too: the reactive 401 path signs
+      // out on those codes.
+      if (generation != _sessionGeneration) {
+        throw AuthException('Session changed during refresh');
+      }
       if (e.statusCode == 401) {
         // Asking again can never succeed. Remove the dead tokens so later
         // calls and launches see "no session" without another round trip.
-        if (sameSession) {
-          _logger.warning(
-            'The backend rejected the refresh token — clearing the session '
-            'and requiring sign-in',
-          );
-          try {
-            await _tokens.clear();
-          } catch (clearError) {
-            _logger.warning('Failed to clear rejected tokens: $clearError');
-          }
+        _logger.warning(
+          'The backend rejected the refresh token — clearing the session '
+          'and requiring sign-in',
+        );
+        try {
+          await _tokens.clear();
+        } catch (clearError) {
+          _logger.warning('Failed to clear rejected tokens: $clearError');
         }
         throw AuthException(
           'Refresh token rejected: ${e.detail ?? ''}',

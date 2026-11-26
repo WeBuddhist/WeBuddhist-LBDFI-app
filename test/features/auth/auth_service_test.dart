@@ -456,6 +456,23 @@ void main() {
       expect(store.tokens?.accessToken, session.accessToken);
     });
 
+    test('leaving the code screen drops a late automatic sign-in', () async {
+      final sms = Completer<FirebaseProof?>();
+      signIn.phoneStart = PhoneVerificationCodeSent(
+        verificationId: 'v-1',
+        autoVerified: sms.future,
+      );
+      final start = await auth.requestPhoneCode('+919876543210');
+
+      // Left the screen, or went back to change the number.
+      auth.cancelPhoneSignIn();
+      api.exchangeResults.add(session);
+      sms.complete(const FirebaseProof(idToken: 'firebase-auto'));
+
+      expect(await start.autoSignIn, isNull);
+      expect(store.tokens, isNull);
+    });
+
     test('no SMS read (iOS, or the wait ran out): nothing happens', () async {
       signIn.phoneStart = PhoneVerificationCodeSent(
         verificationId: 'v-1',
@@ -639,10 +656,35 @@ void main() {
       await auth.loginWithGoogle();
 
       pending.completeError(const AuthApiException(401, 'expired'));
-      await expectLater(refresh, throwsA(isA<AuthException>()));
+      final error = await refresh.then<Object?>((_) => null, onError: (e) => e);
 
+      expect(error, isA<AuthException>());
+      // Not a terminal code: the 401 path signs out on those, which would
+      // end the new session.
+      expect(AuthService.isSessionPermanentlyLost(error!), isFalse);
+      expect(AuthService.isTokenRenewalFailed(error), isFalse);
       expect(store.tokens?.refreshToken, 'refresh-2');
       expect(store.clears, 0);
+    });
+
+    test('a refusal that lands after a new sign-in does not end it', () async {
+      final pending = Completer<String>();
+      api.refreshResults.add(pending);
+      final refresh = auth.forceRefreshAccessToken();
+      await Future<void>.delayed(Duration.zero);
+
+      api.exchangeResults.add(
+        SessionTokens(accessToken: _jwt(tag: 'next'), refreshToken: 'refresh-2'),
+      );
+      await auth.loginWithGoogle();
+
+      pending.completeError(const AuthApiException(403, 'refused'));
+      final error = await refresh.then<Object?>((_) => null, onError: (e) => e);
+
+      expect(error, isA<AuthException>());
+      expect(AuthService.isSessionPermanentlyLost(error!), isFalse);
+      expect(AuthService.isTokenRenewalFailed(error), isFalse);
+      expect(store.tokens?.refreshToken, 'refresh-2');
     });
 
     test('a token that arrives after sign-out is not stored', () async {

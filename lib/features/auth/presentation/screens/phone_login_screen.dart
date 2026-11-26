@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_pecha/core/extensions/context_ext.dart';
 import 'package:flutter_pecha/features/auth/domain/failures/login_failure.dart';
+import 'package:flutter_pecha/features/auth/presentation/providers/auth_notifier.dart';
 import 'package:flutter_pecha/features/auth/presentation/providers/state_providers.dart';
 import 'package:flutter_pecha/features/auth/presentation/utils/auth_analytics.dart';
 import 'package:flutter_pecha/features/auth/presentation/utils/login_failure_text.dart';
@@ -79,9 +80,14 @@ class _PhoneLoginScreenState extends ConsumerState<PhoneLoginScreen>
   Timer? _resendTimer;
   int _resendIn = 0;
 
+  /// Held from [initState]: [dispose] needs it, and `ref` is not for use
+  /// there.
+  late final AuthNotifier _auth;
+
   @override
   void initState() {
     super.initState();
+    _auth = ref.read(authProvider.notifier);
     // Start from the phone's region; the app language says nothing about
     // where a number is from.
     final region =
@@ -91,6 +97,9 @@ class _PhoneLoginScreenState extends ConsumerState<PhoneLoginScreen>
 
   @override
   void dispose() {
+    // Leaving with a code requested: Android must not finish that sign-in
+    // after the person has gone. Read here, before super.dispose().
+    if (_verificationId != null) _auth.cancelPhoneSignIn();
     _resendTimer?.cancel();
     _numberController.dispose();
     _codeController.dispose();
@@ -182,6 +191,9 @@ class _PhoneLoginScreenState extends ConsumerState<PhoneLoginScreen>
   }
 
   void _changeNumber() {
+    // The code for the old number may still be read by Android; the person
+    // has moved on from it.
+    _auth.cancelPhoneSignIn();
     _resendTimer?.cancel();
     setState(() {
       _verificationId = null;

@@ -35,6 +35,10 @@ abstract class AuthRepository {
     int? resendToken,
   });
 
+  /// Drop a pending automatic phone sign-in: the person left the code
+  /// screen or went back to change the number.
+  void cancelPhoneSignIn();
+
   /// Finish a phone sign-in with the code from the SMS.
   Future<Either<Failure, AuthCredentials>> loginWithPhoneCode({
     required String verificationId,

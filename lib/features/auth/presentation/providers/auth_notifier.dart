@@ -18,6 +18,7 @@ import 'package:flutter_pecha/features/auth/domain/usecases/request_phone_code_u
 import 'package:flutter_pecha/features/auth/domain/usecases/clear_guest_mode_and_onboarding_usecase.dart';
 import 'package:flutter_pecha/features/auth/domain/usecases/clear_guest_mode_usecase.dart';
 import 'package:flutter_pecha/features/auth/domain/usecases/continue_as_guest_usecase.dart';
+import 'package:flutter_pecha/features/auth/presentation/providers/auth_providers.dart';
 import 'package:flutter_pecha/features/auth/presentation/providers/use_case_providers.dart';
 import 'package:flutter_pecha/features/auth/presentation/utils/auth_analytics.dart';
 import 'package:flutter_pecha/features/auth/domain/usecases/get_credentials_usecase.dart';
@@ -517,6 +518,12 @@ class AuthNotifier extends StateNotifier<AuthState> {
     );
     return Right(start);
   }
+
+  /// The person left the code screen or went back to change the number, so
+  /// an automatic sign-in Android may still finish for that attempt must not
+  /// sign them in.
+  void cancelPhoneSignIn() =>
+      ref.read(authRepositoryProvider).cancelPhoneSignIn();
 
   /// Finishes a phone sign-in with the code from the SMS. Returns null once
   /// signed in, or the failure for the screen to word.
