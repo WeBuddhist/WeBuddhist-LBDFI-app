@@ -36,9 +36,9 @@ void main() {
   // and a generated handle.
   const generated = User(
     id: 'u1',
-    firstName: 'WeBuddhist',
+    firstName: 'LBDFI',
     lastName: 'User',
-    displayName: 'WeBuddhist User',
+    displayName: 'LBDFI User',
     username: 'abigail_4821',
   );
 

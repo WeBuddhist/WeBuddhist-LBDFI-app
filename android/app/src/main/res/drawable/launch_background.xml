@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Native launch screen shown before Flutter draws; mirrors the first SplashScreen frame (60dp logo, turned 90°). -->
+<!-- Native launch screen shown before Flutter draws; mirrors BrandSplashScreen (160dp logo on white, upright). -->
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:drawable="@color/splash_background" />
+    <item android:drawable="@android:color/white" />
 
     <item>
         <bitmap

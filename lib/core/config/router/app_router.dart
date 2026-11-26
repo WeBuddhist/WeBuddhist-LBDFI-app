@@ -1,3 +1,5 @@
+import 'package:flutter_pecha/brand/brand_about_screen.dart';
+import 'package:flutter_pecha/brand/brand_splash_screen.dart';
 import 'dart:async';
 import 'package:clarity_flutter/clarity_flutter.dart';
 import 'package:flutter/material.dart';
@@ -10,7 +12,6 @@ import 'package:flutter_pecha/core/config/router/splash_exit_transition.dart';
 import 'package:flutter_pecha/core/config/router/splash_hold_provider.dart';
 import 'package:flutter_pecha/features/auth/presentation/providers/state_providers.dart';
 import 'package:flutter_pecha/features/auth/presentation/screens/login_page.dart';
-import 'package:flutter_pecha/features/auth/presentation/screens/splash_screen.dart';
 import 'package:flutter_pecha/features/calendar/presentation/screens/tibetan_calendar_screen.dart';
 import 'package:flutter_pecha/features/connect/presentation/screens/connect_post_detail_screen.dart';
 import 'package:flutter_pecha/features/connect/domain/entities/connect_post.dart';
@@ -37,7 +38,6 @@ import 'package:flutter_pecha/features/home/presentation/screens/main_navigation
 import 'package:flutter_pecha/features/home/presentation/screens/plan_list_screen.dart';
 import 'package:flutter_pecha/features/home/presentation/screens/series_detail_screen.dart';
 import 'package:flutter_pecha/features/home/presentation/screens/series_info_screen.dart';
-import 'package:flutter_pecha/features/more/presentation/about_screen.dart';
 import 'package:flutter_pecha/features/more/presentation/edit_profile_screen.dart';
 import 'package:flutter_pecha/features/more/presentation/more_screen.dart';
 import 'package:flutter_pecha/features/more/presentation/legal.dart';
@@ -156,7 +156,7 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         // Only the launch splash plays the intro, holds the route for it,
         // and has the next screen fade in over it.
         builder:
-            (context, state) => SplashScreen(
+            (context, state) => BrandSplashScreen(
               playIntro: ref.read(splashHoldProvider),
               onIntroComplete: () {
                 final hold = ref.read(splashHoldProvider.notifier);
@@ -585,7 +585,7 @@ final appRouterProvider = Provider<GoRouter>((ref) {
           GoRoute(
             path: AppRoutes.about,
             name: "about",
-            builder: (context, state) => const AboutScreen(),
+            builder: (context, state) => const BrandAboutScreen(),
           ),
           GoRoute(
             path: AppRoutes.legal,

@@ -39,15 +39,16 @@ magick "$MARK" -resize 758x758 -gravity center -background none -extent 1024x102
 magick "$MARK" -resize 1012x1012 -gravity center -background none -extent 1024x1024 \
   -strip assets/images/webuddhist_logo.png
 
-for item in mdpi:60 hdpi:90 xhdpi:120 xxhdpi:180 xxxhdpi:240; do
+# Native splash logo: 160dp / 160pt, the size BrandSplashScreen draws it.
+for item in mdpi:160 hdpi:240 xhdpi:320 xxhdpi:480 xxxhdpi:640; do
   d=${item%%:*}; s=${item##*:}
   magick "$MARK" -resize "${s}x${s}" -strip "android/app/src/main/res/drawable-$d/splash_logo.png"
 done
 
 L=ios/Runner/Assets.xcassets/LaunchImage.imageset
-magick "$MARK" -resize 60x60 -strip "$L/LaunchImage.png"
-magick "$MARK" -resize 120x120 -strip "$L/LaunchImage@2x.png"
-magick "$MARK" -resize 180x180 -strip "$L/LaunchImage@3x.png"
+magick "$MARK" -resize 160x160 -strip "$L/LaunchImage.png"
+magick "$MARK" -resize 320x320 -strip "$L/LaunchImage@2x.png"
+magick "$MARK" -resize 480x480 -strip "$L/LaunchImage@3x.png"
 
 W=ios/TimerWidget/Assets.xcassets/AppLogo.imageset
 magick "$MARK" -resize 32x32 -strip "$W/AppLogo.png"

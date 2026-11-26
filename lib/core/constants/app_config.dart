@@ -1,7 +1,7 @@
 class AppConfig {
   AppConfig._();
 
-  static const String appName = 'WeBuddhist';
+  static const String appName = 'LBDFI';
   static const String appPackageName = 'org.pecha.app';
   
   /// Airbridge tracking link that handles attribution and deep linking

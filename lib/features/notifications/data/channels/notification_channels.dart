@@ -50,7 +50,7 @@ class NotificationChannels {
   static const String pushDefaultId = 'push_default_v2';
   static const String pushDefaultName = 'General Notifications';
   static const String pushDefaultDescription =
-      'Announcements and updates from WeBuddhist';
+      'Announcements and updates from LBDFI';
 
   /// Android channel for remote (FCM) notifications. Referenced from
   /// AndroidManifest as `default_notification_channel_id` so background /

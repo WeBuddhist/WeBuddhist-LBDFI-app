@@ -11,7 +11,7 @@ class AccountNames {
   /// start with it, and the onboarding step that asks "What should we call
   /// you?" replaces it (see [fromDisplayName]).
   static const AccountNames placeholder = AccountNames(
-    first: 'WeBuddhist',
+    first: 'LBDFI',
     last: 'User',
   );
 

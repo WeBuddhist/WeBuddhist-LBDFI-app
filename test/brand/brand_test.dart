@@ -35,14 +35,22 @@ void main() {
       );
     });
 
-    test('keeps strings about the shared platform', () {
-      const footer = 'Replies come from the WeBuddhist Team in your Chats.';
-      expect(Brand.text('en', 'help_contact_footer', footer), footer);
-      const confirm =
-          'Are you sure you want to delete your WeBuddhist account?';
+    test('leaves no WeBuddhist name, platform strings included', () {
       expect(
-        Brand.text('en', 'delete_account_confirm_message', confirm),
-        confirm,
+        Brand.text(
+          'en',
+          'help_contact_footer',
+          'Replies come from the WeBuddhist Team in your Chats.',
+        ),
+        'Replies come from the LBDFI Team in your Chats.',
+      );
+      expect(
+        Brand.text(
+          'en',
+          'delete_account_confirm_message',
+          'Are you sure you want to delete your WeBuddhist account?',
+        ),
+        'Are you sure you want to delete your LBDFI account?',
       );
     });
 

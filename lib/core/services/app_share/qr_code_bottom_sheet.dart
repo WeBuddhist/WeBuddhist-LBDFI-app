@@ -1,3 +1,4 @@
+import 'package:flutter_pecha/brand/brand.dart';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_pecha/core/analytics/share_analytics.dart';
@@ -109,7 +110,7 @@ Or visit: $url''';
         ShareParams(
           files: [XFile(tempFile.path)],
           text: shareText,
-          subject: 'Download WeBuddhist on $platform',
+          subject: 'Download ${Brand.appName} on $platform',
         ),
       );
       if (mounted && ShareAnalytics.wasUsed(result)) {

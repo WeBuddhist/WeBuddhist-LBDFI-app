@@ -14,9 +14,41 @@ class Brand {
   /// Name under the icon, on the welcome screen and in share messages.
   static const String appName = 'LBDFI';
 
-  /// Who sends help replies and owns the user accounts. The backend, accounts
-  /// and support team are shared with WeBuddhist, so strings about them keep
-  /// the platform's name.
+  /// The organisation's full name, as lbdfi.org writes it. Shown under the
+  /// emblem on the launch screen and the About page.
+  static const String fullName = 'Light of Buddhadharma Foundation International';
+
+  static const String websiteUrl = 'https://www.lbdfi.org/';
+  static const String websiteLabel = 'www.lbdfi.org';
+  static const String email = 'lbdfiorg@gmail.com';
+  static const String facebookUrl = 'https://www.facebook.com/LBDFI';
+  static const String youtubeUrl = 'https://www.youtube.com/@LBDFIOnline';
+
+  /// About page text, in LBDFI's own words (lbdfi.org home and About pages,
+  /// trimmed). English only: the site has no translations.
+  static const List<String> aboutParagraphs = [
+    'Since its founding in 2002 and the commencement of its activities in '
+        '2006, LBDFI has worked to restore the Buddha Sasana in India. Starting '
+        'with the first chanting of the words of the Buddha in Pali in 2006 '
+        'under the sacred Bodhi Tree, LBDFI has worked to restore and '
+        'revitalize the Buddhist culture of India, the Motherland of Āryadeśa.',
+    'LBDFI works through four main activities: the sponsorship of '
+        'international prayer ceremonies and pilgrimages at the ancient '
+        'pilgrimage centers of the Āryadeśa; the improvement of amenities for '
+        'pilgrims and visitors; the distribution of Dharma books; and the '
+        'training and education of a new generation of Indian monks. Over '
+        '100,000 Dharma books have been distributed without charge.',
+    'In 2006, LBDFI became the primary sponsor for the International Tipitaka '
+        'Chanting Ceremony, which has grown to become the most important '
+        'international gathering of Theravadin monks in India. From December '
+        '2-13th each year, over 10,000 monks and their followers from ten South '
+        'East Asian Countries gather in Bodhgaya to chant the teachings of the '
+        'Buddha, as recorded in the Pali Canon.',
+  ];
+
+  /// The app is built on the WeBuddhist platform (backend, accounts,
+  /// library). This name is shown once, as "Powered by WeBuddhist" at the
+  /// foot of the About page; everywhere else it is replaced by [appName].
   static const String platformName = 'WeBuddhist';
 
   /// Sent as `X-Application` on every WeBuddhist API call, so the backend
@@ -24,15 +56,9 @@ class Brand {
   /// and does not get it.
   static const String applicationId = 'lbdfi';
 
-  /// Keys whose text is about the shared platform rather than the app, so the
-  /// word "WeBuddhist" in them is literally true and stays.
-  static const Set<String> platformKeys = {
-    'help_contact_footer',
-    'help_contact_sent_body',
-    'help_contact_sent_body_named',
-    'delete_account_description',
-    'delete_account_confirm_message',
-  };
+  /// Keys that keep the word "WeBuddhist". None: LBDFI asked for the name
+  /// to appear only in the About page's "Powered by" line.
+  static const Set<String> platformKeys = {};
 
   /// Whole-string replacements, per language. Taken from LBDFI's own words
   /// (21st ITCC poster and invitation).
