@@ -188,7 +188,7 @@ class AppLocalizationsVi extends AppLocalizations {
   String get mala_group_accumulations => 'Thêm lượt tụng vào';
 
   @override
-  String get mala_groups_section => 'Sự kiện';
+  String get mala_groups_section => 'Nhóm';
 
   @override
   String get mala_group_untitled => 'Nhóm chưa đặt tên';

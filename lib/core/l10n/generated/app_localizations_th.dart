@@ -185,7 +185,7 @@ class AppLocalizationsTh extends AppLocalizations {
   String get mala_group_accumulations => 'เพิ่มการสวดไปที่';
 
   @override
-  String get mala_groups_section => 'กิจกรรม';
+  String get mala_groups_section => 'กลุ่ม';
 
   @override
   String get mala_group_untitled => 'กลุ่มไม่มีชื่อ';

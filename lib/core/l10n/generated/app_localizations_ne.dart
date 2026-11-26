@@ -189,7 +189,7 @@ class AppLocalizationsNe extends AppLocalizations {
   String get mala_group_accumulations => 'पाठ थप्नुहोस्';
 
   @override
-  String get mala_groups_section => 'कार्यक्रम';
+  String get mala_groups_section => 'स्पेसहरू';
 
   @override
   String get mala_group_untitled => 'शीर्षकविहीन स्पेस';

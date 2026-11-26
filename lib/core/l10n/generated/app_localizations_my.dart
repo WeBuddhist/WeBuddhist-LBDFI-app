@@ -188,7 +188,7 @@ class AppLocalizationsMy extends AppLocalizations {
   String get mala_group_accumulations => 'ရွတ်ဆိုမှု ထည့်မည့်နေရာ';
 
   @override
-  String get mala_groups_section => 'ပွဲများ';
+  String get mala_groups_section => 'အဖွဲ့များ';
 
   @override
   String get mala_group_untitled => 'အမည်မဲ့ အဖွဲ့';

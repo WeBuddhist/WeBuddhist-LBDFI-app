@@ -189,7 +189,7 @@ class AppLocalizationsBo extends AppLocalizations {
   String get mala_group_accumulations => 'ཞལ་འདོན་ཁ་སྣོན།';
 
   @override
-  String get mala_groups_section => 'Groups';
+  String get mala_groups_section => 'ཚོགས་པ།';
 
   @override
   String get mala_group_untitled => 'མིང་མེད་པའི་ཚོགས་པ།';

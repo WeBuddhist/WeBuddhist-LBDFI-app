@@ -189,7 +189,7 @@ class AppLocalizationsMn extends AppLocalizations {
   String get mala_group_accumulations => 'Уншлага нэмэх';
 
   @override
-  String get mala_groups_section => 'Арга хэмжээ';
+  String get mala_groups_section => 'Орон зай';
 
   @override
   String get mala_group_untitled => 'Нэргүй орон зай';

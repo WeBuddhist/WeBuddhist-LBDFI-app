@@ -183,7 +183,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get mala_group_accumulations => '加入持誦計數';
 
   @override
-  String get mala_groups_section => 'Groups';
+  String get mala_groups_section => '社群';
 
   @override
   String get mala_group_untitled => '未命名社群';
@@ -4533,7 +4533,7 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get mala_group_accumulations => '加入持诵计数';
 
   @override
-  String get mala_groups_section => '活动';
+  String get mala_groups_section => '社群';
 
   @override
   String get mala_group_untitled => '未命名社群';

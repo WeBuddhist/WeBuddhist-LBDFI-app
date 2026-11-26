@@ -188,7 +188,7 @@ class AppLocalizationsHi extends AppLocalizations {
   String get mala_group_accumulations => 'पाठ को इसमें जोड़ें';
 
   @override
-  String get mala_groups_section => 'कार्यक्रम';
+  String get mala_groups_section => 'स्पेस';
 
   @override
   String get mala_group_untitled => 'बिना शीर्षक वाला स्पेस';
