@@ -1,6 +1,5 @@
 import 'package:flutter_pecha/env.dart';
 import 'package:flutter_pecha/features/library/data/adapters/library_recitations_remote_datasource.dart';
-import 'package:flutter_pecha/features/library/data/datasource/chants_tag_lookup.dart';
 import 'package:flutter_pecha/features/library/presentation/providers/library_providers.dart';
 import 'package:flutter_pecha/features/onboarding/presentation/providers/tradition_tag_filter_provider.dart';
 import 'package:flutter_pecha/features/practice/presentation/providers/my_recitation_collections_providers.dart';
@@ -17,7 +16,6 @@ final recitationsRemoteDatasourceProvider =
         library: ref.watch(libraryRepositoryProvider),
         collections: ref.watch(myRecitationCollectionsRemoteDatasourceProvider),
         tagId: Env.libraryChantsTagId,
-        resolveTagId: ref.watch(chantsTagLookupProvider).resolve,
         traditionTagIds:
             ref.watch(traditionTagFilterProvider).valueOrNull ?? const [],
       );

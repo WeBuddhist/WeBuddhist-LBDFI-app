@@ -24,10 +24,6 @@ class Brand {
   /// and does not get it.
   static const String applicationId = 'lbdfi';
 
-  /// Application named to the library API where it asks for one. The library
-  /// is shared with WeBuddhist, so LBDFI reads it as WeBuddhist.
-  static const String libraryApplicationId = 'webuddhist';
-
   /// Keys whose text is about the shared platform rather than the app, so the
   /// word "WeBuddhist" in them is literally true and stays.
   static const Set<String> platformKeys = {
