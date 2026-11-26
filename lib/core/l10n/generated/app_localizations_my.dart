@@ -4560,4 +4560,11 @@ class AppLocalizationsMy extends AppLocalizations {
 
   @override
   String get practice_popular_practices => 'လူကြိုက်များသော ကျင့်စဉ်များ';
+
+  @override
+  String get practice_start_routine => 'ကျင့်စဉ် စတင်ရန်';
+
+  @override
+  String get practice_start_routine_hint =>
+      'သို့မဟုတ် ကျင့်စဉ်တစ်ခုကို နှိပ်ပြီး \"ကျွန်ုပ်၏ ကျင့်စဉ်များသို့ ထည့်ရန်\" ကို ရွေးပါ။';
 }

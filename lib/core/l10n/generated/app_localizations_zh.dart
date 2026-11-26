@@ -4352,6 +4352,12 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get practice_popular_practices => '熱門修持';
+
+  @override
+  String get practice_start_routine => '開始日常修持';
+
+  @override
+  String get practice_start_routine_hint => '或點選一項修持，選擇「加入我的修持」。';
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hans`).
@@ -8453,4 +8459,10 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String get practice_popular_practices => '热门修持';
+
+  @override
+  String get practice_start_routine => '开始日常修持';
+
+  @override
+  String get practice_start_routine_hint => '或点选一项修持，选择“加入我的修持”。';
 }

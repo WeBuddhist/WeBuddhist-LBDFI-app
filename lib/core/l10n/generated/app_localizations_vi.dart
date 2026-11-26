@@ -4519,4 +4519,11 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get practice_popular_practices => 'Thực hành phổ biến';
+
+  @override
+  String get practice_start_routine => 'Bắt đầu thời khóa';
+
+  @override
+  String get practice_start_routine_hint =>
+      'Hoặc chạm vào một pháp tu và chọn \"Thêm vào pháp tu của tôi\".';
 }

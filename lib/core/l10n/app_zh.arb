@@ -1320,5 +1320,7 @@
       }
     }
   },
-  "practice_popular_practices": "熱門修持"
+  "practice_popular_practices": "熱門修持",
+  "practice_start_routine": "開始日常修持",
+  "practice_start_routine_hint": "或點選一項修持，選擇「加入我的修持」。"
 }

@@ -1212,5 +1212,7 @@
   "practice_search_hint": "ค้นหาการปฏิบัติ",
   "practice_search_recent": "ล่าสุด",
   "practice_search_no_results": "ไม่พบผลลัพธ์สำหรับ \"{query}\"",
-  "practice_popular_practices": "การปฏิบัติยอดนิยม"
+  "practice_popular_practices": "การปฏิบัติยอดนิยม",
+  "practice_start_routine": "เริ่มกิจวัตร",
+  "practice_start_routine_hint": "หรือแตะการปฏิบัติแล้วเลือก \"เพิ่มในการปฏิบัติของฉัน\""
 }

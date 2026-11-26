@@ -4495,4 +4495,11 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get practice_popular_practices => 'Popular practices';
+
+  @override
+  String get practice_start_routine => 'Start a routine';
+
+  @override
+  String get practice_start_routine_hint =>
+      'Or tap a practice and choose Add to my practices.';
 }

@@ -1328,5 +1328,7 @@
       }
     }
   },
-  "practice_popular_practices": "དར་ཁྱབ་ཆེ་བའི་ཉམས་ལེན།"
+  "practice_popular_practices": "དར་ཁྱབ་ཆེ་བའི་ཉམས་ལེན།",
+  "practice_start_routine": "འཆར་ཅན་འགོ་འཛུགས།",
+  "practice_start_routine_hint": "ཡང་ན་ཉམས་ལེན་ཞིག་མནན་ནས་ངའི་ཉམས་ལེན་ནང་སྣོན་ཞེས་པ་འདེམས།"
 }

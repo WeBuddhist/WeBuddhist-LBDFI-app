@@ -7866,6 +7866,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Popular practices'**
   String get practice_popular_practices;
+
+  /// Label on the My practices pill when the routine is empty; tap opens Edit routine.
+  ///
+  /// In en, this message translates to:
+  /// **'Start a routine'**
+  String get practice_start_routine;
+
+  /// Helper line under the Start a routine pill on the Practice tab.
+  ///
+  /// In en, this message translates to:
+  /// **'Or tap a practice and choose Add to my practices.'**
+  String get practice_start_routine_hint;
 }
 
 class _AppLocalizationsDelegate

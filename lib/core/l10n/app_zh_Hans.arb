@@ -1603,5 +1603,7 @@
       }
     }
   },
-  "practice_popular_practices": "热门修持"
+  "practice_popular_practices": "热门修持",
+  "practice_start_routine": "开始日常修持",
+  "practice_start_routine_hint": "或点选一项修持，选择“加入我的修持”。"
 }

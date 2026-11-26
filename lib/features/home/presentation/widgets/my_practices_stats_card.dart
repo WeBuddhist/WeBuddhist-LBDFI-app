@@ -4,8 +4,9 @@ import 'package:flutter_pecha/core/extensions/context_ext.dart';
 import 'package:flutter_pecha/core/theme/app_colors.dart';
 import 'package:flutter_pecha/core/utils/tibetan_numerals.dart';
 
-/// Home's "My practices" pill: the title, how many practices the member
-/// keeps, and an arrow into My practices.
+/// The "My practices" pill on Home and the Practice tab: the title, how
+/// many practices the member keeps (or "Start a routine" with none yet),
+/// and an arrow into My practices.
 class MyPracticesStatsCard extends StatelessWidget {
   const MyPracticesStatsCard({super.key, required this.count, this.onTap});
 
@@ -23,7 +24,11 @@ class MyPracticesStatsCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final count = this.count;
     final countLabel =
-        count == null ? null : context.l10n.home_practices_sessions(count);
+        count == null
+            ? null
+            : count == 0
+            ? context.l10n.practice_start_routine
+            : context.l10n.home_practices_sessions(count);
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),

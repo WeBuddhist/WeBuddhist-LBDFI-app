@@ -1212,5 +1212,7 @@
   "practice_search_hint": "Tìm thực hành",
   "practice_search_recent": "Gần đây",
   "practice_search_no_results": "Không có kết quả cho \"{query}\"",
-  "practice_popular_practices": "Thực hành phổ biến"
+  "practice_popular_practices": "Thực hành phổ biến",
+  "practice_start_routine": "Bắt đầu thời khóa",
+  "practice_start_routine_hint": "Hoặc chạm vào một pháp tu và chọn \"Thêm vào pháp tu của tôi\"."
 }

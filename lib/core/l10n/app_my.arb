@@ -1212,5 +1212,7 @@
   "practice_search_hint": "ကျင့်စဉ်များ ရှာရန်",
   "practice_search_recent": "မကြာသေးမီက",
   "practice_search_no_results": "\"{query}\" အတွက် ရလဒ် မရှိပါ",
-  "practice_popular_practices": "လူကြိုက်များသော ကျင့်စဉ်များ"
+  "practice_popular_practices": "လူကြိုက်များသော ကျင့်စဉ်များ",
+  "practice_start_routine": "ကျင့်စဉ် စတင်ရန်",
+  "practice_start_routine_hint": "သို့မဟုတ် ကျင့်စဉ်တစ်ခုကို နှိပ်ပြီး \"ကျွန်ုပ်၏ ကျင့်စဉ်များသို့ ထည့်ရန်\" ကို ရွေးပါ။"
 }

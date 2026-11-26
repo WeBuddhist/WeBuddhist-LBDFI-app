@@ -1330,5 +1330,7 @@
       }
     }
   },
-  "practice_popular_practices": "Түгээмэл бясалгалууд"
+  "practice_popular_practices": "Түгээмэл бясалгалууд",
+  "practice_start_routine": "Дадал эхлүүлэх",
+  "practice_start_routine_hint": "Эсвэл дадлага дээр дараад \"Миний дадлагад нэмэх\"-ийг сонгоно уу."
 }

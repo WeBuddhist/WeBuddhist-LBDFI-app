@@ -4537,4 +4537,11 @@ class AppLocalizationsNe extends AppLocalizations {
 
   @override
   String get practice_popular_practices => 'लोकप्रिय अभ्यासहरू';
+
+  @override
+  String get practice_start_routine => 'दिनचर्या सुरु गर्नुहोस्';
+
+  @override
+  String get practice_start_routine_hint =>
+      'वा कुनै अभ्यासमा ट्याप गरी \"मेरा अभ्यासहरूमा थप्नुहोस्\" छान्नुहोस्।';
 }
