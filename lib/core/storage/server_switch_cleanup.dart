@@ -57,6 +57,9 @@ class ServerSwitchCleanupImpl implements ServerSwitchCleanup {
   /// The server the app last ran against.
   static const lastServerKey = 'last_server_environment';
 
+  /// Boxes of the previous server that a cleanup could not remove.
+  static const leftoverBoxesKey = 'server_switch_leftover_boxes';
+
   /// Preferences that belong to the signed-in account or to the server.
   static const serverPreferenceKeys = <String>[
     StorageKeys.userData,
@@ -98,7 +101,10 @@ class ServerSwitchCleanupImpl implements ServerSwitchCleanup {
     try {
       final prefs = await SharedPreferences.getInstance();
       final last = prefs.getString(lastServerKey);
-      if (last == server) return false;
+      if (last == server) {
+        await _retryLeftoverBoxes(prefs);
+        return false;
+      }
       if (last == null) {
         // A fresh install, which has nothing to remove, or the first launch
         // of a build with this check, which cannot know the previous server.
@@ -108,13 +114,7 @@ class ServerSwitchCleanupImpl implements ServerSwitchCleanup {
 
       _logger.info('Server changed from "$last" to "$server"; removing its data');
       await _removePreferences(prefs);
-      var allBoxesRemoved = true;
-      for (final box in serverBoxes) {
-        allBoxesRemoved &= await _bestEffort(
-          'remove the "$box" box',
-          () => _deleteBox(box),
-        );
-      }
+      final leftover = await _removeBoxes(serverBoxes);
       // A stale push or reminder is less harm than a launch that never gets
       // past here, so these do not hold the marker back.
       await _bestEffort('reset the push token', _resetPushToken);
@@ -122,13 +122,49 @@ class ServerSwitchCleanupImpl implements ServerSwitchCleanup {
         'cancel scheduled reminders',
         _cancelScheduledNotifications,
       );
-      // Last, and only once every box is gone, so the next launch retries
-      // what is left.
-      if (allBoxesRemoved) await prefs.setString(lastServerKey, server);
+      // The marker is written even when a box is left. From here the person
+      // signs in and saves data for this server, so a later launch must not
+      // run the whole cleanup again: it would remove that data too. Only the
+      // boxes still listed are retried.
+      await _saveLeftoverBoxes(prefs, leftover);
+      await prefs.setString(lastServerKey, server);
       return true;
     } catch (e) {
       _logger.warning('Could not remove the previous server\'s data: $e');
       return false;
+    }
+  }
+
+  /// Removes the boxes an earlier cleanup could not, and nothing else. A box
+  /// still listed holds the previous server's data, so it goes even though
+  /// the app has used it since.
+  Future<void> _retryLeftoverBoxes(SharedPreferences prefs) async {
+    final leftover = prefs.getStringList(leftoverBoxesKey);
+    if (leftover == null || leftover.isEmpty) return;
+    await _saveLeftoverBoxes(prefs, await _removeBoxes(leftover));
+  }
+
+  /// Returns the boxes that could not be removed.
+  Future<List<String>> _removeBoxes(List<String> boxes) async {
+    final leftover = <String>[];
+    for (final box in boxes) {
+      final removed = await _bestEffort(
+        'remove the "$box" box',
+        () => _deleteBox(box),
+      );
+      if (!removed) leftover.add(box);
+    }
+    return leftover;
+  }
+
+  Future<void> _saveLeftoverBoxes(
+    SharedPreferences prefs,
+    List<String> leftover,
+  ) async {
+    if (leftover.isEmpty) {
+      await prefs.remove(leftoverBoxesKey);
+    } else {
+      await prefs.setStringList(leftoverBoxesKey, leftover);
     }
   }
 

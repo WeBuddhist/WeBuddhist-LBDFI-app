@@ -133,22 +133,101 @@ void main() {
       expect(deletedBoxes, isEmpty);
     });
 
-    test('a box it cannot remove is retried on the next launch', () async {
-      final prefs = await prefsWith('staging');
+    group('with a box it cannot remove', () {
+      /// What the person saved after the switch, signed in on this server.
+      const newServerData = <String, Object>{
+        StorageKeys.userData: '{"id":"u2"}',
+        StorageKeys.currentUserId: 'u2',
+        StorageKeys.pushDeviceServerId: 'device-on-new-server',
+      };
 
-      expect(await cleanup(failingBoxes: {'mala_counts'}).run(), isTrue);
+      Future<SharedPreferences> afterAFailedSwitch() async {
+        final prefs = await prefsWith('staging');
+        expect(await cleanup(failingBoxes: {'mala_counts'}).run(), isTrue);
+        return prefs;
+      }
 
-      // The others still go.
-      expect(deletedBoxes, ['text_content_cache', 'timers_local_data']);
-      expect(prefs.getString(ServerSwitchCleanupImpl.lastServerKey), 'staging');
+      Future<void> useTheApp(SharedPreferences prefs) async {
+        for (final entry in newServerData.entries) {
+          await prefs.setString(entry.key, entry.value as String);
+        }
+        deletedBoxes.clear();
+        pushResets = 0;
+        reminderCancels = 0;
+      }
 
-      deletedBoxes.clear();
-      expect(await cleanup().run(), isTrue);
-      expect(deletedBoxes, boxes);
-      expect(
-        prefs.getString(ServerSwitchCleanupImpl.lastServerKey),
-        'production',
-      );
+      void expectNewServerDataKept(SharedPreferences prefs) {
+        for (final entry in newServerData.entries) {
+          expect(prefs.get(entry.key), entry.value, reason: entry.key);
+        }
+        expect(pushResets, 0);
+        expect(reminderCancels, 0);
+      }
+
+      test('still records this server, and lists the box', () async {
+        final prefs = await afterAFailedSwitch();
+
+        // The others still go.
+        expect(deletedBoxes, ['text_content_cache', 'timers_local_data']);
+        expect(
+          prefs.getString(ServerSwitchCleanupImpl.lastServerKey),
+          'production',
+        );
+        expect(prefs.getStringList(ServerSwitchCleanupImpl.leftoverBoxesKey), [
+          'mala_counts',
+        ]);
+      });
+
+      test('the next launch removes only that box', () async {
+        final prefs = await afterAFailedSwitch();
+        await useTheApp(prefs);
+
+        expect(await cleanup().run(), isFalse);
+
+        expect(deletedBoxes, ['mala_counts']);
+        expectNewServerDataKept(prefs);
+        expect(
+          prefs.containsKey(ServerSwitchCleanupImpl.leftoverBoxesKey),
+          isFalse,
+        );
+
+        // Nothing is left to retry.
+        deletedBoxes.clear();
+        expect(await cleanup().run(), isFalse);
+        expect(deletedBoxes, isEmpty);
+      });
+
+      test('a box that never goes is retried alone on each launch', () async {
+        final prefs = await afterAFailedSwitch();
+        await useTheApp(prefs);
+
+        for (var launch = 0; launch < 2; launch++) {
+          expect(await cleanup(failingBoxes: {'mala_counts'}).run(), isFalse);
+        }
+
+        expect(deletedBoxes, isEmpty);
+        expectNewServerDataKept(prefs);
+        expect(prefs.getStringList(ServerSwitchCleanupImpl.leftoverBoxesKey), [
+          'mala_counts',
+        ]);
+      });
+
+      test('a switch to a third server starts over with every box', () async {
+        final prefs = await afterAFailedSwitch();
+        await useTheApp(prefs);
+
+        expect(await cleanup(server: 'development').run(), isTrue);
+
+        expect(deletedBoxes, boxes);
+        expect(
+          prefs.containsKey(ServerSwitchCleanupImpl.leftoverBoxesKey),
+          isFalse,
+        );
+        expect(
+          prefs.getString(ServerSwitchCleanupImpl.lastServerKey),
+          'development',
+        );
+      });
     });
 
     test('a push or reminder failure does not hold it back', () async {
