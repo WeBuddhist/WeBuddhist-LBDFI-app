@@ -8,43 +8,66 @@ import 'package:flutter_pecha/features/home/data/models/verse_of_day_model.dart'
 import 'package:flutter_pecha/features/home/data/repositories/verse_of_day_repository.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-/// In-memory stand-in for the Hive-backed store.
+/// In-memory stand-in for the Hive-backed store. Keys are `<lang>` (or
+/// `<lang>:<tradition>`), then `:<date>` for day entries.
 class _FakeLocal extends HomeLocalDatasource {
   final entries = <String, VerseOfDayCacheEntry>{};
   final today = <String, VerseOfDayModel>{};
-  List<String>? dates;
+  final datesByScope = <String, List<String>>{};
   final _changes = StreamController<void>.broadcast();
+
+  static String scope(String language, String? tradition) =>
+      tradition == null ? language : '$language:$tradition';
+
+  /// The All traditions `en` week.
+  List<String>? get dates => datesByScope['en'];
+  set dates(List<String>? value) =>
+      value == null ? datesByScope.remove('en') : datesByScope['en'] = value;
 
   @override
   Stream<void> watchKey(String key) => _changes.stream;
 
   @override
-  VerseOfDayModel? readVerseOfDay(String language) => today[language];
+  VerseOfDayModel? readVerseOfDay(String language, {String? tradition}) =>
+      today[scope(language, tradition)];
 
   @override
-  Future<void> saveVerseOfDay(String language, VerseOfDayModel verse) async {
-    today[language] = verse;
+  Future<void> saveVerseOfDay(
+    String language,
+    VerseOfDayModel verse, {
+    String? tradition,
+  }) async {
+    today[scope(language, tradition)] = verse;
   }
 
   @override
-  VerseOfDayCacheEntry? readVerseOfDayEntry(String language, String date) =>
-      entries['$language:$date'];
+  VerseOfDayCacheEntry? readVerseOfDayEntry(
+    String language,
+    String date, {
+    String? tradition,
+  }) => entries['${scope(language, tradition)}:$date'];
 
   @override
   Future<void> saveVerseOfDayEntry(
     String language,
     String date,
-    VerseOfDayCacheEntry entry,
-  ) async {
-    entries['$language:$date'] = entry;
+    VerseOfDayCacheEntry entry, {
+    String? tradition,
+  }) async {
+    entries['${scope(language, tradition)}:$date'] = entry;
   }
 
   @override
-  List<String>? readRecentVerseDates(String language) => dates;
+  List<String>? readRecentVerseDates(String language, {String? tradition}) =>
+      datesByScope[scope(language, tradition)];
 
   @override
-  Future<void> saveRecentVerseDates(String language, List<String> dates) async {
-    this.dates = [...dates];
+  Future<void> saveRecentVerseDates(
+    String language,
+    List<String> dates, {
+    String? tradition,
+  }) async {
+    datesByScope[scope(language, tradition)] = [...dates];
     _changes.add(null);
   }
 }
@@ -58,22 +81,33 @@ class _FakeRemote extends VerseOfDayRemoteDatasource {
   final dateErrors = <String, Exception>{};
   final dateCalls = <String>[];
 
+  /// Today's verse per tradition; [todayVerse] answers the rest.
+  final todayByTradition = <String, VerseOfDayModel>{};
+  final todayTraditions = <String?>[];
+  final dateTraditions = <String?>[];
+
   /// When set, today's call waits for it before answering.
   Completer<void>? todayGate;
 
   @override
-  Future<VerseOfDayModel?> fetchVerseOfDay({required String language}) async {
+  Future<VerseOfDayModel?> fetchVerseOfDay({
+    required String language,
+    String? tradition,
+  }) async {
+    todayTraditions.add(tradition);
     await todayGate?.future;
     if (todayError != null) throw todayError!;
-    return todayVerse;
+    return todayByTradition[tradition] ?? todayVerse;
   }
 
   @override
   Future<VerseOfDayModel?> fetchVerseOfDayByDate({
     required String language,
     required String date,
+    String? tradition,
   }) async {
     dateCalls.add(date);
+    dateTraditions.add(tradition);
     final error = dateErrors[date];
     if (error != null) throw error;
     return byDate[date];
@@ -259,5 +293,32 @@ void main() {
         await repository.watchRecentVerses(language: 'en').first;
 
     expect(first.isLeft(), isTrue);
+  });
+
+  test('each tradition is asked for and stored on its own', () async {
+    remote.todayVerse = _verse('2026-11-10');
+    remote.todayByTradition['pali'] = VerseOfDayModel(
+      id: 'theravada-verse',
+      verse: 'Theravada verse',
+      imageUrl: 'https://example.com/pali.webp',
+      refId: '',
+      refType: '',
+      date: '2026-11-10',
+    );
+
+    await repository.refreshRecentVerses(language: 'en', tradition: 'pali');
+
+    expect(remote.todayTraditions, ['pali']);
+    expect(remote.dateTraditions.toSet(), {'pali'});
+    expect(
+      local.readRecentVerses('en', tradition: 'pali')!.map((v) => v.id),
+      ['theravada-verse'],
+    );
+    // The All traditions week is untouched, so a switch never shows it.
+    expect(local.readRecentVerses('en'), isNull);
+
+    await repository.refreshRecentVerses(language: 'en');
+    expect(remote.todayTraditions.last, isNull);
+    expect(local.readRecentVerses('en')!.map((v) => v.id), ['id-2026-11-10']);
   });
 }

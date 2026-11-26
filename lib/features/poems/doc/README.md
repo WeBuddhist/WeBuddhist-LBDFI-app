@@ -58,7 +58,14 @@ poems/
 
 ## Data sources
 
-- **Main API** via `dioProvider`; `/poems` is public (no auth).
+- **Main API** via `dioProvider`. `/poems` is optional-auth: guests get
+  All traditions poems; with a token the backend adds poems for the caller's
+  saved traditions (no `tradition` param is sent, so all of them count).
+  The feed is per user, so it always skips the HTTP cache (`no_cache`).
+- Home's stored preview is keyed by user and `userTraditionCodesProvider`
+  (`onboarding/.../user_tradition_codes_provider.dart`); it waits for the
+  codes and re-fetches when they change. Invalidate that provider wherever
+  the user's traditions are saved.
 - `language` is the API's uppercase enum — use `poemsApiLanguageCode`.
 - The list envelope is tolerated as a bare array or
   `{poems|items|results|data, total|count}`; without a total, `hasMore` is
@@ -82,10 +89,13 @@ poems/
 ### Don't
 
 - Don't send the lowercase content language to the API.
-- Don't add auth to `/poems` calls.
+- Don't send `tradition` on `/poems` for signed-in users: it narrows the
+  feed to one tradition instead of all of theirs.
+- Don't put `/poems` through the HTTP cache; its keys aren't per user.
 
 ### Testing
 
 - Envelope parsing and `hasMore` with and without a total.
 - Initial poem: in first page, fetched by id, fetch failure.
 - Load-more de-duplication and failure (keeps `hasMore` for retry).
+- Home preview: keyed by tradition codes, waits for them, re-fetches on change.

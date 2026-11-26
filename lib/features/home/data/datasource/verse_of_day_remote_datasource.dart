@@ -14,12 +14,20 @@ class VerseOfDayRemoteDatasource {
   final Dio dio;
   final _logger = AppLogger('VerseOfDayRemoteDatasource');
 
-  /// Today's verse in the user's timezone, or null when none is published.
-  Future<VerseOfDayModel?> fetchVerseOfDay({required String language}) async {
+  /// Today's verse in the user's timezone, or null when none is published
+  /// (for [tradition], when given: a day whose verses are all for other
+  /// traditions is null too, never another tradition's verse).
+  Future<VerseOfDayModel?> fetchVerseOfDay({
+    required String language,
+    String? tradition,
+  }) async {
     try {
       final response = await dio.get(
         '/verse-of-day/today',
-        queryParameters: {'lang': language},
+        queryParameters: {
+          'lang': language,
+          if (tradition != null) 'tradition': tradition,
+        },
       );
 
       if (response.statusCode == 200) {
@@ -38,15 +46,21 @@ class VerseOfDayRemoteDatasource {
   }
 
   /// The verse for [date] (`YYYY-MM-DD`, taken as given — no timezone), or
-  /// null when that day has none, including days the backend has deleted.
+  /// null when that day has none (for [tradition], when given), including
+  /// days the backend has deleted.
   Future<VerseOfDayModel?> fetchVerseOfDayByDate({
     required String language,
     required String date,
+    String? tradition,
   }) async {
     try {
       final response = await dio.get(
         '/verse-of-day',
-        queryParameters: {'date': date, 'lang': language},
+        queryParameters: {
+          'date': date,
+          'lang': language,
+          if (tradition != null) 'tradition': tradition,
+        },
       );
       if (response.statusCode != 200) {
         _logger.error(

@@ -24,6 +24,7 @@ import 'package:flutter_pecha/features/home/presentation/widgets/verse_of_day_ca
 import 'package:flutter_pecha/features/home/presentation/widgets/verse_of_day_skeleton.dart';
 import 'package:flutter_pecha/features/mala/presentation/utils/mala_analytics.dart';
 import 'package:flutter_pecha/features/notifications/application/notification_sync_engine.dart';
+import 'package:flutter_pecha/features/onboarding/presentation/providers/user_tradition_codes_provider.dart';
 import 'package:flutter_pecha/features/plans/data/utils/plan_utils.dart';
 import 'package:flutter_pecha/features/plans/presentation/providers/user_plans_provider.dart';
 import 'package:flutter_pecha/features/practice/presentation/providers/routine_provider.dart';
@@ -230,12 +231,20 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       ref.read(homeFeedProvider.notifier).refresh(),
       ref.read(homePoemsPreviewSourceProvider).refresh(),
       // The verse-of-the-day week; also stores today's verse on its own.
-      ref.read(verseOfDayDomainRepositoryProvider).refreshRecentVerses(
-        language: language,
-      ),
-      ref.read(todayEventsDomainRepositoryProvider).refreshTodayEvents(
-        language: language,
-      ),
+      // A failed tradition lookup is retried first so the verse isn't stuck
+      // on All traditions.
+      () async {
+        await ref.read(userTraditionCodesProvider.notifier).retryIfFailed();
+        await ref
+            .read(verseOfDayDomainRepositoryProvider)
+            .refreshRecentVerses(
+              language: language,
+              tradition: ref.read(verseOfDayTraditionProvider),
+            );
+      }(),
+      ref
+          .read(todayEventsDomainRepositoryProvider)
+          .refreshTodayEvents(language: language),
       ref.read(routineInfoDomainRepositoryProvider).refreshRoutineInfo(),
       ref.read(streakDomainRepositoryProvider).refreshStreak(),
     ]);
@@ -302,9 +311,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     return MyPracticesStatsCard(
       count: count,
       onTap: () {
-        ref
-            .read(homeAnalyticsProvider)
-            .cardTapped(section: HomeSection.stats);
+        ref.read(homeAnalyticsProvider).cardTapped(section: HomeSection.stats);
         context.pushNamed('my-practices');
       },
     );
