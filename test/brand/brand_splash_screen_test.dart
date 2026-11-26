@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_pecha/brand/brand.dart';
 import 'package:flutter_pecha/brand/brand_splash_screen.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -42,5 +43,26 @@ void main() {
     await tester.pumpWidget(const SizedBox());
     await tester.pump(const Duration(seconds: 4));
     expect(done, 1);
+  });
+
+  testWidgets('stays white with dark status bar icons in dark mode', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: ThemeData.light(),
+        darkTheme: ThemeData.dark(),
+        themeMode: ThemeMode.dark,
+        home: const BrandSplashScreen(playIntro: false),
+      ),
+    );
+
+    final scaffold = tester.widget<Scaffold>(find.byType(Scaffold));
+    expect(scaffold.backgroundColor, Colors.white);
+    final region = tester.widget<AnnotatedRegion<SystemUiOverlayStyle>>(
+      find.byType(AnnotatedRegion<SystemUiOverlayStyle>).first,
+    );
+    expect(region.value.statusBarIconBrightness, Brightness.dark);
+    expect(region.value.statusBarBrightness, Brightness.light);
   });
 }

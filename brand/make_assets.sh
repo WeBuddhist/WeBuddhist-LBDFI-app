@@ -39,7 +39,8 @@ magick "$MARK" -resize 758x758 -gravity center -background none -extent 1024x102
 magick "$MARK" -resize 1012x1012 -gravity center -background none -extent 1024x1024 \
   -strip assets/images/webuddhist_logo.png
 
-# Native splash logo: 160dp / 160pt, the size BrandSplashScreen draws it.
+# Native splash logo, made at 160dp / 160pt; the launch screens draw it at
+# 152 (BrandSplashScreen.logoSize), so it stays sharp.
 for item in mdpi:160 hdpi:240 xhdpi:320 xxhdpi:480 xxxhdpi:640; do
   d=${item%%:*}; s=${item##*:}
   magick "$MARK" -resize "${s}x${s}" -strip "android/app/src/main/res/drawable-$d/splash_logo.png"

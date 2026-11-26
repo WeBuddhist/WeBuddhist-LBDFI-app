@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Matches AppColors.backgroundDark. -->
-    <color name="splash_background">#000000</color>
+    <!-- White in dark mode too: the launch screens and BrandSplashScreen are
+         always white, so nothing dark shows before Flutter's first frame. -->
+    <color name="splash_background">#FFFFFF</color>
 </resources>

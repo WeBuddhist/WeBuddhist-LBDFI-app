@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_pecha/brand/brand.dart';
 import 'package:flutter_pecha/core/constants/app_assets.dart';
 
@@ -29,9 +30,11 @@ class BrandSplashScreen extends StatefulWidget {
 
   static const Duration holdDuration = Duration(seconds: 3);
 
-  /// Keep in sync with the native launch screens (brand/make_assets.sh,
-  /// LaunchScreen.storyboard), so the first frame matches what they drew.
-  static const double logoSize = 160;
+  /// Keep in sync with the native launch screens (LaunchScreen.storyboard,
+  /// android launch_background.xml and splash_icon.xml), so the first frame
+  /// matches what they drew. 152, not more: Android 12+ masks its launch icon
+  /// to a 192dp circle, and the emblem's cloud base would poke out of it.
+  static const double logoSize = 152;
 
   @override
   State<BrandSplashScreen> createState() => _BrandSplashScreenState();
@@ -83,37 +86,44 @@ class _BrandSplashScreenState extends State<BrandSplashScreen> {
       color: _nameColor,
       decoration: TextDecoration.none,
     );
-    return Scaffold(
-      backgroundColor: Colors.white,
-      body: LayoutBuilder(
-        builder: (context, constraints) {
-          final nameTop =
-              constraints.maxHeight / 2 +
-              BrandSplashScreen.logoSize / 2 +
-              _nameGap;
-          return Stack(
-            children: [
-              Center(
-                child: Image.asset(
-                  AppAssets.weBuddhistLogo,
-                  width: BrandSplashScreen.logoSize,
-                  height: BrandSplashScreen.logoSize,
-                  semanticLabel: Brand.appName,
+    // Dark status bar icons: the screen is white in dark mode too, where the
+    // app's theme would otherwise draw them white on white.
+    return AnnotatedRegion<SystemUiOverlayStyle>(
+      value: SystemUiOverlayStyle.dark.copyWith(
+        statusBarColor: Colors.transparent,
+      ),
+      child: Scaffold(
+        backgroundColor: Colors.white,
+        body: LayoutBuilder(
+          builder: (context, constraints) {
+            final nameTop =
+                constraints.maxHeight / 2 +
+                BrandSplashScreen.logoSize / 2 +
+                _nameGap;
+            return Stack(
+              children: [
+                Center(
+                  child: Image.asset(
+                    AppAssets.weBuddhistLogo,
+                    width: BrandSplashScreen.logoSize,
+                    height: BrandSplashScreen.logoSize,
+                    semanticLabel: Brand.appName,
+                  ),
                 ),
-              ),
-              Positioned(
-                top: nameTop,
-                left: _horizontalPadding,
-                right: _horizontalPadding,
-                child: Text(
-                  Brand.fullName,
-                  textAlign: TextAlign.center,
-                  style: nameStyle,
+                Positioned(
+                  top: nameTop,
+                  left: _horizontalPadding,
+                  right: _horizontalPadding,
+                  child: Text(
+                    Brand.fullName,
+                    textAlign: TextAlign.center,
+                    style: nameStyle,
+                  ),
                 ),
-              ),
-            ],
-          );
-        },
+              ],
+            );
+          },
+        ),
       ),
     );
   }

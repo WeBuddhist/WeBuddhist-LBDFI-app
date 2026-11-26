@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Android 12+ launch icon. The system draws it 288dp square and masks it to
+     a 192dp circle, so the emblem is 152dp (inset 68dp, 23.6%, on each side):
+     the size BrandSplashScreen draws it, and small enough that the corners of
+     its cloud base stay inside the circle. -->
+<inset xmlns:android="http://schemas.android.com/apk/res/android"
+    android:drawable="@drawable/splash_logo"
+    android:inset="23.6%" />

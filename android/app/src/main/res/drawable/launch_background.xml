@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Native launch screen shown before Flutter draws; mirrors BrandSplashScreen (160dp logo on white, upright). -->
+<!-- Native launch screen shown before Flutter draws; mirrors BrandSplashScreen
+     (152dp emblem on white, upright, in dark mode too). -->
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
     <item android:drawable="@android:color/white" />
 
-    <item>
-        <bitmap
-            android:gravity="center"
-            android:src="@drawable/splash_logo" />
-    </item>
+    <item
+        android:width="152dp"
+        android:height="152dp"
+        android:gravity="center"
+        android:drawable="@drawable/splash_logo" />
 </layer-list>
