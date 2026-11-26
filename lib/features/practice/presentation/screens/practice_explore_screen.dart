@@ -18,6 +18,7 @@ import 'package:flutter_pecha/features/practice/presentation/widgets/practice_pl
 import 'package:flutter_pecha/features/practice/presentation/widgets/practice_section_container.dart';
 import 'package:flutter_pecha/features/practice/presentation/widgets/practice_shortcut_buttons.dart';
 import 'package:flutter_pecha/features/practice/presentation/widgets/practice_spaces_section.dart';
+import 'package:flutter_pecha/features/practice/presentation/widgets/practice_start_routine_pill.dart';
 import 'package:flutter_pecha/shared/widgets/main_tab_app_bar.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -27,7 +28,9 @@ import 'package:go_router/go_router.dart';
 /// With a routine or joined spaces it is grouped: the next routine session,
 /// Mala and Timer, "From your spaces", then "Discover more" (the catalog
 /// and spaces the user has not joined). Without either it is just the
-/// discover rows, with Mala and Timer under Plans.
+/// discover rows under Mala and Timer. With nothing in My practices yet
+/// (or as a guest) the "Start a routine" pill takes the next session's
+/// place.
 class PracticeExploreScreen extends ConsumerStatefulWidget {
   const PracticeExploreScreen({super.key});
 
@@ -166,7 +169,9 @@ class _PracticeExploreScreenState extends ConsumerState<PracticeExploreScreen> {
           nextSession:
               last.routine && routinePending
                   ? const PracticeNextSessionSkeleton()
-                  : null,
+                  : last.routine
+                  ? null
+                  : const PracticeStartRoutinePill(),
           spacesLoading: last.spaces && spacesPending,
         );
       }
@@ -174,11 +179,12 @@ class _PracticeExploreScreenState extends ConsumerState<PracticeExploreScreen> {
 
     if (!hasRoutine && !hasSpaces) {
       return const [
-        PracticePlansSection(),
+        PracticeStartRoutinePill(),
         Padding(
           padding: EdgeInsets.only(top: 16),
           child: PracticeShortcutButtons(),
         ),
+        PracticePlansSection(),
         PracticeChantsSection(),
         PracticeAccumulationsSection(),
       ];
@@ -191,7 +197,7 @@ class _PracticeExploreScreenState extends ConsumerState<PracticeExploreScreen> {
               ? PracticeNextSessionSection(routine: routine)
               : routinePending && _lastLayout?.routine == true
               ? const PracticeNextSessionSkeleton()
-              : null,
+              : const PracticeStartRoutinePill(),
       spacesLoading: spacesPending && _lastLayout?.spaces == true,
     );
   }

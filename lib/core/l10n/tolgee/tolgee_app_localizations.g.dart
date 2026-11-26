@@ -8973,4 +8973,18 @@ class TolgeeAppLocalizations extends AppLocalizations {
     'practice_popular_practices',
     () => _fallback.practice_popular_practices,
   );
+
+  @override
+  String get practice_start_routine => TolgeeBridge.get(
+    localeName,
+    'practice_start_routine',
+    () => _fallback.practice_start_routine,
+  );
+
+  @override
+  String get practice_start_routine_hint => TolgeeBridge.get(
+    localeName,
+    'practice_start_routine_hint',
+    () => _fallback.practice_start_routine_hint,
+  );
 }

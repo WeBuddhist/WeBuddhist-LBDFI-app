@@ -4531,4 +4531,11 @@ class AppLocalizationsBo extends AppLocalizations {
 
   @override
   String get practice_popular_practices => 'དར་ཁྱབ་ཆེ་བའི་ཉམས་ལེན།';
+
+  @override
+  String get practice_start_routine => 'འཆར་ཅན་འགོ་འཛུགས།';
+
+  @override
+  String get practice_start_routine_hint =>
+      'ཡང་ན་ཉམས་ལེན་ཞིག་མནན་ནས་ངའི་ཉམས་ལེན་ནང་སྣོན་ཞེས་པ་འདེམས།';
 }

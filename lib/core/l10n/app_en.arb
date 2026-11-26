@@ -2322,5 +2322,13 @@
       }
     }
   },
-  "practice_popular_practices": "Popular practices"
+  "practice_popular_practices": "Popular practices",
+  "practice_start_routine": "Start a routine",
+  "@practice_start_routine": {
+    "description": "Label on the My practices pill when the routine is empty; tap opens Edit routine."
+  },
+  "practice_start_routine_hint": "Or tap a practice and choose Add to my practices.",
+  "@practice_start_routine_hint": {
+    "description": "Helper line under the Start a routine pill on the Practice tab."
+  }
 }

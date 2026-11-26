@@ -4521,4 +4521,11 @@ class AppLocalizationsHi extends AppLocalizations {
 
   @override
   String get practice_popular_practices => 'लोकप्रिय अभ्यास';
+
+  @override
+  String get practice_start_routine => 'दिनचर्या शुरू करें';
+
+  @override
+  String get practice_start_routine_hint =>
+      'या किसी अभ्यास पर टैप करके \"मेरे अभ्यास में जोड़ें\" चुनें।';
 }

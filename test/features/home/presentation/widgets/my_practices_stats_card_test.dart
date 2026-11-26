@@ -33,9 +33,10 @@ void main() {
     expect(find.text('10 sessions'), findsOneWidget);
   });
 
-  testWidgets('shows 0 and 1 rather than hiding', (tester) async {
+  testWidgets('invites to start a routine at 0, shows 1', (tester) async {
     await _pump(tester, count: 0);
-    expect(find.text('0 sessions'), findsOneWidget);
+    expect(find.text('Start a routine'), findsOneWidget);
+    expect(find.textContaining('session'), findsNothing);
 
     await _pump(tester, count: 1);
     expect(find.text('1 session'), findsOneWidget);

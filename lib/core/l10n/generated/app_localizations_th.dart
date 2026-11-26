@@ -4471,4 +4471,11 @@ class AppLocalizationsTh extends AppLocalizations {
 
   @override
   String get practice_popular_practices => 'การปฏิบัติยอดนิยม';
+
+  @override
+  String get practice_start_routine => 'เริ่มกิจวัตร';
+
+  @override
+  String get practice_start_routine_hint =>
+      'หรือแตะการปฏิบัติแล้วเลือก \"เพิ่มในการปฏิบัติของฉัน\"';
 }

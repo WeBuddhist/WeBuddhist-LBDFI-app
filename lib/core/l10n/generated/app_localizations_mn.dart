@@ -4536,4 +4536,11 @@ class AppLocalizationsMn extends AppLocalizations {
 
   @override
   String get practice_popular_practices => 'Түгээмэл бясалгалууд';
+
+  @override
+  String get practice_start_routine => 'Дадал эхлүүлэх';
+
+  @override
+  String get practice_start_routine_hint =>
+      'Эсвэл дадлага дээр дараад \"Миний дадлагад нэмэх\"-ийг сонгоно уу.';
 }
