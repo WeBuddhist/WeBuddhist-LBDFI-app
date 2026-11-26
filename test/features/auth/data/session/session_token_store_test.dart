@@ -14,25 +14,29 @@ void main() {
     refreshToken: 'refresh-2',
   );
 
+  /// A build talking to the given server, prod unless said otherwise.
+  SecureSessionTokenStore store({String server = 'production'}) =>
+      SecureSessionTokenStore(storage: storage, server: server);
+
   setUp(() => FlutterSecureStorage.setMockInitialValues({}));
 
   test('nothing stored reads as no session', () async {
-    expect(await SecureSessionTokenStore(storage).read(), isNull);
+    expect(await store().read(), isNull);
   });
 
   test('a written pair is read back by a new store (next launch)', () async {
-    await SecureSessionTokenStore(storage).write(first);
+    await store().write(first);
 
-    final tokens = await SecureSessionTokenStore(storage).read();
+    final tokens = await store().read();
 
     expect(tokens?.accessToken, 'access-1');
     expect(tokens?.refreshToken, 'refresh-1');
   });
 
   test('the pair is one stored value, so it is replaced whole', () async {
-    final store = SecureSessionTokenStore(storage);
-    await store.write(first);
-    await store.write(second);
+    final tokens = store();
+    await tokens.write(first);
+    await tokens.write(second);
 
     // One entry: there is no moment when one account's access token sits
     // beside another's refresh token.
@@ -41,45 +45,88 @@ void main() {
     expect(jsonDecode(all.values.single), {
       'access_token': 'access-2',
       'refresh_token': 'refresh-2',
+      'server': 'production',
     });
   });
 
   test('clear removes the session for the next launch too', () async {
-    final store = SecureSessionTokenStore(storage);
-    await store.write(first);
+    final tokens = store();
+    await tokens.write(first);
 
-    await store.clear();
+    await tokens.clear();
 
-    expect(await store.read(), isNull);
-    expect(await SecureSessionTokenStore(storage).read(), isNull);
+    expect(await tokens.read(), isNull);
+    expect(await store().read(), isNull);
   });
 
   test('a stored value that is not a complete pair is no session', () async {
     for (final broken in [
       'not json',
       '[]',
-      '{"access_token":"a"}',
-      '{"access_token":"","refresh_token":"r"}',
-      '{"access_token":"a","refresh_token":7}',
+      '{"access_token":"a","server":"production"}',
+      '{"access_token":"","refresh_token":"r","server":"production"}',
+      '{"access_token":"a","refresh_token":7,"server":"production"}',
     ]) {
       FlutterSecureStorage.setMockInitialValues({
         SecureSessionTokenStore.sessionKey: broken,
       });
-      expect(
-        await SecureSessionTokenStore(storage).read(),
-        isNull,
-        reason: broken,
-      );
+      expect(await store().read(), isNull, reason: broken);
     }
   });
 
   test('later reads come from memory, not the keystore', () async {
-    final store = SecureSessionTokenStore(storage);
-    await store.write(first);
+    final tokens = store();
+    await tokens.write(first);
 
     // Gone from the keystore behind the store's back.
     FlutterSecureStorage.setMockInitialValues({});
 
-    expect((await store.read())?.accessToken, 'access-1');
+    expect((await tokens.read())?.accessToken, 'access-1');
+  });
+
+  group('a session names the server that issued it', () {
+    test('a build for another server sees no session, and removes it', () async {
+      // Signed in on the testing build, then the App Store (prod) build is
+      // installed over it. The Keychain keeps the session across that.
+      await store(server: 'staging').write(first);
+
+      expect(await store().read(), isNull);
+      expect(
+        await storage.read(key: SecureSessionTokenStore.sessionKey),
+        isNull,
+        reason: 'removed, so no later launch has to decide again',
+      );
+    });
+
+    test('going back does not bring the removed session back', () async {
+      await store(server: 'staging').write(first);
+      await store().read();
+
+      expect(await store(server: 'staging').read(), isNull);
+    });
+
+    test('a session saved before sessions named their server is removed',
+        () async {
+      FlutterSecureStorage.setMockInitialValues({
+        SecureSessionTokenStore.sessionKey: jsonEncode({
+          'access_token': 'access-1',
+          'refresh_token': 'refresh-1',
+        }),
+      });
+
+      expect(await store().read(), isNull);
+      expect(
+        await storage.read(key: SecureSessionTokenStore.sessionKey),
+        isNull,
+      );
+    });
+
+    test('the same server keeps its session', () async {
+      await store(server: 'development').write(first);
+
+      final tokens = await store(server: 'development').read();
+
+      expect(tokens?.accessToken, 'access-1');
+    });
   });
 }
