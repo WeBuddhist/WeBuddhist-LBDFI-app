@@ -19,6 +19,11 @@ class Brand {
   /// the platform's name.
   static const String platformName = 'WeBuddhist';
 
+  /// Sent as `X-Application` on every WeBuddhist API call, so the backend
+  /// returns LBDFI's content (spaces and so on). The library API is shared
+  /// and does not get it.
+  static const String applicationId = 'lbdfi';
+
   /// Keys whose text is about the shared platform rather than the app, so the
   /// word "WeBuddhist" in them is literally true and stays.
   static const Set<String> platformKeys = {

@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:flutter_pecha/brand/brand.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_pecha/core/cache/cache_service.dart';
 import 'package:package_info_plus/package_info_plus.dart';
@@ -129,6 +130,7 @@ final _dioBaseOptionsProvider = Provider<BaseOptions>((ref) {
     headers: {
       'Content-Type': 'application/json',
       'Accept': 'application/json',
+      'X-Application': Brand.applicationId,
     },
   );
 });

@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:dio/dio.dart';
+import 'package:flutter_pecha/brand/brand.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_pecha/core/storage/storage_keys.dart';
 import 'package:flutter_pecha/core/utils/app_logger.dart';
@@ -129,6 +130,7 @@ class AuthService {
             headers: const {
               'Content-Type': 'application/json',
               'Accept': 'application/json',
+              'X-Application': Brand.applicationId,
             },
           ),
         ),
