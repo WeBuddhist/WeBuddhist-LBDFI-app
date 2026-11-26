@@ -66,8 +66,8 @@
   "mala_sound": "Sound",
   "mala_vibration": "Vibration",
   "mala_reset_count": "Reset count",
-  "mala_reset_title": "Reset count?",
-  "mala_reset_count_confirm": "This mala's count goes back to 0. Your lifetime total stays the same",
+  "mala_reset_title": "Reset this mala?",
+  "mala_reset_count_confirm": "Your current count will go back to zero, but your accumulations will stay in your lifetime total",
   "mala_reset_confirm": "Reset",
   "mala_action_coming_soon": "Coming soon",
   "mala_rounds_count": "{count, plural,\n=0 {0 rounds}\n=1 {1 round}\nother {{count} rounds}\n}",
@@ -97,7 +97,7 @@
     }
   },
   "mala_group_accumulations": "Add recitation to",
-  "mala_groups_section": "Groups",
+  "mala_groups_section": "Events",
   "mala_group_untitled": "Untitled space",
   "mala_all_time_accumulation": "My all-time accumulation",
   "mala_personal_practice": "Personal practice",
@@ -998,7 +998,7 @@
       }
     }
   },
-  "group_join_banned": "You were removed from this space and can't rejoin until the ban is lifted",
+  "group_join_banned": "You were removed from this space and can’t rejoin yet",
   "group_removed_title": "You've been removed from this space",
   "group_removed_message": "An admin from {group} removed you from this space. You won't be able to view its posts, events and practices, or ask to rejoin for {duration}.",
   "@group_removed_message": {
@@ -1011,7 +1011,7 @@
       }
     }
   },
-  "group_removed_message_no_date": "An admin from {group} removed you from this space. You won't be able to view its posts, events and practices, or ask to rejoin",
+  "group_removed_message_no_date": "An admin from {group} removed you from this space. You won't be able to rejoin until an admin allows it",
   "@group_removed_message_no_date": {
     "placeholders": {
       "group": {
@@ -1019,7 +1019,7 @@
       }
     }
   },
-  "group_removed_rejoin_label": "You can ask to join to this space on",
+  "group_removed_rejoin_label": "You can ask to join this space on",
   "group_removed_rejoin_value": "{date} · {remaining}",
   "@group_removed_rejoin_value": {
     "placeholders": {
@@ -1156,7 +1156,7 @@
     }
   },
   "group_accumulator_session_share_error": "Unable to share session. Please try again",
-  "group_recitation_collection_share_message": "Check out \"{collection}\", a recitation collection by {group} on WeBuddhist. Join us in practice!",
+  "group_recitation_collection_share_message": "Check out \"{collection}\", a chant book from {group} on WeBuddhist. Join us in practice!",
   "@group_recitation_collection_share_message": {
     "placeholders": {
       "collection": {
@@ -1167,7 +1167,7 @@
       }
     }
   },
-  "group_recitation_collection_share_message_no_group": "Check out the recitation collection \"{collection}\" on WeBuddhist. Join us in practice!",
+  "group_recitation_collection_share_message_no_group": "Check out the chant book \"{collection}\" on WeBuddhist. Join us in practice!",
   "@group_recitation_collection_share_message_no_group": {
     "placeholders": {
       "collection": {
@@ -1876,7 +1876,7 @@
   "group_event_practice_search_hint": "Search your space's practices",
   "group_event_practice_filter_all": "All",
   "group_event_practice_filter_content": "Plans & series",
-  "group_event_practice_filter_collections": "Chant collections",
+  "group_event_practice_filter_collections": "Chant books",
   "group_event_practice_filter_accumulators": "Accumulations",
   "group_event_practice_rule": "One plan or series and one chant collection per event. Add as many accumulations as you need.",
   "group_event_practice_replaced": "Choosing {chosen} replaced {previous}.",
@@ -2102,7 +2102,7 @@
   "group_event_in_person_save_error": "Could not save the count.",
   "group_event_in_person_load_more": "Load more",
   "mala_failed_load_catalogue_error": "Unable to load catalogue",
-  "chant_collection_reload_error": "Unable to reload collection to reorder",
+  "chant_collection_reload_error": "Unable to reload chant book to reorder",
   "chant_collection_reorder_error": "Unable to reorder chants",
   "timer_duration_label": "DURATION",
   "timer_ambient_sound_label": "AMBIENT SOUND",

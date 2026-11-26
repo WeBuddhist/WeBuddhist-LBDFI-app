@@ -1917,16 +1917,16 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String group_remove_member_title(String name) {
-    return '移除 $name';
+    return '要從社群中移除嗎？';
   }
 
   @override
-  String group_remove_member_message(String duration) {
-    return '對方將被移出此社群，且在 $duration 內無法重新加入。';
+  String group_remove_member_message(String duration, Object name) {
+    return '$name 將被移出此社群，且在禁令解除前無法重新加入';
   }
 
   @override
-  String get group_remove_member_blocked_for => '無法重新加入的期限';
+  String get group_remove_member_blocked_for => '封鎖期間：';
 
   @override
   String get group_remove_member_duration_day => '1 天';
@@ -1943,10 +1943,10 @@ class AppLocalizationsZh extends AppLocalizations {
   String get group_remove_member_reason_label => '原因（選填）';
 
   @override
-  String get group_remove_member_reason_hint => '您為什麼要移除此成員？';
+  String get group_remove_member_reason_hint => '其他...';
 
   @override
-  String get group_remove_member_action => '移除成員';
+  String get group_remove_member_action => '移除';
 
   @override
   String group_remove_member_success(String name) {
@@ -3548,7 +3548,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get group_event_practice_filter_content => 'Plans & series';
 
   @override
-  String get group_event_practice_filter_collections => 'Chant collections';
+  String get group_event_practice_filter_collections => 'Chant books';
 
   @override
   String get group_event_practice_filter_accumulators => 'Accumulations';
@@ -3963,7 +3963,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get chant_collection_reload_error =>
-      'Unable to reload collection to reorder';
+      'Unable to reload chant book to reorder';
 
   @override
   String get chant_collection_reorder_error => 'Unable to reorder chants';
@@ -4533,7 +4533,7 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get mala_group_accumulations => '加入持诵计数';
 
   @override
-  String get mala_groups_section => '社群';
+  String get mala_groups_section => '活动';
 
   @override
   String get mala_group_untitled => '未命名社群';
@@ -6241,8 +6241,8 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   }
 
   @override
-  String group_remove_member_message(String duration) {
-    return '对方将被移出此社群，且在 $duration 内无法重新加入。';
+  String group_remove_member_message(String duration, Object name) {
+    return '对方将被移出此社群，并在 $duration 内无法重新加入。';
   }
 
   @override
@@ -6263,7 +6263,7 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get group_remove_member_reason_label => '原因（选填）';
 
   @override
-  String get group_remove_member_reason_hint => '您为什么要移除此成员？';
+  String get group_remove_member_reason_hint => '您为什么要移除这位成员？';
 
   @override
   String get group_remove_member_action => '移除成员';
@@ -6282,7 +6282,7 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   }
 
   @override
-  String get group_join_banned => '您已被移出此社群，在禁令解除前无法重新加入';
+  String get group_join_banned => '您已被移出此社群，暂时无法重新加入';
 
   @override
   String get group_removed_title => '您已被移出此社群';
@@ -6294,7 +6294,7 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String group_removed_message_no_date(String group) {
-    return '$group 的管理员已将您移出此社群。您将无法查看其中的贴文、活动和修持，也无法要求重新加入';
+    return '$group 的管理员已将您移出此社群。在管理员允许之前，您将无法重新加入';
   }
 
   @override

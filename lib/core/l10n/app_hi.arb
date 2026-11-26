@@ -83,7 +83,7 @@
     }
   },
   "mala_group_accumulations": "पाठ को इसमें जोड़ें",
-  "mala_groups_section": "Groups",
+  "mala_groups_section": "कार्यक्रम",
   "mala_group_untitled": "बिना शीर्षक वाला स्पेस",
   "mala_all_time_accumulation": "मेरा अब तक का कुल संचय",
   "mala_personal_practice": "व्यक्तिगत अभ्यास",
@@ -119,7 +119,7 @@
       }
     }
   },
-  "home_share_support": "आपका सहयोग हमारे समुदाय को बढ़ने में मदद करता है।",
+  "home_share_support": "आपका सहयोग हमारे समुदाय को बढ़ने में मदद करता है",
   "no_feature_content": "कोई विशेष सामग्री उपलब्ध नहीं",
   "nav_home": "होम",
   "nav_explore": "एक्सप्लोर",
@@ -723,20 +723,20 @@
   "group_remove_member": "{name} को हटाएँ",
   "group_remove_member_title": "{name} को हटाएँ",
   "group_remove_member_message": "उन्हें इस स्पेस से हटा दिया जाएगा और वे {duration} तक फिर से शामिल नहीं हो पाएँगे।",
-  "group_remove_member_blocked_for": "फिर से शामिल न हो सकने की अवधि",
+  "group_remove_member_blocked_for": "फिर से शामिल होने पर रोक",
   "group_remove_member_duration_day": "1 दिन",
   "group_remove_member_duration_days": "{count} दिन",
   "group_remove_member_duration_year": "1 वर्ष",
   "group_remove_member_reason_label": "कारण (वैकल्पिक)",
   "group_remove_member_reason_hint": "आप इस सदस्य को क्यों हटा रहे हैं?",
-  "group_remove_member_action": "सदस्य को हटाएँ",
+  "group_remove_member_action": "सदस्य हटाएँ",
   "group_remove_member_success": "{name} को स्पेस से हटा दिया गया",
   "group_remove_member_error": "इस सदस्य को हटाया नहीं जा सका। पुनः प्रयास करें",
   "group_join_banned_until": "आपको इस स्पेस से हटा दिया गया था और आप {date} तक फिर से शामिल नहीं हो सकते",
-  "group_join_banned": "आपको इस स्पेस से हटा दिया गया था और प्रतिबंध हटने तक आप फिर से शामिल नहीं हो सकते",
+  "group_join_banned": "आपको इस स्पेस से हटा दिया गया था और आप अभी फिर से शामिल नहीं हो सकते",
   "group_removed_title": "आपको इस स्पेस से हटा दिया गया है",
   "group_removed_message": "{group} के एक एडमिन ने आपको इस स्पेस से हटा दिया है। आप इसकी पोस्ट, कार्यक्रम और अभ्यास नहीं देख पाएँगे और {duration} तक फिर से शामिल होने का अनुरोध भी नहीं कर पाएँगे।",
-  "group_removed_message_no_date": "{group} के एक एडमिन ने आपको इस स्पेस से हटा दिया है। आप इसकी पोस्ट, कार्यक्रम और अभ्यास नहीं देख पाएँगे और फिर से शामिल होने का अनुरोध भी नहीं कर पाएँगे",
+  "group_removed_message_no_date": "{group} के एक एडमिन ने आपको इस स्पेस से हटा दिया है। जब तक कोई एडमिन अनुमति न दे, आप फिर से शामिल नहीं हो पाएँगे",
   "group_removed_rejoin_label": "आप इस स्पेस में शामिल होने का अनुरोध इस तारीख को कर सकते हैं",
   "group_removed_rejoin_value": "{date} · {remaining}",
   "group_removed_day_left": "1 दिन बाकी",
@@ -1062,7 +1062,7 @@
   "event_prayer_empty_title": "अभी तक कोई प्रार्थना अनुरोध नहीं",
   "event_prayer_empty_body": "आपका अनुरोध और आपके स्पेस के अनुरोध यहाँ दिखाई देंगे",
   "event_prayer_add": "प्रार्थना अनुरोध जोड़ें",
-  "event_prayer_hint": "आज हम आपके लिए कैसे प्रार्थना कर सकते हैं?",
+  "event_prayer_hint": "प्रार्थना अनुरोध साझा करें",
   "event_prayer_load_failed": "प्रार्थना अनुरोध लोड नहीं किए जा सके",
   "event_prayer_closed": "इस कार्यक्रम के लिए प्रार्थना अनुरोध बंद हैं",
   "event_prayer_pray": "प्रार्थना करें",
@@ -1205,7 +1205,7 @@
   "group_leave_space_confirm_title": "यह स्पेस छोड़ें?",
   "group_leave_space_failed": "स्पेस छोड़ा नहीं जा सका। पुनः प्रयास करें",
   "group_accumulator_join_before_practice": "इसे अपने अभ्यास में जोड़ने से पहले इस संचय में शामिल हों",
-  "group_recitation_collection_share_message": "WeBuddhist पर {group} स्पेस का पाठ संग्रह \"{collection}\" देखें। अभ्यास में हमारे साथ जुड़ें!",
+  "group_recitation_collection_share_message": "WeBuddhist पर {group} की जप पुस्तक \"{collection}\" देखें। अभ्यास में हमारे साथ जुड़ें!",
   "@group_recitation_collection_share_message": {
     "placeholders": {
       "collection": {
@@ -1216,7 +1216,7 @@
       }
     }
   },
-  "group_recitation_collection_share_message_no_group": "WeBuddhist पर पाठ संग्रह \"{collection}\" देखें। अभ्यास में हमारे साथ जुड़ें!",
+  "group_recitation_collection_share_message_no_group": "WeBuddhist पर जप पुस्तक \"{collection}\" देखें। अभ्यास में हमारे साथ जुड़ें!",
   "@group_recitation_collection_share_message_no_group": {
     "placeholders": {
       "collection": {

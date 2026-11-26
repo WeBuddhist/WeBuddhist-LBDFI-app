@@ -338,13 +338,13 @@ abstract class AppLocalizations {
   /// No description provided for @mala_reset_title.
   ///
   /// In en, this message translates to:
-  /// **'Reset count?'**
+  /// **'Reset this mala?'**
   String get mala_reset_title;
 
   /// No description provided for @mala_reset_count_confirm.
   ///
   /// In en, this message translates to:
-  /// **'This mala\'s count goes back to 0. Your lifetime total stays the same'**
+  /// **'Your current count will go back to zero, but your accumulations will stay in your lifetime total'**
   String get mala_reset_count_confirm;
 
   /// No description provided for @mala_reset_confirm.
@@ -404,7 +404,7 @@ abstract class AppLocalizations {
   /// No description provided for @mala_groups_section.
   ///
   /// In en, this message translates to:
-  /// **'Groups'**
+  /// **'Events'**
   String get mala_groups_section;
 
   /// No description provided for @mala_group_untitled.
@@ -3633,7 +3633,7 @@ abstract class AppLocalizations {
   ///
   /// In en, this message translates to:
   /// **'They\'ll be removed from this space and can\'t rejoin for {duration}.'**
-  String group_remove_member_message(String duration);
+  String group_remove_member_message(String duration, Object name);
 
   /// No description provided for @group_remove_member_blocked_for.
   ///
@@ -3698,7 +3698,7 @@ abstract class AppLocalizations {
   /// No description provided for @group_join_banned.
   ///
   /// In en, this message translates to:
-  /// **'You were removed from this space and can\'t rejoin until the ban is lifted'**
+  /// **'You were removed from this space and can’t rejoin yet'**
   String get group_join_banned;
 
   /// No description provided for @group_removed_title.
@@ -3716,13 +3716,13 @@ abstract class AppLocalizations {
   /// No description provided for @group_removed_message_no_date.
   ///
   /// In en, this message translates to:
-  /// **'An admin from {group} removed you from this space. You won\'t be able to view its posts, events and practices, or ask to rejoin'**
+  /// **'An admin from {group} removed you from this space. You won\'t be able to rejoin until an admin allows it'**
   String group_removed_message_no_date(String group);
 
   /// No description provided for @group_removed_rejoin_label.
   ///
   /// In en, this message translates to:
-  /// **'You can ask to join to this space on'**
+  /// **'You can ask to join this space on'**
   String get group_removed_rejoin_label;
 
   /// No description provided for @group_removed_rejoin_value.
@@ -4017,7 +4017,7 @@ abstract class AppLocalizations {
   /// No description provided for @group_recitation_collection_share_message.
   ///
   /// In en, this message translates to:
-  /// **'Check out \"{collection}\", a recitation collection by {group} on WeBuddhist. Join us in practice!'**
+  /// **'Check out \"{collection}\", a chant book from {group} on WeBuddhist. Join us in practice!'**
   String group_recitation_collection_share_message(
     String collection,
     String group,
@@ -4026,7 +4026,7 @@ abstract class AppLocalizations {
   /// No description provided for @group_recitation_collection_share_message_no_group.
   ///
   /// In en, this message translates to:
-  /// **'Check out the recitation collection \"{collection}\" on WeBuddhist. Join us in practice!'**
+  /// **'Check out the chant book \"{collection}\" on WeBuddhist. Join us in practice!'**
   String group_recitation_collection_share_message_no_group(String collection);
 
   /// No description provided for @group_recitation_collection_completed_title.
@@ -6450,7 +6450,7 @@ abstract class AppLocalizations {
   /// No description provided for @group_event_practice_filter_collections.
   ///
   /// In en, this message translates to:
-  /// **'Chant collections'**
+  /// **'Chant books'**
   String get group_event_practice_filter_collections;
 
   /// No description provided for @group_event_practice_filter_accumulators.
@@ -7138,7 +7138,7 @@ abstract class AppLocalizations {
   /// No description provided for @chant_collection_reload_error.
   ///
   /// In en, this message translates to:
-  /// **'Unable to reload collection to reorder'**
+  /// **'Unable to reload chant book to reorder'**
   String get chant_collection_reload_error;
 
   /// No description provided for @chant_collection_reorder_error.

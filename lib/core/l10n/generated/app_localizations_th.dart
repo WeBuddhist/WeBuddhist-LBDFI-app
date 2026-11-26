@@ -1992,8 +1992,8 @@ class AppLocalizationsTh extends AppLocalizations {
   }
 
   @override
-  String group_remove_member_message(String duration) {
-    return 'พวกเขาจะถูกนำออกจากกลุ่มนี้ และเข้าร่วมใหม่ไม่ได้เป็นเวลา $duration';
+  String group_remove_member_message(String duration, Object name) {
+    return 'สมาชิกจะถูกนำออกจากกลุ่มนี้ และเข้าร่วมใหม่ไม่ได้เป็นเวลา $duration';
   }
 
   @override
@@ -2014,7 +2014,7 @@ class AppLocalizationsTh extends AppLocalizations {
   String get group_remove_member_reason_label => 'เหตุผล (ไม่บังคับ)';
 
   @override
-  String get group_remove_member_reason_hint => 'ทำไมคุณจึงนำสมาชิกคนนี้ออก';
+  String get group_remove_member_reason_hint => 'ทำไมคุณถึงนำสมาชิกคนนี้ออก';
 
   @override
   String get group_remove_member_action => 'นำสมาชิกออก';
@@ -2035,7 +2035,7 @@ class AppLocalizationsTh extends AppLocalizations {
 
   @override
   String get group_join_banned =>
-      'คุณถูกนำออกจากกลุ่มนี้ และเข้าร่วมใหม่ไม่ได้จนกว่าการระงับจะสิ้นสุด';
+      'คุณถูกนำออกจากกลุ่มนี้ และยังเข้าร่วมใหม่ไม่ได้';
 
   @override
   String get group_removed_title => 'คุณถูกนำออกจากกลุ่มนี้';
@@ -2047,7 +2047,7 @@ class AppLocalizationsTh extends AppLocalizations {
 
   @override
   String group_removed_message_no_date(String group) {
-    return 'ผู้ดูแลจาก $group ได้นำคุณออกจากกลุ่มนี้ คุณจะไม่สามารถดูโพสต์ กิจกรรม และการปฏิบัติของกลุ่ม หรือขอเข้าร่วมใหม่ได้';
+    return 'ผู้ดูแลจาก $group ได้นำคุณออกจากกลุ่มนี้ คุณจะเข้าร่วมใหม่ไม่ได้จนกว่าผู้ดูแลจะอนุญาต';
   }
 
   @override
@@ -2242,12 +2242,12 @@ class AppLocalizationsTh extends AppLocalizations {
     String collection,
     String group,
   ) {
-    return 'มาดู \"$collection\" ชุดบทสวดของ $group บน WeBuddhist แล้วมาปฏิบัติร่วมกับเรา!';
+    return 'มาดู \"$collection\" หนังสือสวดมนต์จาก $group บน WeBuddhist แล้วมาปฏิบัติร่วมกับเรา!';
   }
 
   @override
   String group_recitation_collection_share_message_no_group(String collection) {
-    return 'มาดูชุดบทสวด \"$collection\" บน WeBuddhist แล้วมาปฏิบัติร่วมกับเรา!';
+    return 'มาดูหนังสือสวดมนต์ \"$collection\" บน WeBuddhist แล้วมาปฏิบัติร่วมกับเรา!';
   }
 
   @override
@@ -3663,7 +3663,7 @@ class AppLocalizationsTh extends AppLocalizations {
   String get group_event_practice_filter_content => 'แผนการปฏิบัติและซีรีส์';
 
   @override
-  String get group_event_practice_filter_collections => 'ชุดบทสวด';
+  String get group_event_practice_filter_collections => 'หนังสือสวดมนต์';
 
   @override
   String get group_event_practice_filter_accumulators => 'ยอดสะสม';
@@ -4078,7 +4078,7 @@ class AppLocalizationsTh extends AppLocalizations {
 
   @override
   String get chant_collection_reload_error =>
-      'ไม่สามารถโหลดชุดบทสวดใหม่เพื่อจัดเรียงได้';
+      'ไม่สามารถโหลดหนังสือสวดมนต์ใหม่เพื่อจัดเรียงได้';
 
   @override
   String get chant_collection_reorder_error => 'ไม่สามารถจัดเรียงบทสวดได้';

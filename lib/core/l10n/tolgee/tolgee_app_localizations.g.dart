@@ -3945,12 +3945,13 @@ class TolgeeAppLocalizations extends AppLocalizations {
   );
 
   @override
-  String group_remove_member_message(String duration) => TolgeeBridge.format(
-    localeName,
-    'group_remove_member_message',
-    <String, Object>{'duration': duration},
-    () => _fallback.group_remove_member_message(duration),
-  );
+  String group_remove_member_message(String duration, Object name) =>
+      TolgeeBridge.format(
+        localeName,
+        'group_remove_member_message',
+        <String, Object>{'duration': duration, 'name': name},
+        () => _fallback.group_remove_member_message(duration, name),
+      );
 
   @override
   String get group_remove_member_blocked_for => TolgeeBridge.get(

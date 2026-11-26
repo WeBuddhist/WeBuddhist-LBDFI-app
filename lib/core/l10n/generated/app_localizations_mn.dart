@@ -189,7 +189,7 @@ class AppLocalizationsMn extends AppLocalizations {
   String get mala_group_accumulations => 'Уншлага нэмэх';
 
   @override
-  String get mala_groups_section => 'Groups';
+  String get mala_groups_section => 'Арга хэмжээ';
 
   @override
   String get mala_group_untitled => 'Нэргүй орон зай';
@@ -2025,8 +2025,8 @@ class AppLocalizationsMn extends AppLocalizations {
   }
 
   @override
-  String group_remove_member_message(String duration) {
-    return 'Тэд энэ орон зайгаас хасагдах бөгөөд $duration-ийн турш дахин нэгдэх боломжгүй.';
+  String group_remove_member_message(String duration, Object name) {
+    return 'Түүнийг энэ орон зайгаас хасах бөгөөд $duration хугацаанд дахин нэгдэх боломжгүй.';
   }
 
   @override
@@ -2070,7 +2070,7 @@ class AppLocalizationsMn extends AppLocalizations {
 
   @override
   String get group_join_banned =>
-      'Та энэ орон зайгаас хасагдсан тул хориг цуцлагдах хүртэл дахин нэгдэх боломжгүй';
+      'Та энэ орон зайгаас хасагдсан тул одоогоор дахин нэгдэх боломжгүй';
 
   @override
   String get group_removed_title => 'Та энэ орон зайгаас хасагдсан байна';
@@ -2082,7 +2082,7 @@ class AppLocalizationsMn extends AppLocalizations {
 
   @override
   String group_removed_message_no_date(String group) {
-    return '$group-ийн админ таныг энэ орон зайгаас хаслаа. Та түүний нийтлэл, арга хэмжээ, дадлагыг үзэх эсвэл дахин нэгдэх хүсэлт гаргах боломжгүй';
+    return '$group-ийн админ таныг энэ орон зайгаас хаслаа. Админ зөвшөөрөх хүртэл та дахин нэгдэх боломжгүй';
   }
 
   @override
@@ -2176,7 +2176,7 @@ class AppLocalizationsMn extends AppLocalizations {
   String get group_accumulator_my_contributions => 'Миний хувь нэмэр';
 
   @override
-  String get group_accumulator_recited => 'Уншсан';
+  String get group_accumulator_recited => 'Уншлага';
 
   @override
   String get group_accumulator_total => 'Нийт';
@@ -2278,12 +2278,12 @@ class AppLocalizationsMn extends AppLocalizations {
     String collection,
     String group,
   ) {
-    return 'WeBuddhist дээрх $group орон зайн \"$collection\" уншлагын цуглуулгыг үзээрэй. Бидэнтэй хамт дадлага хийцгээе!';
+    return 'WeBuddhist дээрх $group-ийн \"$collection\" магтаалын номыг үзээрэй. Бидэнтэй хамт дадлага хийцгээе!';
   }
 
   @override
   String group_recitation_collection_share_message_no_group(String collection) {
-    return 'WeBuddhist дээрх \"$collection\" уншлагын цуглуулгыг үзээрэй. Бидэнтэй хамт дадлага хийцгээе!';
+    return 'WeBuddhist дээрх \"$collection\" магтаалын номыг үзээрэй. Бидэнтэй хамт дадлага хийцгээе!';
   }
 
   @override
@@ -2990,7 +2990,7 @@ class AppLocalizationsMn extends AppLocalizations {
   String get event_prayer_add => 'Залбирлын хүсэлт нэмэх';
 
   @override
-  String get event_prayer_hint => 'Өнөөдөр бид таны төлөө хэрхэн залбирах вэ?';
+  String get event_prayer_hint => 'Залбирлын хүсэлтээ хуваалцаарай';
 
   @override
   String event_prayer_hint_intention(String topics) {
@@ -3725,7 +3725,7 @@ class AppLocalizationsMn extends AppLocalizations {
   String get group_event_practice_filter_content => 'Plans & series';
 
   @override
-  String get group_event_practice_filter_collections => 'Chant collections';
+  String get group_event_practice_filter_collections => 'Chant books';
 
   @override
   String get group_event_practice_filter_accumulators => 'Accumulations';
@@ -4140,7 +4140,7 @@ class AppLocalizationsMn extends AppLocalizations {
 
   @override
   String get chant_collection_reload_error =>
-      'Unable to reload collection to reorder';
+      'Unable to reload chant book to reorder';
 
   @override
   String get chant_collection_reorder_error => 'Unable to reorder chants';

@@ -83,7 +83,7 @@
     }
   },
   "mala_group_accumulations": "Уншлага нэмэх",
-  "mala_groups_section": "Groups",
+  "mala_groups_section": "Арга хэмжээ",
   "mala_group_untitled": "Нэргүй орон зай",
   "mala_all_time_accumulation": "Миний нийт хуримтлал",
   "mala_personal_practice": "Хувийн дадлага",
@@ -722,7 +722,7 @@
   "group_member_admin": "Админ",
   "group_remove_member": "{name}-г хасах",
   "group_remove_member_title": "{name}-г хасах",
-  "group_remove_member_message": "Тэд энэ орон зайгаас хасагдах бөгөөд {duration}-ийн турш дахин нэгдэх боломжгүй.",
+  "group_remove_member_message": "Түүнийг энэ орон зайгаас хасах бөгөөд {duration} хугацаанд дахин нэгдэх боломжгүй.",
   "group_remove_member_blocked_for": "Дахин нэгдэх боломжгүй хугацаа",
   "group_remove_member_duration_day": "1 өдөр",
   "group_remove_member_duration_days": "{count} өдөр",
@@ -733,10 +733,10 @@
   "group_remove_member_success": "{name} орон зайгаас хасагдлаа",
   "group_remove_member_error": "Энэ гишүүнийг хасаж чадсангүй. Дахин оролдоно уу",
   "group_join_banned_until": "Та энэ орон зайгаас хасагдсан тул {date} хүртэл дахин нэгдэх боломжгүй",
-  "group_join_banned": "Та энэ орон зайгаас хасагдсан тул хориг цуцлагдах хүртэл дахин нэгдэх боломжгүй",
+  "group_join_banned": "Та энэ орон зайгаас хасагдсан тул одоогоор дахин нэгдэх боломжгүй",
   "group_removed_title": "Та энэ орон зайгаас хасагдсан байна",
   "group_removed_message": "{group}-ийн админ таныг энэ орон зайгаас хаслаа. Та {duration}-ийн турш түүний нийтлэл, арга хэмжээ, дадлагыг үзэх эсвэл дахин нэгдэх хүсэлт гаргах боломжгүй.",
-  "group_removed_message_no_date": "{group}-ийн админ таныг энэ орон зайгаас хаслаа. Та түүний нийтлэл, арга хэмжээ, дадлагыг үзэх эсвэл дахин нэгдэх хүсэлт гаргах боломжгүй",
+  "group_removed_message_no_date": "{group}-ийн админ таныг энэ орон зайгаас хаслаа. Админ зөвшөөрөх хүртэл та дахин нэгдэх боломжгүй",
   "group_removed_rejoin_label": "Та энэ орон зайд нэгдэх хүсэлтийг дараах өдөр гаргах боломжтой",
   "group_removed_rejoin_value": "{date} · {remaining}",
   "group_removed_day_left": "1 өдөр үлдсэн",
@@ -760,7 +760,7 @@
   "group_accumulator_everyone": "Бүгд",
   "group_accumulator_me": "Би",
   "group_accumulator_my_contributions": "Миний хувь нэмэр",
-  "group_accumulator_recited": "Уншсан",
+  "group_accumulator_recited": "Уншлага",
   "group_accumulator_total": "Нийт",
   "group_accumulator_contributions_empty": "Хувь нэмрээ хянахын тулд энэ хуримтлалд нэгдэнэ үү",
   "group_accumulator_leaderboard_empty": "Одоогоор уншлага алга",
@@ -1062,7 +1062,7 @@
   "event_prayer_empty_title": "Одоогоор залбирлын хүсэлт алга",
   "event_prayer_empty_body": "Таны болон таны орон зайн хүсэлтүүд энд харагдана",
   "event_prayer_add": "Залбирлын хүсэлт нэмэх",
-  "event_prayer_hint": "Өнөөдөр бид таны төлөө хэрхэн залбирах вэ?",
+  "event_prayer_hint": "Залбирлын хүсэлтээ хуваалцаарай",
   "event_prayer_load_failed": "Залбирлын хүсэлтүүдийг ачаалж чадсангүй",
   "event_prayer_closed": "Энэ арга хэмжээний залбирлын хүсэлт хаагдсан",
   "event_prayer_pray": "Залбирах",
@@ -1205,7 +1205,7 @@
   "group_leave_space_confirm_title": "Энэ орон зайнаас гарах уу?",
   "group_leave_space_failed": "Орон зайнаас гарч чадсангүй. Дахин оролдоно уу",
   "group_accumulator_join_before_practice": "Дадлагадаа нэмэхээсээ өмнө энэ хуримтлалд нэгдээрэй",
-  "group_recitation_collection_share_message": "WeBuddhist дээрх {group} орон зайн \"{collection}\" уншлагын цуглуулгыг үзээрэй. Бидэнтэй хамт дадлага хийцгээе!",
+  "group_recitation_collection_share_message": "WeBuddhist дээрх {group}-ийн \"{collection}\" магтаалын номыг үзээрэй. Бидэнтэй хамт дадлага хийцгээе!",
   "@group_recitation_collection_share_message": {
     "placeholders": {
       "collection": {
@@ -1216,7 +1216,7 @@
       }
     }
   },
-  "group_recitation_collection_share_message_no_group": "WeBuddhist дээрх \"{collection}\" уншлагын цуглуулгыг үзээрэй. Бидэнтэй хамт дадлага хийцгээе!",
+  "group_recitation_collection_share_message_no_group": "WeBuddhist дээрх \"{collection}\" магтаалын номыг үзээрэй. Бидэнтэй хамт дадлага хийцгээе!",
   "@group_recitation_collection_share_message_no_group": {
     "placeholders": {
       "collection": {

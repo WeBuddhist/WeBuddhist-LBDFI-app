@@ -145,11 +145,11 @@ class AppLocalizationsEn extends AppLocalizations {
   String get mala_reset_count => 'Reset count';
 
   @override
-  String get mala_reset_title => 'Reset count?';
+  String get mala_reset_title => 'Reset this mala?';
 
   @override
   String get mala_reset_count_confirm =>
-      'This mala\'s count goes back to 0. Your lifetime total stays the same';
+      'Your current count will go back to zero, but your accumulations will stay in your lifetime total';
 
   @override
   String get mala_reset_confirm => 'Reset';
@@ -190,7 +190,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get mala_group_accumulations => 'Add recitation to';
 
   @override
-  String get mala_groups_section => 'Groups';
+  String get mala_groups_section => 'Events';
 
   @override
   String get mala_group_untitled => 'Untitled space';
@@ -2005,7 +2005,7 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String group_remove_member_message(String duration) {
+  String group_remove_member_message(String duration, Object name) {
     return 'They\'ll be removed from this space and can\'t rejoin for $duration.';
   }
 
@@ -2049,7 +2049,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get group_join_banned =>
-      'You were removed from this space and can\'t rejoin until the ban is lifted';
+      'You were removed from this space and can’t rejoin yet';
 
   @override
   String get group_removed_title => 'You\'ve been removed from this space';
@@ -2061,12 +2061,11 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String group_removed_message_no_date(String group) {
-    return 'An admin from $group removed you from this space. You won\'t be able to view its posts, events and practices, or ask to rejoin';
+    return 'An admin from $group removed you from this space. You won\'t be able to rejoin until an admin allows it';
   }
 
   @override
-  String get group_removed_rejoin_label =>
-      'You can ask to join to this space on';
+  String get group_removed_rejoin_label => 'You can ask to join this space on';
 
   @override
   String group_removed_rejoin_value(String date, String remaining) {
@@ -2257,12 +2256,12 @@ class AppLocalizationsEn extends AppLocalizations {
     String collection,
     String group,
   ) {
-    return 'Check out \"$collection\", a recitation collection by $group on WeBuddhist. Join us in practice!';
+    return 'Check out \"$collection\", a chant book from $group on WeBuddhist. Join us in practice!';
   }
 
   @override
   String group_recitation_collection_share_message_no_group(String collection) {
-    return 'Check out the recitation collection \"$collection\" on WeBuddhist. Join us in practice!';
+    return 'Check out the chant book \"$collection\" on WeBuddhist. Join us in practice!';
   }
 
   @override
@@ -3682,7 +3681,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get group_event_practice_filter_content => 'Plans & series';
 
   @override
-  String get group_event_practice_filter_collections => 'Chant collections';
+  String get group_event_practice_filter_collections => 'Chant books';
 
   @override
   String get group_event_practice_filter_accumulators => 'Accumulations';
@@ -4097,7 +4096,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get chant_collection_reload_error =>
-      'Unable to reload collection to reorder';
+      'Unable to reload chant book to reorder';
 
   @override
   String get chant_collection_reorder_error => 'Unable to reorder chants';

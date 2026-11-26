@@ -2028,7 +2028,7 @@ class AppLocalizationsMy extends AppLocalizations {
   }
 
   @override
-  String group_remove_member_message(String duration) {
+  String group_remove_member_message(String duration, Object name) {
     return '၎င်းတို့ကို ဤအဖွဲ့မှ ဖယ်ရှားမည်ဖြစ်ပြီး $duration ကြာ ပြန်ဝင်၍ မရပါ။';
   }
 

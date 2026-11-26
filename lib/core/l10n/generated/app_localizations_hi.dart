@@ -188,7 +188,7 @@ class AppLocalizationsHi extends AppLocalizations {
   String get mala_group_accumulations => 'पाठ को इसमें जोड़ें';
 
   @override
-  String get mala_groups_section => 'Groups';
+  String get mala_groups_section => 'कार्यक्रम';
 
   @override
   String get mala_group_untitled => 'बिना शीर्षक वाला स्पेस';
@@ -240,7 +240,7 @@ class AppLocalizationsHi extends AppLocalizations {
 
   @override
   String get home_share_support =>
-      'आपका सहयोग हमारे समुदाय को बढ़ने में मदद करता है।';
+      'आपका सहयोग हमारे समुदाय को बढ़ने में मदद करता है';
 
   @override
   String get no_feature_content => 'कोई विशेष सामग्री उपलब्ध नहीं';
@@ -2019,13 +2019,12 @@ class AppLocalizationsHi extends AppLocalizations {
   }
 
   @override
-  String group_remove_member_message(String duration) {
+  String group_remove_member_message(String duration, Object name) {
     return 'उन्हें इस स्पेस से हटा दिया जाएगा और वे $duration तक फिर से शामिल नहीं हो पाएँगे।';
   }
 
   @override
-  String get group_remove_member_blocked_for =>
-      'फिर से शामिल न हो सकने की अवधि';
+  String get group_remove_member_blocked_for => 'फिर से शामिल होने पर रोक';
 
   @override
   String get group_remove_member_duration_day => '1 दिन';
@@ -2046,7 +2045,7 @@ class AppLocalizationsHi extends AppLocalizations {
       'आप इस सदस्य को क्यों हटा रहे हैं?';
 
   @override
-  String get group_remove_member_action => 'सदस्य को हटाएँ';
+  String get group_remove_member_action => 'सदस्य हटाएँ';
 
   @override
   String group_remove_member_success(String name) {
@@ -2064,7 +2063,7 @@ class AppLocalizationsHi extends AppLocalizations {
 
   @override
   String get group_join_banned =>
-      'आपको इस स्पेस से हटा दिया गया था और प्रतिबंध हटने तक आप फिर से शामिल नहीं हो सकते';
+      'आपको इस स्पेस से हटा दिया गया था और आप अभी फिर से शामिल नहीं हो सकते';
 
   @override
   String get group_removed_title => 'आपको इस स्पेस से हटा दिया गया है';
@@ -2076,7 +2075,7 @@ class AppLocalizationsHi extends AppLocalizations {
 
   @override
   String group_removed_message_no_date(String group) {
-    return '$group के एक एडमिन ने आपको इस स्पेस से हटा दिया है। आप इसकी पोस्ट, कार्यक्रम और अभ्यास नहीं देख पाएँगे और फिर से शामिल होने का अनुरोध भी नहीं कर पाएँगे';
+    return '$group के एक एडमिन ने आपको इस स्पेस से हटा दिया है। जब तक कोई एडमिन अनुमति न दे, आप फिर से शामिल नहीं हो पाएँगे';
   }
 
   @override
@@ -2272,12 +2271,12 @@ class AppLocalizationsHi extends AppLocalizations {
     String collection,
     String group,
   ) {
-    return 'WeBuddhist पर $group स्पेस का पाठ संग्रह \"$collection\" देखें। अभ्यास में हमारे साथ जुड़ें!';
+    return 'WeBuddhist पर $group की जप पुस्तक \"$collection\" देखें। अभ्यास में हमारे साथ जुड़ें!';
   }
 
   @override
   String group_recitation_collection_share_message_no_group(String collection) {
-    return 'WeBuddhist पर पाठ संग्रह \"$collection\" देखें। अभ्यास में हमारे साथ जुड़ें!';
+    return 'WeBuddhist पर जप पुस्तक \"$collection\" देखें। अभ्यास में हमारे साथ जुड़ें!';
   }
 
   @override
@@ -2979,7 +2978,7 @@ class AppLocalizationsHi extends AppLocalizations {
   String get event_prayer_add => 'प्रार्थना अनुरोध जोड़ें';
 
   @override
-  String get event_prayer_hint => 'आज हम आपके लिए कैसे प्रार्थना कर सकते हैं?';
+  String get event_prayer_hint => 'प्रार्थना अनुरोध साझा करें';
 
   @override
   String event_prayer_hint_intention(String topics) {
@@ -3712,7 +3711,7 @@ class AppLocalizationsHi extends AppLocalizations {
   String get group_event_practice_filter_content => 'Plans & series';
 
   @override
-  String get group_event_practice_filter_collections => 'Chant collections';
+  String get group_event_practice_filter_collections => 'Chant books';
 
   @override
   String get group_event_practice_filter_accumulators => 'Accumulations';
@@ -4127,7 +4126,7 @@ class AppLocalizationsHi extends AppLocalizations {
 
   @override
   String get chant_collection_reload_error =>
-      'Unable to reload collection to reorder';
+      'Unable to reload chant book to reorder';
 
   @override
   String get chant_collection_reorder_error => 'Unable to reorder chants';

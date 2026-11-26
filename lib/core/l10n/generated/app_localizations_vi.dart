@@ -2010,7 +2010,7 @@ class AppLocalizationsVi extends AppLocalizations {
   }
 
   @override
-  String group_remove_member_message(String duration) {
+  String group_remove_member_message(String duration, Object name) {
     return 'Họ sẽ bị xóa khỏi nhóm này và không thể tham gia lại trong $duration.';
   }
 

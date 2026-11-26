@@ -244,7 +244,7 @@ class AppLocalizationsBo extends AppLocalizations {
       'ཁྱེད་ཀྱི་རྒྱབ་སྐྱོར་གྱིས་ང་ཚོའི་ཚོགས་པ་འཕེལ་རྒྱས་ལ་རོགས་རམ་བྱེད།';
 
   @override
-  String get no_feature_content => 'ཆེད་སྒྲིག་ནང་དོན་མི་འདུག';
+  String get no_feature_content => 'གདམ་བསྒྲིགས་ནང་དོན་མི་འདུག';
 
   @override
   String get nav_home => 'མདུན་ངོས།';
@@ -299,7 +299,7 @@ class AppLocalizationsBo extends AppLocalizations {
 
   @override
   String commentary_not_available_for_language(String language) {
-    return '$language ཡི་འགྲེལ་བ་མི་འདུག';
+    return '$language ནང་འགྲེལ་བ་མི་འདུག';
   }
 
   @override
@@ -781,7 +781,7 @@ class AppLocalizationsBo extends AppLocalizations {
   String get connect_events_filter_empty_in_person => 'ངོ་བཅར་གྱི་ལས་རིམ་མེད།';
 
   @override
-  String get connect_events_filter_hybrid => 'མཉམ་བསྲེས';
+  String get connect_events_filter_hybrid => 'མཉམ་བསྲེས།';
 
   @override
   String get connect_events_filter_empty_hybrid =>
@@ -914,7 +914,7 @@ class AppLocalizationsBo extends AppLocalizations {
       'སྐུ་ཉིད་ཀྱི་ཉིན་རེའི་འཚོ་བ་དང་འཚམ་པའི་སྒེར་གྱི་སློབ་གཉེར་ཐུན་འཆར།';
 
   @override
-  String get creator_featured_plan => 'སྒྲིག་གཞི་ཡོད་པའི་ཉམས་ལེན།';
+  String get creator_featured_plan => 'གདམ་བསྒྲིགས་ཉམས་ལེན།';
 
   @override
   String get home_no_series_found => 'དཔེ་ཚོགས་རྙེད་མ་སོང་།';
@@ -1932,10 +1932,10 @@ class AppLocalizationsBo extends AppLocalizations {
   String get group_reports_section_posts => 'འགྲེམས་སྟོན།';
 
   @override
-  String get group_reports_section_comments => 'བསམ་ཚུལ།';
+  String get group_reports_section_comments => 'མཆན།';
 
   @override
-  String get group_reports_section_messages => 'འཕྲིན།';
+  String get group_reports_section_messages => 'འཕྲིན་ཐུང་།';
 
   @override
   String group_reports_count(int count) {
@@ -2021,17 +2021,16 @@ class AppLocalizationsBo extends AppLocalizations {
 
   @override
   String group_remove_member_title(String name) {
-    return '$name ཕུད།';
+    return 'ཚོགས་པ་ནས་ཕུད་དམ།';
   }
 
   @override
-  String group_remove_member_message(String duration) {
-    return 'ཁོང་ཚོགས་པ་འདི་ནས་ཕུད་འགྲོ་བ་དང་། དུས་ཡུན་$duration རིང་ཡང་བསྐྱར་ཞུགས་མི་ཐུབ།';
+  String group_remove_member_message(String duration, Object name) {
+    return '$name ཚོགས་པ་འདི་ནས་ཕུད་འགྲོ་བ་དང་། བཀག་སྡོམ་མ་བཏང་བར་ཡང་བསྐྱར་ཞུགས་མི་ཐུབ།';
   }
 
   @override
-  String get group_remove_member_blocked_for =>
-      'ཡང་བསྐྱར་ཞུགས་མི་ཐུབ་པའི་དུས་ཡུན';
+  String get group_remove_member_blocked_for => 'བཀག་སྡོམ་དུས་ཡུན།';
 
   @override
   String get group_remove_member_duration_day => 'ཉིན་ 1';
@@ -2048,11 +2047,10 @@ class AppLocalizationsBo extends AppLocalizations {
   String get group_remove_member_reason_label => 'རྒྱུ་མཚན། (གདམ་ཀ)';
 
   @override
-  String get group_remove_member_reason_hint =>
-      'ཚོགས་མི་འདི་ཅིའི་ཕྱིར་ཕུད་གི་ཡོད་དམ།';
+  String get group_remove_member_reason_hint => 'གཞན།...';
 
   @override
-  String get group_remove_member_action => 'ཚོགས་མི་ཕུད།';
+  String get group_remove_member_action => 'ཕུད།';
 
   @override
   String group_remove_member_success(String name) {
@@ -3721,7 +3719,7 @@ class AppLocalizationsBo extends AppLocalizations {
   String get group_event_practice_filter_content => 'Plans & series';
 
   @override
-  String get group_event_practice_filter_collections => 'Chant collections';
+  String get group_event_practice_filter_collections => 'Chant books';
 
   @override
   String get group_event_practice_filter_accumulators => 'Accumulations';
@@ -4136,7 +4134,7 @@ class AppLocalizationsBo extends AppLocalizations {
 
   @override
   String get chant_collection_reload_error =>
-      'Unable to reload collection to reorder';
+      'Unable to reload chant book to reorder';
 
   @override
   String get chant_collection_reorder_error => 'Unable to reorder chants';
