@@ -1992,7 +1992,7 @@ class AppLocalizationsTh extends AppLocalizations {
   }
 
   @override
-  String group_remove_member_message(String duration, Object name) {
+  String group_remove_member_message(String duration) {
     return 'สมาชิกจะถูกนำออกจากกลุ่มนี้ และเข้าร่วมใหม่ไม่ได้เป็นเวลา $duration';
   }
 

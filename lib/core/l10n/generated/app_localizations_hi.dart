@@ -2019,7 +2019,7 @@ class AppLocalizationsHi extends AppLocalizations {
   }
 
   @override
-  String group_remove_member_message(String duration, Object name) {
+  String group_remove_member_message(String duration) {
     return 'उन्हें इस स्पेस से हटा दिया जाएगा और वे $duration तक फिर से शामिल नहीं हो पाएँगे।';
   }
 

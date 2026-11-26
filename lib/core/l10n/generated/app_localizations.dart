@@ -3633,7 +3633,7 @@ abstract class AppLocalizations {
   ///
   /// In en, this message translates to:
   /// **'They\'ll be removed from this space and can\'t rejoin for {duration}.'**
-  String group_remove_member_message(String duration, Object name);
+  String group_remove_member_message(String duration);
 
   /// No description provided for @group_remove_member_blocked_for.
   ///

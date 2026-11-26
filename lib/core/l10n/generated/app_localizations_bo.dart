@@ -2021,12 +2021,12 @@ class AppLocalizationsBo extends AppLocalizations {
 
   @override
   String group_remove_member_title(String name) {
-    return 'ཚོགས་པ་ནས་ཕུད་དམ།';
+    return 'Remove $name';
   }
 
   @override
-  String group_remove_member_message(String duration, Object name) {
-    return '$name ཚོགས་པ་འདི་ནས་ཕུད་འགྲོ་བ་དང་། བཀག་སྡོམ་མ་བཏང་བར་ཡང་བསྐྱར་ཞུགས་མི་ཐུབ།';
+  String group_remove_member_message(String duration) {
+    return 'They\'ll be removed from this space and can\'t rejoin for $duration.';
   }
 
   @override

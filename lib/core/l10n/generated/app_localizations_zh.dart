@@ -1917,12 +1917,12 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String group_remove_member_title(String name) {
-    return '要從社群中移除嗎？';
+    return '移除 $name';
   }
 
   @override
-  String group_remove_member_message(String duration, Object name) {
-    return '$name 將被移出此社群，且在禁令解除前無法重新加入';
+  String group_remove_member_message(String duration) {
+    return '對方將被移出此社群，並在 $duration 內無法重新加入。';
   }
 
   @override
@@ -6241,7 +6241,7 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   }
 
   @override
-  String group_remove_member_message(String duration, Object name) {
+  String group_remove_member_message(String duration) {
     return '对方将被移出此社群，并在 $duration 内无法重新加入。';
   }
 

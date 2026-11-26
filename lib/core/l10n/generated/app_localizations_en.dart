@@ -2005,7 +2005,7 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String group_remove_member_message(String duration, Object name) {
+  String group_remove_member_message(String duration) {
     return 'They\'ll be removed from this space and can\'t rejoin for $duration.';
   }
 

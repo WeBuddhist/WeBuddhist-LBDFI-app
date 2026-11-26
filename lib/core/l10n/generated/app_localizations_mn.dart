@@ -2025,7 +2025,7 @@ class AppLocalizationsMn extends AppLocalizations {
   }
 
   @override
-  String group_remove_member_message(String duration, Object name) {
+  String group_remove_member_message(String duration) {
     return 'Түүнийг энэ орон зайгаас хасах бөгөөд $duration хугацаанд дахин нэгдэх боломжгүй.';
   }
 
