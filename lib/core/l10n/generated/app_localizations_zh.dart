@@ -70,6 +70,16 @@ class AppLocalizationsZh extends AppLocalizations {
   }
 
   @override
+  String home_practices_sessions(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count 次',
+    );
+    return '$_temp0';
+  }
+
+  @override
   String get home_shortcut_plans => '計劃';
 
   @override
@@ -4040,6 +4050,34 @@ class AppLocalizationsZh extends AppLocalizations {
   String get timer_duration_sec => 'sec';
 
   @override
+  String get timer_resume => 'Resume';
+
+  @override
+  String get timer_paused_caption => 'Paused · tap to resume';
+
+  @override
+  String get timer_discard_title => 'Discard this session?';
+
+  @override
+  String timer_discard_message(String elapsed) {
+    return 'Your $elapsed of practice won’t be saved';
+  }
+
+  @override
+  String get timer_save_session => 'Save session';
+
+  @override
+  String get timer_session_saved => 'Session saved';
+
+  @override
+  String get timer_session_complete => 'Session complete';
+
+  @override
+  String timer_saved_to_practice(String elapsed) {
+    return '$elapsed · saved to your practice';
+  }
+
+  @override
   String get reader_display_title => '顯示';
 
   @override
@@ -4263,6 +4301,57 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get mala_appearance_save_failed => '無法儲存。請再試一次';
+
+  @override
+  String get session_search_plans_hint => '搜尋計劃';
+
+  @override
+  String get session_search_chants_hint => '搜尋持誦';
+
+  @override
+  String get session_search_malas_hint => '搜尋念珠';
+
+  @override
+  String get session_search_timers_hint => '依名稱或時長搜尋計時';
+
+  @override
+  String search_min_query_length(int count) {
+    return '請至少輸入 $count 個字元以搜尋';
+  }
+
+  @override
+  String get practice_next_session => '下一堂課程';
+
+  @override
+  String practice_more_in_session(int count) {
+    return '此課程還有 $count 項';
+  }
+
+  @override
+  String get practice_from_your_spaces => '來自你的社群';
+
+  @override
+  String get practice_discover_more => '探索更多';
+
+  @override
+  String get practice_space_accumulations => '社群持誦計數';
+
+  @override
+  String get practice_no_space_accumulations => '目前沒有其他社群的持誦計數';
+
+  @override
+  String get practice_search_hint => '搜尋修持';
+
+  @override
+  String get practice_search_recent => '最近';
+
+  @override
+  String practice_search_no_results(String query) {
+    return '找不到「$query」的結果';
+  }
+
+  @override
+  String get practice_popular_practices => '熱門修持';
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hans`).
@@ -4328,6 +4417,16 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   @override
   String home_recitation_count(int count) {
     return '$count 持诵';
+  }
+
+  @override
+  String home_practices_sessions(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count 次',
+    );
+    return '$_temp0';
   }
 
   @override
@@ -8303,4 +8402,55 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String get mala_appearance_save_failed => '无法保存。请再试一次';
+
+  @override
+  String get session_search_plans_hint => '搜索计划';
+
+  @override
+  String get session_search_chants_hint => '搜索持诵';
+
+  @override
+  String get session_search_malas_hint => '搜索念珠';
+
+  @override
+  String get session_search_timers_hint => '按名称或时长搜索计时';
+
+  @override
+  String search_min_query_length(int count) {
+    return '请至少输入 $count 个字符以搜索';
+  }
+
+  @override
+  String get practice_next_session => '下一堂课程';
+
+  @override
+  String practice_more_in_session(int count) {
+    return '此课程还有 $count 项';
+  }
+
+  @override
+  String get practice_from_your_spaces => '来自你的社群';
+
+  @override
+  String get practice_discover_more => '探索更多';
+
+  @override
+  String get practice_space_accumulations => '社群持诵计数';
+
+  @override
+  String get practice_no_space_accumulations => '目前没有其他社群的持诵计数';
+
+  @override
+  String get practice_search_hint => '搜索修持';
+
+  @override
+  String get practice_search_recent => '最近';
+
+  @override
+  String practice_search_no_results(String query) {
+    return '找不到“$query”的结果';
+  }
+
+  @override
+  String get practice_popular_practices => '热门修持';
 }

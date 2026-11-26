@@ -74,6 +74,17 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String home_practices_sessions(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count sessions',
+      one: '1 session',
+    );
+    return '$_temp0';
+  }
+
+  @override
   String get home_shortcut_plans => 'Plans';
 
   @override
@@ -4173,6 +4184,34 @@ class AppLocalizationsEn extends AppLocalizations {
   String get timer_duration_sec => 'sec';
 
   @override
+  String get timer_resume => 'Resume';
+
+  @override
+  String get timer_paused_caption => 'Paused · tap to resume';
+
+  @override
+  String get timer_discard_title => 'Discard this session?';
+
+  @override
+  String timer_discard_message(String elapsed) {
+    return 'Your $elapsed of practice won’t be saved';
+  }
+
+  @override
+  String get timer_save_session => 'Save session';
+
+  @override
+  String get timer_session_saved => 'Session saved';
+
+  @override
+  String get timer_session_complete => 'Session complete';
+
+  @override
+  String timer_saved_to_practice(String elapsed) {
+    return '$elapsed · saved to your practice';
+  }
+
+  @override
   String get reader_display_title => 'Display';
 
   @override
@@ -4399,4 +4438,62 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get mala_appearance_save_failed => 'Couldn\'t save. Please try again';
+
+  @override
+  String get session_search_plans_hint => 'Search plans';
+
+  @override
+  String get session_search_chants_hint => 'Search chants';
+
+  @override
+  String get session_search_malas_hint => 'Search malas';
+
+  @override
+  String get session_search_timers_hint => 'Search timers by name or length';
+
+  @override
+  String search_min_query_length(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Type at least $count characters to search',
+      one: 'Type at least 1 character to search',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get practice_next_session => 'Next session';
+
+  @override
+  String practice_more_in_session(int count) {
+    return '+$count more in this session';
+  }
+
+  @override
+  String get practice_from_your_spaces => 'From your spaces';
+
+  @override
+  String get practice_discover_more => 'Discover more';
+
+  @override
+  String get practice_space_accumulations => 'Space accumulations';
+
+  @override
+  String get practice_no_space_accumulations =>
+      'No accumulations from other spaces right now';
+
+  @override
+  String get practice_search_hint => 'Search practices';
+
+  @override
+  String get practice_search_recent => 'Recent';
+
+  @override
+  String practice_search_no_results(String query) {
+    return 'No results for \"$query\"';
+  }
+
+  @override
+  String get practice_popular_practices => 'Popular practices';
 }

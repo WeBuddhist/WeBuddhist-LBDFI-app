@@ -73,6 +73,17 @@ class AppLocalizationsBo extends AppLocalizations {
   }
 
   @override
+  String home_practices_sessions(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'ཐུན་ $count',
+      one: 'ཐུན་ 1',
+    );
+    return '$_temp0';
+  }
+
+  @override
   String get home_shortcut_plans => 'ཐུན་འཆར།';
 
   @override
@@ -4212,6 +4223,34 @@ class AppLocalizationsBo extends AppLocalizations {
   String get timer_duration_sec => 'sec';
 
   @override
+  String get timer_resume => 'Resume';
+
+  @override
+  String get timer_paused_caption => 'Paused · tap to resume';
+
+  @override
+  String get timer_discard_title => 'Discard this session?';
+
+  @override
+  String timer_discard_message(String elapsed) {
+    return 'Your $elapsed of practice won’t be saved';
+  }
+
+  @override
+  String get timer_save_session => 'Save session';
+
+  @override
+  String get timer_session_saved => 'Session saved';
+
+  @override
+  String get timer_session_complete => 'Session complete';
+
+  @override
+  String timer_saved_to_practice(String elapsed) {
+    return '$elapsed · saved to your practice';
+  }
+
+  @override
   String get reader_display_title => 'མངོན་ཚུལ།';
 
   @override
@@ -4440,4 +4479,56 @@ class AppLocalizationsBo extends AppLocalizations {
   @override
   String get mala_appearance_save_failed =>
       'ཉར་ཚགས་བྱེད་མ་ཐུབ། བསྐྱར་དུ་ཚོད་ལྟ་བྱོས།';
+
+  @override
+  String get session_search_plans_hint => 'ཐུན་འཆར་འཚོལ།';
+
+  @override
+  String get session_search_chants_hint => 'ཞལ་འདོན་འཚོལ།';
+
+  @override
+  String get session_search_malas_hint => 'ཕྲེང་བ་འཚོལ།';
+
+  @override
+  String get session_search_timers_hint => 'མིང་ངམ་དུས་ཡུན་གྱིས་སྒོམ་ཡུན་འཚོལ།';
+
+  @override
+  String search_min_query_length(int count) {
+    return 'འཚོལ་བར་ཡི་གེ་ཉུང་མཐར་ $count འབྲི་དགོས།';
+  }
+
+  @override
+  String get practice_next_session => 'ཉམས་ལེན་ཚན་པ་རྗེས་མ།';
+
+  @override
+  String practice_more_in_session(int count) {
+    return 'ཚན་པ་འདིའི་ནང་ +$count གཞན།';
+  }
+
+  @override
+  String get practice_from_your_spaces => 'ཁྱེད་ཀྱི་ཚོགས་པ་ནས།';
+
+  @override
+  String get practice_discover_more => 'དེ་ལས་མང་བ་གསར་རྙེད།';
+
+  @override
+  String get practice_space_accumulations => 'ཚོགས་པའི་བསགས་གྲངས།';
+
+  @override
+  String get practice_no_space_accumulations =>
+      'ད་ལྟ་ཚོགས་པ་གཞན་དག་གི་བསགས་གྲངས་མི་འདུག';
+
+  @override
+  String get practice_search_hint => 'ཉམས་ལེན་འཚོལ།';
+
+  @override
+  String get practice_search_recent => 'ཉེ་ཆར།';
+
+  @override
+  String practice_search_no_results(String query) {
+    return '\"$query\" ཡི་འབྲས་བུ་མི་འདུག';
+  }
+
+  @override
+  String get practice_popular_practices => 'དར་ཁྱབ་ཆེ་བའི་ཉམས་ལེན།';
 }

@@ -227,6 +227,12 @@ abstract class AppLocalizations {
   /// **'{count} chants'**
   String home_recitation_count(int count);
 
+  /// No description provided for @home_practices_sessions.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural,\n=1 {1 session}\nother {{count} sessions}\n}'**
+  String home_practices_sessions(int count);
+
   /// No description provided for @home_shortcut_plans.
   ///
   /// In en, this message translates to:
@@ -7297,6 +7303,54 @@ abstract class AppLocalizations {
   /// **'sec'**
   String get timer_duration_sec;
 
+  /// No description provided for @timer_resume.
+  ///
+  /// In en, this message translates to:
+  /// **'Resume'**
+  String get timer_resume;
+
+  /// No description provided for @timer_paused_caption.
+  ///
+  /// In en, this message translates to:
+  /// **'Paused · tap to resume'**
+  String get timer_paused_caption;
+
+  /// No description provided for @timer_discard_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Discard this session?'**
+  String get timer_discard_title;
+
+  /// No description provided for @timer_discard_message.
+  ///
+  /// In en, this message translates to:
+  /// **'Your {elapsed} of practice won’t be saved'**
+  String timer_discard_message(String elapsed);
+
+  /// No description provided for @timer_save_session.
+  ///
+  /// In en, this message translates to:
+  /// **'Save session'**
+  String get timer_save_session;
+
+  /// No description provided for @timer_session_saved.
+  ///
+  /// In en, this message translates to:
+  /// **'Session saved'**
+  String get timer_session_saved;
+
+  /// No description provided for @timer_session_complete.
+  ///
+  /// In en, this message translates to:
+  /// **'Session complete'**
+  String get timer_session_complete;
+
+  /// No description provided for @timer_saved_to_practice.
+  ///
+  /// In en, this message translates to:
+  /// **'{elapsed} · saved to your practice'**
+  String timer_saved_to_practice(String elapsed);
+
   /// No description provided for @reader_display_title.
   ///
   /// In en, this message translates to:
@@ -7722,6 +7776,96 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Couldn\'t save. Please try again'**
   String get mala_appearance_save_failed;
+
+  /// Search field hint on the Plans tab of Add to session.
+  ///
+  /// In en, this message translates to:
+  /// **'Search plans'**
+  String get session_search_plans_hint;
+
+  /// Search field hint on the Chants tab of Add to session.
+  ///
+  /// In en, this message translates to:
+  /// **'Search chants'**
+  String get session_search_chants_hint;
+
+  /// Search field hint on the Malas tab of Add to session.
+  ///
+  /// In en, this message translates to:
+  /// **'Search malas'**
+  String get session_search_malas_hint;
+
+  /// Search field hint on the Timers tab of Add to session; timers match by name or by duration such as '10 min'.
+  ///
+  /// In en, this message translates to:
+  /// **'Search timers by name or length'**
+  String get session_search_timers_hint;
+
+  /// Shown instead of results while a search query is shorter than the minimum the server accepts.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{Type at least 1 character to search} other{Type at least {count} characters to search}}'**
+  String search_min_query_length(int count);
+
+  /// No description provided for @practice_next_session.
+  ///
+  /// In en, this message translates to:
+  /// **'Next session'**
+  String get practice_next_session;
+
+  /// No description provided for @practice_more_in_session.
+  ///
+  /// In en, this message translates to:
+  /// **'+{count} more in this session'**
+  String practice_more_in_session(int count);
+
+  /// No description provided for @practice_from_your_spaces.
+  ///
+  /// In en, this message translates to:
+  /// **'From your spaces'**
+  String get practice_from_your_spaces;
+
+  /// No description provided for @practice_discover_more.
+  ///
+  /// In en, this message translates to:
+  /// **'Discover more'**
+  String get practice_discover_more;
+
+  /// No description provided for @practice_space_accumulations.
+  ///
+  /// In en, this message translates to:
+  /// **'Space accumulations'**
+  String get practice_space_accumulations;
+
+  /// No description provided for @practice_no_space_accumulations.
+  ///
+  /// In en, this message translates to:
+  /// **'No accumulations from other spaces right now'**
+  String get practice_no_space_accumulations;
+
+  /// No description provided for @practice_search_hint.
+  ///
+  /// In en, this message translates to:
+  /// **'Search practices'**
+  String get practice_search_hint;
+
+  /// No description provided for @practice_search_recent.
+  ///
+  /// In en, this message translates to:
+  /// **'Recent'**
+  String get practice_search_recent;
+
+  /// No description provided for @practice_search_no_results.
+  ///
+  /// In en, this message translates to:
+  /// **'No results for \"{query}\"'**
+  String practice_search_no_results(String query);
+
+  /// No description provided for @practice_popular_practices.
+  ///
+  /// In en, this message translates to:
+  /// **'Popular practices'**
+  String get practice_popular_practices;
 }
 
 class _AppLocalizationsDelegate

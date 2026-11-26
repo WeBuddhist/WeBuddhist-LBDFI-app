@@ -224,6 +224,7 @@ void main() {
       'method': 'google-oauth2',
       'source': null,
       'is_new_user': true,
+      r'$set_once': {'signup_method': 'google-oauth2'},
     });
   });
 

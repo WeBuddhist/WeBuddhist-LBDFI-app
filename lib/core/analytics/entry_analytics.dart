@@ -54,15 +54,23 @@ class EntryAnalytics {
 
   /// A push tap was routed. [sessionType] and [sourceId] are the payload's
   /// own values, null when it carried none.
+  ///
+  /// [notificationId] and [campaign] come from the push data once the backend
+  /// sends them; they are left out until then.
   void pushNotificationOpened({
     required PushAppState appState,
     String? sessionType,
     String? sourceId,
+    String? notificationId,
+    String? campaign,
   }) {
     _analytics.trackInBackground(AnalyticsEvents.pushNotificationOpened, {
       AnalyticsProperties.sessionType: sessionType,
       AnalyticsProperties.sourceId: sourceId,
       AnalyticsProperties.appState: appState.name,
+      if (notificationId != null)
+        AnalyticsProperties.notificationId: notificationId,
+      if (campaign != null) AnalyticsProperties.campaign: campaign,
     });
   }
 

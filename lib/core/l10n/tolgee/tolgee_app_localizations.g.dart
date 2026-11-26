@@ -140,6 +140,14 @@ class TolgeeAppLocalizations extends AppLocalizations {
   );
 
   @override
+  String home_practices_sessions(int count) => TolgeeBridge.format(
+    localeName,
+    'home_practices_sessions',
+    <String, Object>{'count': count},
+    () => _fallback.home_practices_sessions(count),
+  );
+
+  @override
   String get home_shortcut_plans => TolgeeBridge.get(
     localeName,
     'home_shortcut_plans',
@@ -8301,6 +8309,64 @@ class TolgeeAppLocalizations extends AppLocalizations {
   );
 
   @override
+  String get timer_resume => TolgeeBridge.get(
+    localeName,
+    'timer_resume',
+    () => _fallback.timer_resume,
+  );
+
+  @override
+  String get timer_paused_caption => TolgeeBridge.get(
+    localeName,
+    'timer_paused_caption',
+    () => _fallback.timer_paused_caption,
+  );
+
+  @override
+  String get timer_discard_title => TolgeeBridge.get(
+    localeName,
+    'timer_discard_title',
+    () => _fallback.timer_discard_title,
+  );
+
+  @override
+  String timer_discard_message(String elapsed) => TolgeeBridge.format(
+    localeName,
+    'timer_discard_message',
+    <String, Object>{'elapsed': elapsed},
+    () => _fallback.timer_discard_message(elapsed),
+  );
+
+  @override
+  String get timer_save_session => TolgeeBridge.get(
+    localeName,
+    'timer_save_session',
+    () => _fallback.timer_save_session,
+  );
+
+  @override
+  String get timer_session_saved => TolgeeBridge.get(
+    localeName,
+    'timer_session_saved',
+    () => _fallback.timer_session_saved,
+  );
+
+  @override
+  String get timer_session_complete => TolgeeBridge.get(
+    localeName,
+    'timer_session_complete',
+    () => _fallback.timer_session_complete,
+  );
+
+  @override
+  String timer_saved_to_practice(String elapsed) => TolgeeBridge.format(
+    localeName,
+    'timer_saved_to_practice',
+    <String, Object>{'elapsed': elapsed},
+    () => _fallback.timer_saved_to_practice(elapsed),
+  );
+
+  @override
   String get reader_display_title => TolgeeBridge.get(
     localeName,
     'reader_display_title',
@@ -8798,5 +8864,113 @@ class TolgeeAppLocalizations extends AppLocalizations {
     localeName,
     'mala_appearance_save_failed',
     () => _fallback.mala_appearance_save_failed,
+  );
+
+  @override
+  String get session_search_plans_hint => TolgeeBridge.get(
+    localeName,
+    'session_search_plans_hint',
+    () => _fallback.session_search_plans_hint,
+  );
+
+  @override
+  String get session_search_chants_hint => TolgeeBridge.get(
+    localeName,
+    'session_search_chants_hint',
+    () => _fallback.session_search_chants_hint,
+  );
+
+  @override
+  String get session_search_malas_hint => TolgeeBridge.get(
+    localeName,
+    'session_search_malas_hint',
+    () => _fallback.session_search_malas_hint,
+  );
+
+  @override
+  String get session_search_timers_hint => TolgeeBridge.get(
+    localeName,
+    'session_search_timers_hint',
+    () => _fallback.session_search_timers_hint,
+  );
+
+  @override
+  String search_min_query_length(int count) => TolgeeBridge.format(
+    localeName,
+    'search_min_query_length',
+    <String, Object>{'count': count},
+    () => _fallback.search_min_query_length(count),
+  );
+
+  @override
+  String get practice_next_session => TolgeeBridge.get(
+    localeName,
+    'practice_next_session',
+    () => _fallback.practice_next_session,
+  );
+
+  @override
+  String practice_more_in_session(int count) => TolgeeBridge.format(
+    localeName,
+    'practice_more_in_session',
+    <String, Object>{'count': count},
+    () => _fallback.practice_more_in_session(count),
+  );
+
+  @override
+  String get practice_from_your_spaces => TolgeeBridge.get(
+    localeName,
+    'practice_from_your_spaces',
+    () => _fallback.practice_from_your_spaces,
+  );
+
+  @override
+  String get practice_discover_more => TolgeeBridge.get(
+    localeName,
+    'practice_discover_more',
+    () => _fallback.practice_discover_more,
+  );
+
+  @override
+  String get practice_space_accumulations => TolgeeBridge.get(
+    localeName,
+    'practice_space_accumulations',
+    () => _fallback.practice_space_accumulations,
+  );
+
+  @override
+  String get practice_no_space_accumulations => TolgeeBridge.get(
+    localeName,
+    'practice_no_space_accumulations',
+    () => _fallback.practice_no_space_accumulations,
+  );
+
+  @override
+  String get practice_search_hint => TolgeeBridge.get(
+    localeName,
+    'practice_search_hint',
+    () => _fallback.practice_search_hint,
+  );
+
+  @override
+  String get practice_search_recent => TolgeeBridge.get(
+    localeName,
+    'practice_search_recent',
+    () => _fallback.practice_search_recent,
+  );
+
+  @override
+  String practice_search_no_results(String query) => TolgeeBridge.format(
+    localeName,
+    'practice_search_no_results',
+    <String, Object>{'query': query},
+    () => _fallback.practice_search_no_results(query),
+  );
+
+  @override
+  String get practice_popular_practices => TolgeeBridge.get(
+    localeName,
+    'practice_popular_practices',
+    () => _fallback.practice_popular_practices,
   );
 }

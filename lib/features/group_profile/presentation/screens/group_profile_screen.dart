@@ -70,6 +70,7 @@ class _GroupProfileScreenState extends ConsumerState<GroupProfileScreen> {
         PrayerRequestsSheet.show(
           context,
           scope: PrayerRoomScope.group(widget.groupId),
+          source: 'link',
         ),
       );
     });

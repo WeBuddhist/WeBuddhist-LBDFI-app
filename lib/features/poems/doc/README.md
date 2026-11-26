@@ -6,7 +6,8 @@
 
 Full-screen, story-style poems viewer: swipe horizontally between published
 poems, each with a collapsing cover image, title, body, author and chapter.
-Home shows a three-poem preview that opens the viewer on the tapped poem.
+Home shows three poems as a row of cards inside its feed (the next card
+peeks in from the right); tapping one opens the viewer on that poem.
 
 ## User-facing functionality
 

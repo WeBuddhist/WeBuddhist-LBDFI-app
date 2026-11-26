@@ -73,6 +73,16 @@ class AppLocalizationsVi extends AppLocalizations {
   }
 
   @override
+  String home_practices_sessions(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count buổi',
+    );
+    return '$_temp0';
+  }
+
+  @override
   String get home_shortcut_plans => 'Lộ trình';
 
   @override
@@ -4202,6 +4212,34 @@ class AppLocalizationsVi extends AppLocalizations {
   String get timer_duration_sec => 'giây';
 
   @override
+  String get timer_resume => 'Resume';
+
+  @override
+  String get timer_paused_caption => 'Paused · tap to resume';
+
+  @override
+  String get timer_discard_title => 'Discard this session?';
+
+  @override
+  String timer_discard_message(String elapsed) {
+    return 'Your $elapsed of practice won’t be saved';
+  }
+
+  @override
+  String get timer_save_session => 'Save session';
+
+  @override
+  String get timer_session_saved => 'Session saved';
+
+  @override
+  String get timer_session_complete => 'Session complete';
+
+  @override
+  String timer_saved_to_practice(String elapsed) {
+    return '$elapsed · saved to your practice';
+  }
+
+  @override
   String get reader_display_title => 'Display';
 
   @override
@@ -4428,4 +4466,57 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get mala_appearance_save_failed => 'Không lưu được. Vui lòng thử lại';
+
+  @override
+  String get session_search_plans_hint => 'Tìm kiếm lộ trình';
+
+  @override
+  String get session_search_chants_hint => 'Tìm kiếm bài tụng';
+
+  @override
+  String get session_search_malas_hint => 'Tìm kiếm chuỗi hạt';
+
+  @override
+  String get session_search_timers_hint =>
+      'Tìm hẹn giờ theo tên hoặc thời lượng';
+
+  @override
+  String search_min_query_length(int count) {
+    return 'Nhập ít nhất $count ký tự để tìm kiếm';
+  }
+
+  @override
+  String get practice_next_session => 'Buổi tu tiếp theo';
+
+  @override
+  String practice_more_in_session(int count) {
+    return '+$count mục khác trong buổi này';
+  }
+
+  @override
+  String get practice_from_your_spaces => 'Từ các nhóm của bạn';
+
+  @override
+  String get practice_discover_more => 'Khám phá thêm';
+
+  @override
+  String get practice_space_accumulations => 'Tích lũy của nhóm';
+
+  @override
+  String get practice_no_space_accumulations =>
+      'Hiện chưa có tích lũy nào từ các nhóm khác';
+
+  @override
+  String get practice_search_hint => 'Tìm thực hành';
+
+  @override
+  String get practice_search_recent => 'Gần đây';
+
+  @override
+  String practice_search_no_results(String query) {
+    return 'Không có kết quả cho \"$query\"';
+  }
+
+  @override
+  String get practice_popular_practices => 'Thực hành phổ biến';
 }

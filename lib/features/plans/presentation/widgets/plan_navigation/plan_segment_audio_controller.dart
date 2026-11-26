@@ -8,6 +8,24 @@ import 'package:just_audio/just_audio.dart';
 /// Visual state of the play/pause button driven by [PlanSegmentAudioController].
 enum PlanAudioButtonState { play, loading, pause }
 
+/// What one player's life added up to, reported once when it is disposed.
+class PlanAudioListen {
+  const PlanAudioListen({
+    required this.listened,
+    required this.speed,
+    required this.repeat,
+    required this.completed,
+  });
+
+  /// Time the play button showed pause, i.e. audio was playing.
+  final Duration listened;
+  final double speed;
+  final bool repeat;
+
+  /// The slice played to its end at least once.
+  final bool completed;
+}
+
 /// Reusable audio engine for plan subtask playback, shared by `PlanTextScreen`
 /// (inline TEXT/IMAGE) and `ReaderScreen` (SOURCE_REFERENCE).
 ///
@@ -36,6 +54,7 @@ class PlanSegmentAudioController extends ChangeNotifier {
     required this.startMs,
     required this.endMs,
     required this.onSegmentComplete,
+    this.onListened,
   }) : progress = ValueNotifier(
          describePlanAudioProgress(
            position: Duration.zero,
@@ -60,6 +79,14 @@ class PlanSegmentAudioController extends ChangeNotifier {
 
   /// Fired once when the segment finishes playing.
   final VoidCallback onSegmentComplete;
+
+  /// Fired once from [dispose] with how long audio played, for analytics.
+  final void Function(PlanAudioListen listen)? onListened;
+
+  /// Runs only while sound is really coming out: playing and ready, not
+  /// loading or buffering, and never after [cancel]. See [_onPlayerState].
+  final Stopwatch _listening = Stopwatch();
+  bool _completedOnce = false;
 
   AudioPlayer? _player;
   StreamSubscription<PlayerState>? _playerStateSub;
@@ -117,6 +144,9 @@ class PlanSegmentAudioController extends ChangeNotifier {
   void _setButtonState(PlanAudioButtonState state) {
     if (_isDisposed || _buttonState == state) return;
     _buttonState = state;
+    // Started by the player itself once audio is audible; any other button
+    // state means it isn't.
+    if (state != PlanAudioButtonState.pause) _listening.stop();
     notifyListeners();
   }
 
@@ -275,6 +305,14 @@ class PlanSegmentAudioController extends ChangeNotifier {
   /// The skip(1) on the subscription means the first BehaviorSubject emit
   /// (which is stale) never reaches this handler.
   void _onPlayerState(PlayerState state) {
+    // Count listening time only while sound is actually playing.
+    if (!_isDisposed &&
+        state.playing &&
+        state.processingState == ProcessingState.ready) {
+      _listening.start();
+    } else {
+      _listening.stop();
+    }
     if (_isDisposed || _buttonState != PlanAudioButtonState.pause) return;
     final ps = state.processingState;
     if (ps == ProcessingState.loading || ps == ProcessingState.buffering) {
@@ -334,6 +372,8 @@ class PlanSegmentAudioController extends ChangeNotifier {
   /// segment does not complete, so a plan task does not auto-advance.
   /// A pause that arrives while the seek is in flight stays paused.
   void _restartForRepeat() {
+    // A repeat pass means the slice was heard to its end.
+    _completedOnce = true;
     if (_loopRestarting || _isDisposed || _hasCompleted || !preferredRepeat) {
       return;
     }
@@ -393,6 +433,7 @@ class PlanSegmentAudioController extends ChangeNotifier {
   void _fireSegmentComplete() {
     if (_hasCompleted) return;
     _hasCompleted = true;
+    _completedOnce = true;
     onSegmentComplete();
     // Idle again so a caller that does not navigate away can replay or resume.
     _setButtonState(PlanAudioButtonState.play);
@@ -404,6 +445,7 @@ class PlanSegmentAudioController extends ChangeNotifier {
   /// Increments [_audioSessionId] so any in-flight [_startAudio] aborts before
   /// it can call play() on a session that has been cancelled.
   void cancel() {
+    _listening.stop(); // nothing plays after this, whatever the screen does
     _audioSessionId++; // invalidate any in-flight _startAudio
     _hasCompleted = true; // prevent late-firing position callbacks
     _pauseRequested = false;
@@ -427,6 +469,15 @@ class PlanSegmentAudioController extends ChangeNotifier {
 
   @override
   void dispose() {
+    _listening.stop();
+    onListened?.call(
+      PlanAudioListen(
+        listened: _listening.elapsed,
+        speed: preferredSpeed,
+        repeat: preferredRepeat,
+        completed: _completedOnce,
+      ),
+    );
     _isDisposed = true;
     cancel();
     progress.dispose();

@@ -33,6 +33,14 @@
       }
     }
   },
+  "home_practices_sessions": "{count, plural,\n=1 {1 session}\nother {{count} sessions}\n}",
+  "@home_practices_sessions": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "home_shortcut_plans": "Plans",
   "home_chants": "Chants",
   "home_mala": "Mala",
@@ -2122,6 +2130,28 @@
   "timer_duration_hours": "hours",
   "timer_duration_hr": "hr",
   "timer_duration_sec": "sec",
+  "timer_resume": "Resume",
+  "timer_paused_caption": "Paused · tap to resume",
+  "timer_discard_title": "Discard this session?",
+  "timer_discard_message": "Your {elapsed} of practice won’t be saved",
+  "@timer_discard_message": {
+    "placeholders": {
+      "elapsed": {
+        "type": "String"
+      }
+    }
+  },
+  "timer_save_session": "Save session",
+  "timer_session_saved": "Session saved",
+  "timer_session_complete": "Session complete",
+  "timer_saved_to_practice": "{elapsed} · saved to your practice",
+  "@timer_saved_to_practice": {
+    "placeholders": {
+      "elapsed": {
+        "type": "String"
+      }
+    }
+  },
   "reader_display_title": "Display",
   "text_size": "Text size",
   "reader_more_settings": "More settings",
@@ -2243,5 +2273,54 @@
   "mala_images_load_error": "Could not load images",
   "mala_bookmarked": "Bookmarked",
   "mala_beads_load_error": "Could not load bead styles",
-  "mala_appearance_save_failed": "Couldn't save. Please try again"
+  "mala_appearance_save_failed": "Couldn't save. Please try again",
+  "session_search_plans_hint": "Search plans",
+  "@session_search_plans_hint": {
+    "description": "Search field hint on the Plans tab of Add to session."
+  },
+  "session_search_chants_hint": "Search chants",
+  "@session_search_chants_hint": {
+    "description": "Search field hint on the Chants tab of Add to session."
+  },
+  "session_search_malas_hint": "Search malas",
+  "@session_search_malas_hint": {
+    "description": "Search field hint on the Malas tab of Add to session."
+  },
+  "session_search_timers_hint": "Search timers by name or length",
+  "@session_search_timers_hint": {
+    "description": "Search field hint on the Timers tab of Add to session; timers match by name or by duration such as '10 min'."
+  },
+  "search_min_query_length": "{count, plural, =1{Type at least 1 character to search} other{Type at least {count} characters to search}}",
+  "@search_min_query_length": {
+    "description": "Shown instead of results while a search query is shorter than the minimum the server accepts.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "practice_next_session": "Next session",
+  "practice_more_in_session": "+{count} more in this session",
+  "@practice_more_in_session": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "practice_from_your_spaces": "From your spaces",
+  "practice_discover_more": "Discover more",
+  "practice_space_accumulations": "Space accumulations",
+  "practice_no_space_accumulations": "No accumulations from other spaces right now",
+  "practice_search_hint": "Search practices",
+  "practice_search_recent": "Recent",
+  "practice_search_no_results": "No results for \"{query}\"",
+  "@practice_search_no_results": {
+    "placeholders": {
+      "query": {
+        "type": "String"
+      }
+    }
+  },
+  "practice_popular_practices": "Popular practices"
 }

@@ -29,6 +29,7 @@ import 'package:flutter_pecha/features/practice/presentation/controllers/bookmar
 import 'package:flutter_pecha/features/practice/presentation/providers/bookmark_providers.dart';
 import 'package:flutter_pecha/shared/utils/helper_functions.dart';
 import 'package:flutter_pecha/shared/widgets/app_toggle_switch.dart';
+import 'package:flutter_pecha/features/mala/presentation/utils/mala_analytics.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:share_plus/share_plus.dart';
@@ -347,6 +348,7 @@ class _ResetCountTile extends ConsumerWidget {
     final selection = ref.read(
       malaAccumulationSelectionProvider(mantra.presetId),
     );
+    final analytics = ref.read(malaAnalyticsProvider);
 
     final result = await showDestructiveConfirmationDialog(
       context,
@@ -367,6 +369,13 @@ class _ResetCountTile extends ConsumerWidget {
             .resetCount(groupAccumulatorId: groupAccumulatorId);
       },
     );
+    if (result == true) {
+      analytics.countReset(
+        presetId: mantra.presetId,
+        groupAccumulatorId:
+            selection.isPersonal ? null : selection.groupAccumulatorId,
+      );
+    }
     if (!context.mounted) return;
     if (result == true) {
       if (!selection.isPersonal) {

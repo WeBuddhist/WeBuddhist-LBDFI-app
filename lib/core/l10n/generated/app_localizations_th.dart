@@ -71,6 +71,16 @@ class AppLocalizationsTh extends AppLocalizations {
   }
 
   @override
+  String home_practices_sessions(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count ครั้ง',
+    );
+    return '$_temp0';
+  }
+
+  @override
   String get home_shortcut_plans => 'แผนการปฏิบัติ';
 
   @override
@@ -4155,6 +4165,34 @@ class AppLocalizationsTh extends AppLocalizations {
   String get timer_duration_sec => 'วินาที';
 
   @override
+  String get timer_resume => 'Resume';
+
+  @override
+  String get timer_paused_caption => 'Paused · tap to resume';
+
+  @override
+  String get timer_discard_title => 'Discard this session?';
+
+  @override
+  String timer_discard_message(String elapsed) {
+    return 'Your $elapsed of practice won’t be saved';
+  }
+
+  @override
+  String get timer_save_session => 'Save session';
+
+  @override
+  String get timer_session_saved => 'Session saved';
+
+  @override
+  String get timer_session_complete => 'Session complete';
+
+  @override
+  String timer_saved_to_practice(String elapsed) {
+    return '$elapsed · saved to your practice';
+  }
+
+  @override
   String get reader_display_title => 'Display';
 
   @override
@@ -4381,4 +4419,56 @@ class AppLocalizationsTh extends AppLocalizations {
 
   @override
   String get mala_appearance_save_failed => 'บันทึกไม่สำเร็จ โปรดลองอีกครั้ง';
+
+  @override
+  String get session_search_plans_hint => 'ค้นหาแผนการปฏิบัติ';
+
+  @override
+  String get session_search_chants_hint => 'ค้นหาบทสวด';
+
+  @override
+  String get session_search_malas_hint => 'ค้นหาลูกประคำ';
+
+  @override
+  String get session_search_timers_hint => 'ค้นหาตัวจับเวลาตามชื่อหรือระยะเวลา';
+
+  @override
+  String search_min_query_length(int count) {
+    return 'พิมพ์อย่างน้อย $count ตัวอักษรเพื่อค้นหา';
+  }
+
+  @override
+  String get practice_next_session => 'ช่วงเวลาถัดไป';
+
+  @override
+  String practice_more_in_session(int count) {
+    return '+อีก $count รายการในช่วงเวลานี้';
+  }
+
+  @override
+  String get practice_from_your_spaces => 'จากกลุ่มของคุณ';
+
+  @override
+  String get practice_discover_more => 'ค้นพบเพิ่มเติม';
+
+  @override
+  String get practice_space_accumulations => 'ยอดสะสมของกลุ่ม';
+
+  @override
+  String get practice_no_space_accumulations =>
+      'ขณะนี้ยังไม่มียอดสะสมจากกลุ่มอื่น';
+
+  @override
+  String get practice_search_hint => 'ค้นหาการปฏิบัติ';
+
+  @override
+  String get practice_search_recent => 'ล่าสุด';
+
+  @override
+  String practice_search_no_results(String query) {
+    return 'ไม่พบผลลัพธ์สำหรับ \"$query\"';
+  }
+
+  @override
+  String get practice_popular_practices => 'การปฏิบัติยอดนิยม';
 }

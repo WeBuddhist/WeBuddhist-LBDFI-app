@@ -73,6 +73,16 @@ class AppLocalizationsMy extends AppLocalizations {
   }
 
   @override
+  String home_practices_sessions(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count ကြိမ်',
+    );
+    return '$_temp0';
+  }
+
+  @override
   String get home_shortcut_plans => 'သင်ခန်းစာအစီအစဉ်များ';
 
   @override
@@ -4243,6 +4253,34 @@ class AppLocalizationsMy extends AppLocalizations {
   String get timer_duration_sec => 'စက္ကန့်';
 
   @override
+  String get timer_resume => 'Resume';
+
+  @override
+  String get timer_paused_caption => 'Paused · tap to resume';
+
+  @override
+  String get timer_discard_title => 'Discard this session?';
+
+  @override
+  String timer_discard_message(String elapsed) {
+    return 'Your $elapsed of practice won’t be saved';
+  }
+
+  @override
+  String get timer_save_session => 'Save session';
+
+  @override
+  String get timer_session_saved => 'Session saved';
+
+  @override
+  String get timer_session_complete => 'Session complete';
+
+  @override
+  String timer_saved_to_practice(String elapsed) {
+    return '$elapsed · saved to your practice';
+  }
+
+  @override
   String get reader_display_title => 'Display';
 
   @override
@@ -4469,4 +4507,57 @@ class AppLocalizationsMy extends AppLocalizations {
 
   @override
   String get mala_appearance_save_failed => 'သိမ်း၍ မရပါ။ ထပ်ကြိုးစားပါ';
+
+  @override
+  String get session_search_plans_hint => 'သင်ခန်းစာအစီအစဉ်များ ရှာဖွေရန်';
+
+  @override
+  String get session_search_chants_hint => 'ရွတ်ဆိုရန်စာများ ရှာဖွေရန်';
+
+  @override
+  String get session_search_malas_hint => 'ပုတီးများ ရှာဖွေရန်';
+
+  @override
+  String get session_search_timers_hint =>
+      'အမည် သို့မဟုတ် ကြာချိန်ဖြင့် အချိန်မှတ်စက် ရှာဖွေရန်';
+
+  @override
+  String search_min_query_length(int count) {
+    return 'ရှာဖွေရန် အနည်းဆုံး စာလုံး $count လုံး ရိုက်ထည့်ပါ';
+  }
+
+  @override
+  String get practice_next_session => 'နောက်အချိန်အပိုင်း';
+
+  @override
+  String practice_more_in_session(int count) {
+    return 'ဤအချိန်အပိုင်းတွင် +နောက်ထပ် $count ခု';
+  }
+
+  @override
+  String get practice_from_your_spaces => 'သင့်အဖွဲ့များမှ';
+
+  @override
+  String get practice_discover_more => 'ထပ်မံရှာဖွေရန်';
+
+  @override
+  String get practice_space_accumulations => 'အဖွဲ့ စုဆောင်းမှုများ';
+
+  @override
+  String get practice_no_space_accumulations =>
+      'လောလောဆယ် အခြားအဖွဲ့များမှ စုဆောင်းမှု မရှိပါ';
+
+  @override
+  String get practice_search_hint => 'ကျင့်စဉ်များ ရှာရန်';
+
+  @override
+  String get practice_search_recent => 'မကြာသေးမီက';
+
+  @override
+  String practice_search_no_results(String query) {
+    return '\"$query\" အတွက် ရလဒ် မရှိပါ';
+  }
+
+  @override
+  String get practice_popular_practices => 'လူကြိုက်များသော ကျင့်စဉ်များ';
 }

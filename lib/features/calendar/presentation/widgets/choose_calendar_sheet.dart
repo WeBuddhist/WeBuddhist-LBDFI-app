@@ -5,6 +5,7 @@ import 'package:flutter_pecha/core/theme/app_colors.dart';
 import 'package:flutter_pecha/features/calendar/domain/models/calendar_type.dart';
 import 'package:flutter_pecha/features/calendar/presentation/calendar_type_l10n.dart';
 import 'package:flutter_pecha/features/calendar/presentation/providers/calendar_type_providers.dart';
+import 'package:flutter_pecha/features/calendar/presentation/utils/calendar_analytics.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 /// "Choose calendar": the calendars on offer grouped under their tradition,
@@ -84,6 +85,12 @@ class ChooseCalendarSheet extends ConsumerWidget {
                   traditions: value,
                   selected: selected,
                   onPick: (code) {
+                    final from = ref.read(selectedCalendarTypeProvider);
+                    if (from != code) {
+                      ref
+                          .read(calendarAnalyticsProvider)
+                          .calendarTypeChanged(from: from, to: code);
+                    }
                     ref
                         .read(selectedCalendarTypeProvider.notifier)
                         .select(code);

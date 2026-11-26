@@ -197,6 +197,43 @@ class GroupEventAnalytics {
       AnalyticsProperties.linkType: kind.name,
     });
   }
+
+  /// An admin saved an event from the composer, as a draft or published.
+  /// [isEdit] is true when an existing event was changed.
+  void eventSaved({
+    required GroupEvent event,
+    required bool isDraft,
+    required bool isEdit,
+  }) {
+    _analytics.trackInBackground(
+      isDraft
+          ? AnalyticsEvents.groupEventDraftSaved
+          : AnalyticsEvents.groupEventPublished,
+      {
+        AnalyticsProperties.eventId: event.id,
+        AnalyticsProperties.groupId: event.groupId,
+        AnalyticsProperties.eventFormat: event.eventFormat,
+        AnalyticsProperties.isRecurring: event.isRecurring,
+        AnalyticsProperties.isEdit: isEdit,
+        AnalyticsProperties.hasPlan: event.planId != null,
+        AnalyticsProperties.hasSeries: event.seriesId != null,
+        AnalyticsProperties.hasCollection:
+            event.groupRecitationCollectionId != null,
+        AnalyticsProperties.hasAccumulation:
+            event.accumulatorId != null ||
+            event.groupAccumulatorId != null ||
+            event.accumulations.isNotEmpty,
+      },
+    );
+  }
+
+  /// An admin deleted a draft event.
+  void eventDeleted({required String eventId, required String groupId}) {
+    _analytics.trackInBackground(AnalyticsEvents.groupEventDeleted, {
+      AnalyticsProperties.eventId: eventId,
+      AnalyticsProperties.groupId: groupId,
+    });
+  }
 }
 
 final groupEventAnalyticsProvider = Provider<GroupEventAnalytics>((ref) {

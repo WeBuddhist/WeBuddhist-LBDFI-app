@@ -101,6 +101,9 @@ class ProtectedRoutes {
     // In-app feedback: the backend takes the sender from the token.
     '/feedback',
 
+    // v2 home feed: personalised per member, 403 without the token.
+    ApiConfig.feedV2Path,
+
     // "Request text" from Chants search: needs a signed-in user (the server
     // rate-limits per user).
     '/text-requests',
@@ -150,6 +153,9 @@ class ProtectedRoutes {
     '/groups/author/posts/{postId}/comments',
     // Group feeds: sends auth when logged in for user-specific fields.
     '/author/groups/feeds',
+    // v2 spaces feed (Home's guest feed): same `liked_by_me` / `is_joined`
+    // enrichment when a token is present.
+    ApiConfig.spacesFeedV2Path,
   ];
 
   /// Check if a given path is protected (requires authentication).

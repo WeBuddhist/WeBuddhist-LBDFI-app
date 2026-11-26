@@ -73,6 +73,17 @@ class AppLocalizationsNe extends AppLocalizations {
   }
 
   @override
+  String home_practices_sessions(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count सत्रहरू',
+      one: '1 सत्र',
+    );
+    return '$_temp0';
+  }
+
+  @override
   String get home_shortcut_plans => 'योजनाहरू';
 
   @override
@@ -4219,6 +4230,34 @@ class AppLocalizationsNe extends AppLocalizations {
   String get timer_duration_sec => 'sec';
 
   @override
+  String get timer_resume => 'Resume';
+
+  @override
+  String get timer_paused_caption => 'Paused · tap to resume';
+
+  @override
+  String get timer_discard_title => 'Discard this session?';
+
+  @override
+  String timer_discard_message(String elapsed) {
+    return 'Your $elapsed of practice won’t be saved';
+  }
+
+  @override
+  String get timer_save_session => 'Save session';
+
+  @override
+  String get timer_session_saved => 'Session saved';
+
+  @override
+  String get timer_session_complete => 'Session complete';
+
+  @override
+  String timer_saved_to_practice(String elapsed) {
+    return '$elapsed · saved to your practice';
+  }
+
+  @override
   String get reader_display_title => 'प्रदर्शन';
 
   @override
@@ -4447,4 +4486,56 @@ class AppLocalizationsNe extends AppLocalizations {
   @override
   String get mala_appearance_save_failed =>
       'सुरक्षित गर्न सकिएन। कृपया फेरि प्रयास गर्नुहोस्';
+
+  @override
+  String get session_search_plans_hint => 'योजनाहरू खोज्नुहोस्';
+
+  @override
+  String get session_search_chants_hint => 'जप खोज्नुहोस्';
+
+  @override
+  String get session_search_malas_hint => 'मालाहरू खोज्नुहोस्';
+
+  @override
+  String get session_search_timers_hint => 'नाम वा अवधिद्वारा टाइमर खोज्नुहोस्';
+
+  @override
+  String search_min_query_length(int count) {
+    return 'खोज्न कम्तीमा $count अक्षर टाइप गर्नुहोस्';
+  }
+
+  @override
+  String get practice_next_session => 'अर्को सत्र';
+
+  @override
+  String practice_more_in_session(int count) {
+    return 'यस सत्रमा +$count थप';
+  }
+
+  @override
+  String get practice_from_your_spaces => 'तपाईंका स्पेसहरूबाट';
+
+  @override
+  String get practice_discover_more => 'थप अन्वेषण गर्नुहोस्';
+
+  @override
+  String get practice_space_accumulations => 'स्पेस संचय';
+
+  @override
+  String get practice_no_space_accumulations =>
+      'अहिले अन्य स्पेसहरूबाट कुनै संचय छैन';
+
+  @override
+  String get practice_search_hint => 'अभ्यास खोज्नुहोस्';
+
+  @override
+  String get practice_search_recent => 'हालैका';
+
+  @override
+  String practice_search_no_results(String query) {
+    return '\"$query\" को लागि कुनै नतिजा छैन';
+  }
+
+  @override
+  String get practice_popular_practices => 'लोकप्रिय अभ्यासहरू';
 }

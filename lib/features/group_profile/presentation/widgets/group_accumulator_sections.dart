@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_pecha/core/analytics/media_analytics.dart';
 import 'package:flutter_pecha/core/constants/app_assets.dart';
 import 'package:flutter_pecha/core/extensions/context_ext.dart';
 import 'package:flutter_pecha/core/l10n/intl_format_locale.dart';
@@ -398,6 +399,9 @@ class _VideoCard extends StatelessWidget {
       openUrl(link.url);
       return;
     }
+    MediaAnalytics.of(
+      context,
+    ).videoOpened(surface: VideoSurface.accumulator, videoUrl: videoId);
     Navigator.of(context).push(
       MaterialPageRoute(
         settings: const RouteSettings(name: 'video-player'),

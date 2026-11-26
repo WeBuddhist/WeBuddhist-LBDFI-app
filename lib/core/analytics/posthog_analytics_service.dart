@@ -108,12 +108,29 @@ class PostHogAnalyticsService implements AnalyticsService {
   }) async {
     if (!_isInitialized) return;
 
+    final Map<String, Object>? setOnce = setOnceProperties(
+      properties: properties,
+      appVersion: _appVersion,
+    );
     await _foregroundGate.run(
       () => Posthog().identify(
         userId: userId,
         userProperties: _sanitizeProperties(properties),
+        userPropertiesSetOnce: setOnce,
       ),
     );
+  }
+
+  /// `first_app_version`, sent only with a real login. Only a login passes
+  /// person [properties]; a restored session on a cold start passes none, and
+  /// sending it there would make PostHog record a profile update every launch.
+  @visibleForTesting
+  static Map<String, Object>? setOnceProperties({
+    required Map<String, Object?>? properties,
+    required String? appVersion,
+  }) {
+    if (properties == null || appVersion == null) return null;
+    return {AnalyticsProperties.firstAppVersion: appVersion};
   }
 
   @override
@@ -124,6 +141,8 @@ class PostHogAnalyticsService implements AnalyticsService {
     _foregroundGate.discardPending();
     await Posthog().reset();
     await _registerDefaultSuperProperties();
+    // The device's languages don't change with the account.
+    await setSuperProperties(Map.of(_languageProperties));
   }
 
   @override
@@ -138,9 +157,23 @@ class PostHogAnalyticsService implements AnalyticsService {
     );
   }
 
+  /// The app version, once read at start-up; null in tests.
+  String? _appVersion;
+
+  /// The last UI and content language registered, put back after [reset].
+  final Map<String, Object> _languageProperties = {};
+
   @override
   Future<void> setSuperProperties(Map<String, Object?> properties) async {
     if (!_isInitialized) return;
+
+    for (final String key in const [
+      AnalyticsProperties.uiLanguage,
+      AnalyticsProperties.contentLanguage,
+    ]) {
+      final Object? value = properties[key];
+      if (value != null) _languageProperties[key] = value;
+    }
 
     for (final MapEntry<String, Object?> entry in properties.entries) {
       final Object? value = entry.value;
@@ -216,6 +249,7 @@ class PostHogAnalyticsService implements AnalyticsService {
       if (packageInfo != null) 'app_version': packageInfo.version,
       if (packageInfo != null) 'build_number': packageInfo.buildNumber,
     });
+    _appVersion = packageInfo?.version;
   }
 
   /// `debug` or `profile` when the app runs from a developer's machine

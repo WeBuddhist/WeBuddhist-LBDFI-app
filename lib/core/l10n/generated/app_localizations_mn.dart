@@ -73,6 +73,17 @@ class AppLocalizationsMn extends AppLocalizations {
   }
 
   @override
+  String home_practices_sessions(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count хичээл',
+      one: '1 хичээл',
+    );
+    return '$_temp0';
+  }
+
+  @override
   String get home_shortcut_plans => 'Төлөвлөгөө';
 
   @override
@@ -4216,6 +4227,34 @@ class AppLocalizationsMn extends AppLocalizations {
   String get timer_duration_sec => 'sec';
 
   @override
+  String get timer_resume => 'Resume';
+
+  @override
+  String get timer_paused_caption => 'Paused · tap to resume';
+
+  @override
+  String get timer_discard_title => 'Discard this session?';
+
+  @override
+  String timer_discard_message(String elapsed) {
+    return 'Your $elapsed of practice won’t be saved';
+  }
+
+  @override
+  String get timer_save_session => 'Save session';
+
+  @override
+  String get timer_session_saved => 'Session saved';
+
+  @override
+  String get timer_session_complete => 'Session complete';
+
+  @override
+  String timer_saved_to_practice(String elapsed) {
+    return '$elapsed · saved to your practice';
+  }
+
+  @override
   String get reader_display_title => 'Харагдац';
 
   @override
@@ -4444,4 +4483,57 @@ class AppLocalizationsMn extends AppLocalizations {
   @override
   String get mala_appearance_save_failed =>
       'Хадгалж чадсангүй. Дахин оролдоно уу';
+
+  @override
+  String get session_search_plans_hint => 'Төлөвлөгөө хайх';
+
+  @override
+  String get session_search_chants_hint => 'Магтаал хайх';
+
+  @override
+  String get session_search_malas_hint => 'Эрхи хайх';
+
+  @override
+  String get session_search_timers_hint =>
+      'Нэр эсвэл хугацаагаар цаг хэмжигч хайх';
+
+  @override
+  String search_min_query_length(int count) {
+    return 'Хайхын тулд дор хаяж $count тэмдэгт бичнэ үү';
+  }
+
+  @override
+  String get practice_next_session => 'Дараагийн хичээл';
+
+  @override
+  String practice_more_in_session(int count) {
+    return 'Энэ хичээлд +$count бусад';
+  }
+
+  @override
+  String get practice_from_your_spaces => 'Таны орон зайнаас';
+
+  @override
+  String get practice_discover_more => 'Илүү ихийг судлах';
+
+  @override
+  String get practice_space_accumulations => 'Орон зайн хуримтлал';
+
+  @override
+  String get practice_no_space_accumulations =>
+      'Одоогоор бусад орон зайн хуримтлал алга';
+
+  @override
+  String get practice_search_hint => 'Бясалгал хайх';
+
+  @override
+  String get practice_search_recent => 'Сүүлд';
+
+  @override
+  String practice_search_no_results(String query) {
+    return '\"$query\"-д тохирох илэрц алга';
+  }
+
+  @override
+  String get practice_popular_practices => 'Түгээмэл бясалгалууд';
 }
