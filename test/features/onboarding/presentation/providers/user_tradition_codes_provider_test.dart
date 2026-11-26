@@ -3,6 +3,8 @@ import 'dart:convert';
 
 import 'package:dio/dio.dart';
 import 'package:flutter_pecha/core/cache/screen_cache/screen_cache_providers.dart';
+import 'package:flutter_pecha/core/di/core_providers.dart';
+import 'package:flutter_pecha/core/network/network_info.dart';
 import 'package:flutter_pecha/features/auth/presentation/providers/auth_notifier.dart';
 import 'package:flutter_pecha/features/auth/presentation/providers/state_providers.dart';
 import 'package:flutter_pecha/features/auth/presentation/state/auth_state.dart';
@@ -37,13 +39,28 @@ class _FakeRemote extends OnboardingRemoteDatasource {
     required String language,
   }) async {
     calls++;
+    // Taken at call time so an older call can finish with an older selection.
+    final picked = selected;
     await gate?.future;
     if (fail) throw Exception('down');
     return [
-      for (final code in selected)
+      for (final code in picked)
         UserTradition(id: 'id-$code', traditionCode: code, traditionName: code),
     ];
   }
+}
+
+class _FakeNetwork implements NetworkInfo {
+  final controller = StreamController<bool>.broadcast();
+
+  @override
+  bool get isOnline => true;
+
+  @override
+  Future<bool> checkConnectivity() async => true;
+
+  @override
+  Stream<bool> get onConnectivityChanged => controller.stream;
 }
 
 const _signedIn = AuthState(isLoggedIn: true);
@@ -54,6 +71,7 @@ void main() {
   late FakeScreenCacheStore store;
   late _FakeRemote remote;
   late _FakeAuth auth;
+  late _FakeNetwork network;
   late ProviderContainer container;
   late List<AsyncValue<List<String>>> states;
 
@@ -64,6 +82,7 @@ void main() {
         authProvider.overrideWith((ref) => auth),
         screenCacheStoreProvider.overrideWithValue(store),
         onboardingRemoteDatasourceProvider.overrideWithValue(remote),
+        networkInfoProvider.overrideWithValue(network),
       ],
     );
     addTearDown(c.dispose);
@@ -79,6 +98,7 @@ void main() {
   setUp(() {
     store = FakeScreenCacheStore();
     remote = _FakeRemote();
+    network = _FakeNetwork();
   });
 
   String key() => UserTraditionCodesNotifier.storageKey(store);
@@ -164,4 +184,78 @@ void main() {
     await pumpEventQueue();
     expect(states.last.value, []);
   });
+
+  test('a failed lookup with nothing stored is retried on reconnect', () async {
+    remote.fail = true;
+    container = build(_signedIn);
+    await pumpEventQueue();
+    expect(states.last.value, []);
+
+    remote.fail = false;
+    network.controller.add(true);
+    await pumpEventQueue();
+    expect(states.last.value, ['tibetan']);
+    expect(remote.calls, 2);
+  });
+
+  test('retryIfFailed re-resolves a failed lookup and settles first', () async {
+    remote.fail = true;
+    container = build(_signedIn);
+    await pumpEventQueue();
+    expect(states.last.value, []);
+
+    remote.fail = false;
+    await container.read(userTraditionCodesProvider.notifier).retryIfFailed();
+    expect(container.read(userTraditionCodesProvider).value, ['tibetan']);
+    expect(jsonDecode(store.entries[key()]!), ['tibetan']);
+  });
+
+  test('a failed retry keeps the codes and can be retried again', () async {
+    store.entries[key()] = jsonEncode(['pali']);
+    remote.fail = true;
+    container = build(_signedIn);
+    await pumpEventQueue();
+
+    final notifier = container.read(userTraditionCodesProvider.notifier);
+    await notifier.retryIfFailed();
+    expect(states.last.value, ['pali']);
+    expect(remote.calls, 2);
+
+    remote.fail = false;
+    await notifier.retryIfFailed();
+    expect(states.last.value, ['tibetan']);
+    expect(remote.calls, 3);
+  });
+
+  test('nothing is retried after a successful lookup', () async {
+    container = build(_signedIn);
+    await pumpEventQueue();
+
+    await container.read(userTraditionCodesProvider.notifier).retryIfFailed();
+    network.controller.add(true);
+    await pumpEventQueue();
+    expect(remote.calls, 1);
+  });
+
+  test(
+    'an older lookup finishing last does not overwrite the stored codes',
+    () async {
+      final stale = remote.gate = Completer<void>();
+      container = build(_signedIn);
+      await pumpEventQueue();
+
+      // A tradition edit re-resolves while the first lookup is still running.
+      remote
+        ..gate = null
+        ..selected = const ['chinese'];
+      container.invalidate(userTraditionCodesProvider);
+      await pumpEventQueue();
+      expect(states.last.value, ['chinese']);
+
+      stale.complete();
+      await pumpEventQueue();
+      expect(jsonDecode(store.entries[key()]!), ['chinese']);
+      expect(states.last.value, ['chinese']);
+    },
+  );
 }

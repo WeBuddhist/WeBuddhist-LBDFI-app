@@ -5,6 +5,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_pecha/core/cache/screen_cache/screen_cache_key.dart';
 import 'package:flutter_pecha/core/cache/screen_cache/screen_cache_providers.dart';
 import 'package:flutter_pecha/core/cache/screen_cache/screen_cache_store.dart';
+import 'package:flutter_pecha/core/di/core_providers.dart';
 import 'package:flutter_pecha/core/utils/app_logger.dart';
 import 'package:flutter_pecha/features/auth/presentation/providers/state_providers.dart';
 import 'package:flutter_pecha/features/onboarding/data/datasource/onboarding_remote_datasource.dart';
@@ -25,6 +26,11 @@ final _logger = AppLogger('UserTraditionCodes');
 /// the first value and the server's replace them if they changed. Kept alive
 /// so the lookup runs once per session. Invalidate it after the user's
 /// traditions change.
+///
+/// A failed lookup is retried when connectivity returns and from
+/// [UserTraditionCodesNotifier.retryIfFailed] (Home refresh), so a lookup
+/// that failed with nothing stored does not leave the user on the All
+/// traditions verse for the rest of the session.
 final userTraditionCodesProvider =
     AsyncNotifierProvider<UserTraditionCodesNotifier, List<String>>(
       UserTraditionCodesNotifier.new,
@@ -34,9 +40,19 @@ class UserTraditionCodesNotifier extends AsyncNotifier<List<String>> {
   // Bumped per build so a resolution finishing after a rebuild is dropped.
   int _epoch = 0;
 
+  // Whether this build's latest lookup failed; only then is a retry worth it.
+  bool _lookupFailed = false;
+  Future<void>? _retry;
+  OnboardingRemoteDatasource? _datasource;
+  ScreenCacheStore? _store;
+
   @override
   FutureOr<List<String>> build() {
     final epoch = ++_epoch;
+    _lookupFailed = false;
+    _retry = null;
+    _datasource = null;
+    _store = null;
     final (isAuthLoading, isLoggedIn, isGuest) = ref.watch(
       authProvider.select(
         (auth) => (auth.isLoading, auth.isLoggedIn, auth.isGuest),
@@ -47,9 +63,24 @@ class UserTraditionCodesNotifier extends AsyncNotifier<List<String>> {
 
     final store = ref.watch(screenCacheStoreProvider);
     final datasource = ref.watch(onboardingRemoteDatasourceProvider);
+    _store = store;
+    _datasource = datasource;
+    final subscription = ref
+        .watch(networkInfoProvider)
+        .onConnectivityChanged
+        .listen((isOnline) {
+          if (isOnline) unawaited(retryIfFailed());
+        });
+    ref.onDispose(subscription.cancel);
+
     final key = storageKey(store);
     final stored = _readStored(store, key);
-    final fresh = _resolve(datasource, store, key, fallback: stored);
+    final fresh = _lookup(
+      datasource,
+      store,
+      key,
+      epoch,
+    ).then((codes) => codes ?? stored ?? const <String>[]);
     if (stored == null) return fresh;
 
     fresh.then((codes) {
@@ -58,6 +89,27 @@ class UserTraditionCodesNotifier extends AsyncNotifier<List<String>> {
       }
     });
     return stored;
+  }
+
+  /// Re-runs the lookup if the latest one failed, keeping the current codes
+  /// until it succeeds. Completes once the codes are settled, so callers can
+  /// read the user's tradition right after. Never throws.
+  Future<void> retryIfFailed() {
+    if (!_lookupFailed) return Future.value();
+    return _retry ??= () async {
+      final epoch = _epoch;
+      final datasource = _datasource;
+      final store = _store;
+      if (datasource == null || store == null) return;
+      // Let a first resolution still in flight settle before comparing.
+      await future;
+      final codes = await _lookup(datasource, store, storageKey(store), epoch);
+      if (epoch != _epoch) return;
+      _retry = null;
+      if (codes != null && !listEquals(codes, state.valueOrNull)) {
+        state = AsyncData(codes);
+      }
+    }();
   }
 
   static String storageKey(ScreenCacheStore store) => ScreenCacheKey.user(
@@ -77,23 +129,29 @@ class UserTraditionCodesNotifier extends AsyncNotifier<List<String>> {
     }
   }
 
-  /// Never throws: a failed lookup keeps [fallback], or no traditions.
-  static Future<List<String>> _resolve(
+  /// The user's codes, or null when the lookup failed (recorded for
+  /// [retryIfFailed] if [epoch] is still current). Never throws.
+  Future<List<String>?> _lookup(
     OnboardingRemoteDatasource datasource,
     ScreenCacheStore store,
-    String key, {
-    required List<String>? fallback,
-  }) async {
+    String key,
+    int epoch,
+  ) async {
     try {
       // Codes don't depend on the language; names aren't used here.
       final selected = await datasource.fetchUserTraditions(language: 'en');
       final codes =
           selected.map((t) => t.traditionCode).toSet().toList()..sort();
+      // A lookup from before a rebuild (e.g. a tradition edit) may finish
+      // after the newer one; saving it would overwrite the newer codes.
+      if (epoch != _epoch) return codes;
       await store.save(key, jsonEncode(codes));
+      _lookupFailed = false;
       return codes;
     } catch (e, stackTrace) {
       _logger.error('Resolving tradition codes failed', e, stackTrace);
-      return fallback ?? const [];
+      if (epoch == _epoch) _lookupFailed = true;
+      return null;
     }
   }
 }
