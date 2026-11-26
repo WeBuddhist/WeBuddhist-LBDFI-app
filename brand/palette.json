@@ -1,0 +1,320 @@
+{
+  "client": "LBDFI - Light of Buddhadharma Foundation International (India)",
+  "generated": "2026-11-25",
+  "method": "Site CSS hexes read from lbdfi.org HTML (Elementor global colours + inline styles); print colours pixel-sampled from PDF renders and the poster with ImageMagick (-colors quantisation and region means). WCAG 2.x relative-luminance contrast.",
+  "colors": [
+    {
+      "name": "Robe Maroon",
+      "hex": "#980404",
+      "role": "primary",
+      "source": "lbdfi.org inline CSS (#980404, 12 uses; Elementor global colour f208bf5 = #840202)",
+      "notes": "Monastic-robe red used for headings/buttons on the site; same family as the maroon type on the ITCC invitation and hoarding."
+    },
+    {
+      "name": "LBDFI Gold",
+      "hex": "#D9A534",
+      "role": "accent",
+      "source": "Pixel-sampled from official logo https://www.lbdfi.org/wp-content/uploads/2024/03/cropped-LBDFI-logo-2-1.png",
+      "notes": "The line-art Three Jewels emblem and LBDFI wordmark colour. Decorative/icon use only on light backgrounds (low contrast)."
+    },
+    {
+      "name": "Saffron",
+      "hex": "#FE6E00",
+      "role": "secondary",
+      "source": "lbdfi.org Elementor global colour 30e4005 (#FE6E00, 20 uses); colour logo fill sampled #FF6F01 (Dhamma Speaker hoarding PDF)",
+      "notes": "The fill of the three jewels in the colour logo and the site's main call-to-action colour. Too light for white text; pair with dark text or use as fill."
+    },
+    {
+      "name": "Ribbon Saffron",
+      "hex": "#CE5005",
+      "role": "secondary",
+      "source": "Pixel-sampled from 21st ITCC countdown poster ribbon (1.jpg); ITCC registration site CSS uses the close #C66A2B",
+      "notes": "Deeper saffron that carries white text better than #FE6E00; good for pills, chips, countdown badges."
+    },
+    {
+      "name": "Bodhi Teal",
+      "hex": "#01455E",
+      "role": "primary",
+      "source": "Pixel-sampled from 21st ITCC countdown poster background (dominant cluster #075065 / #02374B)",
+      "notes": "Campaign colour of the 2026 ITCC social posts; strong alternative primary and good dark-theme surface tint."
+    },
+    {
+      "name": "Temple Cream",
+      "hex": "#FFFAF7",
+      "role": "background",
+      "source": "lbdfi.org Elementor global colour 9aa9d12 (#FFFAF7)",
+      "notes": "Warm off-white page background; matches the paper tone of the invitation and hoarding (#F9F8F3-#FAEBD3)."
+    },
+    {
+      "name": "Parchment",
+      "hex": "#F6ECD4",
+      "role": "surface",
+      "source": "Pixel-sampled from poster cream frames (#F6ECD4/#FAF1DE) and invitation background (#FAEBD3)",
+      "notes": "Card/sheet surface; framed with thin gold rules in print."
+    },
+    {
+      "name": "Deep Maroon Ink",
+      "hex": "#501919",
+      "role": "text",
+      "source": "Pixel-sampled title type: hoarding #501919, invitation #613631, poster #542512",
+      "notes": "Headline and body text colour in all cream-ground print pieces (serif type)."
+    },
+    {
+      "name": "ITCC Lotus Crimson",
+      "hex": "#D5535D",
+      "role": "accent",
+      "source": "Pixel-sampled from ITCC emblem https://www.tipitakachantingcouncil.co.in/icons/512.png",
+      "notes": "Lotus petals around the Dharma wheel in the ITCC council emblem; use sparingly."
+    },
+    {
+      "name": "Monlam Indigo",
+      "hex": "#171252",
+      "role": "secondary",
+      "source": "Pixel-sampled from 3rd Guru Padmasambhava Monlam programme cover (PDF p.1)",
+      "notes": "Night-sky ground for the Vajrayana/Monlam materials, paired with antique gold #BC8B4A type and rainbow rays."
+    }
+  ],
+  "themes": {
+    "recommendedDirection": "A",
+    "light": {
+      "colors": {
+        "primary": "#980404",
+        "onPrimary": "#FFFFFF",
+        "secondary": "#B34810",
+        "onSecondary": "#FFFFFF",
+        "accent": "#D9A534",
+        "surface": "#F6ECD4",
+        "background": "#FFFAF7",
+        "text": "#501919",
+        "textSecondary": "#7A5A4F"
+      },
+      "contrast": [
+        {
+          "pair": "text on background",
+          "fg": "#501919",
+          "bg": "#FFFAF7",
+          "ratio": 13.57,
+          "passesAA": true,
+          "flag": null
+        },
+        {
+          "pair": "text on surface",
+          "fg": "#501919",
+          "bg": "#F6ECD4",
+          "ratio": 11.96,
+          "passesAA": true,
+          "flag": null
+        },
+        {
+          "pair": "textSecondary on background",
+          "fg": "#7A5A4F",
+          "bg": "#FFFAF7",
+          "ratio": 5.96,
+          "passesAA": true,
+          "flag": null
+        },
+        {
+          "pair": "onPrimary on primary",
+          "fg": "#FFFFFF",
+          "bg": "#980404",
+          "ratio": 8.92,
+          "passesAA": true,
+          "flag": null
+        },
+        {
+          "pair": "onSecondary on secondary",
+          "fg": "#FFFFFF",
+          "bg": "#B34810",
+          "ratio": 5.45,
+          "passesAA": true,
+          "flag": null
+        },
+        {
+          "pair": "primary as text/icon on background",
+          "fg": "#980404",
+          "bg": "#FFFAF7",
+          "ratio": 8.61,
+          "passesAA": true,
+          "flag": null
+        },
+        {
+          "pair": "accent (gold) on background",
+          "fg": "#D9A534",
+          "bg": "#FFFAF7",
+          "ratio": 2.16,
+          "passesAA": false,
+          "flag": "below 3.0:1 - do not use for body text"
+        }
+      ],
+      "appColorTokens": {
+        "primary": "#980404",
+        "primaryLight": "#AD3636",
+        "primaryDark": "#720303",
+        "primaryDarkest": "#580202",
+        "primaryContainer": "#F5E6E6",
+        "primarySurface": "#FAF2F2"
+      }
+    },
+    "dark": {
+      "colors": {
+        "primary": "#E3B04B",
+        "onPrimary": "#2B0A05",
+        "secondary": "#FF8A3D",
+        "onSecondary": "#2B0A05",
+        "accent": "#D9A534",
+        "surface": "#2A1714",
+        "background": "#160C0A",
+        "text": "#FBEFDC",
+        "textSecondary": "#CDB8A6"
+      },
+      "contrast": [
+        {
+          "pair": "text on background",
+          "fg": "#FBEFDC",
+          "bg": "#160C0A",
+          "ratio": 16.94,
+          "passesAA": true,
+          "flag": null
+        },
+        {
+          "pair": "text on surface",
+          "fg": "#FBEFDC",
+          "bg": "#2A1714",
+          "ratio": 15.01,
+          "passesAA": true,
+          "flag": null
+        },
+        {
+          "pair": "textSecondary on background",
+          "fg": "#CDB8A6",
+          "bg": "#160C0A",
+          "ratio": 10.08,
+          "passesAA": true,
+          "flag": null
+        },
+        {
+          "pair": "onPrimary on primary",
+          "fg": "#2B0A05",
+          "bg": "#E3B04B",
+          "ratio": 9.21,
+          "passesAA": true,
+          "flag": null
+        },
+        {
+          "pair": "onSecondary on secondary",
+          "fg": "#2B0A05",
+          "bg": "#FF8A3D",
+          "ratio": 7.8,
+          "passesAA": true,
+          "flag": null
+        },
+        {
+          "pair": "primary as text/icon on background",
+          "fg": "#E3B04B",
+          "bg": "#160C0A",
+          "ratio": 9.69,
+          "passesAA": true,
+          "flag": null
+        },
+        {
+          "pair": "accent (gold) on background",
+          "fg": "#D9A534",
+          "bg": "#160C0A",
+          "ratio": 8.6,
+          "passesAA": true,
+          "flag": null
+        }
+      ]
+    },
+    "otherPairs": [
+      {
+        "pair": "white on Saffron #FE6E00",
+        "fg": "#FFFFFF",
+        "bg": "#FE6E00",
+        "ratio": 2.82,
+        "passesAA": false,
+        "flag": "below 4.5:1 - do not use for body text"
+      },
+      {
+        "pair": "Deep Maroon Ink on Saffron #FE6E00",
+        "fg": "#501919",
+        "bg": "#FE6E00",
+        "ratio": 4.98,
+        "passesAA": true,
+        "flag": null
+      },
+      {
+        "pair": "white on Ribbon Saffron #CE5005",
+        "fg": "#FFFFFF",
+        "bg": "#CE5005",
+        "ratio": 4.4,
+        "passesAA": false,
+        "flag": "below 4.5:1 - do not use for body text"
+      },
+      {
+        "pair": "white on deep ribbon saffron #B34810 (poster ribbon shadow cluster)",
+        "fg": "#FFFFFF",
+        "bg": "#B34810",
+        "ratio": 5.45,
+        "passesAA": true,
+        "flag": null
+      },
+      {
+        "pair": "white on Bodhi Teal",
+        "fg": "#FFFFFF",
+        "bg": "#01455E",
+        "ratio": 10.43,
+        "passesAA": true,
+        "flag": null
+      },
+      {
+        "pair": "Parchment on Bodhi Teal",
+        "fg": "#F6ECD4",
+        "bg": "#01455E",
+        "ratio": 8.87,
+        "passesAA": true,
+        "flag": null
+      },
+      {
+        "pair": "white on Monlam Indigo",
+        "fg": "#FFFFFF",
+        "bg": "#171252",
+        "ratio": 16.87,
+        "passesAA": true,
+        "flag": null
+      },
+      {
+        "pair": "LBDFI Gold on Monlam Indigo",
+        "fg": "#D9A534",
+        "bg": "#171252",
+        "ratio": 7.54,
+        "passesAA": true,
+        "flag": null
+      },
+      {
+        "pair": "LBDFI Gold on Robe Maroon",
+        "fg": "#D9A534",
+        "bg": "#980404",
+        "ratio": 3.99,
+        "passesAA": true,
+        "flag": null
+      },
+      {
+        "pair": "LBDFI Gold on Bodhi Teal",
+        "fg": "#D9A534",
+        "bg": "#01455E",
+        "ratio": 4.66,
+        "passesAA": true,
+        "flag": null
+      },
+      {
+        "pair": "LBDFI Gold on Temple Cream",
+        "fg": "#D9A534",
+        "bg": "#FFFAF7",
+        "ratio": 2.16,
+        "passesAA": false,
+        "flag": "below 3.0:1 - do not use for body text"
+      }
+    ]
+  }
+}

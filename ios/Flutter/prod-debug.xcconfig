@@ -2,10 +2,10 @@
 #include "Generated.xcconfig"
 #include? "Secrets.xcconfig"
 
-BUNDLE_ID=org.pecha.app
-APP_NAME=WeBuddhist
-AUTH0_SCHEME=org.pecha.app
+BUNDLE_ID=com.webuddhist.lbdfi
+APP_NAME=LBDFI
+AUTH0_SCHEME=com.webuddhist.lbdfi
 AIRBRIDGE_APP_NAME=webuddhist
 // REVERSED_CLIENT_ID of Runner/config/prod/GoogleService-Info.plist: the URL
 // scheme Google sign-in (and the phone sign-in reCAPTCHA fallback) returns on.
-GOOGLE_REVERSED_CLIENT_ID=com.googleusercontent.apps.551646315172-gqk6dkovt3loao84lhertpoflqkn94d0
+GOOGLE_REVERSED_CLIENT_ID=com.googleusercontent.apps.551646315172-igtg6e826e8rc7s2amm6q0as4fn19dha

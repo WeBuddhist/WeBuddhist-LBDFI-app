@@ -3,7 +3,7 @@
 #include? "Secrets.xcconfig"
 
 BUNDLE_ID=org.pecha.app.dev
-APP_NAME=[Dev] WeBuddhist
+APP_NAME=[Dev] LBDFI
 AUTH0_SCHEME=org.pecha.app.dev
 AIRBRIDGE_APP_NAME=webuddhist
 // REVERSED_CLIENT_ID of Runner/config/dev/GoogleService-Info.plist: the URL

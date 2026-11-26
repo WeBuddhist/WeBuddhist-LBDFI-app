@@ -7,6 +7,42 @@
   "client": [
     {
       "client_info": {
+        "mobilesdk_app_id": "1:551646315172:android:b7939de6ecc962377adc31",
+        "android_client_info": {
+          "package_name": "com.webuddhist.lbdfi"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "551646315172-kfkbg97ojbn7nus3gi2sju0jocnph2mu.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBRo5ms8zEQ4qyQlZfyBH3OOe9ajkuDiuA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "551646315172-bs4d0b9rejjo5t4e43i7jjjfso22drf7.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "551646315172-gqk6dkovt3loao84lhertpoflqkn94d0.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "org.pecha.app"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
         "mobilesdk_app_id": "1:551646315172:android:0bd7b5394051c7df7adc31",
         "android_client_info": {
           "package_name": "org.pecha.app"
@@ -19,14 +55,6 @@
           "android_info": {
             "package_name": "org.pecha.app",
             "certificate_hash": "40299cc7a6cf41649a763cd9d566e06765d8c1e8"
-          }
-        },
-        {
-          "client_id": "551646315172-7gqpd2n5aqk5lq2gckis9vebo8cbc642.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "org.pecha.app",
-            "certificate_hash": "f2d8d42f6bc523365d801521c2ef05516e1cf4b8"
           }
         },
         {
@@ -75,7 +103,7 @@
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "551646315172-kfkbg97ojbn7nus3gi2sju0jocnph2mu.apps.googleusercontent.com",
+              "client_id": "551646315172-bs4d0b9rejjo5t4e43i7jjjfso22drf7.apps.googleusercontent.com",
               "client_type": 3
             },
             {
@@ -111,7 +139,7 @@
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "551646315172-kfkbg97ojbn7nus3gi2sju0jocnph2mu.apps.googleusercontent.com",
+              "client_id": "551646315172-bs4d0b9rejjo5t4e43i7jjjfso22drf7.apps.googleusercontent.com",
               "client_type": 3
             },
             {
