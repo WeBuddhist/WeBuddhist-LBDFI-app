@@ -11,6 +11,7 @@ import 'package:flutter_pecha/core/analytics/analytics_providers.dart';
 import 'package:flutter_pecha/core/analytics/clarity_analytics_service.dart';
 import 'package:flutter_pecha/core/analytics/entry_analytics.dart';
 import 'package:flutter_pecha/core/analytics/posthog_analytics_service.dart';
+import 'package:flutter_pecha/core/cache/cache_config.dart';
 import 'package:flutter_pecha/core/cache/cache_service.dart';
 import 'package:flutter_pecha/core/cache/screen_cache/screen_cache_store.dart';
 import 'package:flutter_pecha/core/config/app_feature_flags.dart';
@@ -23,7 +24,9 @@ import 'package:flutter_pecha/core/l10n/l10n.dart';
 import 'package:flutter_pecha/core/services/airbridge_deep_link_service.dart';
 import 'package:flutter_pecha/core/services/service_providers.dart';
 import 'package:flutter_pecha/core/theme/theme_notifier.dart';
+import 'package:flutter_pecha/core/storage/server_switch_cleanup.dart';
 import 'package:flutter_pecha/core/utils/app_logger.dart';
+import 'package:flutter_pecha/env.dart';
 import 'package:flutter_pecha/features/notifications/data/models/notification_nav.dart';
 import 'package:flutter_pecha/features/practice/data/models/routine_model.dart';
 import 'package:flutter_pecha/features/notifications/application/notification_sync_bootstrap.dart';
@@ -68,6 +71,31 @@ import 'package:airbridge_flutter_sdk/airbridge_flutter_sdk.dart';
 
 final _logger = AppLogger('Main');
 
+/// Hive boxes filled from the server or holding work queued for it, removed
+/// when the app starts against another server (see [ServerSwitchCleanup]).
+/// A new box of server data opened below belongs here too.
+/// `NotificationLocalDataSource`'s box is left out: it holds the device's
+/// notification switches.
+const serverDataBoxes = <String>[
+  CacheConfig.collectionListBox,
+  CacheConfig.workListBox,
+  CacheConfig.textVersionListBox,
+  CacheConfig.textCommentListBox,
+  CacheConfig.textContentBox,
+  CacheConfig.recitationContentBox,
+  CacheConfig.recitationListBox,
+  CacheConfig.savedRecitationsBox,
+  CacheConfig.cacheMetadataBox,
+  ScreenCacheStore.boxName,
+  HomeLocalDatasource.boxName,
+  PlansLocalDatasource.boxName,
+  MalaLocalDataSource.boxName,
+  MalaLocalDataSource.groupBoxName,
+  TimersLocalDatasource.boxName,
+  UserStatsLocalDatasource.boxName,
+  RoutineLocalStorage.boxName,
+];
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   // Covers from every tab share this budget; the 100 MB default evicts them
@@ -111,6 +139,13 @@ void main() async {
   GoogleFonts.config.allowRuntimeFetching = true;
 
   // Note: .env files are loaded by flavor-specific entry points (main_dev.dart, main_staging.dart, main_prod.dart)
+
+  // Before any local store opens: data saved for another server (a build
+  // from another entry file on this phone) is removed. Never throws.
+  await ServerSwitchCleanupImpl(
+    server: Env.environment,
+    serverBoxes: serverDataBoxes,
+  ).run();
 
   // Initialize cache service for offline-first data
   try {
