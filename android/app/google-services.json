@@ -14,6 +14,22 @@
       },
       "oauth_client": [
         {
+          "client_id": "551646315172-6ccf2t9gac8q5kg8agat06tnofnhfr0q.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "org.pecha.app",
+            "certificate_hash": "40299cc7a6cf41649a763cd9d566e06765d8c1e8"
+          }
+        },
+        {
+          "client_id": "551646315172-7gqpd2n5aqk5lq2gckis9vebo8cbc642.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "org.pecha.app",
+            "certificate_hash": "f2d8d42f6bc523365d801521c2ef05516e1cf4b8"
+          }
+        },
+        {
           "client_id": "551646315172-7i0r4lb12bfnap21rpp9np01kn94n2bg.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
@@ -35,6 +51,14 @@
           "android_info": {
             "package_name": "org.pecha.app",
             "certificate_hash": "1998c075149773f73549cdd4bd8b63fcc8606e72"
+          }
+        },
+        {
+          "client_id": "551646315172-jmkgh46sm345ihgj90sbhlu8s2uq1fi0.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "org.pecha.app",
+            "certificate_hash": "fa3c9e5aff7b5fd1e5450a18aeaf7fff6bc3f051"
           }
         },
         {
